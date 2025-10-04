@@ -1,0 +1,838 @@
+---
+// BlockchainAnalytics.astro - Advanced blockchain analytics and on-chain data visualization
+export interface Props {
+  walletAddress?: string;
+  showNetworkStats?: boolean;
+  showTransactionFlow?: boolean;
+  showTokenAnalytics?: boolean;
+  showNFTAnalytics?: boolean;
+  timeRange?: '1h' | '24h' | '7d' | '30d' | '90d';
+}
+
+const {
+  walletAddress = '',
+  showNetworkStats = true,
+  showTransactionFlow = true,
+  showTokenAnalytics = true,
+  showNFTAnalytics = true,
+  timeRange = '24h'
+} = Astro.props;
+
+// Mock blockchain data
+const networkStats = {
+  totalTransactions: 1250000,
+  activeWallets: 45000,
+  totalVolume: 2500000,
+  averageGasPrice: 0.000005,
+  networkHealth: 98.5,
+  blockTime: 0.4,
+  tps: 3000
+};
+
+const transactionFlow = [
+  { from: 'Wallet A', to: 'Wallet B', amount: 5.5, token: 'SOL', timestamp: '2024-01-20T10:30:00Z' },
+  { from: 'Wallet C', to: 'Wallet D', amount: 12.3, token: 'USDC', timestamp: '2024-01-20T10:29:00Z' },
+  { from: 'Wallet E', to: 'Wallet F', amount: 2.1, token: 'SOL', timestamp: '2024-01-20T10:28:00Z' },
+  { from: 'Wallet G', to: 'Wallet H', amount: 8.7, token: 'USDT', timestamp: '2024-01-20T10:27:00Z' },
+  { from: 'Wallet I', to: 'Wallet J', amount: 15.2, token: 'SOL', timestamp: '2024-01-20T10:26:00Z' }
+];
+
+const tokenAnalytics = {
+  topTokens: [
+    { symbol: 'SOL', volume: 1500000, price: 95.50, change: 2.5, marketCap: 40000000000 },
+    { symbol: 'USDC', volume: 500000, price: 1.00, change: 0.1, marketCap: 25000000000 },
+    { symbol: 'USDT', volume: 300000, price: 1.00, change: -0.05, marketCap: 20000000000 },
+    { symbol: 'RAY', volume: 100000, price: 2.45, change: 5.2, marketCap: 1000000000 },
+    { symbol: 'SRM', volume: 80000, price: 0.85, change: -1.2, marketCap: 500000000 }
+  ],
+  priceHistory: [
+    { time: '00:00', sol: 94.2, usdc: 1.0, usdt: 1.0 },
+    { time: '04:00', sol: 94.8, usdc: 1.0, usdt: 1.0 },
+    { time: '08:00', sol: 95.1, usdc: 1.0, usdt: 1.0 },
+    { time: '12:00', sol: 95.5, usdc: 1.0, usdt: 1.0 },
+    { time: '16:00', sol: 95.3, usdc: 1.0, usdt: 1.0 },
+    { time: '20:00', sol: 95.7, usdc: 1.0, usdt: 1.0 }
+  ]
+};
+
+const nftAnalytics = {
+  topCollections: [
+    { name: 'Bored Ape Yacht Club', floorPrice: 45.2, volume: 250000, change: 8.5, items: 10000 },
+    { name: 'CryptoPunks', floorPrice: 85.7, volume: 180000, change: -2.1, items: 10000 },
+    { name: 'Art Blocks', floorPrice: 12.3, volume: 95000, change: 15.2, items: 5000 },
+    { name: 'Solana Monkey Business', floorPrice: 8.9, volume: 75000, change: 22.1, items: 5000 },
+    { name: 'Degenerate Ape Academy', floorPrice: 6.5, volume: 45000, change: -5.3, items: 10000 }
+  ],
+  salesHistory: [
+    { time: '00:00', sales: 45, volume: 125000 },
+    { time: '04:00', sales: 32, volume: 89000 },
+    { time: '08:00', sales: 67, volume: 198000 },
+    { time: '12:00', sales: 89, volume: 267000 },
+    { time: '16:00', sales: 76, volume: 234000 },
+    { time: '20:00', sales: 54, volume: 156000 }
+  ]
+};
+---
+
+<div class="blockchain-analytics" id="blockchain-analytics">
+  <div class="analytics-header">
+    <h2 class="analytics-title">Blockchain Analytics</h2>
+    <div class="analytics-controls">
+      <select class="time-range-select" id="time-range-select">
+        <option value="1h" {timeRange === '1h' ? 'selected' : ''}>Last Hour</option>
+        <option value="24h" {timeRange === '24h' ? 'selected' : ''}>Last 24 Hours</option>
+        <option value="7d" {timeRange === '7d' ? 'selected' : ''}>Last 7 Days</option>
+        <option value="30d" {timeRange === '30d' ? 'selected' : ''}>Last 30 Days</option>
+        <option value="90d" {timeRange === '90d' ? 'selected' : ''}>Last 90 Days</option>
+      </select>
+      <button class="refresh-btn" id="refresh-analytics">
+        <span class="btn-icon">🔄</span>
+        Refresh
+      </button>
+      <button class="export-btn" id="export-analytics">
+        <span class="btn-icon">📊</span>
+        Export
+      </button>
+    </div>
+  </div>
+
+  {showNetworkStats && (
+    <div class="network-stats-section">
+      <h3 class="section-title">Network Statistics</h3>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-icon">📊</div>
+          <div class="stat-content">
+            <div class="stat-label">Total Transactions</div>
+            <div class="stat-value">{networkStats.totalTransactions.toLocaleString()}</div>
+            <div class="stat-change positive">+12.5%</div>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-content">
+            <div class="stat-label">Active Wallets</div>
+            <div class="stat-value">{networkStats.activeWallets.toLocaleString()}</div>
+            <div class="stat-change positive">+8.3%</div>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-content">
+            <div class="stat-label">Total Volume</div>
+            <div class="stat-value">${networkStats.totalVolume.toLocaleString()}</div>
+            <div class="stat-change positive">+15.2%</div>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">⛽</div>
+          <div class="stat-content">
+            <div class="stat-label">Avg Gas Price</div>
+            <div class="stat-value">{networkStats.averageGasPrice} SOL</div>
+            <div class="stat-change negative">-2.1%</div>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">💚</div>
+          <div class="stat-content">
+            <div class="stat-label">Network Health</div>
+            <div class="stat-value">{networkStats.networkHealth}%</div>
+            <div class="stat-change positive">+0.5%</div>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">⚡</div>
+          <div class="stat-content">
+            <div class="stat-label">Block Time</div>
+            <div class="stat-value">{networkStats.blockTime}s</div>
+            <div class="stat-change positive">-0.1s</div>
+          </div>
+        </div>
+        
+        <div class="stat-card">
+          <div class="stat-icon">🚀</div>
+          <div class="stat-content">
+            <div class="stat-label">TPS</div>
+            <div class="stat-value">{networkStats.tps.toLocaleString()}</div>
+            <div class="stat-change positive">+5.2%</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+
+  {showTransactionFlow && (
+    <div class="transaction-flow-section">
+      <h3 class="section-title">Live Transaction Flow</h3>
+      <div class="flow-container">
+        <div class="flow-visualization" id="flow-visualization">
+          <canvas id="transaction-flow-canvas" width="800" height="400"></canvas>
+        </div>
+        <div class="flow-list">
+          <h4 class="flow-list-title">Recent Transactions</h4>
+          <div class="flow-items">
+            {transactionFlow.map((tx, index) => (
+              <div class="flow-item" key={index}>
+                <div class="flow-item-header">
+                  <span class="flow-amount">{tx.amount} {tx.token}</span>
+                  <span class="flow-time">{new Date(tx.timestamp).toLocaleTimeString()}</span>
+                </div>
+                <div class="flow-item-details">
+                  <span class="flow-from">{tx.from.slice(0, 8)}...{tx.from.slice(-4)}</span>
+                  <span class="flow-arrow">→</span>
+                  <span class="flow-to">{tx.to.slice(0, 8)}...{tx.to.slice(-4)}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+
+  {showTokenAnalytics && (
+    <div class="token-analytics-section">
+      <h3 class="section-title">Token Analytics</h3>
+      <div class="token-content">
+        <div class="token-chart">
+          <h4 class="chart-title">Price History</h4>
+          <div class="chart-container">
+            <canvas id="price-chart" width="600" height="300"></canvas>
+          </div>
+        </div>
+        <div class="token-table">
+          <h4 class="table-title">Top Tokens</h4>
+          <div class="table-container">
+            <table class="token-table">
+              <thead>
+                <tr>
+                  <th>Token</th>
+                  <th>Price</th>
+                  <th>Change</th>
+                  <th>Volume</th>
+                  <th>Market Cap</th>
+                </tr>
+              </thead>
+              <tbody>
+                {tokenAnalytics.topTokens.map((token) => (
+                  <tr>
+                    <td class="token-symbol">{token.symbol}</td>
+                    <td class="token-price">${token.price.toFixed(2)}</td>
+                    <td class={`token-change ${token.change >= 0 ? 'positive' : 'negative'}`}>
+                      {token.change >= 0 ? '+' : ''}{token.change.toFixed(2)}%
+                    </td>
+                    <td class="token-volume">${token.volume.toLocaleString()}</td>
+                    <td class="token-marketcap">${token.marketCap.toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+
+  {showNFTAnalytics && (
+    <div class="nft-analytics-section">
+      <h3 class="section-title">NFT Analytics</h3>
+      <div class="nft-content">
+        <div class="nft-chart">
+          <h4 class="chart-title">Sales History</h4>
+          <div class="chart-container">
+            <canvas id="nft-sales-chart" width="600" height="300"></canvas>
+          </div>
+        </div>
+        <div class="nft-table">
+          <h4 class="table-title">Top Collections</h4>
+          <div class="table-container">
+            <table class="nft-table">
+              <thead>
+                <tr>
+                  <th>Collection</th>
+                  <th>Floor Price</th>
+                  <th>Volume</th>
+                  <th>Change</th>
+                  <th>Items</th>
+                </tr>
+              </thead>
+              <tbody>
+                {nftAnalytics.topCollections.map((collection) => (
+                  <tr>
+                    <td class="collection-name">{collection.name}</td>
+                    <td class="floor-price">{collection.floorPrice} SOL</td>
+                    <td class="collection-volume">${collection.volume.toLocaleString()}</td>
+                    <td class={`collection-change ${collection.change >= 0 ? 'positive' : 'negative'}`}>
+                      {collection.change >= 0 ? '+' : ''}{collection.change.toFixed(1)}%
+                    </td>
+                    <td class="collection-items">{collection.items.toLocaleString()}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+
+  <div class="analytics-footer">
+    <div class="footer-info">
+      <span class="last-updated">Last updated: {new Date().toLocaleString()}</span>
+      <span class="data-source">Data source: Solana RPC</span>
+    </div>
+    <div class="footer-actions">
+      <button class="action-btn" id="fullscreen-btn">Fullscreen</button>
+      <button class="action-btn" id="settings-btn">Settings</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  class BlockchainAnalytics {
+    private timeRange: string;
+    private charts: Map<string, any> = new Map();
+    private refreshInterval: number | null = null;
+
+    constructor(timeRange: string = '24h') {
+      this.timeRange = timeRange;
+      this.initializeElements();
+      this.setupEventListeners();
+    }
+
+    private initializeElements() {
+      // This will be called when the component is mounted
+    }
+
+    private setupEventListeners() {
+      document.addEventListener('DOMContentLoaded', () => {
+        const timeRangeSelect = document.getElementById('time-range-select') as HTMLSelectElement;
+        const refreshBtn = document.getElementById('refresh-analytics');
+        const exportBtn = document.getElementById('export-analytics');
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        const settingsBtn = document.getElementById('settings-btn');
+
+        timeRangeSelect?.addEventListener('change', (e) => {
+          this.timeRange = (e.target as HTMLSelectElement).value;
+          this.updateAnalytics();
+        });
+
+        refreshBtn?.addEventListener('click', () => this.refreshData());
+        exportBtn?.addEventListener('click', () => this.exportData());
+        fullscreenBtn?.addEventListener('click', () => this.toggleFullscreen());
+        settingsBtn?.addEventListener('click', () => this.openSettings());
+
+        // Start auto-refresh
+        this.startAutoRefresh();
+      });
+    }
+
+    public render() {
+      this.renderPriceChart();
+      this.renderNFTSalesChart();
+      this.renderTransactionFlow();
+    }
+
+    private renderPriceChart() {
+      const canvas = document.getElementById('price-chart') as HTMLCanvasElement;
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const data = JSON.parse('${JSON.stringify(tokenAnalytics.priceHistory)}');
+      const maxPrice = Math.max(...data.map((d: any) => Math.max(d.sol, d.usdc, d.usdt)));
+
+      // Draw axes
+      ctx.strokeStyle = '#e5e7eb';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(40, 20);
+      ctx.lineTo(40, canvas.height - 20);
+      ctx.lineTo(canvas.width - 20, canvas.height - 20);
+      ctx.stroke();
+
+      // Draw SOL price line
+      ctx.strokeStyle = '#3b82f6';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      
+      data.forEach((point: any, index: number) => {
+        const x = 40 + (index / (data.length - 1)) * (canvas.width - 60);
+        const y = canvas.height - 20 - (point.sol / maxPrice) * (canvas.height - 40);
+        
+        if (index === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+      
+      ctx.stroke();
+
+      // Draw data points
+      ctx.fillStyle = '#3b82f6';
+      data.forEach((point: any, index: number) => {
+        const x = 40 + (index / (data.length - 1)) * (canvas.width - 60);
+        const y = canvas.height - 20 - (point.sol / maxPrice) * (canvas.height - 40);
+        
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, 2 * Math.PI);
+        ctx.fill();
+      });
+
+      // Draw labels
+      ctx.fillStyle = '#6b7280';
+      ctx.font = '12px Arial';
+      ctx.textAlign = 'center';
+      
+      data.forEach((point: any, index: number) => {
+        const x = 40 + (index / (data.length - 1)) * (canvas.width - 60);
+        ctx.fillText(point.time, x, canvas.height - 5);
+      });
+    }
+
+    private renderNFTSalesChart() {
+      const canvas = document.getElementById('nft-sales-chart') as HTMLCanvasElement;
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      const data = JSON.parse('${JSON.stringify(nftAnalytics.salesHistory)}');
+      const maxVolume = Math.max(...data.map((d: any) => d.volume));
+
+      // Draw axes
+      ctx.strokeStyle = '#e5e7eb';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(40, 20);
+      ctx.lineTo(40, canvas.height - 20);
+      ctx.lineTo(canvas.width - 20, canvas.height - 20);
+      ctx.stroke();
+
+      // Draw volume bars
+      const barWidth = (canvas.width - 60) / data.length;
+      ctx.fillStyle = '#10b981';
+      
+      data.forEach((point: any, index: number) => {
+        const barHeight = (point.volume / maxVolume) * (canvas.height - 40);
+        const x = 40 + index * barWidth;
+        const y = canvas.height - 20 - barHeight;
+        
+        ctx.fillRect(x, y, barWidth - 2, barHeight);
+      });
+
+      // Draw labels
+      ctx.fillStyle = '#6b7280';
+      ctx.font = '12px Arial';
+      ctx.textAlign = 'center';
+      
+      data.forEach((point: any, index: number) => {
+        const x = 40 + index * barWidth + barWidth / 2;
+        ctx.fillText(point.time, x, canvas.height - 5);
+      });
+    }
+
+    private renderTransactionFlow() {
+      const canvas = document.getElementById('transaction-flow-canvas') as HTMLCanvasElement;
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw network nodes and connections
+      const nodes = [
+        { x: 100, y: 100, label: 'Wallet A', type: 'wallet' },
+        { x: 300, y: 100, label: 'Wallet B', type: 'wallet' },
+        { x: 500, y: 100, label: 'Wallet C', type: 'wallet' },
+        { x: 200, y: 200, label: 'Marketplace', type: 'marketplace' },
+        { x: 400, y: 200, label: 'Exchange', type: 'exchange' }
+      ];
+
+      // Draw connections
+      ctx.strokeStyle = '#3b82f6';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      
+      nodes.forEach((node, index) => {
+        if (index < nodes.length - 1) {
+          ctx.beginPath();
+          ctx.moveTo(node.x, node.y);
+          ctx.lineTo(nodes[index + 1].x, nodes[index + 1].y);
+          ctx.stroke();
+        }
+      });
+
+      ctx.setLineDash([]);
+
+      // Draw nodes
+      nodes.forEach(node => {
+        ctx.fillStyle = node.type === 'wallet' ? '#3b82f6' : '#10b981';
+        ctx.beginPath();
+        ctx.arc(node.x, node.y, 20, 0, 2 * Math.PI);
+        ctx.fill();
+
+        // Draw labels
+        ctx.fillStyle = '#374151';
+        ctx.font = '12px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(node.label, node.x, node.y + 35);
+      });
+    }
+
+    private updateAnalytics() {
+      console.log(`Updating analytics for time range: ${this.timeRange}`);
+      this.render();
+    }
+
+    private async refreshData() {
+      const refreshBtn = document.getElementById('refresh-analytics') as HTMLButtonElement;
+      if (refreshBtn) {
+        refreshBtn.disabled = true;
+        refreshBtn.innerHTML = '<span class="btn-icon">⏳</span> Refreshing...';
+      }
+
+      try {
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        this.render();
+        this.showNotification('Analytics refreshed successfully', 'success');
+      } catch (error) {
+        this.showNotification('Failed to refresh analytics', 'error');
+      } finally {
+        if (refreshBtn) {
+          refreshBtn.disabled = false;
+          refreshBtn.innerHTML = '<span class="btn-icon">🔄</span> Refresh';
+        }
+      }
+    }
+
+    private exportData() {
+      const data = {
+        timestamp: new Date().toISOString(),
+        timeRange: this.timeRange,
+        networkStats: JSON.parse('${JSON.stringify(networkStats)}'),
+        tokenAnalytics: JSON.parse('${JSON.stringify(tokenAnalytics)}'),
+        nftAnalytics: JSON.parse('${JSON.stringify(nftAnalytics)}')
+      };
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `blockchain-analytics-${this.timeRange}-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      this.showNotification('Analytics exported successfully', 'success');
+    }
+
+    private toggleFullscreen() {
+      const analytics = document.getElementById('blockchain-analytics');
+      if (analytics) {
+        if (document.fullscreenElement) {
+          document.exitFullscreen();
+        } else {
+          analytics.requestFullscreen();
+        }
+      }
+    }
+
+    private openSettings() {
+      this.showNotification('Settings panel coming soon', 'info');
+    }
+
+    private startAutoRefresh() {
+      // Refresh every 30 seconds
+      this.refreshInterval = setInterval(() => {
+        this.refreshData();
+      }, 30000);
+    }
+
+    private showNotification(message: string, type: 'success' | 'error' | 'info') {
+      const notification = document.createElement('div');
+      notification.className = `notification notification-${type}`;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+  }
+
+  // Initialize analytics when DOM is loaded
+  let blockchainAnalytics: BlockchainAnalytics;
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    blockchainAnalytics = new BlockchainAnalytics('${timeRange}');
+    blockchainAnalytics.render();
+  });
+
+  // Export for external use
+  window.getBlockchainAnalytics = () => blockchainAnalytics;
+</script>
+
+<style>
+  .blockchain-analytics {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+  }
+
+  .analytics-header {
+    @apply flex justify-between items-center mb-6;
+  }
+
+  .analytics-title {
+    @apply text-2xl font-bold text-gray-900;
+  }
+
+  .analytics-controls {
+    @apply flex items-center space-x-3;
+  }
+
+  .time-range-select {
+    @apply px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+  }
+
+  .refresh-btn,
+  .export-btn {
+    @apply px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition-colors flex items-center space-x-2;
+  }
+
+  .btn-icon {
+    @apply text-sm;
+  }
+
+  .network-stats-section {
+    @apply mb-8;
+  }
+
+  .section-title {
+    @apply text-lg font-semibold text-gray-900 mb-4;
+  }
+
+  .stats-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4;
+  }
+
+  .stat-card {
+    @apply bg-gray-50 rounded-lg p-4 flex items-center space-x-3;
+  }
+
+  .stat-icon {
+    @apply text-2xl;
+  }
+
+  .stat-content {
+    @apply flex-1;
+  }
+
+  .stat-label {
+    @apply text-sm text-gray-600 mb-1;
+  }
+
+  .stat-value {
+    @apply text-xl font-bold text-gray-900 mb-1;
+  }
+
+  .stat-change {
+    @apply text-sm font-medium;
+  }
+
+  .stat-change.positive {
+    @apply text-green-600;
+  }
+
+  .stat-change.negative {
+    @apply text-red-600;
+  }
+
+  .transaction-flow-section {
+    @apply mb-8;
+  }
+
+  .flow-container {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+  }
+
+  .flow-visualization {
+    @apply bg-gray-50 rounded-lg p-4;
+  }
+
+  .flow-list {
+    @apply space-y-4;
+  }
+
+  .flow-list-title {
+    @apply font-semibold text-gray-900 mb-3;
+  }
+
+  .flow-items {
+    @apply space-y-3;
+  }
+
+  .flow-item {
+    @apply bg-white rounded-lg p-3 border border-gray-200;
+  }
+
+  .flow-item-header {
+    @apply flex justify-between items-center mb-2;
+  }
+
+  .flow-amount {
+    @apply font-semibold text-gray-900;
+  }
+
+  .flow-time {
+    @apply text-sm text-gray-500;
+  }
+
+  .flow-item-details {
+    @apply flex items-center space-x-2 text-sm text-gray-600;
+  }
+
+  .flow-from,
+  .flow-to {
+    @apply font-mono;
+  }
+
+  .flow-arrow {
+    @apply text-gray-400;
+  }
+
+  .token-analytics-section,
+  .nft-analytics-section {
+    @apply mb-8;
+  }
+
+  .token-content,
+  .nft-content {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+  }
+
+  .token-chart,
+  .nft-chart {
+    @apply space-y-4;
+  }
+
+  .chart-title,
+  .table-title {
+    @apply font-semibold text-gray-900;
+  }
+
+  .chart-container {
+    @apply bg-gray-50 rounded-lg p-4;
+  }
+
+  .table-container {
+    @apply overflow-x-auto;
+  }
+
+  .token-table,
+  .nft-table {
+    @apply w-full text-sm;
+  }
+
+  .token-table th,
+  .nft-table th {
+    @apply text-left font-medium text-gray-700 pb-2 border-b border-gray-200;
+  }
+
+  .token-table td,
+  .nft-table td {
+    @apply py-2 border-b border-gray-100;
+  }
+
+  .token-symbol,
+  .collection-name {
+    @apply font-medium text-gray-900;
+  }
+
+  .token-price,
+  .floor-price {
+    @apply font-mono text-gray-900;
+  }
+
+  .token-change,
+  .collection-change {
+    @apply font-medium;
+  }
+
+  .token-change.positive,
+  .collection-change.positive {
+    @apply text-green-600;
+  }
+
+  .token-change.negative,
+  .collection-change.negative {
+    @apply text-red-600;
+  }
+
+  .token-volume,
+  .collection-volume {
+    @apply text-gray-600;
+  }
+
+  .token-marketcap,
+  .collection-items {
+    @apply text-gray-600;
+  }
+
+  .analytics-footer {
+    @apply flex justify-between items-center pt-4 border-t border-gray-200;
+  }
+
+  .footer-info {
+    @apply text-sm text-gray-500 space-x-4;
+  }
+
+  .footer-actions {
+    @apply flex space-x-2;
+  }
+
+  .action-btn {
+    @apply px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200 transition-colors;
+  }
+
+  .notification {
+    @apply fixed top-4 right-4 px-4 py-2 rounded-lg text-white font-medium z-50;
+  }
+
+  .notification-success {
+    @apply bg-green-600;
+  }
+
+  .notification-error {
+    @apply bg-red-600;
+  }
+
+  .notification-info {
+    @apply bg-blue-600;
+  }
+</style>
+
+<!-- Global types for TypeScript -->
+<script>
+  declare global {
+    interface Window {
+      getBlockchainAnalytics: () => BlockchainAnalytics;
+    }
+  }
+</script>

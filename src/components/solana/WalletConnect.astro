@@ -1,0 +1,431 @@
+---
+// WalletConnect.astro - Wallet connection flow component
+---
+
+<div id="wallet-connect-modal" class="wallet-connect-modal">
+  <div class="modal-overlay" id="modal-overlay"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 class="modal-title">Connect Your Wallet</h2>
+      <button class="close-btn" id="close-modal">
+        <span>✕</span>
+      </button>
+    </div>
+    
+    <div class="modal-body">
+      <p class="modal-description">
+        Choose a wallet to connect to Soladia and start trading securely on Solana.
+      </p>
+      
+      <div class="wallet-options">
+        <!-- Phantom Wallet -->
+        <button class="wallet-option" data-wallet="phantom" id="phantom-btn">
+          <div class="wallet-icon">
+            <img src="https://phantom.app/img/phantom-logo.svg" alt="Phantom" />
+          </div>
+          <div class="wallet-info">
+            <h3 class="wallet-name">Phantom</h3>
+            <p class="wallet-description">The most popular Solana wallet</p>
+            <span class="wallet-status" id="phantom-status">Not Installed</span>
+          </div>
+          <div class="wallet-arrow">→</div>
+        </button>
+
+        <!-- Solflare Wallet -->
+        <button class="wallet-option" data-wallet="solflare" id="solflare-btn">
+          <div class="wallet-icon">
+            <img src="https://solflare.com/favicon.ico" alt="Solflare" />
+          </div>
+          <div class="wallet-info">
+            <h3 class="wallet-name">Solflare</h3>
+            <p class="wallet-description">Multi-chain wallet for Solana</p>
+            <span class="wallet-status" id="solflare-status">Not Installed</span>
+          </div>
+          <div class="wallet-arrow">→</div>
+        </button>
+
+        <!-- Backpack Wallet -->
+        <button class="wallet-option" data-wallet="backpack" id="backpack-btn">
+          <div class="wallet-icon">
+            <img src="https://backpack.app/favicon.ico" alt="Backpack" />
+          </div>
+          <div class="wallet-info">
+            <h3 class="wallet-name">Backpack</h3>
+            <p class="wallet-description">Crypto wallet for the future</p>
+            <span class="wallet-status" id="backpack-status">Not Installed</span>
+          </div>
+          <div class="wallet-arrow">→</div>
+        </button>
+
+        <!-- Sollet Wallet -->
+        <button class="wallet-option" data-wallet="sollet" id="sollet-btn">
+          <div class="wallet-icon">
+            <span class="wallet-emoji">🔗</span>
+          </div>
+          <div class="wallet-info">
+            <h3 class="wallet-name">Sollet</h3>
+            <p class="wallet-description">Browser extension wallet</p>
+            <span class="wallet-status" id="sollet-status">Not Installed</span>
+          </div>
+          <div class="wallet-arrow">→</div>
+        </button>
+      </div>
+
+      <div class="wallet-help">
+        <h4 class="help-title">Don't have a wallet?</h4>
+        <p class="help-description">
+          You'll need a Solana wallet to use Soladia. Choose one of the options above to get started.
+        </p>
+        <div class="help-links">
+          <a href="https://phantom.app/" target="_blank" class="help-link">
+            <span>👻</span> Get Phantom
+          </a>
+          <a href="https://solflare.com/" target="_blank" class="help-link">
+            <span>☀️</span> Get Solflare
+          </a>
+          <a href="https://backpack.app/" target="_blank" class="help-link">
+            <span>🎒</span> Get Backpack
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { enhancedSolanaWalletService } from '../../services/solana/solana-wallet';
+
+  class WalletConnectModal {
+    private modal: HTMLElement | null = null;
+    private overlay: HTMLElement | null = null;
+    private closeBtn: HTMLElement | null = null;
+    private walletOptions: NodeListOf<HTMLElement> | null = null;
+
+    constructor() {
+      this.initializeElements();
+      this.setupEventListeners();
+      this.checkWalletAvailability();
+    }
+
+    private initializeElements() {
+      this.modal = document.getElementById('wallet-connect-modal');
+      this.overlay = document.getElementById('modal-overlay');
+      this.closeBtn = document.getElementById('close-modal');
+      this.walletOptions = document.querySelectorAll('.wallet-option');
+    }
+
+    private setupEventListeners() {
+      // Close modal events
+      if (this.closeBtn) {
+        this.closeBtn.addEventListener('click', () => this.closeModal());
+      }
+
+      if (this.overlay) {
+        this.overlay.addEventListener('click', () => this.closeModal());
+      }
+
+      // Wallet option clicks
+      this.walletOptions?.forEach(option => {
+        option.addEventListener('click', () => {
+          const wallet = option.getAttribute('data-wallet');
+          if (wallet) {
+            this.connectWallet(wallet);
+          }
+        });
+      });
+
+      // Keyboard events
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && this.isOpen()) {
+          this.closeModal();
+        }
+      });
+    }
+
+    private checkWalletAvailability() {
+      const wallets = ['phantom', 'solflare', 'backpack', 'sollet'];
+      
+      wallets.forEach(wallet => {
+        const statusElement = document.getElementById(`${wallet}-status`);
+        const optionElement = document.getElementById(`${wallet}-btn`);
+        
+        if (statusElement && optionElement) {
+          const isAvailable = this.isWalletAvailable(wallet);
+          
+          if (isAvailable) {
+            statusElement.textContent = 'Available';
+            statusElement.className = 'wallet-status available';
+            optionElement.classList.add('available');
+          } else {
+            statusElement.textContent = 'Not Installed';
+            statusElement.className = 'wallet-status not-installed';
+            optionElement.classList.add('not-installed');
+          }
+        }
+      });
+    }
+
+    private isWalletAvailable(wallet: string): boolean {
+      switch (wallet) {
+        case 'phantom':
+          return typeof window !== 'undefined' && !!(window as any).solana?.isPhantom;
+        case 'solflare':
+          return typeof window !== 'undefined' && !!(window as any).solflare;
+        case 'backpack':
+          return typeof window !== 'undefined' && !!(window as any).backpack;
+        case 'sollet':
+          return typeof window !== 'undefined' && !!(window as any).sollet;
+        default:
+          return false;
+      }
+    }
+
+    private async connectWallet(walletName: string) {
+      try {
+        const optionElement = document.getElementById(`${walletName}-btn`);
+        if (optionElement) {
+          optionElement.classList.add('connecting');
+          const statusElement = document.getElementById(`${walletName}-status`);
+          if (statusElement) {
+            statusElement.textContent = 'Connecting...';
+          }
+        }
+
+        await enhancedSolanaWalletService.connect(walletName);
+        
+        this.showNotification('Wallet connected successfully!', 'success');
+        this.closeModal();
+        
+        // Dispatch custom event
+        window.dispatchEvent(new CustomEvent('wallet:connected', {
+          detail: { wallet: walletName }
+        }));
+        
+      } catch (error) {
+        this.showNotification(`Failed to connect ${walletName}: ${error}`, 'error');
+        
+        // Reset button state
+        const optionElement = document.getElementById(`${walletName}-btn`);
+        if (optionElement) {
+          optionElement.classList.remove('connecting');
+        }
+        
+        const statusElement = document.getElementById(`${walletName}-status`);
+        if (statusElement) {
+          statusElement.textContent = 'Available';
+        }
+      }
+    }
+
+    public openModal() {
+      if (this.modal) {
+        this.modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+        this.checkWalletAvailability();
+      }
+    }
+
+    public closeModal() {
+      if (this.modal) {
+        this.modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    }
+
+    public isOpen(): boolean {
+      return this.modal?.classList.contains('active') || false;
+    }
+
+    private showNotification(message: string, type: 'success' | 'error' | 'info') {
+      const notification = document.createElement('div');
+      notification.className = `notification notification-${type}`;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+  }
+
+  // Initialize modal when DOM is loaded
+  let walletConnectModal: WalletConnectModal;
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    walletConnectModal = new WalletConnectModal();
+  });
+
+  // Export functions for external use
+  window.openWalletConnect = () => {
+    if (walletConnectModal) {
+      walletConnectModal.openModal();
+    }
+  };
+
+  window.closeWalletConnect = () => {
+    if (walletConnectModal) {
+      walletConnectModal.closeModal();
+    }
+  };
+</script>
+
+<style>
+  .wallet-connect-modal {
+    @apply fixed inset-0 z-50 hidden;
+  }
+
+  .wallet-connect-modal.active {
+    @apply flex items-center justify-center;
+  }
+
+  .modal-overlay {
+    @apply absolute inset-0 bg-black bg-opacity-50;
+  }
+
+  .modal-content {
+    @apply relative bg-white rounded-lg shadow-xl max-w-md w-full mx-4 max-h-[90vh] overflow-y-auto;
+  }
+
+  .modal-header {
+    @apply flex items-center justify-between p-6 border-b border-gray-200;
+  }
+
+  .modal-title {
+    @apply text-xl font-semibold text-gray-900;
+  }
+
+  .close-btn {
+    @apply p-2 text-gray-400 hover:text-gray-600 transition-colors;
+  }
+
+  .modal-body {
+    @apply p-6;
+  }
+
+  .modal-description {
+    @apply text-gray-600 mb-6;
+  }
+
+  .wallet-options {
+    @apply space-y-3 mb-6;
+  }
+
+  .wallet-option {
+    @apply w-full p-4 border border-gray-200 rounded-lg hover:border-blue-500 hover:bg-blue-50 transition-all duration-200 flex items-center space-x-4 cursor-pointer;
+  }
+
+  .wallet-option.available {
+    @apply border-green-200 bg-green-50;
+  }
+
+  .wallet-option.not-installed {
+    @apply opacity-60 cursor-not-allowed;
+  }
+
+  .wallet-option.connecting {
+    @apply cursor-wait;
+  }
+
+  .wallet-icon {
+    @apply w-12 h-12 flex items-center justify-center;
+  }
+
+  .wallet-icon img {
+    @apply w-8 h-8;
+  }
+
+  .wallet-emoji {
+    @apply text-2xl;
+  }
+
+  .wallet-info {
+    @apply flex-1;
+  }
+
+  .wallet-name {
+    @apply font-semibold text-gray-900 mb-1;
+  }
+
+  .wallet-description {
+    @apply text-sm text-gray-600 mb-1;
+  }
+
+  .wallet-status {
+    @apply text-xs font-medium px-2 py-1 rounded-full;
+  }
+
+  .wallet-status.available {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .wallet-status.not-installed {
+    @apply bg-gray-100 text-gray-600;
+  }
+
+  .wallet-arrow {
+    @apply text-gray-400 text-xl;
+  }
+
+  .wallet-help {
+    @apply bg-gray-50 rounded-lg p-4;
+  }
+
+  .help-title {
+    @apply font-semibold text-gray-900 mb-2;
+  }
+
+  .help-description {
+    @apply text-sm text-gray-600 mb-3;
+  }
+
+  .help-links {
+    @apply flex flex-wrap gap-2;
+  }
+
+  .help-link {
+    @apply inline-flex items-center space-x-1 px-3 py-1 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition-colors;
+  }
+
+  .notification {
+    @apply fixed top-4 right-4 px-4 py-2 rounded-lg text-white font-medium z-50;
+  }
+
+  .notification-success {
+    @apply bg-green-600;
+  }
+
+  .notification-error {
+    @apply bg-red-600;
+  }
+
+  .notification-info {
+    @apply bg-blue-600;
+  }
+
+  /* Animation for modal */
+  .wallet-connect-modal.active .modal-content {
+    animation: modalSlideIn 0.3s ease-out;
+  }
+
+  @keyframes modalSlideIn {
+    from {
+      opacity: 0;
+      transform: translateY(-20px) scale(0.95);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+</style>
+
+<!-- Global types for TypeScript -->
+<script>
+  declare global {
+    interface Window {
+      openWalletConnect: () => void;
+      closeWalletConnect: () => void;
+    }
+  }
+</script>

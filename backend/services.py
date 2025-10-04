@@ -2,8 +2,8 @@ from sqlalchemy.orm import Session, joinedload, selectinload
 from sqlalchemy import and_, or_, desc, func, select
 from typing import List, Optional
 from datetime import datetime, timedelta
-from .models import User, Product, Order, Category, Review, Watchlist
-from .schemas import (
+from models import User, Product, Order, Category, Review, Watchlist
+from schemas import (
     UserCreate, ProductCreate, OrderCreate, ReviewCreate, 
     WatchlistCreate, SearchFilters, SalesAnalytics, ProductAnalytics
 )

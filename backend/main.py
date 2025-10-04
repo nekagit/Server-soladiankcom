@@ -11,27 +11,27 @@ from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
 
-from .database import get_db, engine, Base
-from .models import User, Product, Order, Category, Review, Watchlist
-from .schemas import (
+from database import get_db, engine, Base
+from models import User, Product, Order, Category, Review, Watchlist
+from schemas import (
     UserCreate, UserResponse, ProductCreate, ProductResponse, 
     OrderCreate, OrderResponse, CategoryResponse, ReviewCreate, 
     ReviewResponse, WatchlistCreate, WatchlistResponse
 )
-from .services import (
+from services import (
     UserService, ProductService, OrderService, 
     CategoryService, ReviewService, WatchlistService
 )
-from simple_solana_endpoints import router as solana_router
-from .config import settings
-from .middleware.error_handler import (
+from enhanced_solana_endpoints import router as solana_router
+from config import settings
+from middleware.error_handler import (
     error_handler_middleware,
     app_exception_handler,
     validation_exception_handler,
     AppException
 )
-from .middleware.logging_middleware import logging_middleware
-from .utils.logger import app_logger, setup_logger
+from middleware.logging_middleware import logging_middleware
+from utils.logger import app_logger, setup_logger
 
 # Create database tables (only creates if not exists)
 Base.metadata.create_all(bind=engine)
@@ -73,11 +73,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+# Include Solana API routes FIRST (before other routes)
+app.include_router(solana_router)
+print(f"✅ Solana router included with prefix: {solana_router.prefix}")
+print(f"✅ Solana routes: {[route.path for route in solana_router.routes]}")
+
 # Mount static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
-
-# Include Solana API routes
-app.include_router(solana_router)
 
 # Initialize services
 user_service = UserService()
@@ -90,6 +92,15 @@ watchlist_service = WatchlistService()
 @app.get("/")
 async def root():
     return {"message": "Soladia Marketplace API", "version": "1.0.0"}
+
+# Test endpoint to verify Solana router
+@app.get("/test-solana")
+async def test_solana():
+    return {
+        "message": "Solana router is working", 
+        "routes": [route.path for route in solana_router.routes],
+        "prefix": solana_router.prefix
+    }
 
 # User endpoints
 @app.post("/api/users/", response_model=UserResponse)
