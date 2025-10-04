@@ -2,7 +2,7 @@ from pydantic import BaseModel, EmailStr, Field, validator, HttpUrl
 from typing import Optional, List
 from datetime import datetime
 import re
-from .models import UserType, OrderStatus, ProductCondition, PaymentStatus
+from models import UserType, OrderStatus, ProductCondition, PaymentStatus
 
 # User schemas
 class UserBase(BaseModel):

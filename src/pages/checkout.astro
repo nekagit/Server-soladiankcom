@@ -1,0 +1,533 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+import PaymentModal from '../components/solana/PaymentModal.astro';
+
+// Sample checkout data
+const orderItems = [
+  {
+    id: 1,
+    title: "Vintage Camera Collection",
+    price: 299.99,
+    quantity: 1,
+    image: "https://via.placeholder.com/80x80/E60012/FFFFFF?text=1"
+  },
+  {
+    id: 2,
+    title: "Wireless Headphones",
+    price: 199.99,
+    quantity: 2,
+    image: "https://via.placeholder.com/80x80/0066CC/FFFFFF?text=2"
+  }
+];
+
+const subtotal = orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+const shipping = 9.99;
+const tax = subtotal * 0.08;
+const total = subtotal + shipping + tax;
+---
+
+<Layout title="Checkout - Soladia">
+  <Navigation />
+  
+  <div class="checkout-container">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <h1 class="page-title">Checkout</h1>
+      
+      <div class="checkout-content">
+        <!-- Checkout Steps -->
+        <div class="checkout-steps">
+          <div class="step active">
+            <span class="step-number">1</span>
+            <span class="step-label">Payment</span>
+          </div>
+          <div class="step">
+            <span class="step-number">2</span>
+            <span class="step-label">Review</span>
+          </div>
+          <div class="step">
+            <span class="step-number">3</span>
+            <span class="step-label">Complete</span>
+          </div>
+        </div>
+
+        <div class="checkout-grid">
+          <!-- Payment Section -->
+          <div class="payment-section">
+            <h2 class="section-title">Payment Method</h2>
+            
+            <!-- Solana Wallet Connection -->
+            <div class="wallet-connection">
+              <h3 class="subsection-title">Connect Your Wallet</h3>
+              <div id="wallet-connection-area">
+                <!-- Wallet connection will be populated here -->
+              </div>
+            </div>
+
+            <!-- Payment Options -->
+            <div class="payment-options">
+              <h3 class="subsection-title">Choose Payment Method</h3>
+              <div class="payment-methods">
+                <label class="payment-option">
+                  <input type="radio" name="payment-method" value="sol" checked>
+                  <div class="option-content">
+                    <span class="option-icon">☀️</span>
+                    <span class="option-name">Pay with SOL</span>
+                    <span class="option-amount">{(total / 100).toFixed(4)} SOL</span>
+                  </div>
+                </label>
+                <label class="payment-option">
+                  <input type="radio" name="payment-method" value="usdc">
+                  <div class="option-content">
+                    <span class="option-icon">💵</span>
+                    <span class="option-name">Pay with USDC</span>
+                    <span class="option-amount">{total.toFixed(2)} USDC</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+
+            <!-- Shipping Information -->
+            <div class="shipping-info">
+              <h3 class="subsection-title">Shipping Information</h3>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="full-name">Full Name</label>
+                  <input type="text" id="full-name" name="fullName" required>
+                </div>
+                <div class="form-group">
+                  <label for="email">Email</label>
+                  <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group">
+                  <label for="address">Address</label>
+                  <input type="text" id="address" name="address" required>
+                </div>
+                <div class="form-group">
+                  <label for="city">City</label>
+                  <input type="text" id="city" name="city" required>
+                </div>
+                <div class="form-group">
+                  <label for="state">State</label>
+                  <input type="text" id="state" name="state" required>
+                </div>
+                <div class="form-group">
+                  <label for="zip">ZIP Code</label>
+                  <input type="text" id="zip" name="zip" required>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Order Summary -->
+          <div class="order-summary">
+            <h2 class="section-title">Order Summary</h2>
+            
+            <div class="order-items">
+              {orderItems.map((item) => (
+                <div class="order-item">
+                  <img src={item.image} alt={item.title} class="item-image">
+                  <div class="item-details">
+                    <h4 class="item-title">{item.title}</h4>
+                    <p class="item-quantity">Qty: {item.quantity}</p>
+                  </div>
+                  <div class="item-price">${(item.price * item.quantity).toFixed(2)}</div>
+                </div>
+              ))}
+            </div>
+
+            <div class="summary-totals">
+              <div class="summary-line">
+                <span>Subtotal</span>
+                <span>${subtotal.toFixed(2)}</span>
+              </div>
+              <div class="summary-line">
+                <span>Shipping</span>
+                <span>${shipping.toFixed(2)}</span>
+              </div>
+              <div class="summary-line">
+                <span>Tax</span>
+                <span>${tax.toFixed(2)}</span>
+              </div>
+              <div class="summary-line total">
+                <span>Total</span>
+                <span>${total.toFixed(2)}</span>
+              </div>
+            </div>
+
+            <button class="place-order-btn" id="place-order-btn">
+              <span class="btn-icon">🛒</span>
+              Place Order
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Modal -->
+  <PaymentModal />
+</Layout>
+
+<script>
+  import { enhancedSolanaWalletService } from '../services/solana/solana-wallet';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeWalletConnection();
+    setupEventListeners();
+  });
+
+  function initializeWalletConnection() {
+    const walletArea = document.getElementById('wallet-connection-area');
+    if (!walletArea) return;
+
+    if (enhancedSolanaWalletService.isConnected()) {
+      const wallet = enhancedSolanaWalletService.getWallet();
+      walletArea.innerHTML = `
+        <div class="wallet-connected">
+          <div class="wallet-info">
+            <span class="wallet-provider">${wallet?.provider}</span>
+            <span class="wallet-address">${enhancedSolanaWalletService.formatAddress(wallet?.publicKey || '')}</span>
+            <span class="wallet-balance">${wallet?.balance.toFixed(4)} SOL</span>
+          </div>
+          <button class="disconnect-btn" id="disconnect-wallet">Disconnect</button>
+        </div>
+      `;
+    } else {
+      walletArea.innerHTML = `
+        <div class="wallet-disconnected">
+          <p>Connect your Solana wallet to proceed with payment</p>
+          <button class="connect-btn" id="connect-wallet">Connect Wallet</button>
+        </div>
+      `;
+    }
+  }
+
+  function setupEventListeners() {
+    // Wallet connection
+    const connectBtn = document.getElementById('connect-wallet');
+    const disconnectBtn = document.getElementById('disconnect-wallet');
+    
+    if (connectBtn) {
+      connectBtn.addEventListener('click', connectWallet);
+    }
+    
+    if (disconnectBtn) {
+      disconnectBtn.addEventListener('click', disconnectWallet);
+    }
+
+    // Place order button
+    const placeOrderBtn = document.getElementById('place-order-btn');
+    if (placeOrderBtn) {
+      placeOrderBtn.addEventListener('click', placeOrder);
+    }
+
+    // Payment method selection
+    const paymentMethods = document.querySelectorAll('input[name="payment-method"]');
+    paymentMethods.forEach(method => {
+      method.addEventListener('change', updatePaymentAmount);
+    });
+  }
+
+  async function connectWallet() {
+    try {
+      await enhancedSolanaWalletService.connect();
+      initializeWalletConnection();
+      showNotification('Wallet connected successfully!', 'success');
+    } catch (error) {
+      showNotification(`Failed to connect wallet: ${error}`, 'error');
+    }
+  }
+
+  async function disconnectWallet() {
+    try {
+      await enhancedSolanaWalletService.disconnect();
+      initializeWalletConnection();
+      showNotification('Wallet disconnected', 'info');
+    } catch (error) {
+      showNotification(`Failed to disconnect wallet: ${error}`, 'error');
+    }
+  }
+
+  function updatePaymentAmount() {
+    const selectedMethod = document.querySelector('input[name="payment-method"]:checked');
+    const method = selectedMethod?.getAttribute('value');
+    
+    // Update payment amounts based on selected method
+    console.log(`Payment method changed to: ${method}`);
+  }
+
+  async function placeOrder() {
+    if (!enhancedSolanaWalletService.isConnected()) {
+      showNotification('Please connect your wallet first', 'error');
+      return;
+    }
+
+    const selectedMethod = document.querySelector('input[name="payment-method"]:checked');
+    const method = selectedMethod?.getAttribute('value') || 'sol';
+
+    try {
+      // Show loading state
+      const btn = document.getElementById('place-order-btn');
+      if (btn) {
+        btn.disabled = true;
+        btn.innerHTML = '<span class="btn-icon">⏳</span> Processing...';
+      }
+
+      // In a real app, this would process the payment
+      await processPayment(method);
+      
+      showNotification('Order placed successfully!', 'success');
+      
+      // Redirect to success page
+      setTimeout(() => {
+        window.location.href = '/order-success';
+      }, 2000);
+      
+    } catch (error) {
+      showNotification(`Payment failed: ${error}`, 'error');
+      
+      // Reset button state
+      const btn = document.getElementById('place-order-btn');
+      if (btn) {
+        btn.disabled = false;
+        btn.innerHTML = '<span class="btn-icon">🛒</span> Place Order';
+      }
+    }
+  }
+
+  async function processPayment(method: string) {
+    // Simulate payment processing
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        if (Math.random() > 0.1) { // 90% success rate
+          resolve('Payment successful');
+        } else {
+          reject('Payment failed');
+        }
+      }, 2000);
+    });
+  }
+
+  function showNotification(message: string, type: 'success' | 'error' | 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
+  }
+</script>
+
+<style>
+  .checkout-container {
+    @apply min-h-screen bg-gray-50;
+  }
+
+  .page-title {
+    @apply text-3xl font-bold text-gray-900 mb-8;
+  }
+
+  .checkout-steps {
+    @apply flex justify-center mb-8;
+  }
+
+  .step {
+    @apply flex items-center space-x-2 px-4 py-2;
+  }
+
+  .step-number {
+    @apply w-8 h-8 rounded-full bg-gray-200 text-gray-600 flex items-center justify-center font-semibold;
+  }
+
+  .step.active .step-number {
+    @apply bg-blue-600 text-white;
+  }
+
+  .step-label {
+    @apply text-sm font-medium text-gray-600;
+  }
+
+  .checkout-grid {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-8;
+  }
+
+  .payment-section {
+    @apply space-y-8;
+  }
+
+  .section-title {
+    @apply text-xl font-semibold text-gray-900 mb-4;
+  }
+
+  .subsection-title {
+    @apply text-lg font-medium text-gray-900 mb-3;
+  }
+
+  .wallet-connection {
+    @apply bg-white rounded-lg shadow-sm p-6;
+  }
+
+  .wallet-connected {
+    @apply flex items-center justify-between p-4 bg-green-50 border border-green-200 rounded-lg;
+  }
+
+  .wallet-disconnected {
+    @apply text-center p-4;
+  }
+
+  .wallet-info {
+    @apply flex items-center space-x-4;
+  }
+
+  .wallet-provider {
+    @apply font-semibold text-green-800;
+  }
+
+  .wallet-address {
+    @apply font-mono text-sm text-gray-600;
+  }
+
+  .wallet-balance {
+    @apply font-semibold text-green-600;
+  }
+
+  .connect-btn, .disconnect-btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-colors;
+  }
+
+  .connect-btn {
+    @apply bg-blue-600 text-white hover:bg-blue-700;
+  }
+
+  .disconnect-btn {
+    @apply bg-gray-200 text-gray-700 hover:bg-gray-300;
+  }
+
+  .payment-options {
+    @apply bg-white rounded-lg shadow-sm p-6;
+  }
+
+  .payment-methods {
+    @apply space-y-3;
+  }
+
+  .payment-option {
+    @apply block cursor-pointer;
+  }
+
+  .payment-option input {
+    @apply sr-only;
+  }
+
+  .option-content {
+    @apply flex items-center justify-between p-4 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors;
+  }
+
+  .payment-option input:checked + .option-content {
+    @apply border-blue-500 bg-blue-50;
+  }
+
+  .option-icon {
+    @apply text-xl;
+  }
+
+  .option-name {
+    @apply font-medium;
+  }
+
+  .option-amount {
+    @apply text-sm text-gray-600;
+  }
+
+  .shipping-info {
+    @apply bg-white rounded-lg shadow-sm p-6;
+  }
+
+  .form-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-4;
+  }
+
+  .form-group {
+    @apply space-y-1;
+  }
+
+  .form-group label {
+    @apply block text-sm font-medium text-gray-700;
+  }
+
+  .form-group input {
+    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+  }
+
+  .order-summary {
+    @apply bg-white rounded-lg shadow-sm p-6 h-fit;
+  }
+
+  .order-items {
+    @apply space-y-4 mb-6;
+  }
+
+  .order-item {
+    @apply flex items-center space-x-3;
+  }
+
+  .item-image {
+    @apply w-16 h-16 object-cover rounded-lg;
+  }
+
+  .item-details {
+    @apply flex-1;
+  }
+
+  .item-title {
+    @apply font-medium text-gray-900;
+  }
+
+  .item-quantity {
+    @apply text-sm text-gray-600;
+  }
+
+  .item-price {
+    @apply font-semibold text-gray-900;
+  }
+
+  .summary-totals {
+    @apply space-y-2 mb-6;
+  }
+
+  .summary-line {
+    @apply flex justify-between py-2;
+  }
+
+  .summary-line.total {
+    @apply text-lg font-bold text-gray-900 border-t border-gray-200 pt-2;
+  }
+
+  .place-order-btn {
+    @apply w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-icon {
+    @apply text-lg;
+  }
+
+  .notification {
+    @apply fixed top-4 right-4 px-4 py-2 rounded-lg text-white font-medium z-50;
+  }
+
+  .notification-success {
+    @apply bg-green-600;
+  }
+
+  .notification-error {
+    @apply bg-red-600;
+  }
+
+  .notification-info {
+    @apply bg-blue-600;
+  }
+</style>

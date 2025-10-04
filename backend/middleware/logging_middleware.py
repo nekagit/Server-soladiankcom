@@ -3,7 +3,7 @@ Logging Middleware for request/response logging
 """
 from fastapi import Request
 import time
-from ..utils.logger import app_logger
+from utils.logger import app_logger
 
 
 async def logging_middleware(request: Request, call_next):
