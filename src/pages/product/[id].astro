@@ -1,0 +1,352 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Navigation from '../../components/Navigation.astro';
+import type { Product } from '../../types';
+
+// Get the product ID from the URL
+const { id } = Astro.params;
+
+// Sample product data - in a real app, this would come from an API
+const product: Product = {
+  id: parseInt(id || '1'),
+  title: "Vintage Camera Collection",
+  description: "Rare vintage cameras from the 1960s. This collection includes three beautifully preserved cameras: a Leica M3, a Canon AE-1, and a Nikon F2. Each camera has been professionally serviced and is in excellent working condition. Perfect for photography enthusiasts and collectors.",
+  price: 299.99,
+  original_price: 399.99,
+  condition: "Used",
+  category_id: 1,
+  seller_id: 1,
+  images: [
+    "https://via.placeholder.com/800x600/E60012/FFFFFF?text=Main+Image",
+    "https://via.placeholder.com/800x600/0066CC/FFFFFF?text=Side+View",
+    "https://via.placeholder.com/800x600/FFD700/000000?text=Detail+Shot",
+    "https://via.placeholder.com/800x600/00A650/FFFFFF?text=Accessories"
+  ],
+  tags: ["vintage", "camera", "photography", "collectible"],
+  is_featured: true,
+  is_active: true,
+  stock_quantity: 1,
+  created_at: "2025-01-01T00:00:00Z",
+  updated_at: "2025-01-01T00:00:00Z",
+  category: {
+    id: 1,
+    name: "Electronics",
+    description: "Electronic devices and accessories",
+    slug: "electronics",
+    is_active: true,
+    created_at: "2025-01-01T00:00:00Z",
+    updated_at: "2025-01-01T00:00:00Z"
+  },
+  seller: {
+    id: 1,
+    email: "cameraexpert@example.com",
+    username: "CameraExpert",
+    first_name: "John",
+    last_name: "Smith",
+    is_active: true,
+    is_verified: true,
+    created_at: "2025-01-01T00:00:00Z",
+    updated_at: "2025-01-01T00:00:00Z"
+  },
+  reviews: [
+    {
+      id: 1,
+      product_id: parseInt(id || '1'),
+      user_id: 2,
+      rating: 5,
+      title: "Amazing quality!",
+      comment: "The cameras are in perfect condition and work beautifully. Fast shipping too!",
+      is_verified_purchase: true,
+      helpful_count: 12,
+      created_at: "2025-01-01T00:00:00Z",
+      updated_at: "2025-01-01T00:00:00Z",
+      user: {
+        id: 2,
+        email: "buyer@example.com",
+        username: "PhotoLover",
+        first_name: "Jane",
+        last_name: "Doe",
+        is_active: true,
+        is_verified: true,
+        created_at: "2025-01-01T00:00:00Z",
+        updated_at: "2025-01-01T00:00:00Z"
+      }
+    }
+  ],
+  average_rating: 4.8,
+  review_count: 24
+};
+
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD'
+  }).format(price);
+};
+
+const formatRating = (rating: number) => {
+  return '⭐'.repeat(Math.floor(rating)) + (rating % 1 >= 0.5 ? '⭐' : '');
+};
+---
+
+<Layout title={`${product.title} - Soladia`}>
+  <Navigation />
+  
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <!-- Breadcrumb -->
+    <nav class="flex mb-8" aria-label="Breadcrumb">
+      <ol class="inline-flex items-center space-x-1 md:space-x-3">
+        <li class="inline-flex items-center">
+          <a href="/" class="text-gray-700 hover:text-blue-600">Home</a>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <a href="/categories" class="ml-1 text-gray-700 hover:text-blue-600 md:ml-2">Categories</a>
+          </div>
+        </li>
+        <li>
+          <div class="flex items-center">
+            <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <a href={`/categories/${product.category?.slug}`} class="ml-1 text-gray-700 hover:text-blue-600 md:ml-2">{product.category?.name}</a>
+          </div>
+        </li>
+        <li aria-current="page">
+          <div class="flex items-center">
+            <svg class="w-6 h-6 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd"></path>
+            </svg>
+            <span class="ml-1 text-gray-500 md:ml-2">{product.title}</span>
+          </div>
+        </li>
+      </ol>
+    </nav>
+
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Product Images -->
+      <div class="space-y-4">
+        <div class="aspect-w-16 aspect-h-12">
+          <img 
+            id="main-image"
+            src={product.images[0]} 
+            alt={product.title}
+            class="w-full h-96 object-cover rounded-lg shadow-lg"
+          />
+        </div>
+        
+        <!-- Thumbnail Images -->
+        <div class="grid grid-cols-4 gap-2">
+          {product.images.map((image, index) => (
+            <button 
+              class="thumbnail-btn aspect-w-1 aspect-h-1 rounded-lg overflow-hidden border-2 border-transparent hover:border-blue-500 transition-colors"
+              data-image={image}
+            >
+              <img 
+                src={image} 
+                alt={`${product.title} view ${index + 1}`}
+                class="w-full h-20 object-cover"
+              />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <!-- Product Details -->
+      <div class="space-y-6">
+        <div>
+          <h1 class="text-3xl font-bold text-gray-900 mb-2">{product.title}</h1>
+          <div class="flex items-center space-x-4 mb-4">
+            <div class="flex items-center">
+              <span class="text-yellow-400 text-lg">{formatRating(product.average_rating || 0)}</span>
+              <span class="ml-2 text-sm text-gray-600">({product.review_count} reviews)</span>
+            </div>
+            <span class="text-sm text-gray-500">•</span>
+            <span class="text-sm text-gray-500">Sold by {product.seller?.username}</span>
+          </div>
+        </div>
+
+        <!-- Price -->
+        <div class="flex items-baseline space-x-4">
+          <span class="text-4xl font-bold text-red-600">{formatPrice(product.price)}</span>
+          {product.original_price && product.original_price > product.price && (
+            <span class="text-xl text-gray-500 line-through">{formatPrice(product.original_price)}</span>
+          )}
+          {product.original_price && product.original_price > product.price && (
+            <span class="bg-red-100 text-red-800 text-sm font-medium px-2.5 py-0.5 rounded">
+              {Math.round(((product.original_price - product.price) / product.original_price) * 100)}% OFF
+            </span>
+          )}
+        </div>
+
+        <!-- Condition -->
+        <div class="flex items-center space-x-2">
+          <span class="text-sm text-gray-600">Condition:</span>
+          <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+            {product.condition}
+          </span>
+        </div>
+
+        <!-- Stock -->
+        <div class="flex items-center space-x-2">
+          <span class="text-sm text-gray-600">Stock:</span>
+          <span class="text-sm font-medium text-gray-900">{product.stock_quantity} available</span>
+        </div>
+
+        <!-- Description -->
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Description</h3>
+          <p class="text-gray-700 leading-relaxed">{product.description}</p>
+        </div>
+
+        <!-- Tags -->
+        <div>
+          <h3 class="text-lg font-semibold text-gray-900 mb-2">Tags</h3>
+          <div class="flex flex-wrap gap-2">
+            {product.tags.map(tag => (
+              <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
+                #{tag}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="space-y-4">
+          <button class="w-full bg-gradient-to-r from-red-600 to-blue-600 text-white py-3 px-6 rounded-lg font-semibold hover:from-red-700 hover:to-blue-700 transition-all duration-200 transform hover:scale-105">
+            Buy Now with Solana
+          </button>
+          
+          <div class="grid grid-cols-2 gap-4">
+            <button class="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+              </svg>
+              Add to Watchlist
+            </button>
+            
+            <button class="flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+              <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z"></path>
+              </svg>
+              Share
+            </button>
+          </div>
+        </div>
+
+        <!-- Seller Info -->
+        <div class="border-t pt-6">
+          <h3 class="text-lg font-semibold text-gray-900 mb-4">Seller Information</h3>
+          <div class="flex items-center space-x-4">
+            <div class="w-12 h-12 bg-gradient-to-r from-red-600 to-blue-600 rounded-full flex items-center justify-center text-white font-bold">
+              {product.seller?.username?.charAt(0)}
+            </div>
+            <div>
+              <h4 class="font-semibold text-gray-900">{product.seller?.username}</h4>
+              <p class="text-sm text-gray-600">Verified Seller</p>
+              <div class="flex items-center mt-1">
+                <span class="text-yellow-400">⭐⭐⭐⭐⭐</span>
+                <span class="text-sm text-gray-600 ml-2">4.9 (127 reviews)</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Reviews Section -->
+    <div class="mt-16">
+      <h2 class="text-2xl font-bold text-gray-900 mb-8">Customer Reviews</h2>
+      
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Review Summary -->
+        <div class="lg:col-span-1">
+          <div class="bg-gray-50 rounded-lg p-6">
+            <div class="text-center mb-6">
+              <div class="text-4xl font-bold text-gray-900 mb-2">{product.average_rating}</div>
+              <div class="flex justify-center mb-2">
+                <span class="text-yellow-400 text-2xl">{formatRating(product.average_rating || 0)}</span>
+              </div>
+              <div class="text-sm text-gray-600">{product.review_count} reviews</div>
+            </div>
+            
+            <!-- Rating Breakdown -->
+            <div class="space-y-2">
+              {[5, 4, 3, 2, 1].map(rating => (
+                <div class="flex items-center">
+                  <span class="text-sm text-gray-600 w-8">{rating}⭐</span>
+                  <div class="flex-1 bg-gray-200 rounded-full h-2 mx-2">
+                    <div class="bg-yellow-400 h-2 rounded-full" style={`width: ${Math.random() * 100}%`}></div>
+                  </div>
+                  <span class="text-sm text-gray-600 w-8">{Math.floor(Math.random() * 20)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <!-- Individual Reviews -->
+        <div class="lg:col-span-2 space-y-6">
+          {product.reviews?.map(review => (
+            <div class="border-b pb-6 last:border-b-0">
+              <div class="flex items-start space-x-4">
+                <div class="w-10 h-10 bg-gradient-to-r from-red-600 to-blue-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                  {review.user?.username?.charAt(0)}
+                </div>
+                <div class="flex-1">
+                  <div class="flex items-center space-x-2 mb-2">
+                    <h4 class="font-semibold text-gray-900">{review.user?.username}</h4>
+                    <span class="text-yellow-400">{formatRating(review.rating)}</span>
+                    {review.is_verified_purchase && (
+                      <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                        Verified Purchase
+                      </span>
+                    )}
+                  </div>
+                  {review.title && (
+                    <h5 class="font-medium text-gray-900 mb-1">{review.title}</h5>
+                  )}
+                  <p class="text-gray-700 mb-2">{review.comment}</p>
+                  <div class="flex items-center space-x-4 text-sm text-gray-500">
+                    <span>{new Date(review.created_at).toLocaleDateString()}</span>
+                    <button class="hover:text-gray-700">Helpful ({review.helpful_count})</button>
+                    <button class="hover:text-gray-700">Report</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const mainImage = document.getElementById('main-image') as HTMLImageElement;
+    const thumbnailBtns = document.querySelectorAll('.thumbnail-btn');
+
+    // Thumbnail image switching
+    thumbnailBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const imageSrc = btn.getAttribute('data-image');
+        if (imageSrc && mainImage) {
+          mainImage.src = imageSrc;
+          
+          // Update active thumbnail
+          thumbnailBtns.forEach(b => b.classList.remove('border-blue-500'));
+          btn.classList.add('border-blue-500');
+        }
+      });
+    });
+
+    // Set first thumbnail as active
+    if (thumbnailBtns.length > 0) {
+      thumbnailBtns[0].classList.add('border-blue-500');
+    }
+  });
+</script>

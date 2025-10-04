@@ -1,0 +1,212 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+import ProductCard from '../components/ProductCard.astro';
+
+// Sample data - in a real app, this would come from an API
+const featuredProducts = [
+  {
+    id: 1,
+    title: "Vintage Camera Collection",
+    description: "Rare vintage cameras from the 1960s",
+    price: 299.99,
+    originalPrice: 399.99,
+    image: "https://via.placeholder.com/300x200/E60012/FFFFFF?text=Product+1",
+    rating: 4.8,
+    reviewCount: 124,
+    seller: "CameraExpert",
+    location: "New York, NY",
+    badge: "Featured" as const,
+    condition: "Used"
+  },
+  {
+    id: 2,
+    title: "Wireless Headphones",
+    description: "Premium noise-canceling headphones",
+    price: 199.99,
+    image: "https://via.placeholder.com/300x200/0066CC/FFFFFF?text=Product+2",
+    rating: 4.9,
+    reviewCount: 89,
+    seller: "TechStore",
+    location: "San Francisco, CA",
+    badge: "New" as const,
+    condition: "New"
+  },
+  {
+    id: 3,
+    title: "Designer Watch",
+    description: "Luxury Swiss-made timepiece",
+    price: 1299.99,
+    originalPrice: 1599.99,
+    image: "https://via.placeholder.com/300x200/FFD700/000000?text=Product+3",
+    rating: 4.7,
+    reviewCount: 67,
+    seller: "LuxuryTime",
+    location: "Miami, FL",
+    badge: "Sale" as const,
+    condition: "New"
+  },
+  {
+    id: 4,
+    title: "Eco-Friendly Backpack",
+    description: "Sustainable travel companion",
+    price: 79.99,
+    image: "https://via.placeholder.com/300x200/00A650/FFFFFF?text=Product+4",
+    rating: 4.6,
+    reviewCount: 156,
+    seller: "GreenGear",
+    location: "Portland, OR",
+    badge: "Eco" as const,
+    condition: "New"
+  }
+];
+
+const categories = [
+  { name: "Electronics", icon: "📱", count: "12,345 items" },
+  { name: "Fashion", icon: "👕", count: "8,765 items" },
+  { name: "Home & Garden", icon: "🏠", count: "5,432 items" },
+  { name: "Automotive", icon: "🚗", count: "3,210 items" },
+  { name: "Gaming", icon: "🎮", count: "6,789 items" },
+  { name: "Jewelry", icon: "💎", count: "2,456 items" }
+];
+
+const features = [
+  {
+    icon: "🔒",
+    title: "Secure Payments",
+    description: "Blockchain-powered security with Solana technology"
+  },
+  {
+    icon: "⚡",
+    title: "Fast Transactions",
+    description: "Lightning-fast payments and instant settlements"
+  },
+  {
+    icon: "🌍",
+    title: "Global Marketplace",
+    description: "Buy and sell with users worldwide"
+  },
+  {
+    icon: "💎",
+    title: "Premium Quality",
+    description: "Curated products from verified sellers"
+  }
+];
+---
+
+<Layout title="Soladia - The Ultimate Marketplace">
+  <Navigation />
+  
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <div class="text-center">
+        <h1 class="hero-title">Welcome to Soladia</h1>
+        <p class="hero-subtitle">The Ultimate Marketplace Powered by Solana Blockchain</p>
+        <div class="hero-actions">
+          <a href="/products" class="btn-primary btn-large">Start Shopping</a>
+          <a href="/sell" class="btn-secondary btn-large">Start Selling</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Categories Section -->
+  <section class="categories-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <h2 class="section-title">Shop by Category</h2>
+      <div class="categories-grid">
+        {categories.map((category) => (
+          <div class="category-card" data-category={category.name}>
+            <div class="category-icon">{category.icon}</div>
+            <h3 class="category-name">{category.name}</h3>
+            <p class="category-count">{category.count}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Products -->
+  <section class="featured-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <h2 class="section-title">Featured Products</h2>
+      <div class="products-grid">
+        {featuredProducts.map((product) => (
+          <ProductCard {...product} />
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Why Choose Soladia -->
+  <section class="features-section">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+      <h2 class="section-title">Why Choose Soladia?</h2>
+      <div class="features-grid">
+        {features.map((feature) => (
+          <div class="feature-card">
+            <div class="feature-icon">{feature.icon}</div>
+            <h3 class="feature-title">{feature.title}</h3>
+            <p class="feature-description">{feature.description}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h3 class="footer-title">Soladia</h3>
+          <p class="footer-description">The ultimate marketplace powered by Solana blockchain technology.</p>
+        </div>
+        <div class="footer-section">
+          <h4 class="footer-subtitle">Buy</h4>
+          <ul class="footer-links">
+            <li><a href="/categories">Categories</a></li>
+            <li><a href="/deals">Daily Deals</a></li>
+            <li><a href="/gift-cards">Gift Cards</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4 class="footer-subtitle">Sell</h4>
+          <ul class="footer-links">
+            <li><a href="/sell">Start Selling</a></li>
+            <li><a href="/seller-center">Seller Center</a></li>
+            <li><a href="/fees">Fees & Pricing</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h4 class="footer-subtitle">Support</h4>
+          <ul class="footer-links">
+            <li><a href="/help">Help Center</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+            <li><a href="/security">Security</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2025 Soladia. All rights reserved. Powered by Solana.</p>
+      </div>
+    </div>
+  </footer>
+</Layout>
+
+<script>
+  // Category card interactions
+  document.addEventListener('DOMContentLoaded', () => {
+    const categoryCards = document.querySelectorAll('.category-card');
+    
+    categoryCards.forEach(card => {
+      card.addEventListener('click', function() {
+        const category = this.getAttribute('data-category');
+        if (category) {
+          window.location.href = `/categories/${category.toLowerCase().replace(/\s+/g, '-')}`;
+        }
+      });
+    });
+  });
+</script>

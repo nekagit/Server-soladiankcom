@@ -1,0 +1,288 @@
+# Soladia Marketplace Migration Plan - .cursorrules
+
+## Project Analysis Summary
+
+### Current Technology Stack (solanankcom)
+- **Frontend**: HTML + HTMX + TypeScript + Vite + Tailwind CSS
+- **Backend**: FastAPI + SQLAlchemy + PostgreSQL
+- **Authentication**: Custom JWT + Keycloak integration
+- **Database**: SQLite (development) / PostgreSQL (production)
+- **Deployment**: Docker + Docker Compose + Nginx
+- **Blockchain**: Solana integration for payments
+
+### Target Technology Stack (soladiankcom)
+- **Frontend**: Astro + TypeScript + Vite + Tailwind CSS
+- **Backend**: FastAPI + SQLAlchemy + PostgreSQL (maintained)
+- **Authentication**: FastAPI JWT + OAuth2 (enhanced)
+- **Database**: PostgreSQL (production ready)
+- **Deployment**: Docker + Docker Compose + Nginx (enhanced)
+- **Blockchain**: Solana integration (enhanced)
+
+## Migration Strategy
+
+### Phase 1: Project Structure Setup
+1. **Initialize Astro Project**
+   - Create Astro project with TypeScript support
+   - Configure Vite for optimal build performance
+   - Set up Tailwind CSS with custom configuration
+   - Configure path aliases and TypeScript strict mode
+
+2. **Directory Structure**
+   ```
+   soladiankcom/
+   ├── src/
+   │   ├── components/          # Astro components
+   │   ├── layouts/            # Page layouts
+   │   ├── pages/              # File-based routing
+   │   ├── styles/             # Global styles
+   │   ├── services/           # API services
+   │   ├── types/              # TypeScript types
+   │   └── utils/              # Utility functions
+   ├── public/                 # Static assets
+   ├── backend/                # FastAPI backend (maintained)
+   ├── docker/                 # Docker configurations
+   └── docs/                   # Documentation
+   ```
+
+### Phase 2: Component Migration
+1. **HTML to Astro Components**
+   - Convert static HTML pages to Astro components
+   - Implement responsive layouts using Astro's layout system
+   - Create reusable components for common UI elements
+
+2. **Key Components to Migrate**
+   - Navigation component
+   - Product card component
+   - Search component
+   - User authentication components
+   - Shopping cart components
+   - Seller dashboard components
+   - Admin dashboard components
+
+### Phase 3: Styling Migration
+1. **Tailwind CSS Enhancement**
+   - Maintain existing color scheme and design system
+   - Implement responsive design patterns
+   - Add dark mode support
+   - Optimize for mobile-first approach
+
+2. **Custom CSS Migration**
+   - Convert custom CSS to Tailwind utilities where possible
+   - Maintain component-specific styles in Astro components
+   - Implement CSS-in-JS patterns for dynamic styling
+
+### Phase 4: TypeScript Enhancement
+1. **Type Safety Improvements**
+   - Define comprehensive interfaces for all data models
+   - Implement strict type checking
+   - Add proper error handling with typed exceptions
+   - Create utility types for common patterns
+
+2. **Service Layer**
+   - Migrate existing services to TypeScript
+   - Implement proper error handling
+   - Add request/response type definitions
+   - Create service interfaces for testability
+
+### Phase 5: Backend Integration
+1. **API Integration**
+   - Maintain existing FastAPI backend
+   - Enhance API endpoints for better frontend integration
+   - Implement proper error handling and validation
+   - Add API documentation with OpenAPI/Swagger
+
+2. **Authentication Flow**
+   - Implement JWT token management
+   - Add refresh token functionality
+   - Create protected route components
+   - Implement role-based access control
+
+### Phase 6: Performance Optimization
+1. **Astro Optimizations**
+   - Implement static site generation where possible
+   - Use Astro's built-in image optimization
+   - Implement code splitting and lazy loading
+   - Optimize bundle size and loading performance
+
+2. **Backend Optimizations**
+   - Implement database query optimization
+   - Add caching strategies
+   - Implement rate limiting and security measures
+   - Add monitoring and logging
+
+## File Migration Mapping
+
+### HTML Pages → Astro Pages
+- `index.html` → `src/pages/index.astro`
+- `auth.html` → `src/pages/auth.astro`
+- `product.html` → `src/pages/product/[id].astro`
+- `categories.html` → `src/pages/categories.astro`
+- `cart.html` → `src/pages/cart.astro`
+- `checkout.html` → `src/pages/checkout.astro`
+- `profile.html` → `src/pages/profile.astro`
+- `seller-dashboard.html` → `src/pages/seller/dashboard.astro`
+- `admin-dashboard.html` → `src/pages/admin/dashboard.astro`
+
+### Components Migration
+- Navigation → `src/components/Navigation.astro`
+- ProductCard → `src/components/ProductCard.astro`
+- SearchBar → `src/components/SearchBar.astro`
+- UserAuth → `src/components/UserAuth.astro`
+- ShoppingCart → `src/components/ShoppingCart.astro`
+
+### Services Migration
+- `src/services/solana-wallet.ts` → Enhanced with better error handling
+- `src/services/product-service.ts` → Enhanced with TypeScript types
+- `src/services/payment-service.ts` → Enhanced with Solana integration
+
+## Technology Enhancements
+
+### Astro Features to Leverage
+1. **Static Site Generation (SSG)**
+   - Generate static pages for better performance
+   - Implement incremental static regeneration
+   - Use Astro's built-in SEO optimization
+
+2. **Component Islands**
+   - Implement interactive components where needed
+   - Use Astro's partial hydration for optimal performance
+   - Create reusable component library
+
+3. **File-based Routing**
+   - Implement clean URL structure
+   - Add dynamic routing for products and categories
+   - Create nested layouts for different sections
+
+### Backend Enhancements
+1. **FastAPI Improvements**
+   - Add comprehensive API documentation
+   - Implement proper error handling middleware
+   - Add request validation and serialization
+   - Implement background tasks for heavy operations
+
+2. **Database Optimization**
+   - Add database indexing for better performance
+   - Implement connection pooling
+   - Add database migrations with Alembic
+   - Implement proper data validation
+
+3. **Security Enhancements**
+   - Implement proper CORS configuration
+   - Add rate limiting and DDoS protection
+   - Implement secure session management
+   - Add input validation and sanitization
+
+## Development Workflow
+
+### Setup Commands
+```bash
+# Initialize Astro project
+npm create astro@latest . -- --template minimal --typescript --yes
+
+# Install dependencies
+npm install @astrojs/tailwind tailwindcss @types/node
+
+# Install development dependencies
+npm install -D @typescript-eslint/eslint-plugin @typescript-eslint/parser eslint
+
+# Install backend dependencies
+pip install -r backend/requirements.txt
+```
+
+### Development Scripts
+```json
+{
+  "scripts": {
+    "dev": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "dev:backend": "cd backend && uvicorn main:app --reload",
+    "dev:full": "concurrently \"npm run dev\" \"npm run dev:backend\""
+  }
+}
+```
+
+## Testing Strategy
+
+### Frontend Testing
+- Unit tests for components using Vitest
+- Integration tests for API services
+- E2E tests using Playwright
+- Visual regression testing
+
+### Backend Testing
+- Unit tests for services and utilities
+- Integration tests for API endpoints
+- Database tests with test fixtures
+- Performance testing for critical paths
+
+## Deployment Strategy
+
+### Docker Configuration
+- Multi-stage builds for optimal image size
+- Separate containers for frontend and backend
+- Nginx reverse proxy configuration
+- Environment-specific configurations
+
+### CI/CD Pipeline
+- Automated testing on pull requests
+- Build and deployment automation
+- Database migration automation
+- Rollback strategies
+
+## Migration Checklist
+
+### Phase 1: Setup ✅
+- [ ] Initialize Astro project
+- [ ] Configure TypeScript and Vite
+- [ ] Set up Tailwind CSS
+- [ ] Create directory structure
+- [ ] Set up development environment
+
+### Phase 2: Components
+- [ ] Migrate HTML pages to Astro
+- [ ] Create reusable components
+- [ ] Implement responsive layouts
+- [ ] Add TypeScript types
+
+### Phase 3: Styling
+- [ ] Migrate custom CSS to Tailwind
+- [ ] Implement responsive design
+- [ ] Add dark mode support
+- [ ] Optimize for mobile
+
+### Phase 4: Backend Integration
+- [ ] Set up API services
+- [ ] Implement authentication
+- [ ] Add error handling
+- [ ] Create type definitions
+
+### Phase 5: Testing
+- [ ] Set up testing framework
+- [ ] Write unit tests
+- [ ] Add integration tests
+- [ ] Implement E2E tests
+
+### Phase 6: Deployment
+- [ ] Configure Docker
+- [ ] Set up CI/CD
+- [ ] Deploy to staging
+- [ ] Deploy to production
+
+## Notes and Considerations
+
+1. **Performance**: Astro's static generation will significantly improve page load times
+2. **SEO**: Better SEO with Astro's built-in optimizations
+3. **Maintainability**: TypeScript will improve code quality and maintainability
+4. **Scalability**: Astro's component system will make the codebase more scalable
+5. **Developer Experience**: Better tooling and development experience with Astro
+
+## Next Steps
+
+1. Start with Phase 1 setup
+2. Migrate core components first
+3. Implement authentication flow
+4. Add testing infrastructure
+5. Deploy and monitor
+
+This migration plan ensures a smooth transition from the current HTMX-based frontend to a modern Astro TypeScript application while maintaining all existing functionality and improving performance, maintainability, and developer experience.
