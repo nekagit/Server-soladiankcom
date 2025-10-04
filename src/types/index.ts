@@ -222,7 +222,7 @@ export interface TokenRefreshRequest {
   refresh_token: string;
 }
 
-// Solana wallet types
+// Solana wallet types (legacy - use solana.ts for new types)
 export interface SolanaWallet {
   publicKey: string;
   connected: boolean;
@@ -237,6 +237,9 @@ export interface SolanaTransaction {
   status: 'pending' | 'confirmed' | 'failed';
   created_at: string;
 }
+
+// Re-export Solana types from solana.ts
+export * from './solana';
 
 // API Error types
 export interface ApiError {

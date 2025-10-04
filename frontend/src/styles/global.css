@@ -1,0 +1,228 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Global Styles */
+@layer base {
+  html {
+    font-family: 'Inter', system-ui, sans-serif;
+  }
+  
+  body {
+    @apply bg-gray-50 text-gray-900;
+  }
+  
+  * {
+    @apply border-gray-200;
+  }
+}
+
+@layer components {
+  /* Button Styles */
+  .btn-primary {
+    @apply bg-solana-purple text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors duration-200 shadow-md hover:shadow-lg;
+  }
+  
+  .btn-secondary {
+    @apply bg-white text-solana-purple border-2 border-solana-purple px-6 py-3 rounded-lg font-semibold hover:bg-solana-purple hover:text-white transition-colors duration-200;
+  }
+  
+  .btn-large {
+    @apply px-8 py-4 text-lg;
+  }
+  
+  /* Card Styles */
+  .card {
+    @apply bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-6;
+  }
+  
+  .product-card {
+    @apply bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer;
+  }
+  
+  .product-image {
+    @apply relative overflow-hidden;
+  }
+  
+  .product-badge {
+    @apply absolute top-2 left-2 bg-solana-purple text-white px-2 py-1 rounded-full text-xs font-semibold;
+  }
+  
+  .product-info {
+    @apply p-4;
+  }
+  
+  .product-title {
+    @apply text-lg font-semibold text-gray-900 mb-2 line-clamp-2;
+  }
+  
+  .product-description {
+    @apply text-gray-600 text-sm mb-3 line-clamp-2;
+  }
+  
+  .product-price {
+    @apply flex items-center space-x-2 mb-2;
+  }
+  
+  .price-current {
+    @apply text-xl font-bold text-solana-purple;
+  }
+  
+  .price-original {
+    @apply text-sm text-gray-500 line-through;
+  }
+  
+  .product-meta {
+    @apply flex items-center justify-between text-sm text-gray-500;
+  }
+  
+  .product-rating {
+    @apply flex items-center space-x-1;
+  }
+  
+  .product-seller {
+    @apply text-gray-600;
+  }
+  
+  /* Category Styles */
+  .category-card {
+    @apply bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-8 text-center cursor-pointer hover:scale-105;
+  }
+  
+  .category-icon {
+    @apply text-4xl mb-4;
+  }
+  
+  .category-name {
+    @apply text-xl font-semibold text-gray-900 mb-2;
+  }
+  
+  .category-count {
+    @apply text-gray-600 text-sm;
+  }
+  
+  /* Feature Styles */
+  .feature-card {
+    @apply bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-6 text-center;
+  }
+  
+  .feature-icon {
+    @apply text-3xl mb-4;
+  }
+  
+  .feature-title {
+    @apply text-xl font-semibold text-gray-900 mb-2;
+  }
+  
+  .feature-description {
+    @apply text-gray-600;
+  }
+  
+  /* Section Styles */
+  .hero-section {
+    @apply bg-gradient-to-br from-solana-purple to-purple-600 text-white;
+  }
+  
+  .hero-title {
+    @apply text-5xl md:text-6xl font-bold mb-6;
+  }
+  
+  .hero-subtitle {
+    @apply text-xl md:text-2xl mb-8 text-purple-100;
+  }
+  
+  .hero-actions {
+    @apply flex flex-col sm:flex-row gap-4 justify-center;
+  }
+  
+  .categories-section {
+    @apply py-16 bg-white;
+  }
+  
+  .section-title {
+    @apply text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12;
+  }
+  
+  .categories-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8;
+  }
+  
+  .featured-section {
+    @apply py-16 bg-gray-50;
+  }
+  
+  .products-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6;
+  }
+  
+  .features-section {
+    @apply py-16 bg-white;
+  }
+  
+  .features-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8;
+  }
+  
+  /* Navigation Styles */
+  .soladia-logo {
+    @apply flex items-center space-x-3;
+  }
+  
+  .soladia-logo-icon {
+    @apply w-10 h-10 bg-solana-purple rounded-lg flex items-center justify-center text-white font-bold text-xl;
+  }
+  
+  .soladia-logo-text {
+    @apply text-2xl font-bold text-gray-900;
+  }
+  
+  /* Footer Styles */
+  .footer {
+    @apply bg-gray-900 text-white;
+  }
+  
+  .footer-content {
+    @apply grid grid-cols-1 md:grid-cols-4 gap-8;
+  }
+  
+  .footer-section {
+    @apply space-y-4;
+  }
+  
+  .footer-title {
+    @apply text-xl font-bold text-solana-purple;
+  }
+  
+  .footer-subtitle {
+    @apply text-lg font-semibold mb-4;
+  }
+  
+  .footer-links {
+    @apply space-y-2;
+  }
+  
+  .footer-links li a {
+    @apply text-gray-300 hover:text-white transition-colors;
+  }
+  
+  .footer-bottom {
+    @apply border-t border-gray-700 mt-8 pt-8 text-center text-gray-400;
+  }
+}
+
+@layer utilities {
+  .line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  
+  .line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+}
+

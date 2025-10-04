@@ -22,6 +22,7 @@ from .services import (
     UserService, ProductService, OrderService, 
     CategoryService, ReviewService, WatchlistService
 )
+from simple_solana_endpoints import router as solana_router
 from .config import settings
 from .middleware.error_handler import (
     error_handler_middleware,
@@ -74,6 +75,9 @@ app.add_middleware(
 
 # Mount static files
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Include Solana API routes
+app.include_router(solana_router)
 
 # Initialize services
 user_service = UserService()

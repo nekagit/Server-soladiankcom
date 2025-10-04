@@ -1,0 +1,96 @@
+---
+export interface Props {
+  id: number;
+  title: string;
+  description: string;
+  price: number;
+  originalPrice?: number;
+  image: string;
+  rating: number;
+  reviewCount: number;
+  seller: string;
+  location: string;
+  badge?: 'Featured' | 'New' | 'Sale' | 'Eco';
+  condition?: string;
+}
+
+const { 
+  id, 
+  title, 
+  description, 
+  price, 
+  originalPrice, 
+  image, 
+  rating, 
+  reviewCount, 
+  seller, 
+  location, 
+  badge,
+  condition = 'New'
+} = Astro.props;
+
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD'
+  }).format(price);
+};
+
+const formatRating = (rating: number) => {
+  return '⭐'.repeat(Math.floor(rating)) + (rating % 1 >= 0.5 ? '⭐' : '');
+};
+---
+
+<div class="product-card" data-product-id={id}>
+  <div class="product-image">
+    <img src={image} alt={title} class="w-full h-48 object-cover rounded-lg" />
+    {badge && <div class="product-badge">{badge}</div>}
+  </div>
+  <div class="product-info">
+    <h3 class="product-title">{title}</h3>
+    <p class="product-description">{description}</p>
+    <div class="product-price">
+      <span class="price-current">{formatPrice(price)}</span>
+      {originalPrice && originalPrice > price && (
+        <span class="price-original">{formatPrice(originalPrice)}</span>
+      )}
+    </div>
+    <div class="product-meta">
+      <span class="product-rating">
+        {formatRating(rating)} ({reviewCount})
+      </span>
+      <span class="product-seller">by {seller}</span>
+    </div>
+    <div class="mt-2 text-sm text-gray-500">
+      <span>{location}</span>
+      <span class="mx-2">•</span>
+      <span>{condition}</span>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Add click handler for product cards
+  document.addEventListener('DOMContentLoaded', () => {
+    const productCards = document.querySelectorAll('.product-card');
+    
+    productCards.forEach(card => {
+      card.addEventListener('click', () => {
+        const productId = card.getAttribute('data-product-id');
+        if (productId) {
+          window.location.href = `/product/${productId}`;
+        }
+      });
+      
+      // Add hover effects
+      card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-4px)';
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+      });
+    });
+  });
+</script>
+
