@@ -99,7 +99,8 @@
     position: absolute;
     top: 0;
     right: 0;
-    width: 320px;
+    width: 100%;
+    max-width: 320px;
     height: 100%;
     background: white;
     box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
@@ -118,6 +119,7 @@
     align-items: center;
     padding: 1rem;
     border-bottom: 1px solid #E1E5E9;
+    min-height: 60px;
   }
 
   .mobile-logo {
@@ -133,6 +135,11 @@
     padding: 0.5rem;
     border-radius: 0.5rem;
     transition: background-color 0.2s ease;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .mobile-menu-close:hover {
@@ -149,8 +156,9 @@
     padding: 0.75rem 1rem;
     border: 2px solid #E1E5E9;
     border-radius: 0.5rem;
-    font-size: 1rem;
+    font-size: 16px; /* Prevents zoom on iOS */
     transition: border-color 0.2s ease;
+    min-height: 44px;
   }
 
   .mobile-search-input:focus {
@@ -175,6 +183,9 @@
     text-decoration: none;
     font-weight: 500;
     transition: background-color 0.2s ease, color 0.2s ease;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
   }
 
   .mobile-nav-link:hover {
@@ -200,6 +211,10 @@
     border: 1px solid #E1E5E9;
     border-radius: 0.5rem;
     transition: all 0.2s ease;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .mobile-auth-link:hover {
@@ -217,6 +232,10 @@
     font-weight: 600;
     border-radius: 0.5rem;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .mobile-register-btn:hover {

@@ -717,8 +717,11 @@ const webhooks = [
     const periodSelect = document.getElementById('usage-period');
     if (periodSelect) {
       periodSelect.addEventListener('change', (e) => {
-        console.log('Usage period changed to:', e.target.value);
-        // Here you would typically fetch new data based on the selected period
+        const target = e.target as HTMLSelectElement;
+        if (target) {
+          console.log('Usage period changed to:', target.value);
+          // Here you would typically fetch new data based on the selected period
+        }
       });
     }
 

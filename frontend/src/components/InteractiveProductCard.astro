@@ -1,7 +1,6 @@
 ---
 // Interactive Product Card Component with partial hydration
 // Demonstrates Astro component islands pattern
----
 
 export interface Props {
   product: {
@@ -111,7 +110,6 @@ const formatRating = (rating: number) => {
       <div class="stars">
         {Array.from({ length: 5 }, (_, i) => (
           <svg 
-            key={i}
             class={`star ${i < Math.floor(product.rating) ? 'filled' : ''}`}
             fill="currentColor" 
             viewBox="0 0 20 20"
@@ -286,7 +284,7 @@ const formatRating = (rating: number) => {
 <script>
   // Interactive functionality for the product card
   class InteractiveProductCard {
-    constructor(element: HTMLElement) {
+    constructor(element) {
       this.element = element;
       this.productId = element.dataset.productId;
       this.init();
@@ -439,7 +437,7 @@ const formatRating = (rating: number) => {
       document.dispatchEvent(event);
     }
 
-    showNotification(message: string, type: 'success' | 'error' | 'info') {
+    showNotification(message, type) {
       // Show notification
       const event = new CustomEvent('showNotification', {
         detail: { message, type }
@@ -452,7 +450,7 @@ const formatRating = (rating: number) => {
   document.addEventListener('DOMContentLoaded', () => {
     const productCards = document.querySelectorAll('.product-card');
     productCards.forEach(card => {
-      new InteractiveProductCard(card as HTMLElement);
+      new InteractiveProductCard(card);
     });
   });
 </script>

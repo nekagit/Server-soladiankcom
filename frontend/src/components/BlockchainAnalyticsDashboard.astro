@@ -1034,8 +1034,11 @@ const nftAnalytics = {
     const timeRangeSelect = document.getElementById('network-time-range');
     if (timeRangeSelect) {
       timeRangeSelect.addEventListener('change', (e) => {
-        console.log('Time range changed to:', e.target.value);
-        // Here you would typically fetch new data based on the selected time range
+        const target = e.target as HTMLSelectElement;
+        if (target) {
+          console.log('Time range changed to:', target.value);
+          // Here you would typically fetch new data based on the selected time range
+        }
       });
     }
 
@@ -1076,8 +1079,11 @@ const nftAnalytics = {
     const categoryFilter = document.getElementById('nft-category-filter');
     if (categoryFilter) {
       categoryFilter.addEventListener('change', (e) => {
-        console.log('NFT category filter changed to:', e.target.value);
-        // Here you would typically filter NFT data based on the selected category
+        const target = e.target as HTMLSelectElement;
+        if (target) {
+          console.log('NFT category filter changed to:', target.value);
+          // Here you would typically filter NFT data based on the selected category
+        }
       });
     }
   });

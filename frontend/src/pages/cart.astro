@@ -38,44 +38,46 @@ const total = subtotal + shipping + tax;
   <Navigation />
   
   <div class="cart-container">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <h1 class="page-title">Shopping Cart</h1>
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <h1 class="page-title mobile-text-2xl sm:mobile-text-3xl lg:mobile-text-4xl">
+        Shopping Cart
+      </h1>
       
       {cartItems.length > 0 ? (
-        <div class="cart-content">
+        <div class="cart-content mobile-flex lg:flex-row gap-6 lg:gap-8">
           <!-- Cart Items -->
-          <div class="cart-items">
+          <div class="cart-items lg:flex-1">
             {cartItems.map((item) => (
-              <div class="cart-item" data-item-id={item.id}>
+              <div class="cart-item mobile-card" data-item-id={item.id}>
                 <div class="item-image">
-                  <img src={item.image} alt={item.title} />
+                  <img src={item.image} alt={item.title} class="mobile-img" />
                 </div>
-                <div class="item-details">
-                  <h3 class="item-title">{item.title}</h3>
-                  <p class="item-description">{item.description}</p>
-                  <div class="item-meta">
+                <div class="item-details flex-1">
+                  <h3 class="item-title mobile-text-base sm:mobile-text-lg">{item.title}</h3>
+                  <p class="item-description mobile-text-sm sm:mobile-text-base">{item.description}</p>
+                  <div class="item-meta mobile-text-xs sm:mobile-text-sm">
                     <span class="item-seller">Sold by: {item.seller}</span>
                     <span class="item-condition">Condition: {item.condition}</span>
                   </div>
                 </div>
-                <div class="item-quantity">
-                  <label for={`quantity-${item.id}`}>Qty:</label>
-                  <select id={`quantity-${item.id}`} class="quantity-select" data-item-id={item.id}>
+                <div class="item-quantity mobile-flex sm:flex-col gap-2">
+                  <label for={`quantity-${item.id}`} class="mobile-text-xs sm:mobile-text-sm">Qty:</label>
+                  <select id={`quantity-${item.id}`} class="quantity-select mobile-form" data-item-id={item.id}>
                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((qty) => (
                       <option value={qty} selected={qty === item.quantity}>{qty}</option>
                     ))}
                   </select>
                 </div>
-                <div class="item-price">
-                  <div class="price-current">${item.price.toFixed(2)}</div>
+                <div class="item-price text-right">
+                  <div class="price-current mobile-text-lg sm:mobile-text-xl">${item.price.toFixed(2)}</div>
                   {item.originalPrice && (
-                    <div class="price-original">${item.originalPrice.toFixed(2)}</div>
+                    <div class="price-original mobile-text-sm sm:mobile-text-base">${item.originalPrice.toFixed(2)}</div>
                   )}
                 </div>
-                <div class="item-total">
+                <div class="item-total mobile-text-lg sm:mobile-text-xl font-bold">
                   ${(item.price * item.quantity).toFixed(2)}
                 </div>
-                <button class="remove-item" data-item-id={item.id}>
+                <button class="remove-item touch-target" data-item-id={item.id}>
                   <span class="remove-icon">🗑️</span>
                 </button>
               </div>
@@ -83,55 +85,60 @@ const total = subtotal + shipping + tax;
           </div>
 
           <!-- Order Summary -->
-          <div class="order-summary">
-            <h3 class="summary-title">Order Summary</h3>
-            <div class="summary-line">
+          <div class="order-summary mobile-card lg:w-80">
+            <h3 class="summary-title mobile-text-lg sm:mobile-text-xl">Order Summary</h3>
+            <div class="summary-line mobile-text-sm sm:mobile-text-base">
               <span>Subtotal ({cartItems.length} items)</span>
               <span>${subtotal.toFixed(2)}</span>
             </div>
-            <div class="summary-line">
+            <div class="summary-line mobile-text-sm sm:mobile-text-base">
               <span>Shipping</span>
               <span>${shipping.toFixed(2)}</span>
             </div>
-            <div class="summary-line">
+            <div class="summary-line mobile-text-sm sm:mobile-text-base">
               <span>Tax</span>
               <span>${tax.toFixed(2)}</span>
             </div>
-            <div class="summary-line summary-total">
+            <div class="summary-line summary-total mobile-text-base sm:mobile-text-lg">
               <span>Total</span>
               <span>${total.toFixed(2)}</span>
             </div>
             
             <!-- Solana Payment Options -->
             <div class="payment-options">
-              <h4 class="payment-title">Payment Options</h4>
-              <div class="payment-methods">
-                <button class="payment-method active" data-method="sol">
+              <h4 class="payment-title mobile-text-base sm:mobile-text-lg">Payment Options</h4>
+              <div class="payment-methods mobile-space-y">
+                <button class="payment-method active mobile-btn" data-method="sol">
                   <span class="method-icon">☀️</span>
-                  <span class="method-name">Pay with SOL</span>
-                  <span class="method-amount">{(total / 100).toFixed(4)} SOL</span>
+                  <div class="flex flex-col">
+                    <span class="method-name mobile-text-sm sm:mobile-text-base">Pay with SOL</span>
+                    <span class="method-amount mobile-text-xs sm:mobile-text-sm">{(total / 100).toFixed(4)} SOL</span>
+                  </div>
                 </button>
-                <button class="payment-method" data-method="usdc">
+                <button class="payment-method mobile-btn" data-method="usdc">
                   <span class="method-icon">💵</span>
-                  <span class="method-name">Pay with USDC</span>
-                  <span class="method-amount">{total.toFixed(2)} USDC</span>
+                  <div class="flex flex-col">
+                    <span class="method-name mobile-text-sm sm:mobile-text-base">Pay with USDC</span>
+                    <span class="method-amount mobile-text-xs sm:mobile-text-sm">{total.toFixed(2)} USDC</span>
+                  </div>
                 </button>
               </div>
             </div>
 
             <!-- Checkout Button -->
-            <button class="checkout-btn" id="checkout-btn">
+            <button class="checkout-btn mobile-btn" id="checkout-btn">
               <span class="checkout-icon">🛒</span>
-              Proceed to Checkout
+              <span class="mobile-only">Checkout</span>
+              <span class="mobile-hidden">Proceed to Checkout</span>
             </button>
           </div>
         </div>
       ) : (
-        <div class="empty-cart">
-          <div class="empty-icon">🛒</div>
-          <h2 class="empty-title">Your cart is empty</h2>
-          <p class="empty-description">Add some items to get started!</p>
-          <a href="/" class="btn-primary">Continue Shopping</a>
+        <div class="empty-cart text-center py-12 sm:py-16">
+          <div class="empty-icon text-6xl sm:text-8xl mb-4">🛒</div>
+          <h2 class="empty-title mobile-text-xl sm:mobile-text-2xl mb-2">Your cart is empty</h2>
+          <p class="empty-description mobile-text-base sm:mobile-text-lg mb-6">Add some items to get started!</p>
+          <a href="/" class="btn-primary mobile-btn sm:w-auto">Continue Shopping</a>
         </div>
       )}
     </div>
@@ -146,26 +153,30 @@ const total = subtotal + shipping + tax;
     // Quantity change handler
     const quantitySelects = document.querySelectorAll('.quantity-select');
     quantitySelects.forEach(select => {
-      select.addEventListener('change', function() {
+      select.addEventListener('change', function(this: HTMLSelectElement) {
         const itemId = this.getAttribute('data-item-id');
         const newQuantity = parseInt(this.value);
-        updateItemQuantity(itemId, newQuantity);
+        if (itemId) {
+          updateItemQuantity(itemId, newQuantity);
+        }
       });
     });
 
     // Remove item handler
     const removeButtons = document.querySelectorAll('.remove-item');
     removeButtons.forEach(button => {
-      button.addEventListener('click', function() {
+      button.addEventListener('click', function(this: HTMLElement) {
         const itemId = this.getAttribute('data-item-id');
-        removeItem(itemId);
+        if (itemId) {
+          removeItem(itemId);
+        }
       });
     });
 
     // Payment method selection
     const paymentMethods = document.querySelectorAll('.payment-method');
     paymentMethods.forEach(method => {
-      method.addEventListener('click', function() {
+      method.addEventListener('click', function(this: HTMLElement) {
         paymentMethods.forEach(m => m.classList.remove('active'));
         this.classList.add('active');
       });
@@ -228,75 +239,79 @@ const total = subtotal + shipping + tax;
   }
 
   .page-title {
-    @apply text-3xl font-bold text-gray-900 mb-8;
+    @apply font-bold text-gray-900 mb-6 sm:mb-8;
   }
 
   .cart-content {
-    @apply grid grid-cols-1 lg:grid-cols-3 gap-8;
+    @apply flex flex-col lg:flex-row gap-6 lg:gap-8;
   }
 
   .cart-items {
-    @apply lg:col-span-2 space-y-4;
+    @apply lg:flex-1 space-y-4;
   }
 
   .cart-item {
-    @apply bg-white rounded-lg shadow-sm p-6 flex items-center space-x-4;
+    @apply bg-white rounded-lg shadow-sm p-4 sm:p-6 flex flex-col sm:flex-row items-start sm:items-center space-y-4 sm:space-y-0 sm:space-x-4;
+  }
+
+  .item-image {
+    @apply w-full sm:w-20 h-20 object-cover rounded-lg;
   }
 
   .item-image img {
-    @apply w-20 h-20 object-cover rounded-lg;
+    @apply w-full h-full object-cover rounded-lg;
   }
 
   .item-details {
-    @apply flex-1;
+    @apply flex-1 w-full sm:w-auto;
   }
 
   .item-title {
-    @apply text-lg font-semibold text-gray-900;
+    @apply font-semibold text-gray-900 mb-1;
   }
 
   .item-description {
-    @apply text-gray-600 text-sm mt-1;
+    @apply text-gray-600 mb-2;
   }
 
   .item-meta {
-    @apply flex space-x-4 mt-2 text-sm text-gray-500;
+    @apply flex flex-col sm:flex-row sm:space-x-4 space-y-1 sm:space-y-0;
   }
 
   .item-quantity {
-    @apply flex items-center space-x-2;
+    @apply flex flex-col sm:flex-row items-start sm:items-center space-y-2 sm:space-y-0 sm:space-x-2;
   }
 
   .quantity-select {
-    @apply border border-gray-300 rounded px-2 py-1;
+    @apply border border-gray-300 rounded px-2 py-1 w-full sm:w-auto;
   }
 
   .item-price {
-    @apply text-right;
+    @apply text-right w-full sm:w-auto;
   }
 
   .price-current {
-    @apply text-lg font-semibold text-gray-900;
+    @apply font-semibold text-gray-900;
   }
 
   .price-original {
-    @apply text-sm text-gray-500 line-through;
+    @apply text-gray-500 line-through;
   }
 
   .item-total {
-    @apply text-lg font-bold text-gray-900;
+    @apply font-bold text-gray-900 w-full sm:w-auto text-center sm:text-right;
   }
 
   .remove-item {
-    @apply p-2 text-gray-400 hover:text-red-500 transition-colors;
+    @apply p-2 text-gray-400 hover:text-red-500 transition-colors w-full sm:w-auto text-center;
   }
 
   .order-summary {
-    @apply bg-white rounded-lg shadow-sm p-6 h-fit;
+    @apply bg-white rounded-lg shadow-sm p-4 sm:p-6 h-fit;
   }
 
   .summary-title {
-    @apply text-xl font-semibold text-gray-900 mb-4;
+    @apply font-semibold text-gray-900 mb-4;
   }
 
   .summary-line {
@@ -304,7 +319,7 @@ const total = subtotal + shipping + tax;
   }
 
   .summary-total {
-    @apply text-lg font-bold text-gray-900 border-b-0 pt-2;
+    @apply font-bold text-gray-900 border-b-0 pt-2;
   }
 
   .payment-options {
@@ -312,7 +327,7 @@ const total = subtotal + shipping + tax;
   }
 
   .payment-title {
-    @apply text-lg font-semibold text-gray-900 mb-3;
+    @apply font-semibold text-gray-900 mb-3;
   }
 
   .payment-methods {
@@ -336,7 +351,7 @@ const total = subtotal + shipping + tax;
   }
 
   .method-amount {
-    @apply text-sm text-gray-600;
+    @apply text-gray-600;
   }
 
   .checkout-btn {
@@ -348,15 +363,15 @@ const total = subtotal + shipping + tax;
   }
 
   .empty-cart {
-    @apply text-center py-16;
+    @apply text-center py-12 sm:py-16;
   }
 
   .empty-icon {
-    @apply text-6xl mb-4;
+    @apply mb-4;
   }
 
   .empty-title {
-    @apply text-2xl font-bold text-gray-900 mb-2;
+    @apply font-bold text-gray-900 mb-2;
   }
 
   .empty-description {
@@ -381,5 +396,51 @@ const total = subtotal + shipping + tax;
 
   .notification-info {
     @apply bg-blue-600;
+  }
+
+  /* Mobile-specific cart item layout */
+  @media (max-width: 640px) {
+    .cart-item {
+      @apply flex-col items-stretch;
+    }
+    
+    .item-image {
+      @apply w-full h-32;
+    }
+    
+    .item-details {
+      @apply w-full;
+    }
+    
+    .item-quantity {
+      @apply flex-row items-center justify-between;
+    }
+    
+    .quantity-select {
+      @apply w-20;
+    }
+    
+    .item-price {
+      @apply text-left;
+    }
+    
+    .item-total {
+      @apply text-left;
+    }
+    
+    .remove-item {
+      @apply w-full text-center py-2 border border-red-300 rounded hover:bg-red-50;
+    }
+  }
+
+  /* Mobile payment method layout */
+  @media (max-width: 640px) {
+    .payment-method {
+      @apply flex-col items-start space-y-2;
+    }
+    
+    .method-icon {
+      @apply text-2xl;
+    }
   }
 </style>

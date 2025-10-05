@@ -11,160 +11,214 @@ const demoCredentials = {
 <Layout title="Sign In to Soladia - Authentication">
   <Navigation />
   
-  <main class="min-h-screen bg-gradient-to-br from-blue-50 to-red-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-md w-full space-y-8">
-      <!-- Auth Container -->
-      <div class="auth-container">
-        <!-- Header -->
-        <div class="auth-header">
-          <h1 class="auth-title">Welcome Back</h1>
-          <p class="auth-subtitle">Sign in to your Soladia account</p>
+  <main class="min-h-screen bg-gray-50">
+    <!-- eBay-style Header -->
+    <div class="bg-white border-b border-gray-200">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center space-x-4">
+            <a href="/" class="text-2xl font-bold text-gray-900">Soladia</a>
+            <span class="text-gray-400">|</span>
+            <h1 class="text-lg font-medium text-gray-900">Sign in or create an account</h1>
+          </div>
+          <div class="text-sm text-gray-600">
+            <a href="/help" class="hover:text-blue-600">Help</a>
+          </div>
         </div>
+      </div>
+    </div>
 
-        <!-- Demo Credentials -->
-        <div class="demo-credentials">
-          <p><strong>Demo Account:</strong> {demoCredentials.email} / {demoCredentials.password}</p>
-        </div>
-
-        <!-- Tab Navigation -->
-        <div class="auth-tabs">
-          <button class="auth-tab active" id="signin-tab">Sign In</button>
-          <button class="auth-tab" id="signup-tab">Sign Up</button>
-        </div>
-
-        <!-- Sign In Form -->
-        <form class="auth-form" id="signin-form">
-          <div class="form-group">
-            <label for="signin-email" class="form-label">Email Address</label>
-            <input 
-              type="email" 
-              id="signin-email" 
-              class="form-input" 
-              placeholder="Enter your email"
-              value={demoCredentials.email}
-              required
-            />
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        <!-- Left Column - Sign In -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Sign in to your account</h2>
+            <p class="text-gray-600">Welcome back! Please sign in to continue.</p>
           </div>
 
-          <div class="form-group">
-            <label for="signin-password" class="form-label">Password</label>
-            <div class="password-container">
+          <!-- Demo Credentials -->
+          <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+            <div class="flex items-start">
+              <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-blue-400" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clip-rule="evenodd"></path>
+                </svg>
+              </div>
+              <div class="ml-3">
+                <h3 class="text-sm font-medium text-blue-800">Demo Account Available</h3>
+                <div class="mt-2 text-sm text-blue-700">
+                  <p><strong>Email:</strong> {demoCredentials.email}</p>
+                  <p><strong>Password:</strong> {demoCredentials.password}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sign In Form -->
+          <form class="space-y-6" id="signin-form">
+            <div>
+              <label for="signin-email" class="block text-sm font-medium text-gray-700 mb-2">
+                Email address
+              </label>
               <input 
-                type="password" 
-                id="signin-password" 
-                class="form-input" 
-                placeholder="Enter your password"
-                value={demoCredentials.password}
+                type="email" 
+                id="signin-email" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter your email"
+                value={demoCredentials.email}
                 required
               />
-              <button type="button" class="password-toggle" id="signin-toggle">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                </svg>
-              </button>
             </div>
-          </div>
 
-          <div class="flex items-center justify-between">
-            <div class="checkbox-container">
-              <input type="checkbox" id="remember-me" class="checkbox-input" />
-              <label for="remember-me" class="checkbox-label">Remember me</label>
+            <div>
+              <label for="signin-password" class="block text-sm font-medium text-gray-700 mb-2">
+                Password
+              </label>
+              <div class="relative">
+                <input 
+                  type="password" 
+                  id="signin-password" 
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10"
+                  placeholder="Enter your password"
+                  value={demoCredentials.password}
+                  required
+                />
+                <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center" id="signin-toggle">
+                  <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                  </svg>
+                </button>
+              </div>
             </div>
-            <a href="/forgot-password" class="text-sm text-blue-600 hover:text-blue-800">Forgot password?</a>
-          </div>
 
-          <button type="submit" class="btn-primary w-full">
-            Sign In
-          </button>
-        </form>
-
-        <!-- Sign Up Form (Hidden by default) -->
-        <form class="auth-form hidden" id="signup-form">
-          <div class="form-group">
-            <label for="signup-email" class="form-label">Email Address</label>
-            <input 
-              type="email" 
-              id="signup-email" 
-              class="form-input" 
-              placeholder="Enter your email"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="signup-username" class="form-label">Username</label>
-            <input 
-              type="text" 
-              id="signup-username" 
-              class="form-input" 
-              placeholder="Choose a username"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="signup-firstname" class="form-label">First Name</label>
-            <input 
-              type="text" 
-              id="signup-firstname" 
-              class="form-input" 
-              placeholder="Enter your first name"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="signup-lastname" class="form-label">Last Name</label>
-            <input 
-              type="text" 
-              id="signup-lastname" 
-              class="form-input" 
-              placeholder="Enter your last name"
-              required
-            />
-          </div>
-
-          <div class="form-group">
-            <label for="signup-password" class="form-label">Password</label>
-            <div class="password-container">
-              <input 
-                type="password" 
-                id="signup-password" 
-                class="form-input" 
-                placeholder="Create a password"
-                required
-              />
-              <button type="button" class="password-toggle" id="signup-toggle">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
-                </svg>
-              </button>
+            <div class="flex items-center justify-between">
+              <div class="flex items-center">
+                <input type="checkbox" id="remember-me" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded" />
+                <label for="remember-me" class="ml-2 block text-sm text-gray-700">
+                  Keep me signed in
+                </label>
+              </div>
+              <a href="/forgot-password" class="text-sm text-blue-600 hover:text-blue-800">
+                Forgot your password?
+              </a>
             </div>
-          </div>
 
-          <div class="checkbox-container">
-            <input type="checkbox" id="agree-terms" class="checkbox-input" required />
-            <label for="agree-terms" class="checkbox-label">
-              I agree to the <a href="/terms" class="text-blue-600 hover:text-blue-800">Terms of Service</a> and <a href="/privacy" class="text-blue-600 hover:text-blue-800">Privacy Policy</a>
-            </label>
-          </div>
+            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out">
+              Sign in
+            </button>
+          </form>
 
-          <button type="submit" class="btn-primary w-full">
-            Create Account
-          </button>
-        </form>
-
-        <!-- Divider -->
-        <div class="divider">
-          <span>or continue with</span>
         </div>
 
-        <!-- Social Login Buttons -->
-        <div class="social-buttons">
-          <button class="social-btn" id="google-login">
-            <svg class="w-5 h-5" viewBox="0 0 24 24">
+        <!-- Right Column - Create Account -->
+        <div class="bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+          <div class="mb-6">
+            <h2 class="text-2xl font-bold text-gray-900 mb-2">Create an account</h2>
+            <p class="text-gray-600">New to Soladia? Create your account to get started.</p>
+          </div>
+
+          <!-- Sign Up Form -->
+          <form class="space-y-6" id="signup-form">
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div>
+                <label for="signup-firstname" class="block text-sm font-medium text-gray-700 mb-2">
+                  First name
+                </label>
+                <input 
+                  type="text" 
+                  id="signup-firstname" 
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter your first name"
+                  required
+                />
+              </div>
+              <div>
+                <label for="signup-lastname" class="block text-sm font-medium text-gray-700 mb-2">
+                  Last name
+                </label>
+                <input 
+                  type="text" 
+                  id="signup-lastname" 
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  placeholder="Enter your last name"
+                  required
+                />
+              </div>
+            </div>
+
+            <div>
+              <label for="signup-email" class="block text-sm font-medium text-gray-700 mb-2">
+                Email address
+              </label>
+              <input 
+                type="email" 
+                id="signup-email" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Enter your email"
+                required
+              />
+            </div>
+
+            <div>
+              <label for="signup-username" class="block text-sm font-medium text-gray-700 mb-2">
+                Username
+              </label>
+              <input 
+                type="text" 
+                id="signup-username" 
+                class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                placeholder="Choose a username"
+                required
+              />
+            </div>
+
+            <div>
+              <label for="signup-password" class="block text-sm font-medium text-gray-700 mb-2">
+                Password
+              </label>
+              <div class="relative">
+                <input 
+                  type="password" 
+                  id="signup-password" 
+                  class="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pr-10"
+                  placeholder="Create a password"
+                  required
+                />
+                <button type="button" class="absolute inset-y-0 right-0 pr-3 flex items-center" id="signup-toggle">
+                  <svg class="h-5 w-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex items-start">
+              <input type="checkbox" id="agree-terms" class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded mt-1" required />
+              <label for="agree-terms" class="ml-2 block text-sm text-gray-700">
+                I agree to the <a href="/terms" class="text-blue-600 hover:text-blue-800">Terms of Service</a> and <a href="/privacy" class="text-blue-600 hover:text-blue-800">Privacy Policy</a>
+              </label>
+            </div>
+
+            <button type="submit" class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition duration-150 ease-in-out">
+              Create account
+            </button>
+          </form>
+        </div>
+      </div>
+
+      <!-- Social Login Section -->
+      <div class="mt-8 bg-white rounded-lg shadow-sm border border-gray-200 p-8">
+        <div class="text-center mb-6">
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Or continue with</h3>
+          <p class="text-sm text-gray-600">Quick and secure sign-in options</p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <button class="w-full flex justify-center items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out" id="google-login">
+            <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
               <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
               <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
@@ -172,36 +226,50 @@ const demoCredentials = {
             </svg>
             Google
           </button>
-          <button class="social-btn" id="github-login">
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+          <button class="w-full flex justify-center items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out" id="github-login">
+            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
             </svg>
             GitHub
           </button>
         </div>
+      </div>
 
-        <!-- Solana Wallet Section -->
-        <div class="wallet-section">
-          <div class="wallet-title">
-            <h3>Connect Solana Wallet</h3>
-            <p>Use your Solana wallet for seamless payments</p>
+      <!-- Solana Wallet Section -->
+      <div class="mt-8 bg-gradient-to-r from-purple-50 to-blue-50 rounded-lg border border-purple-200 p-8">
+        <div class="text-center mb-6">
+          <div class="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-purple-100 mb-4">
+            <svg class="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+            </svg>
           </div>
-          
-          <div class="wallet-buttons">
-            <button class="wallet-btn" id="connect-phantom">
-              <svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor">
-                <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
-                <path d="M12 6c-3.314 0-6 2.686-6 6s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6zm0 10c-2.206 0-4-1.794-4-4s1.794-4 4-4 4 1.794 4 4-1.794 4-4 4z"/>
-              </svg>
-              Connect Phantom Wallet
-            </button>
-          </div>
+          <h3 class="text-lg font-medium text-gray-900 mb-2">Connect Solana Wallet</h3>
+          <p class="text-sm text-gray-600">Use your Solana wallet for seamless payments and NFT transactions</p>
+        </div>
+        
+        <div class="space-y-4">
+          <button class="w-full flex justify-center items-center px-4 py-3 border border-purple-300 rounded-md shadow-sm text-sm font-medium text-purple-700 bg-white hover:bg-purple-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-purple-500 transition duration-150 ease-in-out" id="connect-phantom">
+            <svg class="w-5 h-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm0 22C6.477 22 2 17.523 2 12S6.477 2 12 2s10 4.477 10 10-4.477 10-10 10z"/>
+              <path d="M12 6c-3.314 0-6 2.686-6 6s2.686 6 6 6 6-2.686 6-6-2.686-6-6-6zm0 10c-2.206 0-4-1.794-4-4s1.794-4 4-4 4 1.794 4 4-1.794 4-4 4z"/>
+            </svg>
+            Connect Phantom Wallet
+          </button>
         </div>
 
         <!-- Security Notice -->
-        <div class="security-notice">
-          <h4>🔒 Secure & Private</h4>
-          <p>Your data is encrypted and protected. We never store your wallet private keys.</p>
+        <div class="mt-6 p-4 bg-green-50 border border-green-200 rounded-md">
+          <div class="flex">
+            <div class="flex-shrink-0">
+              <svg class="h-5 w-5 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+              </svg>
+            </div>
+            <div class="ml-3">
+              <h4 class="text-sm font-medium text-green-800">🔒 Secure & Private</h4>
+              <p class="mt-1 text-sm text-green-700">Your data is encrypted and protected. We never store your wallet private keys.</p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -210,27 +278,10 @@ const demoCredentials = {
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    const signinTab = document.getElementById('signin-tab');
-    const signupTab = document.getElementById('signup-tab');
     const signinForm = document.getElementById('signin-form');
     const signupForm = document.getElementById('signup-form');
-    const passwordToggles = document.querySelectorAll('.password-toggle');
+    const passwordToggles = document.querySelectorAll('[id$="-toggle"]');
     const connectPhantomBtn = document.getElementById('connect-phantom');
-
-    // Tab switching
-    signinTab?.addEventListener('click', () => {
-      signinTab.classList.add('active');
-      signupTab?.classList.remove('active');
-      signinForm?.classList.remove('hidden');
-      signupForm?.classList.add('hidden');
-    });
-
-    signupTab?.addEventListener('click', () => {
-      signupTab.classList.add('active');
-      signinTab?.classList.remove('active');
-      signupForm?.classList.remove('hidden');
-      signinForm?.classList.add('hidden');
-    });
 
     // Password visibility toggle
     passwordToggles.forEach(toggle => {
@@ -246,8 +297,8 @@ const demoCredentials = {
     signinForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
       const formData = new FormData(e.target as HTMLFormElement);
-      const email = formData.get('signin-email') as string;
-      const password = formData.get('signin-password') as string;
+      const email = (document.getElementById('signin-email') as HTMLInputElement)?.value;
+      const password = (document.getElementById('signin-password') as HTMLInputElement)?.value;
       
       // Simulate login
       console.log('Signing in with:', { email, password });
@@ -257,13 +308,12 @@ const demoCredentials = {
 
     signupForm?.addEventListener('submit', async (e) => {
       e.preventDefault();
-      const formData = new FormData(e.target as HTMLFormElement);
       const userData = {
-        email: formData.get('signup-email'),
-        username: formData.get('signup-username'),
-        first_name: formData.get('signup-firstname'),
-        last_name: formData.get('signup-lastname'),
-        password: formData.get('signup-password')
+        email: (document.getElementById('signup-email') as HTMLInputElement)?.value,
+        username: (document.getElementById('signup-username') as HTMLInputElement)?.value,
+        first_name: (document.getElementById('signup-firstname') as HTMLInputElement)?.value,
+        last_name: (document.getElementById('signup-lastname') as HTMLInputElement)?.value,
+        password: (document.getElementById('signup-password') as HTMLInputElement)?.value
       };
       
       // Simulate registration

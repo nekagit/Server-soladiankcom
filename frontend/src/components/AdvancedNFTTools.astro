@@ -965,9 +965,11 @@ const ipfsData = {
         
         // Add remove functionality to new button
         const removeBtn = attributeItem.querySelector('.remove-attribute-btn');
-        removeBtn.addEventListener('click', () => {
-          attributeItem.remove();
-        });
+        if (removeBtn) {
+          removeBtn.addEventListener('click', () => {
+            attributeItem.remove();
+          });
+        }
       });
     }
 
@@ -1005,10 +1007,13 @@ const ipfsData = {
     const validateUrlBtn = document.getElementById('validate-url-btn');
     if (validateUrlBtn) {
       validateUrlBtn.addEventListener('click', () => {
-        const url = document.getElementById('metadata-url').value;
-        if (url) {
-          console.log('Validating metadata URL:', url);
-          // Here you would typically validate the metadata URL
+        const urlInput = document.getElementById('metadata-url') as HTMLInputElement;
+        if (urlInput) {
+          const url = urlInput.value;
+          if (url) {
+            console.log('Validating metadata URL:', url);
+            // Here you would typically validate the metadata URL
+          }
         }
       });
     }
