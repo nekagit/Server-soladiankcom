@@ -2,7 +2,7 @@
 // Dynamic category page
 import Layout from '../../layouts/Layout.astro';
 import ProductCard from '../../components/ProductCard.astro';
-import AdvancedSearch from '../../components/AdvancedSearch.astro';
+import AdvancedSearchSidebar from '../../components/AdvancedSearchSidebar.astro';
 import '../../styles/category-pages.css';
 
 export async function getStaticPaths() {
@@ -35,7 +35,7 @@ const categoryProducts = {
       id: 1,
       name: "Smartphone NFT",
       price: 15.0,
-      image: "/api/placeholder/300/200",
+      image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=300&h=200&fit=crop&crop=center",
       category: "Electronics",
       seller: "TechSeller",
       description: "Digital representation of latest smartphone",
@@ -46,7 +46,7 @@ const categoryProducts = {
       id: 2,
       name: "Laptop NFT",
       price: 25.0,
-      image: "/api/placeholder/300/200",
+      image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=300&h=200&fit=crop&crop=center",
       category: "Electronics",
       seller: "TechSeller",
       description: "High-end laptop as NFT",
@@ -59,7 +59,7 @@ const categoryProducts = {
       id: 3,
       name: "Abstract Art #001",
       price: 2.5,
-      image: "/api/placeholder/300/200",
+      image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=300&h=200&fit=crop&crop=center",
       category: "Digital Art",
       seller: "Artist123",
       description: "Unique abstract digital artwork",
@@ -70,7 +70,7 @@ const categoryProducts = {
       id: 4,
       name: "Pixel Art Collection",
       price: 1.8,
-      image: "/api/placeholder/300/200",
+      image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=300&h=200&fit=crop&crop=center",
       category: "Digital Art",
       seller: "PixelArtist",
       description: "Retro pixel art collection",
@@ -83,7 +83,7 @@ const categoryProducts = {
       id: 5,
       name: "Legendary Sword",
       price: 8.5,
-      image: "/api/placeholder/300/200",
+      image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=300&h=200&fit=crop&crop=center",
       category: "Gaming",
       seller: "GameMaster",
       description: "Rare legendary sword from RPG",
@@ -94,7 +94,7 @@ const categoryProducts = {
       id: 6,
       name: "Character Skin",
       price: 3.2,
-      image: "/api/placeholder/300/200",
+      image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=300&h=200&fit=crop&crop=center",
       category: "Gaming",
       seller: "SkinCreator",
       description: "Exclusive character skin",
@@ -201,7 +201,7 @@ const info = categoryInfo[category as keyof typeof categoryInfo] || {
               <h3 class="sidebar-card-title">Advanced Search</h3>
             </div>
             <div class="sidebar-card-content">
-              <AdvancedSearch />
+              <AdvancedSearchSidebar />
             </div>
           </div>
 
