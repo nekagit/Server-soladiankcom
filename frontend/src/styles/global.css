@@ -1272,19 +1272,24 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
 }
 
-.status-active .status-dot {
+.status-trading .status-dot {
   background: #3B82F6;
   box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.4);
 }
 
-.status-secure .status-dot {
+.status-transactions .status-dot {
   background: #8B5CF6;
   box-shadow: 0 0 0 0 rgba(139, 92, 246, 0.4);
 }
 
-.status-fast .status-dot {
+.status-volume .status-dot {
   background: #F59E0B;
   box-shadow: 0 0 0 0 rgba(245, 158, 11, 0.4);
+}
+
+.status-secure .status-dot {
+  background: #EF4444;
+  box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.4);
 }
 
 @keyframes pulse {

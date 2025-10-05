@@ -2,7 +2,6 @@
 import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
 import ProductCard from '../components/ProductCard.astro';
-import SolanaWallet from '../components/solana/SolanaWallet.astro';
 import WalletConnect from '../components/solana/WalletConnect.astro';
 
 // Sample data - in a real app, this would come from an API
@@ -114,19 +113,23 @@ const features = [
         <div class="status-badges flex flex-wrap justify-center gap-3 mt-6 mb-8">
           <div class="status-badge status-online">
             <div class="status-dot"></div>
-            <span>Online</span>
+            <span>Live</span>
           </div>
-          <div class="status-badge status-active">
+          <div class="status-badge status-trading">
             <div class="status-dot"></div>
-            <span>Active Trading</span>
+            <span>1,247 Active Users</span>
+          </div>
+          <div class="status-badge status-transactions">
+            <div class="status-dot"></div>
+            <span>5,432 Transactions Today</span>
+          </div>
+          <div class="status-badge status-volume">
+            <div class="status-dot"></div>
+            <span>$2.4M Volume</span>
           </div>
           <div class="status-badge status-secure">
             <div class="status-dot"></div>
-            <span>Secure</span>
-          </div>
-          <div class="status-badge status-fast">
-            <div class="status-dot"></div>
-            <span>Fast Transactions</span>
+            <span>Blockchain Secured</span>
           </div>
         </div>
         <div class="hero-actions mobile-flex sm:flex-row">
@@ -143,10 +146,6 @@ const features = [
           </button>
         </div>
         
-        <!-- Solana Wallet Integration -->
-        <div class="wallet-section mt-6 sm:mt-8 max-w-md mx-auto">
-          <SolanaWallet />
-        </div>
       </div>
     </div>
   </section>
