@@ -113,7 +113,7 @@ export class SolanaTokenService {
         supply: Math.floor(Math.random() * 1000000000),
         uiSupply: Math.floor(Math.random() * 1000000),
         isNative: false,
-        logoURI: 'https://via.placeholder.com/64x64/4F46E5/FFFFFF?text=T'
+        logoURI: 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=64&h=64&fit=crop&crop=center'
       };
 
       return token;
@@ -198,7 +198,7 @@ export class SolanaTokenService {
         name: `Token ${mint.slice(0, 8)}`,
         symbol: 'TOKEN',
         description: 'A custom SPL token on Solana',
-        image: 'https://via.placeholder.com/200x200/4F46E5/FFFFFF?text=TOKEN',
+        image: 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=200&h=200&fit=crop&crop=center',
         external_url: `https://soladia.com/token/${mint}`,
         attributes: [
           { trait_type: 'Network', value: 'Solana' },
