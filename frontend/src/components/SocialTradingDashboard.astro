@@ -1083,8 +1083,11 @@ const community = {
     const leaderboardPeriod = document.getElementById('leaderboard-period');
     if (leaderboardPeriod) {
       leaderboardPeriod.addEventListener('change', (e) => {
-        console.log('Leaderboard period changed to:', e.target.value);
-        // Here you would typically fetch new leaderboard data
+        const target = e.target as HTMLSelectElement;
+        if (target) {
+          console.log('Leaderboard period changed to:', target.value);
+          // Here you would typically fetch new leaderboard data
+        }
       });
     }
 
@@ -1121,8 +1124,8 @@ const community = {
         if (action === 'like') {
           const count = button.querySelector('span');
           if (count) {
-            const currentCount = parseInt(count.textContent);
-            count.textContent = currentCount + 1;
+            const currentCount = parseInt(count.textContent || '0');
+            count.textContent = (currentCount + 1).toString();
           }
         }
       });
@@ -1145,9 +1148,10 @@ const community = {
         console.log(`Joining topic: ${topic}`);
         
         // Update button state
-        button.textContent = 'Joined';
-        button.style.background = '#059669';
-        button.disabled = true;
+        const btn = button as HTMLButtonElement;
+        btn.textContent = 'Joined';
+        btn.style.background = '#059669';
+        btn.disabled = true;
       });
     });
   });

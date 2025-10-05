@@ -328,7 +328,7 @@ const analyticsData = {
         ctx.moveTo(centerX, centerY);
         ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
         ctx.closePath();
-        ctx.fillStyle = colors[index % colors.length];
+        ctx.fillStyle = colors[index % colors.length] || '#10b981';
         ctx.fill();
 
         // Draw label
@@ -350,7 +350,7 @@ const analyticsData = {
       if (!canvas) return;
 
       const ctx = canvas.getContext('2d');
-      if (!canvas) return;
+      if (!ctx) return;
 
       // Clear canvas
       ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -707,7 +707,7 @@ const analyticsData = {
 <script>
   declare global {
     interface Window {
-      getAnalyticsDashboard: () => AnalyticsDashboard;
+      getAnalyticsDashboard: () => any;
     }
   }
 </script>

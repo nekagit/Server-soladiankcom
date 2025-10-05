@@ -470,10 +470,13 @@ const nftAnalytics = {
       ctx.setLineDash([5, 5]);
       
       nodes.forEach((node, index) => {
-        if (index < nodes.length - 1) {
+        const nextNode = nodes[index + 1];
+        if (index < nodes.length - 1 && nextNode && node && 
+            typeof node.x === 'number' && typeof node.y === 'number' &&
+            typeof nextNode.x === 'number' && typeof nextNode.y === 'number') {
           ctx.beginPath();
           ctx.moveTo(node.x, node.y);
-          ctx.lineTo(nodes[index + 1].x, nodes[index + 1].y);
+          ctx.lineTo(nextNode.x, nextNode.y);
           ctx.stroke();
         }
       });
@@ -562,7 +565,7 @@ const nftAnalytics = {
       // Refresh every 30 seconds
       this.refreshInterval = setInterval(() => {
         this.refreshData();
-      }, 30000);
+      }, 30000) as any;
     }
 
     private showNotification(message: string, type: 'success' | 'error' | 'info') {
@@ -832,7 +835,7 @@ const nftAnalytics = {
 <script>
   declare global {
     interface Window {
-      getBlockchainAnalytics: () => BlockchainAnalytics;
+      getBlockchainAnalytics: () => any;
     }
   }
 </script>
