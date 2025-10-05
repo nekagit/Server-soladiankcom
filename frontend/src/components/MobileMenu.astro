@@ -1,6 +1,5 @@
 ---
 // Mobile Menu Component for responsive navigation
-import ThemeToggle from './ThemeToggle.astro';
 ---
 
 <div class="mobile-menu" id="mobile-menu">
@@ -58,10 +57,6 @@ import ThemeToggle from './ThemeToggle.astro';
       <a href="/auth" class="mobile-register-btn">Register</a>
     </div>
 
-    <!-- Mobile Theme Toggle -->
-    <div class="mobile-theme-toggle">
-      <ThemeToggle />
-    </div>
   </div>
 </div>
 
@@ -229,12 +224,6 @@ import ThemeToggle from './ThemeToggle.astro';
     box-shadow: 0 4px 12px rgba(230, 0, 18, 0.3);
   }
 
-  .mobile-theme-toggle {
-    padding: 1rem;
-    border-top: 1px solid #E1E5E9;
-    display: flex;
-    justify-content: center;
-  }
 
   .mobile-menu-trigger {
     display: none;
@@ -250,46 +239,6 @@ import ThemeToggle from './ThemeToggle.astro';
     background: #F3F4F6;
   }
 
-  /* Dark Mode Styles */
-  .dark .mobile-menu-content {
-    background: #1A1A1A;
-  }
-
-  .dark .mobile-menu-header,
-  .dark .mobile-search,
-  .dark .mobile-user-actions,
-  .dark .mobile-theme-toggle {
-    border-color: #333333;
-  }
-
-  .dark .mobile-nav-link {
-    color: #D1D5DB;
-  }
-
-  .dark .mobile-nav-link:hover {
-    background: #374151;
-    color: #FFFFFF;
-  }
-
-  .dark .mobile-auth-link {
-    color: #9CA3AF;
-    border-color: #333333;
-  }
-
-  .dark .mobile-auth-link:hover {
-    background: #374151;
-    color: #D1D5DB;
-  }
-
-  .dark .mobile-search-input {
-    background: #374151;
-    border-color: #4B5563;
-    color: #FFFFFF;
-  }
-
-  .dark .mobile-search-input:focus {
-    border-color: #3B82F6;
-  }
 
   /* Responsive Design */
   @media (max-width: 768px) {
