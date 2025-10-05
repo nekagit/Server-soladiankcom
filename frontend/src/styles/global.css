@@ -1,37 +1,39 @@
+/* Import Google Fonts first for better performance */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 /* ========================================
-   SOLADIA - ICONIC MARKETPLACE DESIGN
-   Inspired by eBay's bold, distinctive style
+   SOLADIA - OPTIMIZED MARKETPLACE DESIGN
    ======================================== */
 
 /* CSS Custom Properties for Soladia Brand */
 :root {
   /* Soladia Brand Colors */
-  --soladia-primary: #E60012;        /* eBay Red equivalent */
-  --soladia-secondary: #0066CC;      /* eBay Blue */
-  --soladia-accent: #FFD700;         /* Gold accent */
-  --soladia-success: #00A650;        /* Success green */
-  --soladia-warning: #FF8C00;        /* Warning orange */
-  --soladia-dark: #1A1A1A;          /* Dark text */
-  --soladia-light: #F8F9FA;         /* Light background */
-  --soladia-border: #E1E5E9;        /* Border color */
+  --soladia-primary: #E60012;
+  --soladia-secondary: #0066CC;
+  --soladia-accent: #FFD700;
+  --soladia-success: #00A650;
+  --soladia-warning: #FF8C00;
+  --soladia-dark: #1A1A1A;
+  --soladia-light: #F8F9FA;
+  --soladia-border: #E1E5E9;
   
   /* Dark Mode Colors */
-  --soladia-dark-bg: #0F0F0F;        /* Dark background */
-  --soladia-dark-surface: #1A1A1A;   /* Dark surface */
-  --soladia-dark-text: #FFFFFF;      /* Dark mode text */
-  --soladia-dark-border: #333333;    /* Dark mode border */
-  --soladia-dark-muted: #666666;     /* Dark mode muted text */
+  --soladia-dark-bg: #0F0F0F;
+  --soladia-dark-surface: #1A1A1A;
+  --soladia-dark-text: #FFFFFF;
+  --soladia-dark-border: #333333;
+  --soladia-dark-muted: #666666;
   
-  /* Gradients */
+  /* Optimized Gradients */
   --soladia-gradient: linear-gradient(135deg, #E60012 0%, #0066CC 100%);
   --soladia-gradient-gold: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
   --soladia-gradient-dark: linear-gradient(135deg, #1A1A1A 0%, #333333 100%);
   
-  /* Shadows */
+  /* Optimized Shadows */
   --soladia-shadow: 0 4px 20px rgba(230, 0, 18, 0.15);
   --soladia-shadow-lg: 0 8px 40px rgba(230, 0, 18, 0.25);
   --soladia-shadow-card: 0 2px 12px rgba(0, 0, 0, 0.08);
@@ -40,7 +42,7 @@
   --soladia-font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   --soladia-font-display: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   
-  /* Spacing */
+  /* Spacing Scale */
   --soladia-space-xs: 0.25rem;
   --soladia-space-sm: 0.5rem;
   --soladia-space-md: 1rem;
@@ -48,19 +50,22 @@
   --soladia-space-xl: 2rem;
   --soladia-space-2xl: 3rem;
   
-  /* Border Radius */
+  /* Border Radius Scale */
   --soladia-radius-sm: 4px;
   --soladia-radius-md: 8px;
   --soladia-radius-lg: 12px;
   --soladia-radius-xl: 16px;
 }
 
-/* Import Google Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
-
-/* Reset and Base Styles */
-* {
+/* Optimized Reset and Base Styles */
+*,
+*::before,
+*::after {
   box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
 }
 
 body {
@@ -72,6 +77,8 @@ body {
   padding: 0;
   overflow-x: hidden;
   transition: background-color 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 /* Dark Mode Styles */
@@ -127,7 +134,7 @@ body {
   color: var(--soladia-dark-text);
 }
 
-/* Animated Background */
+/* Optimized Static Background */
 body::before {
   content: '';
   position: fixed;
@@ -136,18 +143,10 @@ body::before {
   width: 100%;
   height: 100%;
   background: 
-    radial-gradient(circle at 20% 80%, rgba(230, 0, 18, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(0, 102, 204, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 40% 40%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+    radial-gradient(circle at 20% 80%, rgba(230, 0, 18, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(0, 102, 204, 0.05) 0%, transparent 50%);
   z-index: -1;
-  animation: backgroundShift 20s ease-in-out infinite;
-}
-
-@keyframes backgroundShift {
-  0%, 100% { transform: translateX(0) translateY(0); }
-  25% { transform: translateX(-10px) translateY(-5px); }
-  50% { transform: translateX(5px) translateY(-10px); }
-  75% { transform: translateX(-5px) translateY(5px); }
+  will-change: auto;
 }
 
 /* Navigation Styles */
@@ -192,21 +191,21 @@ nav:hover {
   box-shadow: var(--soladia-shadow);
 }
 
+/* Optimized logo without heavy animation */
 .soladia-logo-icon::before {
   content: '';
   position: absolute;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
-  animation: logoShine 3s ease-in-out infinite;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
-@keyframes logoShine {
-  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
-  50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
-  100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+.soladia-logo:hover .soladia-logo-icon::before {
+  opacity: 1;
 }
 
 .soladia-logo-icon span {
@@ -237,6 +236,7 @@ nav:hover {
   overflow: hidden;
 }
 
+/* Optimized hero section without heavy animation */
 .hero-section::before {
   content: '';
   position: absolute;
@@ -245,14 +245,9 @@ nav:hover {
   right: 0;
   bottom: 0;
   background: 
-    radial-gradient(circle at 20% 20%, rgba(230, 0, 18, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(0, 102, 204, 0.1) 0%, transparent 50%);
-  animation: heroFloat 20s ease-in-out infinite;
-}
-
-@keyframes heroFloat {
-  0%, 100% { transform: translateY(0) rotate(0deg); }
-  50% { transform: translateY(-20px) rotate(1deg); }
+    radial-gradient(circle at 20% 20%, rgba(230, 0, 18, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(0, 102, 204, 0.05) 0%, transparent 50%);
+  will-change: auto;
 }
 
 .hero-title {

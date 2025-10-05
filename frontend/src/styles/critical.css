@@ -1,0 +1,164 @@
+/* Critical CSS for above-the-fold content */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap');
+
+/* Critical CSS Variables */
+:root {
+  --soladia-primary: #E60012;
+  --soladia-secondary: #0066CC;
+  --soladia-dark: #1A1A1A;
+  --soladia-light: #F8F9FA;
+  --soladia-border: #E1E5E9;
+  --soladia-gradient: linear-gradient(135deg, #E60012 0%, #0066CC 100%);
+  --soladia-shadow: 0 4px 20px rgba(230, 0, 18, 0.15);
+  --soladia-font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --soladia-font-display: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Critical Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--soladia-font-primary);
+  background: var(--soladia-light);
+  color: var(--soladia-dark);
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Critical Navigation */
+nav {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 3px solid var(--soladia-primary);
+  box-shadow: var(--soladia-shadow);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+/* Critical Logo */
+.soladia-logo {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  text-decoration: none;
+}
+
+.soladia-logo-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--soladia-gradient);
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--soladia-shadow);
+}
+
+.soladia-logo-icon span {
+  font-family: var(--soladia-font-display);
+  font-weight: 900;
+  font-size: 1.5rem;
+  color: white;
+}
+
+.soladia-logo-text {
+  font-family: var(--soladia-font-display);
+  font-weight: 800;
+  font-size: 1.75rem;
+  background: var(--soladia-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Critical Hero */
+.hero-section {
+  background: linear-gradient(135deg, rgba(230, 0, 18, 0.1) 0%, rgba(0, 102, 204, 0.1) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-title {
+  font-family: var(--soladia-font-display);
+  font-size: 4rem;
+  font-weight: 900;
+  background: var(--soladia-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.hero-subtitle {
+  font-size: 1.5rem;
+  color: #666;
+  margin-bottom: 3rem;
+}
+
+/* Critical Buttons */
+.btn-primary {
+  background: var(--soladia-gradient);
+  color: white;
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+  border: none;
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 40px rgba(230, 0, 18, 0.25);
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--soladia-primary);
+  border: 2px solid var(--soladia-primary);
+  padding: 1rem 2rem;
+  border-radius: 12px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn-secondary:hover {
+  background: var(--soladia-primary);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 40px rgba(230, 0, 18, 0.25);
+}
+
+/* Critical Responsive */
+@media (max-width: 768px) {
+  .hero-title {
+    font-size: 2.5rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.2rem;
+  }
+}
