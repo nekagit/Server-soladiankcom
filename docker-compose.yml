@@ -18,9 +18,9 @@ services:
   backend:
     build:
       context: ./backend
-      dockerfile: docker/backend.Dockerfile
+      dockerfile: Dockerfile
     ports:
-      - "8000:8000"
+      - "8008:8000"
     environment:
       - DATABASE_URL=postgresql://soladia:password@postgres:5432/soladia
       - SECRET_KEY=your-secret-key-here
@@ -46,8 +46,8 @@ services:
   nginx:
     image: nginx:alpine
     ports:
-      - "80:80"
-      - "443:443"
+      - "8081:80"
+      - "8443:443"
     volumes:
       - ./docker/nginx.conf:/etc/nginx/nginx.conf
       - ./docker/ssl:/etc/nginx/ssl
