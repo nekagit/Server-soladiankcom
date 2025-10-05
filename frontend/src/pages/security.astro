@@ -1,0 +1,416 @@
+---
+// Security page - Security information and best practices
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Security - Soladia">
+  <main class="min-h-screen bg-gray-50">
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-red-600 to-orange-600 text-white py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+          <h1 class="text-4xl md:text-6xl font-bold mb-6">
+            🛡️ Security
+          </h1>
+          <p class="text-xl md:text-2xl mb-8 opacity-90">
+            Your security is our top priority
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Security Overview -->
+    <section class="py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">How We Protect You</h2>
+          <p class="text-lg text-gray-600">Multiple layers of security to keep your assets safe</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Security Feature 1 -->
+          <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <div class="text-4xl mb-4">🔐</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">End-to-End Encryption</h3>
+            <p class="text-gray-600">
+              All data is encrypted in transit and at rest using industry-standard AES-256 encryption.
+            </p>
+          </div>
+
+          <!-- Security Feature 2 -->
+          <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <div class="text-4xl mb-4">🔑</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Private Key Security</h3>
+            <p class="text-gray-600">
+              We never store your private keys. All transactions are signed by your wallet.
+            </p>
+          </div>
+
+          <!-- Security Feature 3 -->
+          <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <div class="text-4xl mb-4">🛡️</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Smart Contract Audits</h3>
+            <p class="text-gray-600">
+              All smart contracts are audited by third-party security firms before deployment.
+            </p>
+          </div>
+
+          <!-- Security Feature 4 -->
+          <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <div class="text-4xl mb-4">🔍</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">24/7 Monitoring</h3>
+            <p class="text-gray-600">
+              Our security team monitors the platform 24/7 for any suspicious activity.
+            </p>
+          </div>
+
+          <!-- Security Feature 5 -->
+          <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <div class="text-4xl mb-4">🚫</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Fraud Detection</h3>
+            <p class="text-gray-600">
+              Advanced AI-powered fraud detection to identify and prevent malicious activities.
+            </p>
+          </div>
+
+          <!-- Security Feature 6 -->
+          <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <div class="text-4xl mb-4">✅</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Compliance</h3>
+            <p class="text-gray-600">
+              We follow industry best practices and comply with relevant security standards.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Security Best Practices -->
+    <section class="py-16 bg-gray-100">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">Security Best Practices</h2>
+          <p class="text-lg text-gray-600">How to keep your account and assets secure</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <!-- Do's -->
+          <div class="bg-white rounded-lg shadow-lg p-8">
+            <h3 class="text-2xl font-bold text-green-600 mb-6">✅ Do's</h3>
+            <ul class="space-y-4">
+              <li class="flex items-start">
+                <span class="text-green-500 mr-3">✓</span>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Use a Hardware Wallet</h4>
+                  <p class="text-gray-600 text-sm">Store your private keys on a hardware wallet for maximum security</p>
+                </div>
+              </li>
+              <li class="flex items-start">
+                <span class="text-green-500 mr-3">✓</span>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Enable 2FA</h4>
+                  <p class="text-gray-600 text-sm">Use two-factor authentication on all your accounts</p>
+                </div>
+              </li>
+              <li class="flex items-start">
+                <span class="text-green-500 mr-3">✓</span>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Verify URLs</h4>
+                  <p class="text-gray-600 text-sm">Always check the URL before entering sensitive information</p>
+                </div>
+              </li>
+              <li class="flex items-start">
+                <span class="text-green-500 mr-3">✓</span>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Keep Software Updated</h4>
+                  <p class="text-gray-600 text-sm">Regularly update your wallet and browser software</p>
+                </div>
+              </li>
+              <li class="flex items-start">
+                <span class="text-green-500 mr-3">✓</span>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Use Strong Passwords</h4>
+                  <p class="text-gray-600 text-sm">Create unique, complex passwords for all accounts</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Don'ts -->
+          <div class="bg-white rounded-lg shadow-lg p-8">
+            <h3 class="text-2xl font-bold text-red-600 mb-6">❌ Don'ts</h3>
+            <ul class="space-y-4">
+              <li class="flex items-start">
+                <span class="text-red-500 mr-3">✗</span>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Share Private Keys</h4>
+                  <p class="text-gray-600 text-sm">Never share your private keys or seed phrases with anyone</p>
+                </div>
+              </li>
+              <li class="flex items-start">
+                <span class="text-red-500 mr-3">✗</span>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Click Suspicious Links</h4>
+                  <p class="text-gray-600 text-sm">Avoid clicking links in unsolicited emails or messages</p>
+                </div>
+              </li>
+              <li class="flex items-start">
+                <span class="text-red-500 mr-3">✗</span>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Use Public WiFi</h4>
+                  <p class="text-gray-600 text-sm">Don't access your wallet on public or unsecured networks</p>
+                </div>
+              </li>
+              <li class="flex items-start">
+                <span class="text-red-500 mr-3">✗</span>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Store Keys Digitally</h4>
+                  <p class="text-gray-600 text-sm">Never store private keys in digital files or cloud storage</p>
+                </div>
+              </li>
+              <li class="flex items-start">
+                <span class="text-red-500 mr-3">✗</span>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Trust Unknown Sources</h4>
+                  <p class="text-gray-600 text-sm">Only download wallet software from official sources</p>
+                </div>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Wallet Security -->
+    <section class="py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">Wallet Security Guide</h2>
+          <p class="text-lg text-gray-600">Best practices for securing your Solana wallet</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Wallet Security 1 -->
+          <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="text-3xl mb-4">🔒</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Hardware Wallets</h3>
+            <p class="text-gray-600 mb-4">
+              The most secure way to store your private keys. Consider Ledger or Trezor devices.
+            </p>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>• Offline key storage</li>
+              <li>• PIN protection</li>
+              <li>• Recovery phrase backup</li>
+            </ul>
+          </div>
+
+          <!-- Wallet Security 2 -->
+          <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="text-3xl mb-4">📱</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Mobile Wallets</h3>
+            <p class="text-gray-600 mb-4">
+              Secure mobile wallets with biometric authentication and app lock features.
+            </p>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>• Biometric authentication</li>
+              <li>• App lock protection</li>
+              <li>• Secure key storage</li>
+            </ul>
+          </div>
+
+          <!-- Wallet Security 3 -->
+          <div class="bg-white rounded-lg shadow-lg p-6">
+            <div class="text-3xl mb-4">🌐</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Browser Wallets</h3>
+            <p class="text-gray-600 mb-4">
+              Browser extension wallets like Phantom and Solflare with proper security settings.
+            </p>
+            <ul class="text-sm text-gray-600 space-y-1">
+              <li>• Auto-lock features</li>
+              <li>• Transaction confirmations</li>
+              <li>• Phishing protection</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Incident Response -->
+    <section class="py-16 bg-gray-100">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">If Something Goes Wrong</h2>
+          <p class="text-lg text-gray-600">What to do if you suspect a security issue</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <!-- Immediate Actions -->
+          <div class="bg-white rounded-lg shadow-lg p-8">
+            <h3 class="text-2xl font-bold text-red-600 mb-6">🚨 Immediate Actions</h3>
+            <ol class="space-y-4">
+              <li class="flex items-start">
+                <span class="bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-0.5">1</span>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Disconnect Your Wallet</h4>
+                  <p class="text-gray-600 text-sm">Immediately disconnect your wallet from all dApps</p>
+                </div>
+              </li>
+              <li class="flex items-start">
+                <span class="bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-0.5">2</span>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Transfer Assets</h4>
+                  <p class="text-gray-600 text-sm">Move your assets to a new, secure wallet</p>
+                </div>
+              </li>
+              <li class="flex items-start">
+                <span class="bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-0.5">3</span>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Change Passwords</h4>
+                  <p class="text-gray-600 text-sm">Update all passwords and enable 2FA</p>
+                </div>
+              </li>
+              <li class="flex items-start">
+                <span class="bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-0.5">4</span>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Report the Issue</h4>
+                  <p class="text-gray-600 text-sm">Contact our security team immediately</p>
+                </div>
+              </li>
+            </ol>
+          </div>
+
+          <!-- Recovery Steps -->
+          <div class="bg-white rounded-lg shadow-lg p-8">
+            <h3 class="text-2xl font-bold text-blue-600 mb-6">🔄 Recovery Steps</h3>
+            <ol class="space-y-4">
+              <li class="flex items-start">
+                <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-0.5">1</span>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Create New Wallet</h4>
+                  <p class="text-gray-600 text-sm">Generate a new wallet with a fresh seed phrase</p>
+                </div>
+              </li>
+              <li class="flex items-start">
+                <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-0.5">2</span>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Update Security</h4>
+                  <p class="text-gray-600 text-sm">Implement stronger security measures</p>
+                </div>
+              </li>
+              <li class="flex items-start">
+                <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-0.5">3</span>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Monitor Activity</h4>
+                  <p class="text-gray-600 text-sm">Keep an eye on your new wallet's activity</p>
+                </div>
+              </li>
+              <li class="flex items-start">
+                <span class="bg-blue-500 text-white rounded-full w-6 h-6 flex items-center justify-center text-sm font-bold mr-3 mt-0.5">4</span>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Learn from Experience</h4>
+                  <p class="text-gray-600 text-sm">Review what went wrong and improve security</p>
+                </div>
+              </li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Security Resources -->
+    <section class="py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">Security Resources</h2>
+          <p class="text-lg text-gray-600">Additional resources to help you stay secure</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Resource 1 -->
+          <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <div class="text-3xl mb-4">📚</div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">Security Guide</h3>
+            <p class="text-gray-600 mb-4">Comprehensive guide to blockchain security</p>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+              Read Guide
+            </button>
+          </div>
+
+          <!-- Resource 2 -->
+          <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <div class="text-3xl mb-4">🎥</div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">Video Tutorials</h3>
+            <p class="text-gray-600 mb-4">Step-by-step security tutorials</p>
+            <button class="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors">
+              Watch Videos
+            </button>
+          </div>
+
+          <!-- Resource 3 -->
+          <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <div class="text-3xl mb-4">🔍</div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">Security Audit</h3>
+            <p class="text-gray-600 mb-4">Get your wallet security audited</p>
+            <button class="bg-purple-500 text-white px-4 py-2 rounded-lg hover:bg-purple-600 transition-colors">
+              Start Audit
+            </button>
+          </div>
+
+          <!-- Resource 4 -->
+          <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <div class="text-3xl mb-4">📞</div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">Security Support</h3>
+            <p class="text-gray-600 mb-4">Contact our security team</p>
+            <button class="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition-colors">
+              Get Help
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Security Contact -->
+    <section class="py-16 bg-gradient-to-r from-red-600 to-orange-600 text-white">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-bold mb-4">Report a Security Issue</h2>
+        <p class="text-xl mb-8 opacity-90">
+          If you've discovered a security vulnerability, please report it to us immediately
+        </p>
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+          <a 
+            href="mailto:security@soladia.com" 
+            class="bg-white text-red-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors"
+          >
+            security@soladia.com
+          </a>
+          <button class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-red-600 transition-colors">
+            Report Vulnerability
+          </button>
+        </div>
+        <p class="text-sm mt-4 opacity-75">
+          We offer rewards for responsible disclosure of security vulnerabilities
+        </p>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Security resource buttons
+    const resourceButtons = document.querySelectorAll('button[class*="bg-blue-500"], button[class*="bg-green-500"], button[class*="bg-purple-500"], button[class*="bg-red-500"]');
+    
+    resourceButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const buttonText = button.textContent;
+        alert(`Opening ${buttonText}...`);
+      });
+    });
+
+    // Vulnerability report button
+    const reportButton = document.querySelector('button[class*="border-2"]');
+    reportButton?.addEventListener('click', () => {
+      alert('Opening vulnerability reporting form...');
+    });
+  });
+</script>

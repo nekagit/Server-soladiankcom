@@ -236,3 +236,6 @@ class ProductAnalytics(BaseModel):
     total_likes: int
     views_by_product: List[dict]
     likes_by_product: List[dict]
+
+# Solana schemas are imported separately when needed
+# to avoid circular import issues

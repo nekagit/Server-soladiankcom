@@ -1,0 +1,820 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Navigation from '../../components/Navigation.astro';
+
+// Sample admin data
+const stats = {
+  totalUsers: 1250,
+  totalProducts: 3400,
+  totalOrders: 8900,
+  totalRevenue: 125000,
+  activeUsers: 850,
+  pendingOrders: 45,
+  totalTransactions: 15600,
+  solanaTransactions: 8900
+};
+
+const recentActivity = [
+  {
+    id: 1,
+    type: 'user_registration',
+    user: 'Alice Johnson',
+    timestamp: '2024-01-20T10:30:00Z',
+    details: 'New user registered with Phantom wallet'
+  },
+  {
+    id: 2,
+    type: 'product_listed',
+    user: 'Bob Smith',
+    timestamp: '2024-01-20T09:15:00Z',
+    details: 'Listed "Vintage Camera" for 2.5 SOL'
+  },
+  {
+    id: 3,
+    type: 'order_completed',
+    user: 'Carol Davis',
+    timestamp: '2024-01-20T08:45:00Z',
+    details: 'Order #1234 completed with Solana payment'
+  },
+  {
+    id: 4,
+    type: 'nft_minted',
+    user: 'David Wilson',
+    timestamp: '2024-01-20T07:20:00Z',
+    details: 'Minted "Digital Art #456" NFT'
+  }
+];
+
+const topProducts = [
+  {
+    id: 1,
+    name: 'Vintage Camera',
+    price: 2.5,
+    currency: 'SOL',
+    sales: 15,
+    revenue: 37.5
+  },
+  {
+    id: 2,
+    name: 'Digital Art #123',
+    price: 1.2,
+    currency: 'SOL',
+    sales: 28,
+    revenue: 33.6
+  },
+  {
+    id: 3,
+    name: 'Gaming Console',
+    price: 5.0,
+    currency: 'SOL',
+    sales: 8,
+    revenue: 40.0
+  }
+];
+
+const systemHealth = {
+  status: 'healthy',
+  uptime: '99.9%',
+  responseTime: '120ms',
+  solanaRPC: 'operational',
+  database: 'operational',
+  lastBackup: '2024-01-20T06:00:00Z'
+};
+---
+
+<Layout title="Admin Dashboard - Soladia">
+  <Navigation />
+  
+  <div class="admin-dashboard">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1 class="page-title">Admin Dashboard</h1>
+        <p class="page-subtitle">Monitor and manage the Soladia marketplace</p>
+        <div class="admin-actions">
+          <button class="btn-primary" id="refresh-data">
+            <span class="btn-icon">🔄</span>
+            Refresh Data
+          </button>
+          <button class="btn-secondary" id="export-data">
+            <span class="btn-icon">📊</span>
+            Export Report
+          </button>
+        </div>
+      </div>
+
+      <!-- System Health -->
+      <div class="health-section">
+        <h2 class="section-title">System Health</h2>
+        <div class="health-grid">
+          <div class="health-card">
+            <div class="health-status healthy">
+              <span class="status-indicator">●</span>
+              <span class="status-text">System Online</span>
+            </div>
+            <div class="health-details">
+              <div class="health-item">
+                <span class="label">Uptime:</span>
+                <span class="value">{systemHealth.uptime}</span>
+              </div>
+              <div class="health-item">
+                <span class="label">Response Time:</span>
+                <span class="value">{systemHealth.responseTime}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="health-card">
+            <div class="health-status operational">
+              <span class="status-indicator">●</span>
+              <span class="status-text">Solana RPC</span>
+            </div>
+            <div class="health-details">
+              <div class="health-item">
+                <span class="label">Status:</span>
+                <span class="value">{systemHealth.solanaRPC}</span>
+              </div>
+              <div class="health-item">
+                <span class="label">Network:</span>
+                <span class="value">Devnet</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="health-card">
+            <div class="health-status operational">
+              <span class="status-indicator">●</span>
+              <span class="status-text">Database</span>
+            </div>
+            <div class="health-details">
+              <div class="health-item">
+                <span class="label">Status:</span>
+                <span class="value">{systemHealth.database}</span>
+              </div>
+              <div class="health-item">
+                <span class="label">Last Backup:</span>
+                <span class="value">Today 06:00</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Key Metrics -->
+      <div class="metrics-section">
+        <h2 class="section-title">Key Metrics</h2>
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-header">
+              <h3 class="metric-title">Total Users</h3>
+              <span class="metric-change positive">+12%</span>
+            </div>
+            <div class="metric-value">{stats.totalUsers.toLocaleString()}</div>
+            <div class="metric-subtitle">Active: {stats.activeUsers.toLocaleString()}</div>
+          </div>
+          
+          <div class="metric-card">
+            <div class="metric-header">
+              <h3 class="metric-title">Total Products</h3>
+              <span class="metric-change positive">+8%</span>
+            </div>
+            <div class="metric-value">{stats.totalProducts.toLocaleString()}</div>
+            <div class="metric-subtitle">Listed items</div>
+          </div>
+          
+          <div class="metric-card">
+            <div class="metric-header">
+              <h3 class="metric-title">Total Orders</h3>
+              <span class="metric-change positive">+15%</span>
+            </div>
+            <div class="metric-value">{stats.totalOrders.toLocaleString()}</div>
+            <div class="metric-subtitle">Pending: {stats.pendingOrders}</div>
+          </div>
+          
+          <div class="metric-card">
+            <div class="metric-header">
+              <h3 class="metric-title">Total Revenue</h3>
+              <span class="metric-change positive">+22%</span>
+            </div>
+            <div class="metric-value">${stats.totalRevenue.toLocaleString()}</div>
+            <div class="metric-subtitle">USD equivalent</div>
+          </div>
+          
+          <div class="metric-card">
+            <div class="metric-header">
+              <h3 class="metric-title">Solana Transactions</h3>
+              <span class="metric-change positive">+18%</span>
+            </div>
+            <div class="metric-value">{stats.solanaTransactions.toLocaleString()}</div>
+            <div class="metric-subtitle">Blockchain payments</div>
+          </div>
+          
+          <div class="metric-card">
+            <div class="metric-header">
+              <h3 class="metric-title">Total Transactions</h3>
+              <span class="metric-change positive">+14%</span>
+            </div>
+            <div class="metric-value">{stats.totalTransactions.toLocaleString()}</div>
+            <div class="metric-subtitle">All payment methods</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Activity -->
+      <div class="activity-section">
+        <div class="section-header">
+          <h2 class="section-title">Recent Activity</h2>
+          <a href="/admin/activity" class="view-all-link">View All</a>
+        </div>
+        
+        <div class="activity-list">
+          {recentActivity.map((activity) => (
+            <div class="activity-item">
+              <div class="activity-icon">
+                {activity.type === 'user_registration' && '👤'}
+                {activity.type === 'product_listed' && '📦'}
+                {activity.type === 'order_completed' && '✅'}
+                {activity.type === 'nft_minted' && '🎨'}
+              </div>
+              <div class="activity-content">
+                <div class="activity-title">{activity.details}</div>
+                <div class="activity-meta">
+                  <span class="activity-user">{activity.user}</span>
+                  <span class="activity-time">{new Date(activity.timestamp).toLocaleString()}</span>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Top Products -->
+      <div class="products-section">
+        <h2 class="section-title">Top Selling Products</h2>
+        <div class="products-table">
+          <div class="table-header">
+            <span>Product</span>
+            <span>Price</span>
+            <span>Sales</span>
+            <span>Revenue</span>
+            <span>Actions</span>
+          </div>
+          
+          {topProducts.map((product) => (
+            <div class="table-row">
+              <div class="product-info">
+                <div class="product-name">{product.name}</div>
+                <div class="product-id">ID: {product.id}</div>
+              </div>
+              
+              <div class="product-price">
+                {product.price} {product.currency}
+              </div>
+              
+              <div class="product-sales">
+                {product.sales} units
+              </div>
+              
+              <div class="product-revenue">
+                {product.revenue} {product.currency}
+              </div>
+              
+              <div class="product-actions">
+                <button class="action-btn view-btn" data-product-id={product.id}>
+                  View
+                </button>
+                <button class="action-btn edit-btn" data-product-id={product.id}>
+                  Edit
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <!-- Solana Analytics -->
+      <div class="solana-section">
+        <h2 class="section-title">Solana Analytics</h2>
+        <div class="solana-grid">
+          <div class="solana-card">
+            <h3 class="card-title">Transaction Volume</h3>
+            <div class="chart-placeholder">
+              <div class="chart-bars">
+                <div class="bar" style="height: 60%"></div>
+                <div class="bar" style="height: 80%"></div>
+                <div class="bar" style="height: 45%"></div>
+                <div class="bar" style="height: 90%"></div>
+                <div class="bar" style="height: 70%"></div>
+                <div class="bar" style="height: 85%"></div>
+                <div class="bar" style="height: 95%"></div>
+              </div>
+              <div class="chart-labels">
+                <span>Mon</span>
+                <span>Tue</span>
+                <span>Wed</span>
+                <span>Thu</span>
+                <span>Fri</span>
+                <span>Sat</span>
+                <span>Sun</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="solana-card">
+            <h3 class="card-title">Wallet Connections</h3>
+            <div class="wallet-stats">
+              <div class="wallet-stat">
+                <span class="wallet-name">Phantom</span>
+                <span class="wallet-count">65%</span>
+              </div>
+              <div class="wallet-stat">
+                <span class="wallet-name">Solflare</span>
+                <span class="wallet-count">25%</span>
+              </div>
+              <div class="wallet-stat">
+                <span class="wallet-name">Backpack</span>
+                <span class="wallet-count">10%</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="solana-card">
+            <h3 class="card-title">Token Usage</h3>
+            <div class="token-stats">
+              <div class="token-stat">
+                <span class="token-name">SOL</span>
+                <span class="token-usage">70%</span>
+              </div>
+              <div class="token-stat">
+                <span class="token-name">USDC</span>
+                <span class="token-usage">20%</span>
+              </div>
+              <div class="token-stat">
+                <span class="token-name">USDT</span>
+                <span class="token-usage">10%</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeAdminDashboard();
+    setupEventListeners();
+    startRealTimeUpdates();
+  });
+
+  function initializeAdminDashboard() {
+    console.log('Admin dashboard initialized');
+    updateLastRefreshTime();
+  }
+
+  function setupEventListeners() {
+    // Refresh data button
+    const refreshBtn = document.getElementById('refresh-data');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', refreshData);
+    }
+
+    // Export data button
+    const exportBtn = document.getElementById('export-data');
+    if (exportBtn) {
+      exportBtn.addEventListener('click', exportData);
+    }
+
+    // Product action buttons
+    const viewBtns = document.querySelectorAll('.view-btn');
+    const editBtns = document.querySelectorAll('.edit-btn');
+    
+    viewBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const productId = this.getAttribute('data-product-id');
+        viewProduct(productId);
+      });
+    });
+
+    editBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const productId = this.getAttribute('data-product-id');
+        editProduct(productId);
+      });
+    });
+  }
+
+  function startRealTimeUpdates() {
+    // Update metrics every 30 seconds
+    setInterval(updateMetrics, 30000);
+    
+    // Update activity every 60 seconds
+    setInterval(updateActivity, 60000);
+  }
+
+  async function refreshData() {
+    const refreshBtn = document.getElementById('refresh-data');
+    if (refreshBtn) {
+      refreshBtn.disabled = true;
+      refreshBtn.innerHTML = '<span class="btn-icon">⏳</span> Refreshing...';
+    }
+
+    try {
+      // Simulate API calls
+      await Promise.all([
+        updateMetrics(),
+        updateActivity(),
+        updateSystemHealth()
+      ]);
+
+      showNotification('Data refreshed successfully', 'success');
+      updateLastRefreshTime();
+    } catch (error) {
+      showNotification('Failed to refresh data', 'error');
+    } finally {
+      if (refreshBtn) {
+        refreshBtn.disabled = false;
+        refreshBtn.innerHTML = '<span class="btn-icon">🔄</span> Refresh Data';
+      }
+    }
+  }
+
+  async function updateMetrics() {
+    // Simulate metrics update
+    const metricValues = document.querySelectorAll('.metric-value');
+    metricValues.forEach(element => {
+      const currentValue = parseInt(element.textContent?.replace(/,/g, '') || '0');
+      const change = Math.floor(Math.random() * 10) - 5; // Random change between -5 and +5
+      const newValue = Math.max(0, currentValue + change);
+      element.textContent = newValue.toLocaleString();
+    });
+  }
+
+  async function updateActivity() {
+    // Simulate new activity
+    const activityList = document.querySelector('.activity-list');
+    if (activityList) {
+      const newActivity = document.createElement('div');
+      newActivity.className = 'activity-item';
+      newActivity.innerHTML = `
+        <div class="activity-icon">🔄</div>
+        <div class="activity-content">
+          <div class="activity-title">System metrics updated</div>
+          <div class="activity-meta">
+            <span class="activity-user">System</span>
+            <span class="activity-time">${new Date().toLocaleString()}</span>
+          </div>
+        </div>
+      `;
+      
+      activityList.insertBefore(newActivity, activityList.firstChild);
+      
+      // Remove oldest activity if more than 10
+      const activities = activityList.querySelectorAll('.activity-item');
+      if (activities.length > 10) {
+        activities[activities.length - 1].remove();
+      }
+    }
+  }
+
+  async function updateSystemHealth() {
+    // Simulate health check
+    const healthCards = document.querySelectorAll('.health-card');
+    healthCards.forEach(card => {
+      const statusIndicator = card.querySelector('.status-indicator');
+      if (statusIndicator) {
+        statusIndicator.style.color = Math.random() > 0.1 ? '#10B981' : '#EF4444';
+      }
+    });
+  }
+
+  function updateLastRefreshTime() {
+    const now = new Date();
+    const timeString = now.toLocaleTimeString();
+    console.log(`Last refresh: ${timeString}`);
+  }
+
+  function exportData() {
+    showNotification('Exporting data...', 'info');
+    
+    // Simulate export
+    setTimeout(() => {
+      const data = {
+        timestamp: new Date().toISOString(),
+        stats: {
+          totalUsers: 1250,
+          totalProducts: 3400,
+          totalOrders: 8900,
+          totalRevenue: 125000
+        }
+      };
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `soladia-admin-report-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      showNotification('Data exported successfully', 'success');
+    }, 2000);
+  }
+
+  function viewProduct(productId: string | null) {
+    if (productId) {
+      showNotification(`Viewing product ${productId}`, 'info');
+      // In a real app, this would navigate to product details
+    }
+  }
+
+  function editProduct(productId: string | null) {
+    if (productId) {
+      showNotification(`Editing product ${productId}`, 'info');
+      // In a real app, this would open edit modal
+    }
+  }
+
+  function showNotification(message: string, type: 'success' | 'error' | 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
+  }
+</script>
+
+<style>
+  .admin-dashboard {
+    @apply min-h-screen bg-gray-50;
+  }
+
+  .page-header {
+    @apply flex justify-between items-start mb-8;
+  }
+
+  .page-title {
+    @apply text-3xl font-bold text-gray-900 mb-2;
+  }
+
+  .page-subtitle {
+    @apply text-gray-600;
+  }
+
+  .admin-actions {
+    @apply flex space-x-3;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors flex items-center space-x-2;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition-colors flex items-center space-x-2;
+  }
+
+  .btn-icon {
+    @apply text-sm;
+  }
+
+  .health-section,
+  .metrics-section,
+  .activity-section,
+  .products-section,
+  .solana-section {
+    @apply mb-8;
+  }
+
+  .section-title {
+    @apply text-xl font-semibold text-gray-900 mb-4;
+  }
+
+  .section-header {
+    @apply flex justify-between items-center mb-4;
+  }
+
+  .health-grid {
+    @apply grid grid-cols-1 md:grid-cols-3 gap-6;
+  }
+
+  .health-card {
+    @apply bg-white rounded-lg shadow-sm p-6;
+  }
+
+  .health-status {
+    @apply flex items-center space-x-2 mb-4;
+  }
+
+  .health-status.healthy .status-indicator {
+    @apply text-green-500;
+  }
+
+  .health-status.operational .status-indicator {
+    @apply text-blue-500;
+  }
+
+  .status-text {
+    @apply font-medium text-gray-900;
+  }
+
+  .health-details {
+    @apply space-y-2;
+  }
+
+  .health-item {
+    @apply flex justify-between text-sm;
+  }
+
+  .label {
+    @apply text-gray-600;
+  }
+
+  .value {
+    @apply font-medium text-gray-900;
+  }
+
+  .metrics-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+  }
+
+  .metric-card {
+    @apply bg-white rounded-lg shadow-sm p-6;
+  }
+
+  .metric-header {
+    @apply flex justify-between items-center mb-2;
+  }
+
+  .metric-title {
+    @apply font-semibold text-gray-900;
+  }
+
+  .metric-change {
+    @apply text-sm font-medium;
+  }
+
+  .metric-change.positive {
+    @apply text-green-600;
+  }
+
+  .metric-value {
+    @apply text-3xl font-bold text-gray-900 mb-1;
+  }
+
+  .metric-subtitle {
+    @apply text-sm text-gray-600;
+  }
+
+  .activity-list {
+    @apply space-y-4;
+  }
+
+  .activity-item {
+    @apply flex items-start space-x-4 p-4 bg-white rounded-lg shadow-sm;
+  }
+
+  .activity-icon {
+    @apply text-2xl;
+  }
+
+  .activity-content {
+    @apply flex-1;
+  }
+
+  .activity-title {
+    @apply font-medium text-gray-900 mb-1;
+  }
+
+  .activity-meta {
+    @apply flex space-x-4 text-sm text-gray-600;
+  }
+
+  .activity-user {
+    @apply font-medium;
+  }
+
+  .view-all-link {
+    @apply text-blue-600 hover:text-blue-800 font-medium;
+  }
+
+  .products-table {
+    @apply bg-white rounded-lg shadow-sm overflow-hidden;
+  }
+
+  .table-header {
+    @apply grid grid-cols-5 gap-4 py-3 px-6 font-semibold text-gray-700 bg-gray-50 border-b border-gray-200;
+  }
+
+  .table-row {
+    @apply grid grid-cols-5 gap-4 py-4 px-6 hover:bg-gray-50 transition-colors;
+  }
+
+  .product-info {
+    @apply space-y-1;
+  }
+
+  .product-name {
+    @apply font-medium text-gray-900;
+  }
+
+  .product-id {
+    @apply text-sm text-gray-600;
+  }
+
+  .product-price {
+    @apply font-semibold text-gray-900;
+  }
+
+  .product-sales {
+    @apply text-gray-700;
+  }
+
+  .product-revenue {
+    @apply font-semibold text-gray-900;
+  }
+
+  .product-actions {
+    @apply flex space-x-2;
+  }
+
+  .action-btn {
+    @apply px-3 py-1 text-sm rounded font-medium transition-colors;
+  }
+
+  .view-btn {
+    @apply bg-blue-100 text-blue-700 hover:bg-blue-200;
+  }
+
+  .edit-btn {
+    @apply bg-gray-100 text-gray-700 hover:bg-gray-200;
+  }
+
+  .solana-grid {
+    @apply grid grid-cols-1 lg:grid-cols-3 gap-6;
+  }
+
+  .solana-card {
+    @apply bg-white rounded-lg shadow-sm p-6;
+  }
+
+  .card-title {
+    @apply font-semibold text-gray-900 mb-4;
+  }
+
+  .chart-placeholder {
+    @apply space-y-4;
+  }
+
+  .chart-bars {
+    @apply flex items-end space-x-2 h-32;
+  }
+
+  .bar {
+    @apply flex-1 bg-blue-200 rounded-t;
+  }
+
+  .chart-labels {
+    @apply flex justify-between text-xs text-gray-600;
+  }
+
+  .wallet-stats,
+  .token-stats {
+    @apply space-y-3;
+  }
+
+  .wallet-stat,
+  .token-stat {
+    @apply flex justify-between items-center;
+  }
+
+  .wallet-name,
+  .token-name {
+    @apply font-medium text-gray-900;
+  }
+
+  .wallet-count,
+  .token-usage {
+    @apply font-semibold text-gray-700;
+  }
+
+  .notification {
+    @apply fixed top-4 right-4 px-4 py-2 rounded-lg text-white font-medium z-50;
+  }
+
+  .notification-success {
+    @apply bg-green-600;
+  }
+
+  .notification-error {
+    @apply bg-red-600;
+  }
+
+  .notification-info {
+    @apply bg-blue-600;
+  }
+</style>

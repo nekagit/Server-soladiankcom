@@ -1,51 +1,59 @@
 ---
+import SEO from '../components/SEO.astro';
+
 export interface Props {
   title: string;
   description?: string;
   canonical?: string;
+  ogImage?: string;
+  ogType?: string;
+  keywords?: string[];
+  author?: string;
+  publishedTime?: string;
+  modifiedTime?: string;
+  structuredData?: any;
 }
 
-const { title, description = "Discover, buy, and sell on Soladia - the world's leading marketplace powered by Solana blockchain", canonical } = Astro.props;
+const { 
+  title, 
+  description, 
+  canonical, 
+  ogImage, 
+  ogType, 
+  keywords, 
+  author, 
+  publishedTime, 
+  modifiedTime, 
+  structuredData 
+} = Astro.props;
 ---
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content={description} />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <meta name="generator" content={Astro.generator} />
     
-    <!-- SEO Meta Tags -->
-    <title>{title}</title>
-    {canonical && <link rel="canonical" href={canonical} />}
-    
-    <!-- Open Graph Meta Tags -->
-    <meta property="og:type" content="website" />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:site_name" content="Soladia" />
-    
-    <!-- Twitter Card Meta Tags -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
+    <!-- SEO Component -->
+    <SEO 
+      title={title}
+      description={description}
+      canonical={canonical}
+      ogImage={ogImage}
+      ogType={ogType}
+      keywords={keywords}
+      author={author}
+      publishedTime={publishedTime}
+      modifiedTime={modifiedTime}
+      structuredData={structuredData}
+    />
     
     <!-- Payment Permissions Policy -->
     <meta http-equiv="Permissions-Policy" content="payment=*, camera=(), microphone=(), geolocation=()" />
     
     <!-- Security Headers -->
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost:8000;" />
-    
-    <!-- Prevent external scripts -->
-    <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-    <meta http-equiv="X-Frame-Options" content="DENY" />
-    
-    <!-- Preconnect to external domains -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   </head>
   <body>
     <slot />
@@ -149,4 +157,3 @@ const { title, description = "Discover, buy, and sell on Soladia - the world's l
 <style is:global>
   @import '../styles/global.css';
 </style>
-

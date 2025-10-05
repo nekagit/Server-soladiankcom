@@ -1,0 +1,685 @@
+---
+// Social Trading Component for Soladia
+// Implements social trading features, leaderboards, and community features
+---
+
+<div class="social-trading-container">
+  <!-- Social Trading Header -->
+  <div class="social-trading-header">
+    <h2 class="social-trading-title">Social Trading</h2>
+    <p class="social-trading-subtitle">Follow top traders and copy their strategies</p>
+  </div>
+
+  <!-- Trading Leaderboard -->
+      <div class="leaderboard-section">
+    <div class="leaderboard-header">
+      <h3 class="leaderboard-title">Top Traders</h3>
+      <div class="leaderboard-filters">
+        <select class="filter-select" id="timeframe-filter">
+          <option value="24h">24 Hours</option>
+          <option value="7d">7 Days</option>
+          <option value="30d">30 Days</option>
+          <option value="all">All Time</option>
+        </select>
+        <select class="filter-select" id="category-filter">
+          <option value="all">All Categories</option>
+          <option value="nft">NFT Trading</option>
+          <option value="token">Token Trading</option>
+          <option value="defi">DeFi</option>
+        </select>
+                  </div>
+                  </div>
+
+    <div class="leaderboard-list" id="leaderboard-list">
+      <!-- Leaderboard items will be populated here -->
+                </div>
+              </div>
+
+  <!-- Social Feed -->
+      <div class="social-feed-section">
+    <div class="social-feed-header">
+      <h3 class="social-feed-title">Trading Activity</h3>
+      <div class="social-feed-actions">
+        <button class="btn-primary" id="post-trade-btn">Post Trade</button>
+        <button class="btn-secondary" id="refresh-feed-btn">Refresh</button>
+            </div>
+          </div>
+
+    <div class="social-feed" id="social-feed">
+      <!-- Social feed items will be populated here -->
+                    </div>
+                </div>
+                
+  <!-- Copy Trading -->
+      <div class="copy-trading-section">
+    <div class="copy-trading-header">
+      <h3 class="copy-trading-title">Copy Trading</h3>
+      <p class="copy-trading-subtitle">Automatically copy trades from top performers</p>
+              </div>
+              
+    <div class="copy-trading-list" id="copy-trading-list">
+      <!-- Copy trading options will be populated here -->
+                </div>
+              </div>
+              
+  <!-- Community Features -->
+      <div class="community-section">
+    <div class="community-header">
+      <h3 class="community-title">Community</h3>
+          </div>
+          
+          <div class="community-features">
+      <div class="community-feature">
+        <div class="feature-icon">👥</div>
+        <h4 class="feature-title">Trading Groups</h4>
+        <p class="feature-description">Join trading groups and share strategies</p>
+        <button class="feature-btn">Join Groups</button>
+              </div>
+
+      <div class="community-feature">
+        <div class="feature-icon">📊</div>
+        <h4 class="feature-title">Portfolio Sharing</h4>
+        <p class="feature-description">Share your portfolio with the community</p>
+        <button class="feature-btn">Share Portfolio</button>
+            </div>
+            
+      <div class="community-feature">
+        <div class="feature-icon">💬</div>
+        <h4 class="feature-title">Trading Chat</h4>
+        <p class="feature-description">Discuss trades and strategies in real-time</p>
+        <button class="feature-btn">Join Chat</button>
+            </div>
+            
+      <div class="community-feature">
+        <div class="feature-icon">🏆</div>
+        <h4 class="feature-title">Competitions</h4>
+        <p class="feature-description">Participate in trading competitions</p>
+        <button class="feature-btn">Join Competition</button>
+              </div>
+            </div>
+  </div>
+</div>
+
+<style>
+  .social-trading-container {
+    @apply max-w-7xl mx-auto px-4 py-8;
+  }
+
+  .social-trading-header {
+    @apply text-center mb-12;
+  }
+
+  .social-trading-title {
+    @apply text-4xl font-bold text-gray-900 dark:text-white mb-4;
+  }
+
+  .social-trading-subtitle {
+    @apply text-xl text-gray-600 dark:text-gray-300;
+  }
+
+  .leaderboard-section {
+    @apply mb-12;
+  }
+
+  .leaderboard-header {
+    @apply flex justify-between items-center mb-6;
+  }
+
+  .leaderboard-title {
+    @apply text-2xl font-bold text-gray-900 dark:text-white;
+  }
+
+  .leaderboard-filters {
+    @apply flex gap-4;
+  }
+
+  .filter-select {
+    @apply px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white;
+  }
+
+  .leaderboard-list {
+    @apply space-y-4;
+  }
+
+  .leaderboard-item {
+    @apply flex items-center justify-between p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow;
+  }
+
+  .leaderboard-rank {
+    @apply text-2xl font-bold text-blue-600 dark:text-blue-400 w-12;
+  }
+
+  .leaderboard-trader {
+    @apply flex items-center space-x-4 flex-1;
+  }
+
+  .trader-avatar {
+    @apply w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold;
+  }
+
+  .trader-info h4 {
+    @apply font-semibold text-gray-900 dark:text-white;
+  }
+
+  .trader-info p {
+    @apply text-sm text-gray-600 dark:text-gray-300;
+  }
+
+  .leaderboard-stats {
+    @apply text-right;
+  }
+
+  .stat-value {
+    @apply text-lg font-semibold text-gray-900 dark:text-white;
+  }
+
+  .stat-label {
+    @apply text-sm text-gray-600 dark:text-gray-300;
+  }
+
+  .social-feed-section {
+    @apply mb-12;
+  }
+
+  .social-feed-header {
+    @apply flex justify-between items-center mb-6;
+  }
+
+  .social-feed-title {
+    @apply text-2xl font-bold text-gray-900 dark:text-white;
+  }
+
+  .social-feed-actions {
+    @apply flex gap-4;
+  }
+
+  .social-feed {
+    @apply space-y-6;
+  }
+
+  .feed-item {
+    @apply p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md;
+  }
+
+  .feed-item-header {
+    @apply flex items-center justify-between mb-4;
+  }
+
+  .feed-item-user {
+    @apply flex items-center space-x-3;
+  }
+
+  .feed-item-avatar {
+    @apply w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-blue-600 flex items-center justify-center text-white font-bold;
+  }
+
+  .feed-item-info h4 {
+    @apply font-semibold text-gray-900 dark:text-white;
+  }
+
+  .feed-item-info p {
+    @apply text-sm text-gray-600 dark:text-gray-300;
+  }
+
+  .feed-item-content {
+    @apply mb-4;
+  }
+
+  .feed-item-trade {
+    @apply p-4 bg-gray-50 dark:bg-gray-700 rounded-lg;
+  }
+
+  .trade-info {
+    @apply flex justify-between items-center mb-2;
+  }
+
+  .trade-symbol {
+    @apply font-semibold text-gray-900 dark:text-white;
+  }
+
+  .trade-price {
+    @apply text-lg font-bold text-green-600 dark:text-green-400;
+  }
+
+  .trade-details {
+    @apply text-sm text-gray-600 dark:text-gray-300;
+  }
+
+  .feed-item-actions {
+    @apply flex items-center space-x-4;
+  }
+
+  .action-btn {
+    @apply flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors;
+  }
+
+  .action-btn:hover {
+    @apply bg-gray-100 dark:bg-gray-600;
+  }
+
+  .copy-trading-section {
+    @apply mb-12;
+  }
+
+  .copy-trading-header {
+    @apply text-center mb-8;
+  }
+
+  .copy-trading-title {
+    @apply text-2xl font-bold text-gray-900 dark:text-white mb-2;
+  }
+
+  .copy-trading-subtitle {
+    @apply text-gray-600 dark:text-gray-300;
+  }
+
+  .copy-trading-list {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+  }
+
+  .copy-trading-item {
+    @apply p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow;
+  }
+
+  .copy-trading-header {
+    @apply flex items-center justify-between mb-4;
+  }
+
+  .copy-trader-info {
+    @apply flex items-center space-x-3;
+  }
+
+  .copy-trader-avatar {
+    @apply w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-600 flex items-center justify-center text-white font-bold;
+  }
+
+  .copy-trader-details h4 {
+    @apply font-semibold text-gray-900 dark:text-white;
+  }
+
+  .copy-trader-details p {
+    @apply text-sm text-gray-600 dark:text-gray-300;
+  }
+
+  .copy-trading-stats {
+    @apply mb-4;
+  }
+
+  .copy-stat {
+    @apply flex justify-between items-center mb-2;
+  }
+
+  .copy-stat-label {
+    @apply text-sm text-gray-600 dark:text-gray-300;
+  }
+
+  .copy-stat-value {
+    @apply font-semibold text-gray-900 dark:text-white;
+  }
+
+  .copy-trading-actions {
+    @apply flex gap-2;
+  }
+
+  .copy-btn {
+    @apply flex-1 px-4 py-2 rounded-lg font-medium transition-colors;
+  }
+
+  .copy-btn-primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700;
+  }
+
+  .copy-btn-secondary {
+    @apply bg-gray-200 dark:bg-gray-600 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-500;
+  }
+
+  .community-section {
+    @apply mb-12;
+  }
+
+  .community-header {
+    @apply text-center mb-8;
+  }
+
+  .community-title {
+    @apply text-2xl font-bold text-gray-900 dark:text-white;
+  }
+
+  .community-features {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6;
+  }
+
+  .community-feature {
+    @apply p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow;
+  }
+
+  .feature-icon {
+    @apply text-4xl mb-4;
+  }
+
+  .feature-title {
+    @apply text-xl font-semibold text-gray-900 dark:text-white mb-2;
+  }
+
+  .feature-description {
+    @apply text-gray-600 dark:text-gray-300 mb-4;
+  }
+
+  .feature-btn {
+    @apply w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors;
+  }
+
+  /* Dark mode styles */
+  .dark .leaderboard-item,
+  .dark .feed-item,
+  .dark .copy-trading-item,
+  .dark .community-feature {
+    @apply bg-gray-800 border border-gray-700;
+  }
+
+  .dark .filter-select {
+    @apply bg-gray-800 border-gray-600;
+  }
+</style>
+
+<script>
+  // Social Trading functionality
+  class SocialTrading {
+    constructor() {
+      this.leaderboardData = [];
+      this.socialFeedData = [];
+      this.copyTradingData = [];
+      this.init();
+    }
+
+    async init() {
+      await this.loadLeaderboard();
+      await this.loadSocialFeed();
+      await this.loadCopyTrading();
+      this.setupEventListeners();
+    }
+
+    async loadLeaderboard() {
+      try {
+        // Mock leaderboard data
+        this.leaderboardData = [
+          {
+            rank: 1,
+            name: "CryptoTrader",
+            avatar: "CT",
+            profit: "+245.6%",
+            trades: 156,
+            followers: 1250,
+            winRate: "87%"
+          },
+          {
+            rank: 2,
+            name: "NFTHunter",
+            avatar: "NH",
+            profit: "+198.3%",
+            trades: 89,
+            followers: 980,
+            winRate: "82%"
+          },
+          {
+            rank: 3,
+            name: "DeFiMaster",
+            avatar: "DM",
+            profit: "+167.2%",
+            trades: 203,
+            followers: 756,
+            winRate: "79%"
+          }
+        ];
+
+        this.renderLeaderboard();
+      } catch (error) {
+        console.error('Failed to load leaderboard:', error);
+      }
+    }
+
+    async loadSocialFeed() {
+      try {
+        // Mock social feed data
+        this.socialFeedData = [
+          {
+            id: 1,
+            user: "CryptoTrader",
+            avatar: "CT",
+            time: "2 hours ago",
+            content: "Just made a profitable trade on SOL! 🚀",
+            trade: {
+              symbol: "SOL",
+              action: "BUY",
+              price: "$45.67",
+              amount: "100 SOL",
+              profit: "+$234.50"
+            },
+            likes: 45,
+            comments: 12,
+            shares: 8
+          },
+          {
+            id: 2,
+            user: "NFTHunter",
+            avatar: "NH",
+            time: "4 hours ago",
+            content: "New NFT collection looking promising 📈",
+            trade: {
+              symbol: "NFT",
+              action: "BUY",
+              price: "2.5 SOL",
+              amount: "1 NFT",
+              profit: "+$125.00"
+            },
+            likes: 32,
+            comments: 7,
+            shares: 5
+          }
+        ];
+
+        this.renderSocialFeed();
+      } catch (error) {
+        console.error('Failed to load social feed:', error);
+      }
+    }
+
+    async loadCopyTrading() {
+      try {
+        // Mock copy trading data
+        this.copyTradingData = [
+          {
+            id: 1,
+            trader: "CryptoTrader",
+            avatar: "CT",
+            profit: "+245.6%",
+            trades: 156,
+            winRate: "87%",
+            followers: 1250,
+            isFollowing: false
+          },
+          {
+            id: 2,
+            trader: "NFTHunter",
+            avatar: "NH",
+            profit: "+198.3%",
+            trades: 89,
+            winRate: "82%",
+            followers: 980,
+            isFollowing: true
+          }
+        ];
+
+        this.renderCopyTrading();
+      } catch (error) {
+        console.error('Failed to load copy trading:', error);
+      }
+    }
+
+    renderLeaderboard() {
+      const leaderboardList = document.getElementById('leaderboard-list');
+      if (!leaderboardList) return;
+
+      leaderboardList.innerHTML = this.leaderboardData.map(item => `
+        <div class="leaderboard-item">
+          <div class="leaderboard-rank">#${item.rank}</div>
+          <div class="leaderboard-trader">
+            <div class="trader-avatar">${item.avatar}</div>
+            <div class="trader-info">
+              <h4>${item.name}</h4>
+              <p>${item.followers} followers</p>
+            </div>
+          </div>
+          <div class="leaderboard-stats">
+            <div class="stat-value">${item.profit}</div>
+            <div class="stat-label">Profit</div>
+            <div class="stat-value">${item.trades}</div>
+            <div class="stat-label">Trades</div>
+            <div class="stat-value">${item.winRate}</div>
+            <div class="stat-label">Win Rate</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    renderSocialFeed() {
+      const socialFeed = document.getElementById('social-feed');
+      if (!socialFeed) return;
+
+      socialFeed.innerHTML = this.socialFeedData.map(item => `
+        <div class="feed-item">
+          <div class="feed-item-header">
+            <div class="feed-item-user">
+              <div class="feed-item-avatar">${item.avatar}</div>
+              <div class="feed-item-info">
+                <h4>${item.user}</h4>
+                <p>${item.time}</p>
+              </div>
+            </div>
+          </div>
+          <div class="feed-item-content">
+            <p class="mb-4">${item.content}</p>
+            <div class="feed-item-trade">
+              <div class="trade-info">
+                <span class="trade-symbol">${item.trade.symbol}</span>
+                <span class="trade-price">${item.trade.price}</span>
+              </div>
+              <div class="trade-details">
+                ${item.trade.action} ${item.trade.amount} • ${item.trade.profit}
+              </div>
+            </div>
+          </div>
+          <div class="feed-item-actions">
+            <button class="action-btn">
+              <span>👍</span>
+              <span>${item.likes}</span>
+            </button>
+            <button class="action-btn">
+              <span>💬</span>
+              <span>${item.comments}</span>
+            </button>
+            <button class="action-btn">
+              <span>🔄</span>
+              <span>${item.shares}</span>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    renderCopyTrading() {
+      const copyTradingList = document.getElementById('copy-trading-list');
+      if (!copyTradingList) return;
+
+      copyTradingList.innerHTML = this.copyTradingData.map(item => `
+        <div class="copy-trading-item">
+          <div class="copy-trading-header">
+            <div class="copy-trader-info">
+              <div class="copy-trader-avatar">${item.avatar}</div>
+              <div class="copy-trader-details">
+                <h4>${item.trader}</h4>
+                <p>${item.followers} followers</p>
+              </div>
+            </div>
+          </div>
+          <div class="copy-trading-stats">
+            <div class="copy-stat">
+              <span class="copy-stat-label">Profit</span>
+              <span class="copy-stat-value">${item.profit}</span>
+            </div>
+            <div class="copy-stat">
+              <span class="copy-stat-label">Trades</span>
+              <span class="copy-stat-value">${item.trades}</span>
+            </div>
+            <div class="copy-stat">
+              <span class="copy-stat-label">Win Rate</span>
+              <span class="copy-stat-value">${item.winRate}</span>
+            </div>
+          </div>
+          <div class="copy-trading-actions">
+            <button class="copy-btn ${item.isFollowing ? 'copy-btn-secondary' : 'copy-btn-primary'}" 
+                    data-trader-id="${item.id}">
+              ${item.isFollowing ? 'Following' : 'Copy Trades'}
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    setupEventListeners() {
+      // Filter changes
+      const timeframeFilter = document.getElementById('timeframe-filter');
+      const categoryFilter = document.getElementById('category-filter');
+      
+      if (timeframeFilter) {
+        timeframeFilter.addEventListener('change', () => this.loadLeaderboard());
+      }
+      
+      if (categoryFilter) {
+        categoryFilter.addEventListener('change', () => this.loadLeaderboard());
+      }
+
+      // Post trade button
+      const postTradeBtn = document.getElementById('post-trade-btn');
+      if (postTradeBtn) {
+        postTradeBtn.addEventListener('click', () => this.showPostTradeModal());
+      }
+
+      // Refresh feed button
+      const refreshFeedBtn = document.getElementById('refresh-feed-btn');
+      if (refreshFeedBtn) {
+        refreshFeedBtn.addEventListener('click', () => this.loadSocialFeed());
+      }
+
+      // Copy trading buttons
+      document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('copy-btn')) {
+          const traderId = e.target.dataset.traderId;
+          this.toggleCopyTrading(traderId);
+        }
+      });
+    }
+
+    showPostTradeModal() {
+      // Show modal for posting a trade
+      console.log('Show post trade modal');
+    }
+
+    toggleCopyTrading(traderId) {
+      const trader = this.copyTradingData.find(t => t.id == traderId);
+      if (trader) {
+        trader.isFollowing = !trader.isFollowing;
+        this.renderCopyTrading();
+      }
+    }
+  }
+
+  // Initialize social trading when DOM is ready
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => new SocialTrading());
+    } else {
+      new SocialTrading();
+    }
+  }
+</script>

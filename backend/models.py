@@ -1,6 +1,7 @@
-from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, Text, ForeignKey, Enum, Index
+from sqlalchemy import Column, Integer, String, Float, DateTime, Boolean, Text, ForeignKey, Enum, Index, JSON, BigInteger
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 from datetime import datetime
 import enum
 
@@ -50,6 +51,7 @@ class User(Base):
     reviews_given = relationship("Review", foreign_keys="Review.reviewer_id", back_populates="reviewer")
     reviews_received = relationship("Review", foreign_keys="Review.reviewee_id", back_populates="reviewee")
     watchlist_items = relationship("Watchlist", back_populates="user")
+    solana_wallets = relationship("SolanaWallet", back_populates="user")
 
 class Category(Base):
     __tablename__ = "categories"
@@ -249,3 +251,6 @@ Order.payments = relationship("Payment", back_populates="order")
 Payment.escrow = relationship("Escrow", back_populates="payment", uselist=False)
 Payment.disputes = relationship("Dispute", back_populates="payment")
 Escrow.disputes = relationship("Dispute", back_populates="escrow")
+
+# Solana models are imported separately when needed
+# to avoid circular import issues

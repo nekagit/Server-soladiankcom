@@ -1,0 +1,682 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+
+// Sample NFT data
+const featuredNFTs = [
+  {
+    id: 1,
+    name: "Solana Punk #001",
+    description: "A unique digital collectible on the Solana blockchain",
+    image: "https://via.placeholder.com/300x300/FF6B6B/FFFFFF?text=SP+001",
+    price: 2.5,
+    currency: "SOL",
+    owner: "0x1234...5678",
+    collection: "Solana Punks",
+    rarity: "Legendary",
+    attributes: [
+      { trait_type: "Background", value: "Blue" },
+      { trait_type: "Eyes", value: "Laser" },
+      { trait_type: "Hat", value: "Crown" }
+    ]
+  },
+  {
+    id: 2,
+    name: "Digital Art #042",
+    description: "Abstract digital artwork created by AI",
+    image: "https://via.placeholder.com/300x300/4ECDC4/FFFFFF?text=DA+042",
+    price: 1.8,
+    currency: "SOL",
+    owner: "0x9876...5432",
+    collection: "Digital Art Collection",
+    rarity: "Rare",
+    attributes: [
+      { trait_type: "Style", value: "Abstract" },
+      { trait_type: "Color", value: "Teal" },
+      { trait_type: "Mood", value: "Calm" }
+    ]
+  },
+  {
+    id: 3,
+    name: "Gaming Character #789",
+    description: "Epic gaming character for metaverse adventures",
+    image: "https://via.placeholder.com/300x300/45B7D1/FFFFFF?text=GC+789",
+    price: 5.2,
+    currency: "SOL",
+    owner: "0xABCD...EFGH",
+    collection: "Gaming Heroes",
+    rarity: "Epic",
+    attributes: [
+      { trait_type: "Class", value: "Warrior" },
+      { trait_type: "Weapon", value: "Sword" },
+      { trait_type: "Armor", value: "Legendary" }
+    ]
+  }
+];
+
+const collections = [
+  {
+    name: "Solana Punks",
+    description: "10,000 unique punks on Solana",
+    floorPrice: 2.1,
+    volume: 1250.5,
+    items: 10000,
+    image: "https://via.placeholder.com/200x200/FF6B6B/FFFFFF?text=SP"
+  },
+  {
+    name: "Digital Art Collection",
+    description: "AI-generated digital masterpieces",
+    floorPrice: 1.5,
+    volume: 890.2,
+    items: 5000,
+    image: "https://via.placeholder.com/200x200/4ECDC4/FFFFFF?text=DA"
+  },
+  {
+    name: "Gaming Heroes",
+    description: "Epic characters for the metaverse",
+    floorPrice: 3.8,
+    volume: 2100.7,
+    items: 2500,
+    image: "https://via.placeholder.com/200x200/45B7D1/FFFFFF?text=GH"
+  }
+];
+
+const categories = [
+  { name: "Art", icon: "🎨", count: "15,234" },
+  { name: "Gaming", icon: "🎮", count: "8,765" },
+  { name: "Music", icon: "🎵", count: "3,456" },
+  { name: "Sports", icon: "⚽", count: "2,890" },
+  { name: "Collectibles", icon: "📦", count: "12,345" },
+  { name: "Utility", icon: "🔧", count: "1,234" }
+];
+---
+
+<Layout title="NFT Marketplace - Soladia">
+  <Navigation />
+  
+  <div class="nft-container">
+    <!-- Hero Section -->
+    <section class="hero-section">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="text-center">
+          <h1 class="hero-title">NFT Marketplace</h1>
+          <p class="hero-subtitle">Discover, buy, and sell unique digital assets on Solana</p>
+          <div class="hero-actions">
+            <button class="btn-primary btn-large" id="connect-wallet-btn">Connect Wallet</button>
+            <button class="btn-secondary btn-large">Create NFT</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Categories -->
+    <section class="categories-section">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h2 class="section-title">Browse Categories</h2>
+        <div class="categories-grid">
+          {categories.map((category) => (
+            <div class="category-card" data-category={category.name}>
+              <div class="category-icon">{category.icon}</div>
+              <h3 class="category-name">{category.name}</h3>
+              <p class="category-count">{category.count} NFTs</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured Collections -->
+    <section class="collections-section">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <h2 class="section-title">Featured Collections</h2>
+        <div class="collections-grid">
+          {collections.map((collection) => (
+            <div class="collection-card">
+              <div class="collection-image">
+                <img src={collection.image} alt={collection.name} />
+              </div>
+              <div class="collection-info">
+                <h3 class="collection-name">{collection.name}</h3>
+                <p class="collection-description">{collection.description}</p>
+                <div class="collection-stats">
+                  <div class="stat">
+                    <span class="stat-label">Floor Price</span>
+                    <span class="stat-value">{collection.floorPrice} SOL</span>
+                  </div>
+                  <div class="stat">
+                    <span class="stat-label">Volume</span>
+                    <span class="stat-value">{collection.volume} SOL</span>
+                  </div>
+                  <div class="stat">
+                    <span class="stat-label">Items</span>
+                    <span class="stat-value">{collection.items.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Featured NFTs -->
+    <section class="nfts-section">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="section-header">
+          <h2 class="section-title">Featured NFTs</h2>
+          <div class="section-filters">
+            <select class="filter-select" id="sort-filter">
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="recent">Recently Listed</option>
+              <option value="rare">Rarity</option>
+            </select>
+            <select class="filter-select" id="category-filter">
+              <option value="all">All Categories</option>
+              {categories.map((category) => (
+                <option value={category.name.toLowerCase()}>{category.name}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+        <div class="nfts-grid">
+          {featuredNFTs.map((nft) => (
+            <div class="nft-card" data-nft-id={nft.id}>
+              <div class="nft-image">
+                <img src={nft.image} alt={nft.name} />
+                <div class="nft-overlay">
+                  <button class="nft-action-btn" data-action="view">
+                    <span>👁️</span>
+                  </button>
+                  <button class="nft-action-btn" data-action="favorite">
+                    <span>❤️</span>
+                  </button>
+                </div>
+              </div>
+              <div class="nft-info">
+                <div class="nft-header">
+                  <h3 class="nft-name">{nft.name}</h3>
+                  <span class={`rarity-badge rarity-${nft.rarity.toLowerCase()}`}>{nft.rarity}</span>
+                </div>
+                <p class="nft-collection">{nft.collection}</p>
+                <div class="nft-price">
+                  <span class="price-amount">{nft.price}</span>
+                  <span class="price-currency">{nft.currency}</span>
+                </div>
+                <div class="nft-attributes">
+                  {nft.attributes.slice(0, 2).map((attr) => (
+                    <div class="attribute">
+                      <span class="attribute-name">{attr.trait_type}:</span>
+                      <span class="attribute-value">{attr.value}</span>
+                    </div>
+                  ))}
+                </div>
+                <button class="buy-btn" data-nft-id={nft.id}>
+                  Buy Now
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats-section">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon">📈</div>
+            <div class="stat-content">
+              <h3 class="stat-title">Total Volume</h3>
+              <p class="stat-value">45,678 SOL</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">🎨</div>
+            <div class="stat-content">
+              <h3 class="stat-title">NFTs Listed</h3>
+              <p class="stat-value">12,345</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">👥</div>
+            <div class="stat-content">
+              <h3 class="stat-title">Active Users</h3>
+              <p class="stat-value">8,901</p>
+            </div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon">💰</div>
+            <div class="stat-content">
+              <h3 class="stat-title">Floor Price</h3>
+              <p class="stat-value">1.2 SOL</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</Layout>
+
+<script>
+  import { enhancedSolanaWalletService } from '../services/solana/solana-wallet';
+
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeNFTMarketplace();
+    setupEventListeners();
+  });
+
+  function initializeNFTMarketplace() {
+    // Check if wallet is connected
+    if (enhancedSolanaWalletService.isConnected()) {
+      updateWalletStatus();
+    }
+  }
+
+  function setupEventListeners() {
+    // Connect wallet button
+    const connectBtn = document.getElementById('connect-wallet-btn');
+    if (connectBtn) {
+      connectBtn.addEventListener('click', connectWallet);
+    }
+
+    // Category cards
+    const categoryCards = document.querySelectorAll('.category-card');
+    categoryCards.forEach(card => {
+      card.addEventListener('click', function() {
+        const category = this.getAttribute('data-category');
+        filterByCategory(category);
+      });
+    });
+
+    // NFT cards
+    const nftCards = document.querySelectorAll('.nft-card');
+    nftCards.forEach(card => {
+      card.addEventListener('click', function(e) {
+        if (!e.target.closest('.nft-action-btn')) {
+          const nftId = this.getAttribute('data-nft-id');
+          viewNFT(nftId);
+        }
+      });
+    });
+
+    // NFT action buttons
+    const actionBtns = document.querySelectorAll('.nft-action-btn');
+    actionBtns.forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const action = this.getAttribute('data-action');
+        const nftCard = this.closest('.nft-card');
+        const nftId = nftCard?.getAttribute('data-nft-id');
+        
+        if (action === 'view') {
+          viewNFT(nftId);
+        } else if (action === 'favorite') {
+          toggleFavorite(nftId);
+        }
+      });
+    });
+
+    // Buy buttons
+    const buyBtns = document.querySelectorAll('.buy-btn');
+    buyBtns.forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const nftId = this.getAttribute('data-nft-id');
+        buyNFT(nftId);
+      });
+    });
+
+    // Filter selects
+    const sortFilter = document.getElementById('sort-filter');
+    const categoryFilter = document.getElementById('category-filter');
+    
+    if (sortFilter) {
+      sortFilter.addEventListener('change', applyFilters);
+    }
+    
+    if (categoryFilter) {
+      categoryFilter.addEventListener('change', applyFilters);
+    }
+  }
+
+  async function connectWallet() {
+    try {
+      await enhancedSolanaWalletService.connect();
+      updateWalletStatus();
+      showNotification('Wallet connected successfully!', 'success');
+    } catch (error) {
+      showNotification(`Failed to connect wallet: ${error}`, 'error');
+    }
+  }
+
+  function updateWalletStatus() {
+    const connectBtn = document.getElementById('connect-wallet-btn');
+    if (connectBtn && enhancedSolanaWalletService.isConnected()) {
+      const wallet = enhancedSolanaWalletService.getWallet();
+      connectBtn.innerHTML = `Connected: ${enhancedSolanaWalletService.formatAddress(wallet?.publicKey || '')}`;
+      connectBtn.classList.remove('btn-primary');
+      connectBtn.classList.add('btn-success');
+    }
+  }
+
+  function viewNFT(nftId: string | null) {
+    if (nftId) {
+      window.location.href = `/nft/${nftId}`;
+    }
+  }
+
+  function toggleFavorite(nftId: string | null) {
+    if (nftId) {
+      // In a real app, this would update the favorite status
+      showNotification('Added to favorites!', 'success');
+    }
+  }
+
+  async function buyNFT(nftId: string | null) {
+    if (!enhancedSolanaWalletService.isConnected()) {
+      showNotification('Please connect your wallet first', 'error');
+      return;
+    }
+
+    if (nftId) {
+      try {
+        // In a real app, this would initiate the purchase process
+        showNotification('Purchase initiated! Please confirm in your wallet.', 'info');
+        
+        // Simulate purchase process
+        setTimeout(() => {
+          showNotification('NFT purchased successfully!', 'success');
+        }, 3000);
+      } catch (error) {
+        showNotification(`Purchase failed: ${error}`, 'error');
+      }
+    }
+  }
+
+  function filterByCategory(category: string | null) {
+    if (category) {
+      // In a real app, this would filter the NFTs by category
+      console.log(`Filtering by category: ${category}`);
+      showNotification(`Filtering by ${category}`, 'info');
+    }
+  }
+
+  function applyFilters() {
+    const sortFilter = document.getElementById('sort-filter') as HTMLSelectElement;
+    const categoryFilter = document.getElementById('category-filter') as HTMLSelectElement;
+    
+    const sortBy = sortFilter?.value;
+    const category = categoryFilter?.value;
+    
+    // In a real app, this would apply the filters
+    console.log(`Applying filters - Sort: ${sortBy}, Category: ${category}`);
+  }
+
+  function showNotification(message: string, type: 'success' | 'error' | 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
+  }
+</script>
+
+<style>
+  .nft-container {
+    @apply min-h-screen bg-gray-50;
+  }
+
+  .hero-section {
+    @apply bg-gradient-to-r from-purple-600 to-blue-600 text-white;
+  }
+
+  .hero-title {
+    @apply text-5xl font-bold mb-4;
+  }
+
+  .hero-subtitle {
+    @apply text-xl mb-8 text-purple-100;
+  }
+
+  .hero-actions {
+    @apply flex flex-col sm:flex-row gap-4 justify-center;
+  }
+
+  .btn-primary {
+    @apply px-8 py-3 bg-white text-purple-600 rounded-lg font-semibold hover:bg-gray-100 transition-colors;
+  }
+
+  .btn-secondary {
+    @apply px-8 py-3 border-2 border-white text-white rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors;
+  }
+
+  .btn-large {
+    @apply text-lg px-8 py-4;
+  }
+
+  .btn-success {
+    @apply px-8 py-3 bg-green-600 text-white rounded-lg font-semibold hover:bg-green-700 transition-colors;
+  }
+
+  .section-title {
+    @apply text-3xl font-bold text-gray-900 mb-8 text-center;
+  }
+
+  .categories-grid {
+    @apply grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4;
+  }
+
+  .category-card {
+    @apply bg-white rounded-lg shadow-sm p-6 text-center hover:shadow-md transition-shadow cursor-pointer;
+  }
+
+  .category-icon {
+    @apply text-4xl mb-3;
+  }
+
+  .category-name {
+    @apply font-semibold text-gray-900 mb-1;
+  }
+
+  .category-count {
+    @apply text-sm text-gray-600;
+  }
+
+  .collections-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+  }
+
+  .collection-card {
+    @apply bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-md transition-shadow;
+  }
+
+  .collection-image {
+    @apply aspect-square overflow-hidden;
+  }
+
+  .collection-image img {
+    @apply w-full h-full object-cover;
+  }
+
+  .collection-info {
+    @apply p-6;
+  }
+
+  .collection-name {
+    @apply text-xl font-semibold text-gray-900 mb-2;
+  }
+
+  .collection-description {
+    @apply text-gray-600 mb-4;
+  }
+
+  .collection-stats {
+    @apply grid grid-cols-3 gap-4;
+  }
+
+  .stat {
+    @apply text-center;
+  }
+
+  .stat-label {
+    @apply block text-sm text-gray-600;
+  }
+
+  .stat-value {
+    @apply block font-semibold text-gray-900;
+  }
+
+  .section-header {
+    @apply flex flex-col sm:flex-row justify-between items-center mb-8;
+  }
+
+  .section-filters {
+    @apply flex gap-4 mt-4 sm:mt-0;
+  }
+
+  .filter-select {
+    @apply px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+  }
+
+  .nfts-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6;
+  }
+
+  .nft-card {
+    @apply bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-shadow cursor-pointer;
+  }
+
+  .nft-image {
+    @apply relative aspect-square overflow-hidden;
+  }
+
+  .nft-image img {
+    @apply w-full h-full object-cover;
+  }
+
+  .nft-overlay {
+    @apply absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center;
+  }
+
+  .nft-action-btn {
+    @apply w-10 h-10 bg-white rounded-full flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity duration-300;
+  }
+
+  .nft-card:hover .nft-overlay {
+    @apply bg-opacity-30;
+  }
+
+  .nft-card:hover .nft-action-btn {
+    @apply opacity-100;
+  }
+
+  .nft-info {
+    @apply p-4;
+  }
+
+  .nft-header {
+    @apply flex justify-between items-start mb-2;
+  }
+
+  .nft-name {
+    @apply font-semibold text-gray-900 text-lg;
+  }
+
+  .rarity-badge {
+    @apply px-2 py-1 rounded-full text-xs font-medium;
+  }
+
+  .rarity-legendary {
+    @apply bg-purple-100 text-purple-800;
+  }
+
+  .rarity-epic {
+    @apply bg-blue-100 text-blue-800;
+  }
+
+  .rarity-rare {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .nft-collection {
+    @apply text-sm text-gray-600 mb-2;
+  }
+
+  .nft-price {
+    @apply flex items-center gap-1 mb-3;
+  }
+
+  .price-amount {
+    @apply text-xl font-bold text-gray-900;
+  }
+
+  .price-currency {
+    @apply text-sm text-gray-600;
+  }
+
+  .nft-attributes {
+    @apply space-y-1 mb-4;
+  }
+
+  .attribute {
+    @apply flex justify-between text-sm;
+  }
+
+  .attribute-name {
+    @apply text-gray-600;
+  }
+
+  .attribute-value {
+    @apply font-medium text-gray-900;
+  }
+
+  .buy-btn {
+    @apply w-full bg-blue-600 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-700 transition-colors;
+  }
+
+  .stats-section {
+    @apply bg-white;
+  }
+
+  .stats-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6;
+  }
+
+  .stat-card {
+    @apply flex items-center space-x-4 p-6 bg-gray-50 rounded-lg;
+  }
+
+  .stat-icon {
+    @apply text-4xl;
+  }
+
+  .stat-title {
+    @apply font-semibold text-gray-900 mb-1;
+  }
+
+  .stat-value {
+    @apply text-2xl font-bold text-blue-600;
+  }
+
+  .notification {
+    @apply fixed top-4 right-4 px-4 py-2 rounded-lg text-white font-medium z-50;
+  }
+
+  .notification-success {
+    @apply bg-green-600;
+  }
+
+  .notification-error {
+    @apply bg-red-600;
+  }
+
+  .notification-info {
+    @apply bg-blue-600;
+  }
+</style>

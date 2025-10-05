@@ -1,0 +1,541 @@
+---
+// RealtimeDashboard.astro - Real-time dashboard component
+export interface Props {
+  userId?: string;
+  showStats?: boolean;
+  showTransactions?: boolean;
+  showWallet?: boolean;
+  showMarket?: boolean;
+}
+
+const {
+  userId = '',
+  showStats = true,
+  showTransactions = true,
+  showWallet = true,
+  showMarket = true
+} = Astro.props;
+---
+
+<div class="realtime-dashboard" id="realtime-dashboard">
+  <div class="dashboard-header">
+    <h2 class="dashboard-title">Real-time Dashboard</h2>
+    <div class="connection-status" id="connection-status">
+      <span class="status-indicator disconnected"></span>
+      <span class="status-text">Disconnected</span>
+    </div>
+  </div>
+
+  <div class="dashboard-content">
+    {showStats && (
+      <div class="stats-section">
+        <h3 class="section-title">Live Statistics</h3>
+        <div class="stats-grid" id="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Active Connections</div>
+            <div class="stat-value" id="active-connections">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Total Users</div>
+            <div class="stat-value" id="total-users">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Wallet Updates</div>
+            <div class="stat-value" id="wallet-updates">-</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Transaction Updates</div>
+            <div class="stat-value" id="transaction-updates">-</div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {showTransactions && (
+      <div class="transactions-section">
+        <h3 class="section-title">Live Transactions</h3>
+        <div class="transactions-list" id="transactions-list">
+          <div class="transaction-item">
+            <div class="transaction-info">
+              <span class="transaction-type">Loading...</span>
+              <span class="transaction-time">-</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {showWallet && (
+      <div class="wallet-section">
+        <h3 class="section-title">Wallet Updates</h3>
+        <div class="wallet-updates" id="wallet-updates-list">
+          <div class="wallet-update-item">
+            <span class="update-message">Waiting for updates...</span>
+            <span class="update-time">-</span>
+          </div>
+        </div>
+      </div>
+    )}
+
+    {showMarket && (
+      <div class="market-section">
+        <h3 class="section-title">Market Updates</h3>
+        <div class="market-updates" id="market-updates-list">
+          <div class="market-update-item">
+            <span class="update-message">Waiting for updates...</span>
+            <span class="update-time">-</span>
+          </div>
+        </div>
+      </div>
+    )}
+  </div>
+
+  <div class="dashboard-controls">
+    <button class="btn-primary" id="connect-btn">Connect</button>
+    <button class="btn-secondary" id="disconnect-btn" disabled>Disconnect</button>
+    <button class="btn-outline" id="clear-btn">Clear</button>
+  </div>
+</div>
+
+<script>
+  class RealtimeDashboard {
+    private ws: WebSocket | null = null;
+    private reconnectAttempts = 0;
+    private maxReconnectAttempts = 5;
+    private reconnectDelay = 1000;
+    private isConnected = false;
+    private userId: string;
+    private subscriptions: Set<string> = new Set();
+
+    constructor(userId: string = '') {
+      this.userId = userId;
+      this.initializeElements();
+      this.setupEventListeners();
+    }
+
+    private initializeElements() {
+      // This will be called when the component is mounted
+    }
+
+    private setupEventListeners() {
+      document.addEventListener('DOMContentLoaded', () => {
+        const connectBtn = document.getElementById('connect-btn');
+        const disconnectBtn = document.getElementById('disconnect-btn');
+        const clearBtn = document.getElementById('clear-btn');
+
+        connectBtn?.addEventListener('click', () => this.connect());
+        disconnectBtn?.addEventListener('click', () => this.disconnect());
+        clearBtn?.addEventListener('click', () => this.clear());
+      });
+    }
+
+    public connect() {
+      if (this.isConnected) {
+        this.showNotification('Already connected', 'info');
+        return;
+      }
+
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsUrl = `${protocol}//${window.location.host}/ws/solana${this.userId ? `?user_id=${this.userId}` : ''}`;
+      
+      try {
+        this.ws = new WebSocket(wsUrl);
+        this.setupWebSocketHandlers();
+        this.updateConnectionStatus('connecting', 'Connecting...');
+      } catch (error) {
+        console.error('Failed to create WebSocket connection:', error);
+        this.showNotification('Failed to connect', 'error');
+      }
+    }
+
+    public disconnect() {
+      if (this.ws) {
+        this.ws.close();
+        this.ws = null;
+      }
+      this.isConnected = false;
+      this.updateConnectionStatus('disconnected', 'Disconnected');
+      this.updateButtons(false);
+    }
+
+    private setupWebSocketHandlers() {
+      if (!this.ws) return;
+
+      this.ws.onopen = () => {
+        console.log('WebSocket connected');
+        this.isConnected = true;
+        this.reconnectAttempts = 0;
+        this.updateConnectionStatus('connected', 'Connected');
+        this.updateButtons(true);
+        this.showNotification('Connected to real-time updates', 'success');
+        
+        // Subscribe to default topics
+        this.subscribeToTopic('wallet_updates');
+        this.subscribeToTopic('transaction_updates');
+        this.subscribeToTopic('system_updates');
+      };
+
+      this.ws.onmessage = (event) => {
+        try {
+          const message = JSON.parse(event.data);
+          this.handleMessage(message);
+        } catch (error) {
+          console.error('Failed to parse WebSocket message:', error);
+        }
+      };
+
+      this.ws.onclose = (event) => {
+        console.log('WebSocket disconnected:', event.code, event.reason);
+        this.isConnected = false;
+        this.updateConnectionStatus('disconnected', 'Disconnected');
+        this.updateButtons(false);
+        
+        if (!event.wasClean && this.reconnectAttempts < this.maxReconnectAttempts) {
+          this.attemptReconnect();
+        }
+      };
+
+      this.ws.onerror = (error) => {
+        console.error('WebSocket error:', error);
+        this.showNotification('Connection error', 'error');
+      };
+    }
+
+    private attemptReconnect() {
+      this.reconnectAttempts++;
+      this.updateConnectionStatus('reconnecting', `Reconnecting... (${this.reconnectAttempts}/${this.maxReconnectAttempts})`);
+      
+      setTimeout(() => {
+        this.connect();
+      }, this.reconnectDelay * Math.pow(2, this.reconnectAttempts - 1));
+    }
+
+    private handleMessage(message: any) {
+      const { type, data } = message;
+
+      switch (type) {
+        case 'connection_established':
+          this.showNotification('Connected to real-time updates', 'success');
+          break;
+
+        case 'wallet_update':
+          this.updateWalletUpdates(data);
+          break;
+
+        case 'transaction_update':
+          this.updateTransactions(data);
+          break;
+
+        case 'system_update':
+          this.updateStats(data.stats);
+          break;
+
+        case 'wallet_balance_change':
+          this.updateWalletBalance(data);
+          break;
+
+        case 'transaction_status_change':
+          this.updateTransactionStatus(data);
+          break;
+
+        case 'nft_update':
+          this.updateNFTUpdates(data);
+          break;
+
+        case 'market_update':
+          this.updateMarketUpdates(data);
+          break;
+
+        case 'stats':
+          this.updateStats(data);
+          break;
+
+        case 'error':
+          this.showNotification(data.message, 'error');
+          break;
+
+        default:
+          console.log('Unknown message type:', type, data);
+      }
+    }
+
+    private subscribeToTopic(topic: string) {
+      if (this.ws && this.isConnected) {
+        this.ws.send(JSON.stringify({
+          type: 'subscribe',
+          data: { topic }
+        }));
+        this.subscriptions.add(topic);
+      }
+    }
+
+    private unsubscribeFromTopic(topic: string) {
+      if (this.ws && this.isConnected) {
+        this.ws.send(JSON.stringify({
+          type: 'unsubscribe',
+          data: { topic }
+        }));
+        this.subscriptions.delete(topic);
+      }
+    }
+
+    private updateConnectionStatus(status: string, text: string) {
+      const statusElement = document.getElementById('connection-status');
+      if (statusElement) {
+        const indicator = statusElement.querySelector('.status-indicator');
+        const statusText = statusElement.querySelector('.status-text');
+        
+        if (indicator) {
+          indicator.className = `status-indicator ${status}`;
+        }
+        if (statusText) {
+          statusText.textContent = text;
+        }
+      }
+    }
+
+    private updateButtons(connected: boolean) {
+      const connectBtn = document.getElementById('connect-btn') as HTMLButtonElement;
+      const disconnectBtn = document.getElementById('disconnect-btn') as HTMLButtonElement;
+      
+      if (connectBtn) connectBtn.disabled = connected;
+      if (disconnectBtn) disconnectBtn.disabled = !connected;
+    }
+
+    private updateStats(stats: any) {
+      const elements = {
+        'active-connections': stats.total_connections,
+        'total-users': stats.total_users,
+        'wallet-updates': stats.topic_subscriptions?.wallet_updates || 0,
+        'transaction-updates': stats.topic_subscriptions?.transaction_updates || 0
+      };
+
+      Object.entries(elements).forEach(([id, value]) => {
+        const element = document.getElementById(id);
+        if (element) {
+          element.textContent = value.toString();
+        }
+      });
+    }
+
+    private updateWalletUpdates(data: any) {
+      this.addUpdateToList('wallet-updates-list', data.message, data.timestamp);
+    }
+
+    private updateTransactions(data: any) {
+      this.addUpdateToList('transactions-list', data.message, data.timestamp, 'transaction');
+    }
+
+    private updateWalletBalance(data: any) {
+      const message = `Balance updated: ${data.balance} SOL`;
+      this.addUpdateToList('wallet-updates-list', message, data.timestamp);
+    }
+
+    private updateTransactionStatus(data: any) {
+      const message = `Transaction ${data.signature.slice(0, 8)}... status: ${data.status}`;
+      this.addUpdateToList('transactions-list', message, data.timestamp, 'transaction');
+    }
+
+    private updateNFTUpdates(data: any) {
+      const message = `NFT ${data.nft_id} - ${data.event_type}`;
+      this.addUpdateToList('market-updates-list', message, data.timestamp);
+    }
+
+    private updateMarketUpdates(data: any) {
+      const message = `Market update: ${data.event_type}`;
+      this.addUpdateToList('market-updates-list', message, data.timestamp);
+    }
+
+    private addUpdateToList(listId: string, message: string, timestamp: string, type: string = 'update') {
+      const listElement = document.getElementById(listId);
+      if (!listElement) return;
+
+      // Remove loading message if present
+      const loadingItem = listElement.querySelector('.loading-item');
+      if (loadingItem) {
+        loadingItem.remove();
+      }
+
+      const updateItem = document.createElement('div');
+      updateItem.className = `${type}-item`;
+      
+      const time = new Date(timestamp).toLocaleTimeString();
+      updateItem.innerHTML = `
+        <span class="update-message">${message}</span>
+        <span class="update-time">${time}</span>
+      `;
+
+      listElement.insertBefore(updateItem, listElement.firstChild);
+
+      // Keep only last 10 items
+      const items = listElement.querySelectorAll(`.${type}-item`);
+      if (items.length > 10) {
+        items[items.length - 1].remove();
+      }
+    }
+
+    private clear() {
+      const lists = ['transactions-list', 'wallet-updates-list', 'market-updates-list'];
+      lists.forEach(listId => {
+        const listElement = document.getElementById(listId);
+        if (listElement) {
+          listElement.innerHTML = '<div class="loading-item">Waiting for updates...</div>';
+        }
+      });
+    }
+
+    private showNotification(message: string, type: 'success' | 'error' | 'info') {
+      const notification = document.createElement('div');
+      notification.className = `notification notification-${type}`;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+  }
+
+  // Initialize dashboard when DOM is loaded
+  let dashboard: RealtimeDashboard;
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    dashboard = new RealtimeDashboard('${userId}');
+  });
+
+  // Export for external use
+  window.getRealtimeDashboard = () => dashboard;
+</script>
+
+<style>
+  .realtime-dashboard {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+  }
+
+  .dashboard-header {
+    @apply flex justify-between items-center mb-6;
+  }
+
+  .dashboard-title {
+    @apply text-xl font-semibold text-gray-900;
+  }
+
+  .connection-status {
+    @apply flex items-center space-x-2;
+  }
+
+  .status-indicator {
+    @apply w-3 h-3 rounded-full;
+  }
+
+  .status-indicator.connected {
+    @apply bg-green-500;
+  }
+
+  .status-indicator.connecting {
+    @apply bg-yellow-500 animate-pulse;
+  }
+
+  .status-indicator.reconnecting {
+    @apply bg-orange-500 animate-pulse;
+  }
+
+  .status-indicator.disconnected {
+    @apply bg-red-500;
+  }
+
+  .status-text {
+    @apply text-sm font-medium text-gray-700;
+  }
+
+  .dashboard-content {
+    @apply space-y-6;
+  }
+
+  .section-title {
+    @apply text-lg font-semibold text-gray-900 mb-4;
+  }
+
+  .stats-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4;
+  }
+
+  .stat-card {
+    @apply bg-gray-50 rounded-lg p-4;
+  }
+
+  .stat-label {
+    @apply text-sm text-gray-600 mb-1;
+  }
+
+  .stat-value {
+    @apply text-2xl font-bold text-gray-900;
+  }
+
+  .transactions-list,
+  .wallet-updates,
+  .market-updates {
+    @apply space-y-2 max-h-64 overflow-y-auto;
+  }
+
+  .transaction-item,
+  .wallet-update-item,
+  .market-update-item {
+    @apply flex justify-between items-center p-3 bg-gray-50 rounded-lg;
+  }
+
+  .update-message {
+    @apply text-sm text-gray-900;
+  }
+
+  .update-time {
+    @apply text-xs text-gray-500;
+  }
+
+  .dashboard-controls {
+    @apply flex space-x-3 mt-6 pt-4 border-t border-gray-200;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition-colors;
+  }
+
+  .btn-outline {
+    @apply px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors;
+  }
+
+  .btn-primary:disabled,
+  .btn-secondary:disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .notification {
+    @apply fixed top-4 right-4 px-4 py-2 rounded-lg text-white font-medium z-50;
+  }
+
+  .notification-success {
+    @apply bg-green-600;
+  }
+
+  .notification-error {
+    @apply bg-red-600;
+  }
+
+  .notification-info {
+    @apply bg-blue-600;
+  }
+</style>
+
+<!-- Global types for TypeScript -->
+<script>
+  declare global {
+    interface Window {
+      getRealtimeDashboard: () => RealtimeDashboard;
+    }
+  }
+</script>

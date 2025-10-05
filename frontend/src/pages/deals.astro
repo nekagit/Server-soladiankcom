@@ -1,0 +1,314 @@
+---
+// Deals page - Daily deals and special offers
+import Layout from '../layouts/Layout.astro';
+import ProductCard from '../components/ProductCard.astro';
+import SolanaWallet from '../components/solana/SolanaWallet.astro';
+---
+
+<Layout title="Daily Deals - Soladia">
+  <main class="min-h-screen bg-gray-50">
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-purple-600 to-blue-600 text-white py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+          <h1 class="text-4xl md:text-6xl font-bold mb-6">
+            🔥 Daily Deals
+          </h1>
+          <p class="text-xl md:text-2xl mb-8 opacity-90">
+            Exclusive discounts on NFTs, collectibles, and digital assets
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <button class="bg-white text-purple-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+              View All Deals
+            </button>
+            <button class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-purple-600 transition-colors">
+              Set Price Alert
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Solana Wallet Integration -->
+    <section class="py-8 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <SolanaWallet client:load />
+      </div>
+    </section>
+
+    <!-- Featured Deals -->
+    <section class="py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">Featured Deals</h2>
+          <p class="text-lg text-gray-600">Limited time offers on premium NFTs and collectibles</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <!-- Deal 1 -->
+          <div class="bg-white rounded-lg shadow-lg overflow-hidden border-2 border-red-500">
+            <div class="relative">
+              <img src="/api/placeholder/400/300" alt="Deal 1" class="w-full h-48 object-cover">
+              <div class="absolute top-4 left-4 bg-red-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                50% OFF
+              </div>
+              <div class="absolute top-4 right-4 bg-yellow-400 text-black px-2 py-1 rounded-full text-xs font-bold">
+                🔥 HOT
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Digital Art Collection</h3>
+              <p class="text-gray-600 mb-4">Exclusive digital artwork by renowned artists</p>
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-2">
+                  <span class="text-2xl font-bold text-red-500">2.5 SOL</span>
+                  <span class="text-lg text-gray-500 line-through">5.0 SOL</span>
+                </div>
+                <div class="text-sm text-gray-500">
+                  <span class="font-semibold">Ends in:</span> 2h 15m
+                </div>
+              </div>
+              <button class="w-full bg-red-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-red-600 transition-colors">
+                Buy Now
+              </button>
+            </div>
+          </div>
+
+          <!-- Deal 2 -->
+          <div class="bg-white rounded-lg shadow-lg overflow-hidden border-2 border-blue-500">
+            <div class="relative">
+              <img src="/api/placeholder/400/300" alt="Deal 2" class="w-full h-48 object-cover">
+              <div class="absolute top-4 left-4 bg-blue-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                30% OFF
+              </div>
+              <div class="absolute top-4 right-4 bg-green-400 text-black px-2 py-1 rounded-full text-xs font-bold">
+                NEW
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Gaming Collectibles</h3>
+              <p class="text-gray-600 mb-4">Rare items from popular blockchain games</p>
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-2">
+                  <span class="text-2xl font-bold text-blue-500">1.4 SOL</span>
+                  <span class="text-lg text-gray-500 line-through">2.0 SOL</span>
+                </div>
+                <div class="text-sm text-gray-500">
+                  <span class="font-semibold">Ends in:</span> 5h 30m
+                </div>
+              </div>
+              <button class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-600 transition-colors">
+                Buy Now
+              </button>
+            </div>
+          </div>
+
+          <!-- Deal 3 -->
+          <div class="bg-white rounded-lg shadow-lg overflow-hidden border-2 border-green-500">
+            <div class="relative">
+              <img src="/api/placeholder/400/300" alt="Deal 3" class="w-full h-48 object-cover">
+              <div class="absolute top-4 left-4 bg-green-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                25% OFF
+              </div>
+              <div class="absolute top-4 right-4 bg-purple-400 text-white px-2 py-1 rounded-full text-xs font-bold">
+                RARE
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Music NFTs</h3>
+              <p class="text-gray-600 mb-4">Exclusive tracks from emerging artists</p>
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-2">
+                  <span class="text-2xl font-bold text-green-500">3.75 SOL</span>
+                  <span class="text-lg text-gray-500 line-through">5.0 SOL</span>
+                </div>
+                <div class="text-sm text-gray-500">
+                  <span class="font-semibold">Ends in:</span> 8h 45m
+                </div>
+              </div>
+              <button class="w-full bg-green-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-green-600 transition-colors">
+                Buy Now
+              </button>
+            </div>
+          </div>
+
+          <!-- Deal 4 -->
+          <div class="bg-white rounded-lg shadow-lg overflow-hidden border-2 border-purple-500">
+            <div class="relative">
+              <img src="/api/placeholder/400/300" alt="Deal 4" class="w-full h-48 object-cover">
+              <div class="absolute top-4 left-4 bg-purple-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                40% OFF
+              </div>
+              <div class="absolute top-4 right-4 bg-orange-400 text-black px-2 py-1 rounded-full text-xs font-bold">
+                LIMITED
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Virtual Land</h3>
+              <p class="text-gray-600 mb-4">Prime locations in metaverse worlds</p>
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-2">
+                  <span class="text-2xl font-bold text-purple-500">9.0 SOL</span>
+                  <span class="text-lg text-gray-500 line-through">15.0 SOL</span>
+                </div>
+                <div class="text-sm text-gray-500">
+                  <span class="font-semibold">Ends in:</span> 12h 20m
+                </div>
+              </div>
+              <button class="w-full bg-purple-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-purple-600 transition-colors">
+                Buy Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Flash Sales -->
+    <section class="py-16 bg-gray-100">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">⚡ Flash Sales</h2>
+          <p class="text-lg text-gray-600">Limited time offers that won't last long</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <!-- Flash Sale 1 -->
+          <div class="bg-white rounded-lg shadow-lg overflow-hidden border-2 border-orange-500">
+            <div class="relative">
+              <img src="/api/placeholder/400/300" alt="Flash Sale 1" class="w-full h-48 object-cover">
+              <div class="absolute top-4 left-4 bg-orange-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                FLASH SALE
+              </div>
+              <div class="absolute top-4 right-4 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold animate-pulse">
+                ⚡ LIVE
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Trading Card Pack</h3>
+              <p class="text-gray-600 mb-4">Mystery pack with guaranteed rare cards</p>
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-2">
+                  <span class="text-2xl font-bold text-orange-500">0.3 SOL</span>
+                  <span class="text-lg text-gray-500 line-through">0.5 SOL</span>
+                </div>
+                <div class="text-sm text-red-500 font-bold">
+                  <span class="font-semibold">Ends in:</span> 15m
+                </div>
+              </div>
+              <button class="w-full bg-orange-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-orange-600 transition-colors">
+                Buy Now
+              </button>
+            </div>
+          </div>
+
+          <!-- Flash Sale 2 -->
+          <div class="bg-white rounded-lg shadow-lg overflow-hidden border-2 border-pink-500">
+            <div class="relative">
+              <img src="/api/placeholder/400/300" alt="Flash Sale 2" class="w-full h-48 object-cover">
+              <div class="absolute top-4 left-4 bg-pink-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                FLASH SALE
+              </div>
+              <div class="absolute top-4 right-4 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold animate-pulse">
+                ⚡ LIVE
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-900 mb-2">3D Model Asset</h3>
+              <p class="text-gray-600 mb-4">High-quality 3D models for game development</p>
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-2">
+                  <span class="text-2xl font-bold text-pink-500">1.9 SOL</span>
+                  <span class="text-lg text-gray-500 line-through">3.2 SOL</span>
+                </div>
+                <div class="text-sm text-red-500 font-bold">
+                  <span class="font-semibold">Ends in:</span> 8m
+                </div>
+              </div>
+              <button class="w-full bg-pink-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-pink-600 transition-colors">
+                Buy Now
+              </button>
+            </div>
+          </div>
+
+          <!-- Flash Sale 3 -->
+          <div class="bg-white rounded-lg shadow-lg overflow-hidden border-2 border-indigo-500">
+            <div class="relative">
+              <img src="/api/placeholder/400/300" alt="Flash Sale 3" class="w-full h-48 object-cover">
+              <div class="absolute top-4 left-4 bg-indigo-500 text-white px-3 py-1 rounded-full text-sm font-bold">
+                FLASH SALE
+              </div>
+              <div class="absolute top-4 right-4 bg-red-500 text-white px-2 py-1 rounded-full text-xs font-bold animate-pulse">
+                ⚡ LIVE
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Photography NFT</h3>
+              <p class="text-gray-600 mb-4">Stunning photography from professional artists</p>
+              <div class="flex items-center justify-between mb-4">
+                <div class="flex items-center space-x-2">
+                  <span class="text-2xl font-bold text-indigo-500">0.6 SOL</span>
+                  <span class="text-lg text-gray-500 line-through">1.0 SOL</span>
+                </div>
+                <div class="text-sm text-red-500 font-bold">
+                  <span class="font-semibold">Ends in:</span> 22m
+                </div>
+              </div>
+              <button class="w-full bg-indigo-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-indigo-600 transition-colors">
+                Buy Now
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Newsletter Signup -->
+    <section class="py-16 bg-gradient-to-r from-blue-600 to-purple-600 text-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl font-bold mb-4">Don't Miss Out on Deals!</h2>
+        <p class="text-xl mb-8 opacity-90">
+          Subscribe to get notified about the best deals and exclusive offers
+        </p>
+        <div class="max-w-md mx-auto flex gap-4">
+          <input 
+            type="email" 
+            placeholder="Enter your email" 
+            class="flex-1 px-4 py-3 rounded-lg text-gray-900"
+          >
+          <button class="bg-white text-blue-600 px-6 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+            Subscribe
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<script>
+  // Countdown timers for deals
+  function updateCountdowns() {
+    const countdownElements = document.querySelectorAll('[data-countdown]');
+    countdownElements.forEach(element => {
+      const endTime = new Date(element.dataset.countdown).getTime();
+      const now = new Date().getTime();
+      const distance = endTime - now;
+
+      if (distance < 0) {
+        element.textContent = "EXPIRED";
+        element.classList.add('text-red-500');
+        return;
+      }
+
+      const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+      const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+      const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+      element.textContent = `${hours}h ${minutes}m ${seconds}s`;
+    });
+  }
+
+  // Update countdowns every second
+  setInterval(updateCountdowns, 1000);
+  updateCountdowns();
+</script>

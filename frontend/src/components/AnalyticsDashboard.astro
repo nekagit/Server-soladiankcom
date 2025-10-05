@@ -1,0 +1,713 @@
+---
+// AnalyticsDashboard.astro - Advanced analytics dashboard component
+export interface Props {
+  userId?: string;
+  showCharts?: boolean;
+  showMetrics?: boolean;
+  showTrends?: boolean;
+  timeRange?: '1h' | '24h' | '7d' | '30d';
+}
+
+const {
+  userId = '',
+  showCharts = true,
+  showMetrics = true,
+  showTrends = true,
+  timeRange = '24h'
+} = Astro.props;
+
+// Sample analytics data
+const analyticsData = {
+  totalVolume: 125000,
+  totalTransactions: 8900,
+  activeUsers: 1250,
+  averageTransactionValue: 14.04,
+  topTokens: [
+    { symbol: 'SOL', volume: 75000, percentage: 60 },
+    { symbol: 'USDC', volume: 30000, percentage: 24 },
+    { symbol: 'USDT', volume: 20000, percentage: 16 }
+  ],
+  hourlyData: [
+    { hour: '00:00', volume: 1200, transactions: 45 },
+    { hour: '01:00', volume: 800, transactions: 32 },
+    { hour: '02:00', volume: 600, transactions: 28 },
+    { hour: '03:00', volume: 400, transactions: 18 },
+    { hour: '04:00', volume: 300, transactions: 15 },
+    { hour: '05:00', volume: 500, transactions: 22 },
+    { hour: '06:00', volume: 800, transactions: 35 },
+    { hour: '07:00', volume: 1200, transactions: 48 },
+    { hour: '08:00', volume: 1800, transactions: 65 },
+    { hour: '09:00', volume: 2200, transactions: 78 },
+    { hour: '10:00', volume: 2500, transactions: 85 },
+    { hour: '11:00', volume: 2800, transactions: 92 },
+    { hour: '12:00', volume: 3000, transactions: 98 },
+    { hour: '13:00', volume: 3200, transactions: 105 },
+    { hour: '14:00', volume: 3500, transactions: 112 },
+    { hour: '15:00', volume: 3800, transactions: 118 },
+    { hour: '16:00', volume: 4000, transactions: 125 },
+    { hour: '17:00', volume: 4200, transactions: 130 },
+    { hour: '18:00', volume: 4500, transactions: 135 },
+    { hour: '19:00', volume: 4800, transactions: 140 },
+    { hour: '20:00', volume: 5000, transactions: 145 },
+    { hour: '21:00', volume: 4800, transactions: 140 },
+    { hour: '22:00', volume: 4200, transactions: 130 },
+    { hour: '23:00', volume: 3500, transactions: 120 }
+  ]
+};
+---
+
+<div class="analytics-dashboard" id="analytics-dashboard">
+  <div class="dashboard-header">
+    <h2 class="dashboard-title">Analytics Dashboard</h2>
+    <div class="dashboard-controls">
+      <select class="time-range-select" id="time-range-select">
+        <option value="1h" {timeRange === '1h' ? 'selected' : ''}>Last Hour</option>
+        <option value="24h" {timeRange === '24h' ? 'selected' : ''}>Last 24 Hours</option>
+        <option value="7d" {timeRange === '7d' ? 'selected' : ''}>Last 7 Days</option>
+        <option value="30d" {timeRange === '30d' ? 'selected' : ''}>Last 30 Days</option>
+      </select>
+      <button class="btn-secondary" id="refresh-analytics">
+        <span class="btn-icon">🔄</span>
+        Refresh
+      </button>
+      <button class="btn-outline" id="export-analytics">
+        <span class="btn-icon">📊</span>
+        Export
+      </button>
+    </div>
+  </div>
+
+  {showMetrics && (
+    <div class="metrics-section">
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <div class="metric-header">
+            <h3 class="metric-title">Total Volume</h3>
+            <span class="metric-change positive">+12.5%</span>
+          </div>
+          <div class="metric-value">${analyticsData.totalVolume.toLocaleString()}</div>
+          <div class="metric-subtitle">USD equivalent</div>
+        </div>
+        
+        <div class="metric-card">
+          <div class="metric-header">
+            <h3 class="metric-title">Total Transactions</h3>
+            <span class="metric-change positive">+8.3%</span>
+          </div>
+          <div class="metric-value">{analyticsData.totalTransactions.toLocaleString()}</div>
+          <div class="metric-subtitle">Completed transactions</div>
+        </div>
+        
+        <div class="metric-card">
+          <div class="metric-header">
+            <h3 class="metric-title">Active Users</h3>
+            <span class="metric-change positive">+15.2%</span>
+          </div>
+          <div class="metric-value">{analyticsData.activeUsers.toLocaleString()}</div>
+          <div class="metric-subtitle">Unique users</div>
+        </div>
+        
+        <div class="metric-card">
+          <div class="metric-header">
+            <h3 class="metric-title">Avg Transaction</h3>
+            <span class="metric-change negative">-2.1%</span>
+          </div>
+          <div class="metric-value">${analyticsData.averageTransactionValue}</div>
+          <div class="metric-subtitle">USD per transaction</div>
+        </div>
+      </div>
+    </div>
+  )}
+
+  {showCharts && (
+    <div class="charts-section">
+      <div class="charts-grid">
+        <div class="chart-card">
+          <h3 class="chart-title">Volume Over Time</h3>
+          <div class="chart-container">
+            <canvas id="volume-chart" width="400" height="200"></canvas>
+          </div>
+        </div>
+        
+        <div class="chart-card">
+          <h3 class="chart-title">Token Distribution</h3>
+          <div class="chart-container">
+            <canvas id="token-chart" width="400" height="200"></canvas>
+          </div>
+        </div>
+        
+        <div class="chart-card">
+          <h3 class="chart-title">Transaction Trends</h3>
+          <div class="chart-container">
+            <canvas id="transaction-chart" width="400" height="200"></canvas>
+          </div>
+        </div>
+        
+        <div class="chart-card">
+          <h3 class="chart-title">User Activity</h3>
+          <div class="chart-container">
+            <canvas id="activity-chart" width="400" height="200"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+
+  {showTrends && (
+    <div class="trends-section">
+      <h3 class="section-title">Market Trends</h3>
+      <div class="trends-grid">
+        <div class="trend-card">
+          <h4 class="trend-title">Top Performing Tokens</h4>
+          <div class="trend-list">
+            {analyticsData.topTokens.map((token) => (
+              <div class="trend-item">
+                <div class="trend-info">
+                  <span class="trend-symbol">{token.symbol}</span>
+                  <span class="trend-volume">${token.volume.toLocaleString()}</span>
+                </div>
+                <div class="trend-bar">
+                  <div class="trend-fill" style={`width: ${token.percentage}%`}></div>
+                </div>
+                <span class="trend-percentage">{token.percentage}%</span>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <div class="trend-card">
+          <h4 class="trend-title">Peak Hours</h4>
+          <div class="peak-hours">
+            <div class="peak-hour">
+              <span class="hour">2:00 PM</span>
+              <span class="volume">$5,000</span>
+            </div>
+            <div class="peak-hour">
+              <span class="hour">3:00 PM</span>
+              <span class="volume">$4,800</span>
+            </div>
+            <div class="peak-hour">
+              <span class="hour">4:00 PM</span>
+              <span class="volume">$4,200</span>
+            </div>
+          </div>
+        </div>
+        
+        <div class="trend-card">
+          <h4 class="trend-title">Growth Metrics</h4>
+          <div class="growth-metrics">
+            <div class="growth-item">
+              <span class="growth-label">Volume Growth</span>
+              <span class="growth-value positive">+12.5%</span>
+            </div>
+            <div class="growth-item">
+              <span class="growth-label">User Growth</span>
+              <span class="growth-value positive">+15.2%</span>
+            </div>
+            <div class="growth-item">
+              <span class="growth-label">Transaction Growth</span>
+              <span class="growth-value positive">+8.3%</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+
+<script>
+  class AnalyticsDashboard {
+    private charts: Map<string, any> = new Map();
+    private data: any;
+    private timeRange: string;
+
+    constructor(data: any, timeRange: string = '24h') {
+      this.data = data;
+      this.timeRange = timeRange;
+      this.initializeElements();
+      this.setupEventListeners();
+    }
+
+    private initializeElements() {
+      // This will be called when the component is mounted
+    }
+
+    private setupEventListeners() {
+      document.addEventListener('DOMContentLoaded', () => {
+        const timeRangeSelect = document.getElementById('time-range-select') as HTMLSelectElement;
+        const refreshBtn = document.getElementById('refresh-analytics');
+        const exportBtn = document.getElementById('export-analytics');
+
+        timeRangeSelect?.addEventListener('change', (e) => {
+          this.timeRange = (e.target as HTMLSelectElement).value;
+          this.updateCharts();
+        });
+
+        refreshBtn?.addEventListener('click', () => this.refreshData());
+        exportBtn?.addEventListener('click', () => this.exportData());
+      });
+    }
+
+    public render() {
+      this.renderVolumeChart();
+      this.renderTokenChart();
+      this.renderTransactionChart();
+      this.renderActivityChart();
+    }
+
+    private renderVolumeChart() {
+      const canvas = document.getElementById('volume-chart') as HTMLCanvasElement;
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw volume chart
+      const data = this.data.hourlyData;
+      const maxVolume = Math.max(...data.map((d: any) => d.volume));
+      
+      // Draw axes
+      ctx.strokeStyle = '#e5e7eb';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(40, 20);
+      ctx.lineTo(40, canvas.height - 20);
+      ctx.lineTo(canvas.width - 20, canvas.height - 20);
+      ctx.stroke();
+
+      // Draw volume bars
+      const barWidth = (canvas.width - 60) / data.length;
+      ctx.fillStyle = '#3b82f6';
+      
+      data.forEach((point: any, index: number) => {
+        const barHeight = (point.volume / maxVolume) * (canvas.height - 40);
+        const x = 40 + index * barWidth;
+        const y = canvas.height - 20 - barHeight;
+        
+        ctx.fillRect(x, y, barWidth - 2, barHeight);
+      });
+
+      // Draw labels
+      ctx.fillStyle = '#6b7280';
+      ctx.font = '12px Arial';
+      ctx.textAlign = 'center';
+      
+      // X-axis labels (every 4 hours)
+      for (let i = 0; i < data.length; i += 4) {
+        const x = 40 + i * barWidth + barWidth / 2;
+        ctx.fillText(data[i].hour, x, canvas.height - 5);
+      }
+    }
+
+    private renderTokenChart() {
+      const canvas = document.getElementById('token-chart') as HTMLCanvasElement;
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw pie chart
+      const data = this.data.topTokens;
+      const centerX = canvas.width / 2;
+      const centerY = canvas.height / 2;
+      const radius = Math.min(centerX, centerY) - 20;
+
+      let currentAngle = 0;
+      const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];
+
+      data.forEach((token: any, index: number) => {
+        const sliceAngle = (token.percentage / 100) * 2 * Math.PI;
+        
+        ctx.beginPath();
+        ctx.moveTo(centerX, centerY);
+        ctx.arc(centerX, centerY, radius, currentAngle, currentAngle + sliceAngle);
+        ctx.closePath();
+        ctx.fillStyle = colors[index % colors.length];
+        ctx.fill();
+
+        // Draw label
+        const labelAngle = currentAngle + sliceAngle / 2;
+        const labelX = centerX + Math.cos(labelAngle) * (radius + 20);
+        const labelY = centerY + Math.sin(labelAngle) * (radius + 20);
+        
+        ctx.fillStyle = '#374151';
+        ctx.font = '12px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${token.symbol} ${token.percentage}%`, labelX, labelY);
+
+        currentAngle += sliceAngle;
+      });
+    }
+
+    private renderTransactionChart() {
+      const canvas = document.getElementById('transaction-chart') as HTMLCanvasElement;
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      if (!canvas) return;
+
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw line chart
+      const data = this.data.hourlyData;
+      const maxTransactions = Math.max(...data.map((d: any) => d.transactions));
+      
+      // Draw axes
+      ctx.strokeStyle = '#e5e7eb';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(40, 20);
+      ctx.lineTo(40, canvas.height - 20);
+      ctx.lineTo(canvas.width - 20, canvas.height - 20);
+      ctx.stroke();
+
+      // Draw line
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      
+      data.forEach((point: any, index: number) => {
+        const x = 40 + (index / (data.length - 1)) * (canvas.width - 60);
+        const y = canvas.height - 20 - (point.transactions / maxTransactions) * (canvas.height - 40);
+        
+        if (index === 0) {
+          ctx.moveTo(x, y);
+        } else {
+          ctx.lineTo(x, y);
+        }
+      });
+      
+      ctx.stroke();
+
+      // Draw data points
+      ctx.fillStyle = '#10b981';
+      data.forEach((point: any, index: number) => {
+        const x = 40 + (index / (data.length - 1)) * (canvas.width - 60);
+        const y = canvas.height - 20 - (point.transactions / maxTransactions) * (canvas.height - 40);
+        
+        ctx.beginPath();
+        ctx.arc(x, y, 3, 0, 2 * Math.PI);
+        ctx.fill();
+      });
+    }
+
+    private renderActivityChart() {
+      const canvas = document.getElementById('activity-chart') as HTMLCanvasElement;
+      if (!canvas) return;
+
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return;
+
+      // Clear canvas
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Draw activity heatmap
+      const data = this.data.hourlyData;
+      const cellWidth = (canvas.width - 40) / data.length;
+      const cellHeight = 20;
+      
+      data.forEach((point: any, index: number) => {
+        const intensity = point.transactions / Math.max(...data.map((d: any) => d.transactions));
+        const alpha = 0.2 + intensity * 0.8;
+        
+        ctx.fillStyle = `rgba(59, 130, 246, ${alpha})`;
+        const x = 20 + index * cellWidth;
+        const y = canvas.height / 2 - cellHeight / 2;
+        
+        ctx.fillRect(x, y, cellWidth - 1, cellHeight);
+      });
+    }
+
+    private updateCharts() {
+      // In a real implementation, this would fetch new data based on time range
+      console.log(`Updating charts for time range: ${this.timeRange}`);
+      this.render();
+    }
+
+    private async refreshData() {
+      const refreshBtn = document.getElementById('refresh-analytics') as HTMLButtonElement;
+      if (refreshBtn) {
+        refreshBtn.disabled = true;
+        refreshBtn.innerHTML = '<span class="btn-icon">⏳</span> Refreshing...';
+      }
+
+      try {
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 2000));
+        
+        // Update data (in a real app, this would come from API)
+        this.data.totalVolume += Math.floor(Math.random() * 1000);
+        this.data.totalTransactions += Math.floor(Math.random() * 100);
+        
+        this.render();
+        this.showNotification('Analytics refreshed successfully', 'success');
+      } catch (error) {
+        this.showNotification('Failed to refresh analytics', 'error');
+      } finally {
+        if (refreshBtn) {
+          refreshBtn.disabled = false;
+          refreshBtn.innerHTML = '<span class="btn-icon">🔄</span> Refresh';
+        }
+      }
+    }
+
+    private exportData() {
+      const data = {
+        timestamp: new Date().toISOString(),
+        timeRange: this.timeRange,
+        analytics: this.data
+      };
+      
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `soladia-analytics-${this.timeRange}-${new Date().toISOString().split('T')[0]}.json`;
+      a.click();
+      URL.revokeObjectURL(url);
+      
+      this.showNotification('Analytics exported successfully', 'success');
+    }
+
+    private showNotification(message: string, type: 'success' | 'error' | 'info') {
+      const notification = document.createElement('div');
+      notification.className = `notification notification-${type}`;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+  }
+
+  // Initialize dashboard when DOM is loaded
+  let analyticsDashboard: AnalyticsDashboard;
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    analyticsDashboard = new AnalyticsDashboard(JSON.parse('${JSON.stringify(analyticsData)}'), '${timeRange}');
+    analyticsDashboard.render();
+  });
+
+  // Export for external use
+  window.getAnalyticsDashboard = () => analyticsDashboard;
+</script>
+
+<style>
+  .analytics-dashboard {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+  }
+
+  .dashboard-header {
+    @apply flex justify-between items-center mb-6;
+  }
+
+  .dashboard-title {
+    @apply text-xl font-semibold text-gray-900;
+  }
+
+  .dashboard-controls {
+    @apply flex items-center space-x-3;
+  }
+
+  .time-range-select {
+    @apply px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition-colors flex items-center space-x-2;
+  }
+
+  .btn-outline {
+    @apply px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors flex items-center space-x-2;
+  }
+
+  .btn-icon {
+    @apply text-sm;
+  }
+
+  .metrics-section {
+    @apply mb-8;
+  }
+
+  .metrics-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6;
+  }
+
+  .metric-card {
+    @apply bg-gray-50 rounded-lg p-6;
+  }
+
+  .metric-header {
+    @apply flex justify-between items-center mb-2;
+  }
+
+  .metric-title {
+    @apply font-semibold text-gray-900;
+  }
+
+  .metric-change {
+    @apply text-sm font-medium;
+  }
+
+  .metric-change.positive {
+    @apply text-green-600;
+  }
+
+  .metric-change.negative {
+    @apply text-red-600;
+  }
+
+  .metric-value {
+    @apply text-3xl font-bold text-gray-900 mb-1;
+  }
+
+  .metric-subtitle {
+    @apply text-sm text-gray-600;
+  }
+
+  .charts-section {
+    @apply mb-8;
+  }
+
+  .charts-grid {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+  }
+
+  .chart-card {
+    @apply bg-gray-50 rounded-lg p-6;
+  }
+
+  .chart-title {
+    @apply text-lg font-semibold text-gray-900 mb-4;
+  }
+
+  .chart-container {
+    @apply w-full;
+  }
+
+  .trends-section {
+    @apply mb-8;
+  }
+
+  .section-title {
+    @apply text-lg font-semibold text-gray-900 mb-4;
+  }
+
+  .trends-grid {
+    @apply grid grid-cols-1 lg:grid-cols-3 gap-6;
+  }
+
+  .trend-card {
+    @apply bg-gray-50 rounded-lg p-6;
+  }
+
+  .trend-title {
+    @apply font-semibold text-gray-900 mb-4;
+  }
+
+  .trend-list {
+    @apply space-y-3;
+  }
+
+  .trend-item {
+    @apply flex items-center space-x-3;
+  }
+
+  .trend-info {
+    @apply flex-1 flex justify-between items-center;
+  }
+
+  .trend-symbol {
+    @apply font-medium text-gray-900;
+  }
+
+  .trend-volume {
+    @apply text-sm text-gray-600;
+  }
+
+  .trend-bar {
+    @apply flex-1 h-2 bg-gray-200 rounded-full mx-3;
+  }
+
+  .trend-fill {
+    @apply h-full bg-blue-500 rounded-full;
+  }
+
+  .trend-percentage {
+    @apply text-sm font-medium text-gray-700 w-12 text-right;
+  }
+
+  .peak-hours {
+    @apply space-y-2;
+  }
+
+  .peak-hour {
+    @apply flex justify-between items-center;
+  }
+
+  .hour {
+    @apply font-medium text-gray-900;
+  }
+
+  .volume {
+    @apply text-sm text-gray-600;
+  }
+
+  .growth-metrics {
+    @apply space-y-3;
+  }
+
+  .growth-item {
+    @apply flex justify-between items-center;
+  }
+
+  .growth-label {
+    @apply text-sm text-gray-600;
+  }
+
+  .growth-value {
+    @apply text-sm font-medium;
+  }
+
+  .growth-value.positive {
+    @apply text-green-600;
+  }
+
+  .growth-value.negative {
+    @apply text-red-600;
+  }
+
+  .notification {
+    @apply fixed top-4 right-4 px-4 py-2 rounded-lg text-white font-medium z-50;
+  }
+
+  .notification-success {
+    @apply bg-green-600;
+  }
+
+  .notification-error {
+    @apply bg-red-600;
+  }
+
+  .notification-info {
+    @apply bg-blue-600;
+  }
+</style>
+
+<!-- Global types for TypeScript -->
+<script>
+  declare global {
+    interface Window {
+      getAnalyticsDashboard: () => AnalyticsDashboard;
+    }
+  }
+</script>

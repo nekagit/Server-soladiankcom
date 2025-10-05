@@ -5,6 +5,12 @@ import tailwind from '@astrojs/tailwind';
 // https://astro.build/config
 export default defineConfig({
   integrations: [tailwind()],
+  site: 'https://soladia.com',
+  output: 'static',
+  build: {
+    assets: 'assets',
+    inlineStylesheets: 'auto'
+  },
   vite: {
     resolve: {
       alias: {
@@ -17,15 +23,29 @@ export default defineConfig({
         '@utils': '/src/utils',
         '@styles': '/src/styles'
       }
+    },
+    build: {
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            'solana-wallet': ['@solana/web3.js'],
+            'ui-components': ['@astrojs/tailwind']
+          }
+        }
+      }
     }
   },
   server: {
     port: 4321,
     host: true
   },
-  output: 'static',
-  build: {
-    assets: 'assets'
+  compressHTML: true,
+  prefetch: {
+    prefetchAll: true,
+    defaultStrategy: 'viewport'
+  },
+  experimental: {
+    contentCollectionCache: true
   }
 });
 

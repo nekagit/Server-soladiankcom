@@ -1,0 +1,161 @@
+---
+// Theme Toggle Component
+---
+
+<div class="theme-toggle">
+  <button 
+    id="theme-toggle" 
+    class="theme-toggle-btn"
+    aria-label="Toggle dark mode"
+    title="Toggle dark mode"
+  >
+    <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <circle cx="12" cy="12" r="5"/>
+      <line x1="12" y1="1" x2="12" y2="3"/>
+      <line x1="12" y1="21" x2="12" y2="23"/>
+      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+      <line x1="1" y1="12" x2="3" y2="12"/>
+      <line x1="21" y1="12" x2="23" y2="12"/>
+      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+    </svg>
+    <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+    </svg>
+  </button>
+</div>
+
+<style>
+  .theme-toggle {
+    position: relative;
+  }
+
+  .theme-toggle-btn {
+    @apply relative p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+  }
+
+  .theme-toggle-btn:focus {
+    @apply outline-none ring-2 ring-blue-500 ring-opacity-50;
+  }
+
+  .sun-icon,
+  .moon-icon {
+    position: absolute;
+    transition: opacity 0.2s ease-in-out, transform 0.2s ease-in-out;
+  }
+
+  .sun-icon {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+
+  .moon-icon {
+    opacity: 0;
+    transform: rotate(180deg);
+  }
+
+  .dark .sun-icon {
+    opacity: 0;
+    transform: rotate(180deg);
+  }
+
+  .dark .moon-icon {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+
+  /* Smooth transitions for theme changes */
+  * {
+    transition: background-color 0.2s ease-in-out, border-color 0.2s ease-in-out, color 0.2s ease-in-out;
+  }
+</style>
+
+<script>
+  // Theme management
+  class ThemeManager {
+    constructor() {
+      this.theme = this.getStoredTheme() || this.getSystemTheme();
+      this.init();
+    }
+
+    getStoredTheme() {
+      if (typeof window !== 'undefined') {
+        return localStorage.getItem('theme');
+      }
+      return null;
+    }
+
+    getSystemTheme() {
+      if (typeof window !== 'undefined' && window.matchMedia) {
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+      }
+      return 'light';
+    }
+
+    init() {
+      if (typeof window !== 'undefined') {
+        this.applyTheme(this.theme);
+        this.setupListeners();
+        this.watchSystemTheme();
+      }
+    }
+
+    applyTheme(theme) {
+      if (typeof document !== 'undefined') {
+        const root = document.documentElement;
+        
+        if (theme === 'dark') {
+          root.classList.add('dark');
+        } else {
+          root.classList.remove('dark');
+        }
+        
+        // Store preference
+        if (typeof localStorage !== 'undefined') {
+          localStorage.setItem('theme', theme);
+        }
+      }
+    }
+
+    toggleTheme() {
+      this.theme = this.theme === 'light' ? 'dark' : 'light';
+      this.applyTheme(this.theme);
+    }
+
+    setupListeners() {
+      const toggleBtn = document.getElementById('theme-toggle');
+      if (toggleBtn) {
+        toggleBtn.addEventListener('click', () => this.toggleTheme());
+      }
+    }
+
+    watchSystemTheme() {
+      if (typeof window !== 'undefined' && window.matchMedia) {
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        mediaQuery.addEventListener('change', (e) => {
+          if (!this.getStoredTheme()) {
+            this.theme = e.matches ? 'dark' : 'light';
+            this.applyTheme(this.theme);
+          }
+        });
+      }
+    }
+  }
+
+  // Initialize theme manager when DOM is ready
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => new ThemeManager());
+    } else {
+      new ThemeManager();
+    }
+  }
+</script>

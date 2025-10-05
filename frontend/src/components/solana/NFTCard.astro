@@ -1,0 +1,393 @@
+---
+// NFTCard.astro - NFT card component for marketplace
+export interface Props {
+  id: string;
+  name: string;
+  description?: string;
+  image: string;
+  price: number;
+  currency: string;
+  owner?: string;
+  collection?: string;
+  rarity?: 'Common' | 'Rare' | 'Epic' | 'Legendary';
+  attributes?: Array<{trait_type: string; value: string}>;
+  isListed?: boolean;
+  isOwned?: boolean;
+}
+
+const {
+  id,
+  name,
+  description = '',
+  image,
+  price,
+  currency = 'SOL',
+  owner = '',
+  collection = '',
+  rarity = 'Common',
+  attributes = [],
+  isListed = true,
+  isOwned = false
+} = Astro.props;
+---
+
+<div class="nft-card" data-nft-id={id}>
+  <div class="nft-image-container">
+    <img src={image} alt={name} class="nft-image" />
+    <div class="nft-overlay">
+      <button class="nft-action-btn view-btn" data-action="view">
+        <span>👁️</span>
+      </button>
+      <button class="nft-action-btn favorite-btn" data-action="favorite">
+        <span>❤️</span>
+      </button>
+      {isListed && (
+        <button class="nft-action-btn buy-btn" data-action="buy">
+          <span>🛒</span>
+        </button>
+      )}
+    </div>
+    {rarity && (
+      <div class={`rarity-badge rarity-${rarity.toLowerCase()}`}>
+        {rarity}
+      </div>
+    )}
+  </div>
+  
+  <div class="nft-content">
+    <div class="nft-header">
+      <h3 class="nft-name">{name}</h3>
+      {collection && (
+        <p class="nft-collection">{collection}</p>
+      )}
+    </div>
+    
+    {description && (
+      <p class="nft-description">{description}</p>
+    )}
+    
+    <div class="nft-price-section">
+      <div class="nft-price">
+        <span class="price-amount">{price}</span>
+        <span class="price-currency">{currency}</span>
+      </div>
+      {owner && (
+        <div class="nft-owner">
+          <span class="owner-label">Owner:</span>
+          <span class="owner-address">{owner.slice(0, 8)}...{owner.slice(-4)}</span>
+        </div>
+      )}
+    </div>
+    
+    {attributes.length > 0 && (
+      <div class="nft-attributes">
+        {attributes.slice(0, 3).map((attr) => (
+          <div class="attribute">
+            <span class="attribute-name">{attr.trait_type}:</span>
+            <span class="attribute-value">{attr.value}</span>
+          </div>
+        ))}
+        {attributes.length > 3 && (
+          <div class="attribute-more">
+            +{attributes.length - 3} more
+          </div>
+        )}
+      </div>
+    )}
+    
+    <div class="nft-actions">
+      {isListed ? (
+        <button class="btn-primary buy-now-btn" data-nft-id={id}>
+          Buy Now
+        </button>
+      ) : (
+        <button class="btn-secondary list-btn" data-nft-id={id}>
+          List for Sale
+        </button>
+      )}
+      
+      {isOwned && (
+        <button class="btn-outline transfer-btn" data-nft-id={id}>
+          Transfer
+        </button>
+      )}
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const nftCards = document.querySelectorAll('.nft-card');
+    
+    nftCards.forEach(card => {
+      // View button
+      const viewBtn = card.querySelector('.view-btn');
+      if (viewBtn) {
+        viewBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const nftId = card.getAttribute('data-nft-id');
+          viewNFT(nftId);
+        });
+      }
+      
+      // Favorite button
+      const favoriteBtn = card.querySelector('.favorite-btn');
+      if (favoriteBtn) {
+        favoriteBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const nftId = card.getAttribute('data-nft-id');
+          toggleFavorite(nftId, favoriteBtn);
+        });
+      }
+      
+      // Buy button
+      const buyBtn = card.querySelector('.buy-now-btn');
+      if (buyBtn) {
+        buyBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const nftId = card.getAttribute('data-nft-id');
+          buyNFT(nftId);
+        });
+      }
+      
+      // List button
+      const listBtn = card.querySelector('.list-btn');
+      if (listBtn) {
+        listBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const nftId = card.getAttribute('data-nft-id');
+          listNFT(nftId);
+        });
+      }
+      
+      // Transfer button
+      const transferBtn = card.querySelector('.transfer-btn');
+      if (transferBtn) {
+        transferBtn.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const nftId = card.getAttribute('data-nft-id');
+          transferNFT(nftId);
+        });
+      }
+      
+      // Card click to view
+      card.addEventListener('click', () => {
+        const nftId = card.getAttribute('data-nft-id');
+        viewNFT(nftId);
+      });
+    });
+  });
+
+  function viewNFT(nftId: string | null) {
+    if (nftId) {
+      window.location.href = `/nft/${nftId}`;
+    }
+  }
+
+  function toggleFavorite(nftId: string | null, button: Element) {
+    if (nftId) {
+      const isFavorited = button.classList.contains('favorited');
+      
+      if (isFavorited) {
+        button.classList.remove('favorited');
+        button.innerHTML = '<span>🤍</span>';
+        showNotification('Removed from favorites', 'info');
+      } else {
+        button.classList.add('favorited');
+        button.innerHTML = '<span>❤️</span>';
+        showNotification('Added to favorites', 'success');
+      }
+    }
+  }
+
+  function buyNFT(nftId: string | null) {
+    if (nftId) {
+      // Check if wallet is connected
+      if (typeof window !== 'undefined' && window.enhancedSolanaWalletService) {
+        if (!window.enhancedSolanaWalletService.isConnected()) {
+          showNotification('Please connect your wallet first', 'error');
+          window.openWalletConnect?.();
+          return;
+        }
+      }
+      
+      showNotification('Opening purchase dialog...', 'info');
+      // In a real app, this would open a purchase modal
+      console.log(`Buying NFT: ${nftId}`);
+    }
+  }
+
+  function listNFT(nftId: string | null) {
+    if (nftId) {
+      showNotification('Opening listing dialog...', 'info');
+      // In a real app, this would open a listing modal
+      console.log(`Listing NFT: ${nftId}`);
+    }
+  }
+
+  function transferNFT(nftId: string | null) {
+    if (nftId) {
+      showNotification('Opening transfer dialog...', 'info');
+      // In a real app, this would open a transfer modal
+      console.log(`Transferring NFT: ${nftId}`);
+    }
+  }
+
+  function showNotification(message: string, type: 'success' | 'error' | 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
+  }
+</script>
+
+<style>
+  .nft-card {
+    @apply bg-white rounded-lg shadow-sm overflow-hidden hover:shadow-lg transition-all duration-300 cursor-pointer group;
+  }
+
+  .nft-image-container {
+    @apply relative aspect-square overflow-hidden;
+  }
+
+  .nft-image {
+    @apply w-full h-full object-cover transition-transform duration-300 group-hover:scale-105;
+  }
+
+  .nft-overlay {
+    @apply absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-30 transition-all duration-300 flex items-center justify-center;
+  }
+
+  .nft-action-btn {
+    @apply w-10 h-10 bg-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 hover:bg-gray-100;
+  }
+
+  .rarity-badge {
+    @apply absolute top-2 right-2 px-2 py-1 rounded-full text-xs font-medium;
+  }
+
+  .rarity-common {
+    @apply bg-gray-100 text-gray-800;
+  }
+
+  .rarity-rare {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .rarity-epic {
+    @apply bg-blue-100 text-blue-800;
+  }
+
+  .rarity-legendary {
+    @apply bg-purple-100 text-purple-800;
+  }
+
+  .nft-content {
+    @apply p-4 space-y-3;
+  }
+
+  .nft-header {
+    @apply space-y-1;
+  }
+
+  .nft-name {
+    @apply font-semibold text-gray-900 text-lg;
+  }
+
+  .nft-collection {
+    @apply text-sm text-gray-600;
+  }
+
+  .nft-description {
+    @apply text-sm text-gray-600 line-clamp-2;
+  }
+
+  .nft-price-section {
+    @apply flex justify-between items-center;
+  }
+
+  .nft-price {
+    @apply flex items-center space-x-1;
+  }
+
+  .price-amount {
+    @apply text-xl font-bold text-gray-900;
+  }
+
+  .price-currency {
+    @apply text-sm text-gray-600;
+  }
+
+  .nft-owner {
+    @apply text-xs text-gray-500;
+  }
+
+  .owner-label {
+    @apply font-medium;
+  }
+
+  .owner-address {
+    @apply font-mono;
+  }
+
+  .nft-attributes {
+    @apply space-y-1;
+  }
+
+  .attribute {
+    @apply flex justify-between text-xs;
+  }
+
+  .attribute-name {
+    @apply text-gray-600;
+  }
+
+  .attribute-value {
+    @apply font-medium text-gray-900;
+  }
+
+  .attribute-more {
+    @apply text-xs text-gray-500 italic;
+  }
+
+  .nft-actions {
+    @apply flex space-x-2 pt-2;
+  }
+
+  .btn-primary {
+    @apply flex-1 bg-blue-600 text-white py-2 px-3 rounded-lg font-medium hover:bg-blue-700 transition-colors text-sm;
+  }
+
+  .btn-secondary {
+    @apply flex-1 bg-gray-200 text-gray-700 py-2 px-3 rounded-lg font-medium hover:bg-gray-300 transition-colors text-sm;
+  }
+
+  .btn-outline {
+    @apply px-3 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors text-sm;
+  }
+
+  .favorited {
+    @apply text-red-500;
+  }
+
+  .notification {
+    @apply fixed top-4 right-4 px-4 py-2 rounded-lg text-white font-medium z-50;
+  }
+
+  .notification-success {
+    @apply bg-green-600;
+  }
+
+  .notification-error {
+    @apply bg-red-600;
+  }
+
+  .notification-info {
+    @apply bg-blue-600;
+  }
+</style>

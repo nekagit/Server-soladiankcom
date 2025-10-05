@@ -2,227 +2,686 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Global Styles */
-@layer base {
-  html {
-    font-family: 'Inter', system-ui, sans-serif;
-  }
+/* ========================================
+   SOLADIA - ICONIC MARKETPLACE DESIGN
+   Inspired by eBay's bold, distinctive style
+   ======================================== */
+
+/* CSS Custom Properties for Soladia Brand */
+:root {
+  /* Soladia Brand Colors */
+  --soladia-primary: #E60012;        /* eBay Red equivalent */
+  --soladia-secondary: #0066CC;      /* eBay Blue */
+  --soladia-accent: #FFD700;         /* Gold accent */
+  --soladia-success: #00A650;        /* Success green */
+  --soladia-warning: #FF8C00;        /* Warning orange */
+  --soladia-dark: #1A1A1A;          /* Dark text */
+  --soladia-light: #F8F9FA;         /* Light background */
+  --soladia-border: #E1E5E9;        /* Border color */
   
-  body {
-    @apply bg-gray-50 text-gray-900;
-  }
+  /* Dark Mode Colors */
+  --soladia-dark-bg: #0F0F0F;        /* Dark background */
+  --soladia-dark-surface: #1A1A1A;   /* Dark surface */
+  --soladia-dark-text: #FFFFFF;      /* Dark mode text */
+  --soladia-dark-border: #333333;    /* Dark mode border */
+  --soladia-dark-muted: #666666;     /* Dark mode muted text */
   
-  * {
-    @apply border-gray-200;
-  }
+  /* Gradients */
+  --soladia-gradient: linear-gradient(135deg, #E60012 0%, #0066CC 100%);
+  --soladia-gradient-gold: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  --soladia-gradient-dark: linear-gradient(135deg, #1A1A1A 0%, #333333 100%);
+  
+  /* Shadows */
+  --soladia-shadow: 0 4px 20px rgba(230, 0, 18, 0.15);
+  --soladia-shadow-lg: 0 8px 40px rgba(230, 0, 18, 0.25);
+  --soladia-shadow-card: 0 2px 12px rgba(0, 0, 0, 0.08);
+  
+  /* Typography */
+  --soladia-font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --soladia-font-display: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  
+  /* Spacing */
+  --soladia-space-xs: 0.25rem;
+  --soladia-space-sm: 0.5rem;
+  --soladia-space-md: 1rem;
+  --soladia-space-lg: 1.5rem;
+  --soladia-space-xl: 2rem;
+  --soladia-space-2xl: 3rem;
+  
+  /* Border Radius */
+  --soladia-radius-sm: 4px;
+  --soladia-radius-md: 8px;
+  --soladia-radius-lg: 12px;
+  --soladia-radius-xl: 16px;
 }
 
-@layer components {
-  /* Button Styles */
-  .btn-primary {
-    @apply bg-solana-purple text-white px-6 py-3 rounded-lg font-semibold hover:bg-purple-700 transition-colors duration-200 shadow-md hover:shadow-lg;
-  }
-  
-  .btn-secondary {
-    @apply bg-white text-solana-purple border-2 border-solana-purple px-6 py-3 rounded-lg font-semibold hover:bg-solana-purple hover:text-white transition-colors duration-200;
-  }
-  
-  .btn-large {
-    @apply px-8 py-4 text-lg;
-  }
-  
-  /* Card Styles */
-  .card {
-    @apply bg-white rounded-xl shadow-md hover:shadow-xl transition-shadow duration-300 p-6;
-  }
-  
-  .product-card {
-    @apply bg-white rounded-lg shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden cursor-pointer;
-  }
-  
-  .product-image {
-    @apply relative overflow-hidden;
-  }
-  
-  .product-badge {
-    @apply absolute top-2 left-2 bg-solana-purple text-white px-2 py-1 rounded-full text-xs font-semibold;
-  }
-  
-  .product-info {
-    @apply p-4;
-  }
-  
-  .product-title {
-    @apply text-lg font-semibold text-gray-900 mb-2 line-clamp-2;
-  }
-  
-  .product-description {
-    @apply text-gray-600 text-sm mb-3 line-clamp-2;
-  }
-  
-  .product-price {
-    @apply flex items-center space-x-2 mb-2;
-  }
-  
-  .price-current {
-    @apply text-xl font-bold text-solana-purple;
-  }
-  
-  .price-original {
-    @apply text-sm text-gray-500 line-through;
-  }
-  
-  .product-meta {
-    @apply flex items-center justify-between text-sm text-gray-500;
-  }
-  
-  .product-rating {
-    @apply flex items-center space-x-1;
-  }
-  
-  .product-seller {
-    @apply text-gray-600;
-  }
-  
-  /* Category Styles */
-  .category-card {
-    @apply bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-8 text-center cursor-pointer hover:scale-105;
-  }
-  
-  .category-icon {
-    @apply text-4xl mb-4;
-  }
-  
-  .category-name {
-    @apply text-xl font-semibold text-gray-900 mb-2;
-  }
-  
-  .category-count {
-    @apply text-gray-600 text-sm;
-  }
-  
-  /* Feature Styles */
-  .feature-card {
-    @apply bg-white rounded-xl shadow-md hover:shadow-xl transition-all duration-300 p-6 text-center;
-  }
-  
-  .feature-icon {
-    @apply text-3xl mb-4;
-  }
-  
-  .feature-title {
-    @apply text-xl font-semibold text-gray-900 mb-2;
-  }
-  
-  .feature-description {
-    @apply text-gray-600;
-  }
-  
-  /* Section Styles */
-  .hero-section {
-    @apply bg-gradient-to-br from-solana-purple to-purple-600 text-white;
-  }
-  
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+
+/* Reset and Base Styles */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: var(--soladia-font-primary);
+  background: var(--soladia-light);
+  color: var(--soladia-dark);
+  line-height: 1.6;
+  margin: 0;
+  padding: 0;
+  overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark Mode Styles */
+.dark body {
+  background: var(--soladia-dark-bg);
+  color: var(--soladia-dark-text);
+}
+
+.dark .hero-section {
+  background: linear-gradient(135deg, rgba(230, 0, 18, 0.05) 0%, rgba(0, 102, 204, 0.05) 100%);
+}
+
+.dark nav {
+  background: rgba(26, 26, 26, 0.95);
+  border-bottom-color: var(--soladia-primary);
+}
+
+.dark .category-card,
+.dark .product-card,
+.dark .feature-card {
+  background: var(--soladia-dark-surface);
+  border-color: var(--soladia-dark-border);
+  color: var(--soladia-dark-text);
+}
+
+.dark .category-card:hover,
+.dark .product-card:hover,
+.dark .feature-card:hover {
+  border-color: var(--soladia-primary);
+}
+
+.dark .product-title,
+.dark .category-name,
+.dark .feature-title {
+  color: var(--soladia-dark-text);
+}
+
+.dark .product-description,
+.dark .feature-description,
+.dark .category-count {
+  color: var(--soladia-dark-muted);
+}
+
+.dark .footer {
+  background: var(--soladia-dark-surface);
+}
+
+.dark .footer-links a {
+  color: var(--soladia-dark-muted);
+}
+
+.dark .footer-links a:hover {
+  color: var(--soladia-dark-text);
+}
+
+/* Animated Background */
+body::before {
+  content: '';
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(230, 0, 18, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(0, 102, 204, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 40% 40%, rgba(255, 215, 0, 0.05) 0%, transparent 50%);
+  z-index: -1;
+  animation: backgroundShift 20s ease-in-out infinite;
+}
+
+@keyframes backgroundShift {
+  0%, 100% { transform: translateX(0) translateY(0); }
+  25% { transform: translateX(-10px) translateY(-5px); }
+  50% { transform: translateX(5px) translateY(-10px); }
+  75% { transform: translateX(-5px) translateY(5px); }
+}
+
+/* Navigation Styles */
+nav {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  border-bottom: 3px solid var(--soladia-primary);
+  box-shadow: var(--soladia-shadow);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: all 0.3s ease;
+}
+
+nav:hover {
+  box-shadow: var(--soladia-shadow-lg);
+}
+
+/* Soladia Logo */
+.soladia-logo {
+  display: flex;
+  align-items: center;
+  gap: var(--soladia-space-sm);
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.soladia-logo:hover {
+  transform: scale(1.05);
+}
+
+.soladia-logo-icon {
+  width: 40px;
+  height: 40px;
+  background: var(--soladia-gradient);
+  border-radius: var(--soladia-radius-lg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--soladia-shadow);
+}
+
+.soladia-logo-icon::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+  animation: logoShine 3s ease-in-out infinite;
+}
+
+@keyframes logoShine {
+  0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+  50% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+  100% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+}
+
+.soladia-logo-icon span {
+  font-family: var(--soladia-font-display);
+  font-weight: 900;
+  font-size: 1.5rem;
+  color: white;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+  z-index: 1;
+}
+
+.soladia-logo-text {
+  font-family: var(--soladia-font-display);
+  font-weight: 800;
+  font-size: 1.75rem;
+  background: var(--soladia-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  letter-spacing: -0.02em;
+}
+
+/* Hero Section */
+.hero-section {
+  background: linear-gradient(135deg, rgba(230, 0, 18, 0.1) 0%, rgba(0, 102, 204, 0.1) 100%);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: 
+    radial-gradient(circle at 20% 20%, rgba(230, 0, 18, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(0, 102, 204, 0.1) 0%, transparent 50%);
+  animation: heroFloat 20s ease-in-out infinite;
+}
+
+@keyframes heroFloat {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(-20px) rotate(1deg); }
+}
+
+.hero-title {
+  font-family: var(--soladia-font-display);
+  font-size: 4rem;
+  font-weight: 900;
+  background: var(--soladia-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: var(--soladia-space-lg);
+  letter-spacing: -0.02em;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-subtitle {
+  font-size: 1.5rem;
+  color: #666;
+  margin-bottom: var(--soladia-space-2xl);
+  position: relative;
+  z-index: 1;
+}
+
+.hero-actions {
+  display: flex;
+  gap: var(--soladia-space-lg);
+  justify-content: center;
+  position: relative;
+  z-index: 1;
+}
+
+.btn-large {
+  padding: var(--soladia-space-lg) var(--soladia-space-2xl);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--soladia-primary);
+  border: 2px solid var(--soladia-primary);
+  padding: var(--soladia-space-md) var(--soladia-space-xl);
+  border-radius: var(--soladia-radius-lg);
+  font-size: 1.1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-decoration: none;
+  display: inline-block;
+  text-align: center;
+}
+
+.btn-secondary:hover {
+  background: var(--soladia-primary);
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: var(--soladia-shadow-lg);
+}
+
+/* Section Styles */
+.section-title {
+  font-family: var(--soladia-font-display);
+  font-size: 2.5rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: var(--soladia-space-2xl);
+  color: var(--soladia-dark);
+}
+
+/* Categories Section */
+.categories-section {
+  background: white;
+  position: relative;
+}
+
+.categories-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: var(--soladia-space-xl);
+  margin-top: var(--soladia-space-2xl);
+}
+
+.category-card {
+  background: white;
+  border: 2px solid var(--soladia-border);
+  border-radius: var(--soladia-radius-xl);
+  padding: var(--soladia-space-xl);
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.category-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(230, 0, 18, 0.1), transparent);
+  transition: left 0.5s ease;
+}
+
+.category-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--soladia-shadow-lg);
+  border-color: var(--soladia-primary);
+}
+
+.category-card:hover::before {
+  left: 100%;
+}
+
+.category-icon {
+  font-size: 3rem;
+  margin-bottom: var(--soladia-space-md);
+  position: relative;
+  z-index: 1;
+}
+
+.category-name {
+  font-family: var(--soladia-font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--soladia-dark);
+  margin-bottom: var(--soladia-space-sm);
+  position: relative;
+  z-index: 1;
+}
+
+.category-count {
+  color: #666;
+  font-size: 0.9rem;
+  position: relative;
+  z-index: 1;
+}
+
+/* Featured Products Section */
+.featured-section {
+  background: var(--soladia-light);
+  position: relative;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: var(--soladia-space-xl);
+  margin-top: var(--soladia-space-2xl);
+}
+
+.product-card {
+  background: white;
+  border-radius: var(--soladia-radius-xl);
+  overflow: hidden;
+  box-shadow: var(--soladia-shadow-card);
+  transition: all 0.3s ease;
+  cursor: pointer;
+  position: relative;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--soladia-shadow-lg);
+}
+
+.product-image {
+  position: relative;
+  overflow: hidden;
+}
+
+.product-image img {
+  transition: transform 0.3s ease;
+}
+
+.product-card:hover .product-image img {
+  transform: scale(1.05);
+}
+
+.product-badge {
+  position: absolute;
+  top: var(--soladia-space-md);
+  right: var(--soladia-space-md);
+  background: var(--soladia-gradient);
+  color: white;
+  padding: var(--soladia-space-xs) var(--soladia-space-sm);
+  border-radius: var(--soladia-radius-md);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.product-info {
+  padding: var(--soladia-space-lg);
+}
+
+.product-title {
+  font-family: var(--soladia-font-display);
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--soladia-dark);
+  margin-bottom: var(--soladia-space-sm);
+}
+
+.product-description {
+  color: #666;
+  font-size: 0.9rem;
+  margin-bottom: var(--soladia-space-md);
+  line-height: 1.4;
+}
+
+.product-price {
+  display: flex;
+  align-items: center;
+  gap: var(--soladia-space-sm);
+  margin-bottom: var(--soladia-space-md);
+}
+
+.price-current {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--soladia-primary);
+}
+
+.price-original {
+  font-size: 1rem;
+  color: #999;
+  text-decoration: line-through;
+}
+
+.product-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.product-rating {
+  display: flex;
+  align-items: center;
+  gap: var(--soladia-space-xs);
+}
+
+.product-seller {
+  font-weight: 500;
+}
+
+/* Features Section */
+.features-section {
+  background: white;
+  position: relative;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--soladia-space-xl);
+  margin-top: var(--soladia-space-2xl);
+}
+
+.feature-card {
+  text-align: center;
+  padding: var(--soladia-space-xl);
+  border-radius: var(--soladia-radius-lg);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--soladia-gradient);
+  transform: scaleX(0);
+  transition: transform 0.3s ease;
+}
+
+.feature-card:hover::before {
+  transform: scaleX(1);
+}
+
+.feature-card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--soladia-shadow);
+}
+
+.feature-icon {
+  font-size: 3rem;
+  margin-bottom: var(--soladia-space-lg);
+}
+
+.feature-title {
+  font-family: var(--soladia-font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--soladia-dark);
+  margin-bottom: var(--soladia-space-md);
+}
+
+.feature-description {
+  color: #666;
+  line-height: 1.6;
+}
+
+/* Footer */
+.footer {
+  background: var(--soladia-dark);
+  color: white;
+  position: relative;
+}
+
+.footer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--soladia-gradient);
+}
+
+.footer-content {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: var(--soladia-space-2xl);
+  margin-bottom: var(--soladia-space-2xl);
+}
+
+.footer-section h3,
+.footer-section h4 {
+  font-family: var(--soladia-font-display);
+  font-weight: 700;
+  margin-bottom: var(--soladia-space-lg);
+}
+
+.footer-title {
+  font-size: 1.5rem;
+  background: var(--soladia-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.footer-subtitle {
+  font-size: 1.1rem;
+  color: #ccc;
+}
+
+.footer-description {
+  color: #999;
+  line-height: 1.6;
+  margin-bottom: var(--soladia-space-lg);
+}
+
+.footer-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.footer-links li {
+  margin-bottom: var(--soladia-space-sm);
+}
+
+.footer-links a {
+  color: #ccc;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+
+.footer-links a:hover {
+  color: white;
+}
+
+.footer-bottom {
+  border-top: 1px solid #333;
+  padding-top: var(--soladia-space-lg);
+  text-align: center;
+  color: #999;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
   .hero-title {
-    @apply text-5xl md:text-6xl font-bold mb-6;
+    font-size: 2.5rem;
   }
   
   .hero-subtitle {
-    @apply text-xl md:text-2xl mb-8 text-purple-100;
+    font-size: 1.2rem;
   }
   
   .hero-actions {
-    @apply flex flex-col sm:flex-row gap-4 justify-center;
-  }
-  
-  .categories-section {
-    @apply py-16 bg-white;
-  }
-  
-  .section-title {
-    @apply text-3xl md:text-4xl font-bold text-center text-gray-900 mb-12;
+    flex-direction: column;
+    align-items: center;
   }
   
   .categories-grid {
-    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8;
-  }
-  
-  .featured-section {
-    @apply py-16 bg-gray-50;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--soladia-space-lg);
   }
   
   .products-grid {
-    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6;
-  }
-  
-  .features-section {
-    @apply py-16 bg-white;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   }
   
   .features-grid {
-    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8;
-  }
-  
-  /* Navigation Styles */
-  .soladia-logo {
-    @apply flex items-center space-x-3;
-  }
-  
-  .soladia-logo-icon {
-    @apply w-10 h-10 bg-solana-purple rounded-lg flex items-center justify-center text-white font-bold text-xl;
-  }
-  
-  .soladia-logo-text {
-    @apply text-2xl font-bold text-gray-900;
-  }
-  
-  /* Footer Styles */
-  .footer {
-    @apply bg-gray-900 text-white;
-  }
-  
-  .footer-content {
-    @apply grid grid-cols-1 md:grid-cols-4 gap-8;
-  }
-  
-  .footer-section {
-    @apply space-y-4;
-  }
-  
-  .footer-title {
-    @apply text-xl font-bold text-solana-purple;
-  }
-  
-  .footer-subtitle {
-    @apply text-lg font-semibold mb-4;
-  }
-  
-  .footer-links {
-    @apply space-y-2;
-  }
-  
-  .footer-links li a {
-    @apply text-gray-300 hover:text-white transition-colors;
-  }
-  
-  .footer-bottom {
-    @apply border-t border-gray-700 mt-8 pt-8 text-center text-gray-400;
+    grid-template-columns: 1fr;
   }
 }
 
-@layer utilities {
-  .line-clamp-2 {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
   
-  .line-clamp-3 {
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+  body::before {
+    animation: none;
   }
 }
-

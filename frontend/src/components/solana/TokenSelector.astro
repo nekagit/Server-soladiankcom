@@ -1,0 +1,448 @@
+---
+// TokenSelector.astro - Token selection component for payments
+export interface Props {
+  selectedToken?: string;
+  onTokenChange?: (token: string) => void;
+  showBalance?: boolean;
+  showSearch?: boolean;
+  disabled?: boolean;
+}
+
+const {
+  selectedToken = 'SOL',
+  onTokenChange,
+  showBalance = true,
+  showSearch = true,
+  disabled = false
+} = Astro.props;
+
+// Sample tokens data
+const tokens = [
+  {
+    mint: 'So11111111111111111111111111111111111111112',
+    name: 'Wrapped SOL',
+    symbol: 'SOL',
+    decimals: 9,
+    balance: 2.5,
+    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/So11111111111111111111111111111111111111112/logo.png'
+  },
+  {
+    mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v',
+    name: 'USD Coin',
+    symbol: 'USDC',
+    decimals: 6,
+    balance: 1000.0,
+    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v/logo.png'
+  },
+  {
+    mint: 'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+    name: 'Tether USD',
+    symbol: 'USDT',
+    decimals: 6,
+    balance: 500.0,
+    logoURI: 'https://raw.githubusercontent.com/solana-labs/token-list/main/assets/mainnet/Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB/logo.png'
+  }
+];
+---
+
+<div class="token-selector" id="token-selector">
+  <div class="selector-header">
+    <label class="selector-label">Select Token</label>
+    {showSearch && (
+      <div class="search-container">
+        <input 
+          type="text" 
+          id="token-search" 
+          class="search-input" 
+          placeholder="Search tokens..."
+          disabled={disabled}
+        />
+        <span class="search-icon">🔍</span>
+      </div>
+    )}
+  </div>
+  
+  <div class="token-list" id="token-list">
+    {tokens.map((token) => (
+      <div 
+        class={`token-option ${selectedToken === token.symbol ? 'selected' : ''} ${disabled ? 'disabled' : ''}`}
+        data-token={token.symbol}
+        data-mint={token.mint}
+      >
+        <div class="token-info">
+          <div class="token-logo">
+            <img src={token.logoURI} alt={token.name} />
+          </div>
+          <div class="token-details">
+            <div class="token-name">{token.name}</div>
+            <div class="token-symbol">{token.symbol}</div>
+          </div>
+        </div>
+        
+        {showBalance && (
+          <div class="token-balance">
+            <div class="balance-amount">{token.balance.toFixed(4)}</div>
+            <div class="balance-symbol">{token.symbol}</div>
+          </div>
+        )}
+        
+        {selectedToken === token.symbol && (
+          <div class="selected-indicator">✓</div>
+        )}
+      </div>
+    ))}
+  </div>
+  
+  <div class="selector-footer">
+    <button class="add-token-btn" id="add-token-btn" disabled={disabled}>
+      <span class="btn-icon">➕</span>
+      Add Custom Token
+    </button>
+  </div>
+</div>
+
+<script>
+  import { solanaTokenService } from '../../services/solana/solana-token';
+
+  class TokenSelector {
+    private container: HTMLElement | null = null;
+    private searchInput: HTMLInputElement | null = null;
+    private tokenList: HTMLElement | null = null;
+    private addTokenBtn: HTMLButtonElement | null = null;
+    private selectedToken: string = 'SOL';
+    private onTokenChange?: (token: string) => void;
+
+    constructor() {
+      this.initializeElements();
+      this.setupEventListeners();
+      this.loadTokenBalances();
+    }
+
+    private initializeElements() {
+      this.container = document.getElementById('token-selector');
+      this.searchInput = document.getElementById('token-search') as HTMLInputElement;
+      this.tokenList = document.getElementById('token-list');
+      this.addTokenBtn = document.getElementById('add-token-btn') as HTMLButtonElement;
+    }
+
+    private setupEventListeners() {
+      // Search functionality
+      this.searchInput?.addEventListener('input', (e) => {
+        const query = (e.target as HTMLInputElement).value.toLowerCase();
+        this.filterTokens(query);
+      });
+
+      // Token selection
+      const tokenOptions = document.querySelectorAll('.token-option');
+      tokenOptions.forEach(option => {
+        option.addEventListener('click', () => {
+          if (option.classList.contains('disabled')) return;
+          
+          const token = option.getAttribute('data-token');
+          if (token) {
+            this.selectToken(token);
+          }
+        });
+      });
+
+      // Add token button
+      this.addTokenBtn?.addEventListener('click', () => {
+        this.showAddTokenModal();
+      });
+    }
+
+    private async loadTokenBalances() {
+      try {
+        // In a real app, this would load actual token balances
+        console.log('Loading token balances...');
+        
+        // Simulate loading balances
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        this.updateTokenBalances();
+      } catch (error) {
+        console.error('Failed to load token balances:', error);
+      }
+    }
+
+    private updateTokenBalances() {
+      const balanceElements = document.querySelectorAll('.balance-amount');
+      balanceElements.forEach((element, index) => {
+        // Simulate different balances
+        const balance = Math.random() * 100;
+        element.textContent = balance.toFixed(4);
+      });
+    }
+
+    private filterTokens(query: string) {
+      if (!this.tokenList) return;
+
+      const options = this.tokenList.querySelectorAll('.token-option');
+      options.forEach(option => {
+        const tokenName = option.querySelector('.token-name')?.textContent?.toLowerCase() || '';
+        const tokenSymbol = option.querySelector('.token-symbol')?.textContent?.toLowerCase() || '';
+        
+        if (tokenName.includes(query) || tokenSymbol.includes(query)) {
+          option.style.display = 'flex';
+        } else {
+          option.style.display = 'none';
+        }
+      });
+    }
+
+    private selectToken(token: string) {
+      // Remove previous selection
+      const previousSelected = document.querySelector('.token-option.selected');
+      previousSelected?.classList.remove('selected');
+
+      // Add selection to new token
+      const selectedOption = document.querySelector(`[data-token="${token}"]`);
+      selectedOption?.classList.add('selected');
+
+      this.selectedToken = token;
+
+      // Call callback if provided
+      if (this.onTokenChange) {
+        this.onTokenChange(token);
+      }
+
+      // Dispatch custom event
+      window.dispatchEvent(new CustomEvent('token:selected', {
+        detail: { token }
+      }));
+
+      this.showNotification(`Selected ${token}`, 'success');
+    }
+
+    private showAddTokenModal() {
+      const mintAddress = prompt('Enter token mint address:');
+      if (mintAddress && this.isValidMintAddress(mintAddress)) {
+        this.addCustomToken(mintAddress);
+      } else if (mintAddress) {
+        this.showNotification('Invalid mint address format', 'error');
+      }
+    }
+
+    private isValidMintAddress(address: string): boolean {
+      // Basic Solana address validation
+      return /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(address);
+    }
+
+    private async addCustomToken(mintAddress: string) {
+      try {
+        this.showNotification('Adding custom token...', 'info');
+        
+        // In a real app, this would fetch token info from the blockchain
+        const tokenInfo = await this.fetchTokenInfo(mintAddress);
+        
+        if (tokenInfo) {
+          this.addTokenToList(tokenInfo);
+          this.showNotification('Custom token added successfully', 'success');
+        } else {
+          this.showNotification('Failed to fetch token information', 'error');
+        }
+      } catch (error) {
+        this.showNotification('Failed to add custom token', 'error');
+        console.error('Error adding custom token:', error);
+      }
+    }
+
+    private async fetchTokenInfo(mintAddress: string) {
+      // Mock implementation - in a real app, this would use solanaTokenService
+      return {
+        mint: mintAddress,
+        name: `Custom Token ${mintAddress.slice(0, 8)}`,
+        symbol: 'CUSTOM',
+        decimals: 9,
+        balance: 0,
+        logoURI: 'https://via.placeholder.com/32x32/4F46E5/FFFFFF?text=T'
+      };
+    }
+
+    private addTokenToList(tokenInfo: any) {
+      if (!this.tokenList) return;
+
+      const tokenOption = document.createElement('div');
+      tokenOption.className = 'token-option';
+      tokenOption.setAttribute('data-token', tokenInfo.symbol);
+      tokenOption.setAttribute('data-mint', tokenInfo.mint);
+
+      tokenOption.innerHTML = `
+        <div class="token-info">
+          <div class="token-logo">
+            <img src="${tokenInfo.logoURI}" alt="${tokenInfo.name}" />
+          </div>
+          <div class="token-details">
+            <div class="token-name">${tokenInfo.name}</div>
+            <div class="token-symbol">${tokenInfo.symbol}</div>
+          </div>
+        </div>
+        <div class="token-balance">
+          <div class="balance-amount">${tokenInfo.balance.toFixed(4)}</div>
+          <div class="balance-symbol">${tokenInfo.symbol}</div>
+        </div>
+      `;
+
+      // Add click event listener
+      tokenOption.addEventListener('click', () => {
+        this.selectToken(tokenInfo.symbol);
+      });
+
+      this.tokenList.appendChild(tokenOption);
+    }
+
+    private showNotification(message: string, type: 'success' | 'error' | 'info') {
+      const notification = document.createElement('div');
+      notification.className = `notification notification-${type}`;
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+
+    // Public methods
+    public getSelectedToken(): string {
+      return this.selectedToken;
+    }
+
+    public setSelectedToken(token: string) {
+      this.selectToken(token);
+    }
+
+    public setOnTokenChange(callback: (token: string) => void) {
+      this.onTokenChange = callback;
+    }
+  }
+
+  // Initialize token selector when DOM is loaded
+  let tokenSelector: TokenSelector;
+  
+  document.addEventListener('DOMContentLoaded', () => {
+    tokenSelector = new TokenSelector();
+  });
+
+  // Export for external use
+  window.getTokenSelector = () => tokenSelector;
+</script>
+
+<style>
+  .token-selector {
+    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-4;
+  }
+
+  .selector-header {
+    @apply flex justify-between items-center mb-4;
+  }
+
+  .selector-label {
+    @apply text-sm font-medium text-gray-700;
+  }
+
+  .search-container {
+    @apply relative;
+  }
+
+  .search-input {
+    @apply w-48 px-3 py-1 pr-8 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+  }
+
+  .search-icon {
+    @apply absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm;
+  }
+
+  .token-list {
+    @apply space-y-2 max-h-64 overflow-y-auto;
+  }
+
+  .token-option {
+    @apply flex items-center justify-between p-3 rounded-lg border border-gray-200 hover:border-blue-300 hover:bg-blue-50 cursor-pointer transition-all duration-200;
+  }
+
+  .token-option.selected {
+    @apply border-blue-500 bg-blue-50;
+  }
+
+  .token-option.disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .token-info {
+    @apply flex items-center space-x-3;
+  }
+
+  .token-logo {
+    @apply w-8 h-8 rounded-full overflow-hidden;
+  }
+
+  .token-logo img {
+    @apply w-full h-full object-cover;
+  }
+
+  .token-details {
+    @apply space-y-1;
+  }
+
+  .token-name {
+    @apply font-medium text-gray-900 text-sm;
+  }
+
+  .token-symbol {
+    @apply text-xs text-gray-600;
+  }
+
+  .token-balance {
+    @apply text-right;
+  }
+
+  .balance-amount {
+    @apply font-semibold text-gray-900 text-sm;
+  }
+
+  .balance-symbol {
+    @apply text-xs text-gray-600;
+  }
+
+  .selected-indicator {
+    @apply text-blue-600 font-bold text-lg;
+  }
+
+  .selector-footer {
+    @apply mt-4 pt-4 border-t border-gray-200;
+  }
+
+  .add-token-btn {
+    @apply w-full flex items-center justify-center space-x-2 py-2 px-3 border border-dashed border-gray-300 rounded-lg text-gray-600 hover:border-gray-400 hover:text-gray-700 transition-colors text-sm;
+  }
+
+  .btn-icon {
+    @apply text-sm;
+  }
+
+  .notification {
+    @apply fixed top-4 right-4 px-4 py-2 rounded-lg text-white font-medium z-50;
+  }
+
+  .notification-success {
+    @apply bg-green-600;
+  }
+
+  .notification-error {
+    @apply bg-red-600;
+  }
+
+  .notification-info {
+    @apply bg-blue-600;
+  }
+</style>
+
+<!-- Global types for TypeScript -->
+<script>
+  declare global {
+    interface Window {
+      getTokenSelector: () => TokenSelector;
+    }
+  }
+</script>
