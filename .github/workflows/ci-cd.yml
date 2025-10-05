@@ -2,9 +2,9 @@ name: CI/CD Pipeline
 
 on:
   push:
-    branches: [ main, develop ]
+    branches: [ master, develop ]
   pull_request:
-    branches: [ main, develop ]
+    branches: [ master, develop ]
 
 env:
   NODE_VERSION: '18'
@@ -53,7 +53,7 @@ jobs:
     
     services:
       postgres:
-        image: postgres:${{ env.POSTGRES_VERSION }}
+        image: postgres:15
         env:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: soladia_test
@@ -130,7 +130,7 @@ jobs:
     
     services:
       postgres:
-        image: postgres:${{ env.POSTGRES_VERSION }}
+        image: postgres:15
         env:
           POSTGRES_PASSWORD: postgres
           POSTGRES_DB: soladia_integration
@@ -232,7 +232,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Build Docker Images
     needs: [frontend-tests, backend-tests, integration-tests]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     
     steps:
     - name: Checkout code
@@ -306,7 +306,7 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy to Production
     needs: [build-images]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     environment: production
     
     steps:
