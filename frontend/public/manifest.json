@@ -1,0 +1,27 @@
+{
+  "name": "Soladia Marketplace",
+  "short_name": "Soladia",
+  "description": "The Ultimate Solana Marketplace",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F8F9FA",
+  "theme_color": "#E60012",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "16x16 32x32 48x48",
+      "type": "image/x-icon"
+    },
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ],
+  "categories": ["shopping", "marketplace", "blockchain"],
+  "lang": "en",
+  "dir": "ltr",
+  "scope": "/",
+  "id": "soladia-marketplace"
+}

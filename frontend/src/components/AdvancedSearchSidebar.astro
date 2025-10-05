@@ -1,0 +1,296 @@
+---
+// Simplified Advanced Search Component for Sidebar
+export interface Props {
+  placeholder?: string;
+  showFilters?: boolean;
+}
+
+const { 
+  placeholder = "Search NFTs, collections...",
+  showFilters = true
+} = Astro.props;
+---
+
+<div class="advanced-search-sidebar">
+  <div class="search-container">
+    <div class="search-input-container">
+      <div class="search-icon">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+      </div>
+      <input 
+        type="text" 
+        class="search-input" 
+        placeholder={placeholder}
+        id="search-input"
+      />
+    </div>
+    
+    {showFilters && (
+      <button class="filter-toggle" id="filter-toggle">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"></polygon>
+        </svg>
+        Filters
+      </button>
+    )}
+  </div>
+
+  {showFilters && (
+    <div class="search-filters" id="search-filters">
+      <div class="filter-section">
+        <h4 class="filter-section-title">Price Range</h4>
+        <div class="price-range">
+          <input type="range" min="0" max="100" value="50" class="price-slider" id="price-slider" />
+          <div class="price-labels">
+            <span>0 SOL</span>
+            <span>50+ SOL</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <h4 class="filter-section-title">Categories</h4>
+        <div class="filter-options">
+          <label class="filter-option">
+            <input type="checkbox" value="art" class="filter-checkbox" />
+            <span class="filter-label">Digital Art</span>
+          </label>
+          <label class="filter-option">
+            <input type="checkbox" value="gaming" class="filter-checkbox" />
+            <span class="filter-label">Gaming</span>
+          </label>
+          <label class="filter-option">
+            <input type="checkbox" value="music" class="filter-checkbox" />
+            <span class="filter-label">Music</span>
+          </label>
+          <label class="filter-option">
+            <input type="checkbox" value="collectibles" class="filter-checkbox" />
+            <span class="filter-label">Collectibles</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <h4 class="filter-section-title">Sort By</h4>
+        <select class="sort-select" id="sort-select">
+          <option value="relevance">Relevance</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="newest">Newest First</option>
+          <option value="popularity">Most Popular</option>
+        </select>
+      </div>
+
+      <div class="filter-actions">
+        <button class="apply-filters" id="apply-filters">Apply</button>
+        <button class="reset-filters" id="reset-filters">Reset</button>
+      </div>
+    </div>
+  )}
+</div>
+
+<style>
+  .advanced-search-sidebar {
+    width: 100%;
+  }
+
+  .search-container {
+    position: relative;
+    margin-bottom: 1rem;
+  }
+
+  .search-input-container {
+    display: flex;
+    align-items: center;
+    border-radius: 0.5rem;
+    border: 1px solid #E5E7EB;
+    background: white;
+    box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  }
+
+  .search-icon {
+    color: #9CA3AF;
+    padding: 0.5rem;
+  }
+
+  .search-input {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    outline: none;
+    font-size: 0.875rem;
+    color: #111827;
+  }
+
+  .search-input::placeholder {
+    color: #6B7280;
+  }
+
+  .filter-toggle {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: #F3F4F6;
+    color: #374151;
+    font-weight: 500;
+    padding: 0.5rem 0.75rem;
+    border: none;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .filter-toggle:hover {
+    background: #E5E7EB;
+  }
+
+  .search-filters {
+    display: none;
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 0.5rem;
+    padding: 1rem;
+    margin-top: 0.5rem;
+  }
+
+  .search-filters.show {
+    display: block;
+  }
+
+  .filter-section {
+    margin-bottom: 1rem;
+  }
+
+  .filter-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .filter-section-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #111827;
+    margin-bottom: 0.5rem;
+  }
+
+  .price-range {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .price-slider {
+    width: 100%;
+    height: 0.5rem;
+    border-radius: 0.25rem;
+    background: #E5E7EB;
+    outline: none;
+    cursor: pointer;
+  }
+
+  .price-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    color: #6B7280;
+  }
+
+  .filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .filter-option {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    cursor: pointer;
+    padding: 0.25rem 0;
+  }
+
+  .filter-checkbox {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 0.25rem;
+    border: 1px solid #D1D5DB;
+    accent-color: #E60012;
+  }
+
+  .filter-label {
+    font-size: 0.875rem;
+    color: #374151;
+  }
+
+  .sort-select {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.375rem;
+    background: white;
+    font-size: 0.875rem;
+    color: #374151;
+  }
+
+  .sort-select:focus {
+    outline: none;
+    border-color: #E60012;
+    box-shadow: 0 0 0 3px rgba(230, 0, 18, 0.1);
+  }
+
+  .filter-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #E5E7EB;
+  }
+
+  .apply-filters,
+  .reset-filters {
+    flex: 1;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .apply-filters {
+    background: #E60012;
+    color: white;
+    border: none;
+  }
+
+  .apply-filters:hover {
+    background: #CC0010;
+  }
+
+  .reset-filters {
+    background: #E5E7EB;
+    color: #374151;
+    border: none;
+  }
+
+  .reset-filters:hover {
+    background: #D1D5DB;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const filterToggle = document.getElementById('filter-toggle');
+    const searchFilters = document.getElementById('search-filters');
+    
+    if (filterToggle && searchFilters) {
+      filterToggle.addEventListener('click', () => {
+        searchFilters.classList.toggle('show');
+      });
+    }
+  });
+</script>
