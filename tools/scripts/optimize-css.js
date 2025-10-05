@@ -80,7 +80,7 @@ async function optimizeCSSFiles() {
     console.log('🚀 Starting CSS optimization...');
     
     // Read the main CSS file
-    const cssPath = path.join(__dirname, '../src/styles/global.css');
+    const cssPath = path.join(__dirname, '../../frontend/src/styles/global.css');
     const cssContent = fs.readFileSync(cssPath, 'utf8');
     
     // Optimize the main CSS
@@ -90,7 +90,7 @@ async function optimizeCSSFiles() {
     const criticalCSS = extractCriticalCSS(cssContent);
     
     // Write optimized files
-    const distPath = path.join(__dirname, '../dist/styles');
+    const distPath = path.join(__dirname, '../../frontend/dist/styles');
     if (!fs.existsSync(distPath)) {
       fs.mkdirSync(distPath, { recursive: true });
     }

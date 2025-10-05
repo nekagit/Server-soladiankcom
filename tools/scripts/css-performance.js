@@ -160,14 +160,14 @@ async function runCSSPerformanceAnalysis() {
   try {
     console.log('🔍 Analyzing CSS performance...');
     
-    const cssPath = path.join(__dirname, '../src/styles/global.css');
+    const cssPath = path.join(__dirname, '../../frontend/src/styles/global.css');
     const cssContent = fs.readFileSync(cssPath, 'utf8');
     
     const analysis = analyzeCSSPerformance(cssContent);
     const report = generateReport(analysis);
     
     // Write report to file
-    const reportPath = path.join(__dirname, '../css-performance-report.md');
+    const reportPath = path.join(__dirname, '../../css-performance-report.md');
     fs.writeFileSync(reportPath, report);
     
     console.log('✅ CSS performance analysis complete!');
