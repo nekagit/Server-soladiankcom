@@ -12,6 +12,9 @@ export default defineConfig({
     inlineStylesheets: 'auto'
   },
   vite: {
+    define: {
+      global: 'globalThis',
+    },
     resolve: {
       alias: {
         '@': '/src',
