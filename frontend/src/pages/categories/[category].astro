@@ -3,6 +3,7 @@
 import Layout from '../../layouts/Layout.astro';
 import ProductCard from '../../components/ProductCard.astro';
 import AdvancedSearch from '../../components/AdvancedSearch.astro';
+import '../../styles/category-pages.css';
 
 export async function getStaticPaths() {
   const categories = [
@@ -178,13 +179,13 @@ const info = categoryInfo[category as keyof typeof categoryInfo] || {
 <Layout title={`${info.name} - Soladia Marketplace`}>
   <main class="min-h-screen bg-gray-50">
     <!-- Category Header -->
-    <div class="bg-white shadow-sm">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div class="flex items-center space-x-4">
-          <div class="text-4xl">{info.icon}</div>
+    <div class="category-header">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="category-header-content flex items-center space-x-6">
+          <div class="category-icon">{info.icon}</div>
           <div>
-            <h1 class="text-3xl font-bold text-gray-900">{info.name}</h1>
-            <p class="mt-2 text-gray-600">{info.description}</p>
+            <h1 class="category-title">{info.name}</h1>
+            <p class="category-description">{info.description}</p>
           </div>
         </div>
       </div>
@@ -193,98 +194,132 @@ const info = categoryInfo[category as keyof typeof categoryInfo] || {
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
       <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <!-- Sidebar -->
-        <div class="lg:col-span-1">
+        <div class="lg:col-span-1 category-sidebar">
           <!-- Advanced Search -->
-          <div class="bg-white rounded-lg shadow-sm p-6">
-            <AdvancedSearch />
+          <div class="sidebar-card">
+            <div class="sidebar-card-header">
+              <h3 class="sidebar-card-title">Advanced Search</h3>
+            </div>
+            <div class="sidebar-card-content">
+              <AdvancedSearch />
+            </div>
           </div>
 
           <!-- Category Stats -->
-          <div class="mt-6 bg-white rounded-lg shadow-sm p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Category Stats</h3>
-            <div class="space-y-3">
-              <div class="flex justify-between">
-                <span class="text-sm text-gray-600">Total Items</span>
-                <span class="text-sm font-medium text-gray-900">{products.length}</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-sm text-gray-600">Floor Price</span>
-                <span class="text-sm font-medium text-gray-900">
-                  {products.length > 0 ? Math.min(...products.map((p: any) => p.price)).toFixed(2) : '0.00'} SOL
-                </span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-sm text-gray-600">Volume (24h)</span>
-                <span class="text-sm font-medium text-gray-900">12.5 SOL</span>
-              </div>
-              <div class="flex justify-between">
-                <span class="text-sm text-gray-600">Owners</span>
-                <span class="text-sm font-medium text-gray-900">45</span>
+          <div class="sidebar-card mt-6">
+            <div class="sidebar-card-header">
+              <h3 class="sidebar-card-title">Category Stats</h3>
+            </div>
+            <div class="sidebar-card-content">
+              <div class="stats-grid">
+                <div class="stat-item">
+                  <span class="stat-label">Total Items</span>
+                  <span class="stat-value">{products.length}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Floor Price</span>
+                  <span class="stat-value sol">
+                    {products.length > 0 ? Math.min(...products.map((p: any) => p.price)).toFixed(2) : '0.00'} SOL
+                  </span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Volume (24h)</span>
+                  <span class="stat-value sol">12.5 SOL</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Owners</span>
+                  <span class="stat-value">45</span>
+                </div>
               </div>
             </div>
           </div>
 
           <!-- Related Categories -->
-          <div class="mt-6 bg-white rounded-lg shadow-sm p-6">
-            <h3 class="text-lg font-semibold text-gray-900 mb-4">Related Categories</h3>
-            <div class="space-y-2">
-              {Object.entries(categoryInfo).filter(([key]) => key !== category).slice(0, 5).map(([key, cat]) => (
-                <a 
-                  href={`/categories/${key}`}
-                  class="flex items-center space-x-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
-                >
-                  <span>{cat.icon}</span>
-                  <span>{cat.name}</span>
-                </a>
-              ))}
+          <div class="sidebar-card mt-6">
+            <div class="sidebar-card-header">
+              <h3 class="sidebar-card-title">Related Categories</h3>
+            </div>
+            <div class="sidebar-card-content">
+              <div class="related-categories">
+                {Object.entries(categoryInfo).filter(([key]) => key !== category).slice(0, 5).map(([key, cat]) => (
+                  <a 
+                    href={`/categories/${key}`}
+                    class="related-category-link"
+                  >
+                    <span class="related-category-icon">{cat.icon}</span>
+                    <span>{cat.name}</span>
+                  </a>
+                ))}
+              </div>
             </div>
           </div>
         </div>
 
         <!-- Main Content -->
-        <div class="lg:col-span-3">
+        <div class="lg:col-span-3 category-main-content">
           <!-- Filters and Sort -->
-          <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
-            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-              <div class="flex items-center space-x-4">
-                <span class="text-sm text-gray-600">
-                  {products.length} items in {info.name}
-                </span>
-              </div>
-              <div class="mt-4 sm:mt-0 flex space-x-4">
-                <select class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                  <option>Sort by: Newest</option>
-                  <option>Sort by: Price (Low to High)</option>
-                  <option>Sort by: Price (High to Low)</option>
-                  <option>Sort by: Most Popular</option>
-                </select>
-                <select class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                  <option>All Items</option>
-                  <option>On Sale</option>
-                  <option>Auctions</option>
-                  <option>New</option>
-                </select>
+          <div class="filters-bar">
+            <div class="filters-content">
+              <div class="filters-row">
+                <div class="filters-info">
+                  <span class="items-count">
+                    {products.length} items in {info.name}
+                  </span>
+                </div>
+                <div class="filters-controls">
+                  <select class="filter-select">
+                    <option>Sort by: Newest</option>
+                    <option>Sort by: Price (Low to High)</option>
+                    <option>Sort by: Price (High to Low)</option>
+                    <option>Sort by: Most Popular</option>
+                  </select>
+                  <select class="filter-select">
+                    <option>All Items</option>
+                    <option>On Sale</option>
+                    <option>Auctions</option>
+                    <option>New</option>
+                  </select>
+                </div>
               </div>
             </div>
           </div>
 
           <!-- Products Grid -->
           {products.length > 0 ? (
-            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+            <div class="products-grid">
               {products.map((product: any) => (
-                <ProductCard 
-                  product={product}
-                  showSolana={true}
-                  showNFT={true}
-                />
+                <div class="enhanced-product-card" data-product-id={product.id}>
+                  <div class="product-image-container">
+                    <img src={product.image} alt={product.name} class="product-image" />
+                    <div class="product-badges">
+                      {product.nft && (
+                        <span class="product-badge nft">NFT</span>
+                      )}
+                      {product.solana && (
+                        <span class="product-badge sol">SOL</span>
+                      )}
+                    </div>
+                  </div>
+                  <div class="product-info-container">
+                    <h3 class="product-title">{product.name}</h3>
+                    <p class="product-description">{product.description}</p>
+                    <div class="product-price-container">
+                      <span class="product-price">{product.price.toFixed(2)} SOL</span>
+                    </div>
+                    <div class="product-meta">
+                      <span class="product-seller">by {product.seller}</span>
+                      <span class="product-rating">⭐ 4.5 (12)</span>
+                    </div>
+                  </div>
+                </div>
               ))}
             </div>
           ) : (
-            <div class="text-center py-12">
-              <div class="text-6xl mb-4">{info.icon}</div>
-              <h3 class="text-lg font-medium text-gray-900 mb-2">No items found</h3>
-              <p class="text-gray-600 mb-6">There are no items in this category yet.</p>
-              <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+            <div class="empty-state">
+              <div class="empty-state-icon">{info.icon}</div>
+              <h3 class="empty-state-title">No items found</h3>
+              <p class="empty-state-description">There are no items in this category yet.</p>
+              <button class="empty-state-button">
                 Be the first to create one
               </button>
             </div>
@@ -292,8 +327,8 @@ const info = categoryInfo[category as keyof typeof categoryInfo] || {
 
           <!-- Load More -->
           {products.length > 0 && (
-            <div class="text-center mt-8">
-              <button class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors">
+            <div class="load-more-container">
+              <button class="load-more-button">
                 Load More Items
               </button>
             </div>
@@ -305,15 +340,17 @@ const info = categoryInfo[category as keyof typeof categoryInfo] || {
 </Layout>
 
 <script>
-  // Add client-side functionality for sorting and filtering
+  // Enhanced client-side functionality for category pages
   document.addEventListener('DOMContentLoaded', () => {
-    const sortSelect = document.querySelector('select');
-    const filterSelect = document.querySelectorAll('select')[1];
+    // Filter and sort functionality
+    const sortSelect = document.querySelector('.filter-select');
+    const filterSelect = document.querySelectorAll('.filter-select')[1];
     
     if (sortSelect) {
       sortSelect.addEventListener('change', (e) => {
         console.log('Sort changed:', (e.target as HTMLSelectElement).value);
         // In a real implementation, this would trigger a re-sort
+        handleSort((e.target as HTMLSelectElement).value);
       });
     }
     
@@ -321,7 +358,92 @@ const info = categoryInfo[category as keyof typeof categoryInfo] || {
       filterSelect.addEventListener('change', (e) => {
         console.log('Filter changed:', (e.target as HTMLSelectElement).value);
         // In a real implementation, this would trigger a re-filter
+        handleFilter((e.target as HTMLSelectElement).value);
+      });
+    }
+
+    // Enhanced product card interactions
+    const productCards = document.querySelectorAll('.enhanced-product-card');
+    
+    productCards.forEach(card => {
+      // Click handler
+      card.addEventListener('click', () => {
+        const productId = card.getAttribute('data-product-id');
+        if (productId) {
+          window.location.href = `/product/${productId}`;
+        }
+      });
+      
+      // Enhanced hover effects
+      card.addEventListener('mouseenter', function() {
+        this.style.transform = 'translateY(-6px)';
+        this.style.boxShadow = '0 8px 40px rgba(230, 0, 18, 0.25)';
+      });
+      
+      card.addEventListener('mouseleave', function() {
+        this.style.transform = 'translateY(0)';
+        this.style.boxShadow = '0 2px 12px rgba(0, 0, 0, 0.08)';
+      });
+    });
+
+    // Load more functionality
+    const loadMoreButton = document.querySelector('.load-more-button');
+    if (loadMoreButton) {
+      loadMoreButton.addEventListener('click', () => {
+        console.log('Load more clicked');
+        // In a real implementation, this would load more products
+        loadMoreButton.textContent = 'Loading...';
+        setTimeout(() => {
+          loadMoreButton.textContent = 'Load More Items';
+        }, 1000);
+      });
+    }
+
+    // Empty state button
+    const emptyStateButton = document.querySelector('.empty-state-button');
+    if (emptyStateButton) {
+      emptyStateButton.addEventListener('click', () => {
+        window.location.href = '/sell';
       });
     }
   });
+
+  // Sort functionality
+  function handleSort(sortValue: string) {
+    const productsGrid = document.querySelector('.products-grid');
+    if (!productsGrid) return;
+
+    const products = Array.from(productsGrid.children);
+    
+    products.sort((a, b) => {
+      const aPrice = parseFloat(a.querySelector('.product-price')?.textContent?.replace(' SOL', '') || '0');
+      const bPrice = parseFloat(b.querySelector('.product-price')?.textContent?.replace(' SOL', '') || '0');
+      
+      switch (sortValue) {
+        case 'Sort by: Price (Low to High)':
+          return aPrice - bPrice;
+        case 'Sort by: Price (High to Low)':
+          return bPrice - aPrice;
+        default:
+          return 0;
+      }
+    });
+
+    // Re-append sorted products
+    products.forEach(product => productsGrid.appendChild(product));
+  }
+
+  // Filter functionality
+  function handleFilter(filterValue: string) {
+    const products = document.querySelectorAll('.enhanced-product-card');
+    
+    products.forEach(product => {
+      const isVisible = filterValue === 'All Items' || 
+        (filterValue === 'On Sale' && product.querySelector('.product-badge.sale')) ||
+        (filterValue === 'Auctions' && product.querySelector('.product-badge.auction')) ||
+        (filterValue === 'New' && product.querySelector('.product-badge.new'));
+      
+      (product as HTMLElement).style.display = isVisible ? 'block' : 'none';
+    });
+  }
 </script>

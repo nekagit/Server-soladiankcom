@@ -532,7 +532,7 @@ const getStatusColor = (status: string) => {
   let nftAuction: NFTAuction;
   
   document.addEventListener('DOMContentLoaded', () => {
-    nftAuction = new NFTAuction('${nftId}', ${currentBid}, ${minBid}, ${timeRemaining}, '${auctionStatus}');
+    nftAuction = new NFTAuction(nftId, currentBid, minBid, timeRemaining, auctionStatus);
   });
 
   // Export for external use
