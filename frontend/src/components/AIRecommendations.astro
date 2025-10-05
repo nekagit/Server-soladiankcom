@@ -1,0 +1,495 @@
+---
+// AI-Powered Recommendations Component
+export interface Props {
+  userId?: string;
+  category?: string;
+  limit?: number;
+}
+
+const { 
+  userId = 'demo-user',
+  category = 'all',
+  limit = 6
+} = Astro.props;
+
+// Mock AI recommendations data
+const recommendations = {
+  trending: [
+    {
+      id: 1,
+      name: 'CryptoPunk #1234',
+      price: '2.5 SOL',
+      image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=300&h=200&fit=crop&crop=center',
+      category: 'Digital Art',
+      trend: 'up',
+      change: '+15%'
+    },
+    {
+      id: 2,
+      name: 'Bored Ape #5678',
+      price: '5.2 SOL',
+      image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=300&h=200&fit=crop&crop=center',
+      category: 'Collectibles',
+      trend: 'up',
+      change: '+8%'
+    },
+    {
+      id: 3,
+      name: 'Art Blocks #9999',
+      price: '1.8 SOL',
+      image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=300&h=200&fit=crop&crop=center',
+      category: 'Digital Art',
+      trend: 'down',
+      change: '-3%'
+    }
+  ],
+  personalized: [
+    {
+      id: 4,
+      name: 'Digital Art #456',
+      price: '3.1 SOL',
+      image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=300&h=200&fit=crop&crop=center',
+      category: 'Digital Art',
+      reason: 'Based on your interest in abstract art',
+      confidence: 85
+    },
+    {
+      id: 5,
+      name: 'Gaming NFT #789',
+      price: '0.9 SOL',
+      image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=300&h=200&fit=crop&crop=center',
+      category: 'Gaming',
+      reason: 'Similar to your gaming collection',
+      confidence: 92
+    }
+  ],
+  priceDrops: [
+    {
+      id: 6,
+      name: 'Collection #111',
+      price: '1.2 SOL',
+      originalPrice: '1.8 SOL',
+      image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=300&h=200&fit=crop&crop=center',
+      category: 'Collectibles',
+      discount: '33%'
+    }
+  ]
+};
+---
+
+<div class="ai-recommendations">
+  <div class="recommendations-header">
+    <h3 class="recommendations-title">
+      <span class="ai-icon">🤖</span>
+      AI Recommendations
+    </h3>
+    <p class="recommendations-subtitle">Powered by machine learning</p>
+  </div>
+
+  <div class="recommendations-tabs">
+    <button class="tab-button active" data-tab="trending">Trending</button>
+    <button class="tab-button" data-tab="personalized">For You</button>
+    <button class="tab-button" data-tab="price-drops">Price Drops</button>
+  </div>
+
+  <div class="recommendations-content">
+    <!-- Trending Recommendations -->
+    <div class="tab-content active" id="trending">
+      <div class="recommendations-grid">
+        {recommendations.trending.map(item => (
+          <div class="recommendation-card">
+            <div class="card-image">
+              <img src={item.image} alt={item.name} />
+              <div class="trend-indicator trend-{item.trend}">
+                {item.change}
+              </div>
+            </div>
+            <div class="card-content">
+              <h4 class="item-name">{item.name}</h4>
+              <p class="item-category">{item.category}</p>
+              <div class="item-price">{item.price}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Personalized Recommendations -->
+    <div class="tab-content" id="personalized">
+      <div class="recommendations-grid">
+        {recommendations.personalized.map(item => (
+          <div class="recommendation-card">
+            <div class="card-image">
+              <img src={item.image} alt={item.name} />
+              <div class="confidence-badge">
+                {item.confidence}% match
+              </div>
+            </div>
+            <div class="card-content">
+              <h4 class="item-name">{item.name}</h4>
+              <p class="item-category">{item.category}</p>
+              <div class="item-price">{item.price}</div>
+              <p class="recommendation-reason">{item.reason}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+
+    <!-- Price Drops -->
+    <div class="tab-content" id="price-drops">
+      <div class="recommendations-grid">
+        {recommendations.priceDrops.map(item => (
+          <div class="recommendation-card">
+            <div class="card-image">
+              <img src={item.image} alt={item.name} />
+              <div class="discount-badge">
+                -{item.discount}
+              </div>
+            </div>
+            <div class="card-content">
+              <h4 class="item-name">{item.name}</h4>
+              <p class="item-category">{item.category}</p>
+              <div class="price-container">
+                <span class="item-price">{item.price}</span>
+                <span class="original-price">{item.originalPrice}</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </div>
+
+  <div class="recommendations-footer">
+    <button class="refresh-recommendations" id="refresh-recommendations">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="23 4 23 10 17 10"></polyline>
+        <polyline points="1 20 1 14 7 14"></polyline>
+        <path d="m3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+      </svg>
+      Refresh Recommendations
+    </button>
+  </div>
+</div>
+
+<style>
+  .ai-recommendations {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #E5E7EB;
+  }
+
+  .recommendations-header {
+    margin-bottom: 1.5rem;
+  }
+
+  .recommendations-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.25rem;
+  }
+
+  .ai-icon {
+    font-size: 1.5rem;
+  }
+
+  .recommendations-subtitle {
+    font-size: 0.875rem;
+    color: #6B7280;
+  }
+
+  .recommendations-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #E5E7EB;
+  }
+
+  .tab-button {
+    padding: 0.5rem 1rem;
+    border: none;
+    background: transparent;
+    color: #6B7280;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+  }
+
+  .tab-button.active {
+    color: #E60012;
+    border-bottom-color: #E60012;
+  }
+
+  .tab-button:hover {
+    color: #111827;
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  .recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .recommendation-card {
+    background: #F9FAFB;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .recommendation-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+
+  .card-image {
+    position: relative;
+    width: 100%;
+    height: 120px;
+    overflow: hidden;
+  }
+
+  .card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .trend-indicator,
+  .confidence-badge,
+  .discount-badge {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .trend-indicator.trend-up {
+    background: #10B981;
+    color: white;
+  }
+
+  .trend-indicator.trend-down {
+    background: #EF4444;
+    color: white;
+  }
+
+  .confidence-badge {
+    background: #3B82F6;
+    color: white;
+  }
+
+  .discount-badge {
+    background: #F59E0B;
+    color: white;
+  }
+
+  .card-content {
+    padding: 1rem;
+  }
+
+  .item-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.25rem;
+  }
+
+  .item-category {
+    font-size: 0.75rem;
+    color: #6B7280;
+    margin-bottom: 0.5rem;
+  }
+
+  .item-price {
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: #E60012;
+  }
+
+  .price-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .original-price {
+    font-size: 0.75rem;
+    color: #9CA3AF;
+    text-decoration: line-through;
+  }
+
+  .recommendation-reason {
+    font-size: 0.75rem;
+    color: #6B7280;
+    margin-top: 0.5rem;
+    font-style: italic;
+  }
+
+  .recommendations-footer {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #E5E7EB;
+    text-align: center;
+  }
+
+  .refresh-recommendations {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #F3F4F6;
+    border: 1px solid #D1D5DB;
+    border-radius: 6px;
+    color: #374151;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .refresh-recommendations:hover {
+    background: #E5E7EB;
+    border-color: #9CA3AF;
+  }
+
+  /* Dark mode */
+  .dark .ai-recommendations {
+    background: #1A1A1A;
+    border-color: #333333;
+  }
+
+  .dark .recommendations-title {
+    color: #FFFFFF;
+  }
+
+  .dark .recommendations-subtitle {
+    color: #666666;
+  }
+
+  .dark .recommendations-tabs {
+    border-bottom-color: #333333;
+  }
+
+  .dark .tab-button {
+    color: #666666;
+  }
+
+  .dark .tab-button.active {
+    color: #E60012;
+  }
+
+  .dark .tab-button:hover {
+    color: #FFFFFF;
+  }
+
+  .dark .recommendation-card {
+    background: #2D2D2D;
+  }
+
+  .dark .item-name {
+    color: #FFFFFF;
+  }
+
+  .dark .item-category {
+    color: #666666;
+  }
+
+  .dark .original-price {
+    color: #666666;
+  }
+
+  .dark .recommendation-reason {
+    color: #666666;
+  }
+
+  .dark .recommendations-footer {
+    border-top-color: #333333;
+  }
+
+  .dark .refresh-recommendations {
+    background: #2D2D2D;
+    border-color: #333333;
+    color: #FFFFFF;
+  }
+
+  .dark .refresh-recommendations:hover {
+    background: #333333;
+    border-color: #666666;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const tabButtons = document.querySelectorAll('.tab-button');
+    const tabContents = document.querySelectorAll('.tab-content');
+    const refreshButton = document.getElementById('refresh-recommendations');
+
+    // Tab switching
+    tabButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const tabId = button.getAttribute('data-tab');
+        
+        // Remove active class from all buttons and contents
+        tabButtons.forEach(btn => btn.classList.remove('active'));
+        tabContents.forEach(content => content.classList.remove('active'));
+        
+        // Add active class to clicked button and corresponding content
+        button.classList.add('active');
+        document.getElementById(tabId).classList.add('active');
+      });
+    });
+
+    // Refresh recommendations
+    if (refreshButton) {
+      refreshButton.addEventListener('click', () => {
+        // Simulate AI recommendation refresh
+        refreshButton.innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="animate-spin">
+            <line x1="12" y1="2" x2="12" y2="6"></line>
+            <line x1="12" y1="18" x2="12" y2="22"></line>
+            <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+            <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+            <line x1="2" y1="12" x2="6" y2="12"></line>
+            <line x1="18" y1="12" x2="22" y2="12"></line>
+            <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+            <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+          </svg>
+          Refreshing...
+        `;
+        
+        setTimeout(() => {
+          refreshButton.innerHTML = `
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="m3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+            Refresh Recommendations
+          `;
+        }, 2000);
+      });
+    }
+  });
+</script>
