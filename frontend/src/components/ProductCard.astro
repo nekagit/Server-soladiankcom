@@ -1,33 +1,71 @@
 ---
 export interface Props {
-  id: number;
-  title: string;
-  description: string;
-  price: number;
+  product?: {
+    id: number;
+    name: string;
+    description: string;
+    price: number;
+    originalPrice?: number;
+    image: string;
+    rating?: number;
+    reviewCount?: number;
+    seller: string;
+    location?: string;
+    category: string;
+    nft?: boolean;
+    solana?: boolean;
+    badge?: 'Featured' | 'New' | 'Sale' | 'Eco';
+    condition?: string;
+  };
+  showSolana?: boolean;
+  showNFT?: boolean;
+  // Legacy props for backward compatibility
+  id?: number;
+  title?: string;
+  description?: string;
+  price?: number;
   originalPrice?: number;
-  image: string;
-  rating: number;
-  reviewCount: number;
-  seller: string;
-  location: string;
+  image?: string;
+  rating?: number;
+  reviewCount?: number;
+  seller?: string;
+  location?: string;
   badge?: 'Featured' | 'New' | 'Sale' | 'Eco';
   condition?: string;
 }
 
 const { 
-  id, 
-  title, 
-  description, 
-  price, 
+  product,
+  showSolana = false,
+  showNFT = false,
+  // Legacy props
+  id: legacyId, 
+  title: legacyTitle, 
+  description: legacyDescription, 
+  price: legacyPrice, 
   originalPrice, 
-  image, 
-  rating, 
-  reviewCount, 
-  seller, 
-  location, 
+  image: legacyImage, 
+  rating: legacyRating, 
+  reviewCount: legacyReviewCount, 
+  seller: legacySeller, 
+  location: legacyLocation, 
   badge,
   condition = 'New'
 } = Astro.props;
+
+// Use product object if provided, otherwise use legacy props
+const id = product?.id || legacyId || 0;
+const title = product?.name || legacyTitle || '';
+const description = product?.description || legacyDescription || '';
+const price = product?.price || legacyPrice || 0;
+const image = product?.image || legacyImage || '';
+const rating = product?.rating || legacyRating || 0;
+const reviewCount = product?.reviewCount || legacyReviewCount || 0;
+const seller = product?.seller || legacySeller || '';
+const location = product?.location || legacyLocation || '';
+const category = product?.category || '';
+const nft = product?.nft || false;
+const solana = product?.solana || false;
 
 const formatPrice = (price: number) => {
   return new Intl.NumberFormat('en-US', {
@@ -47,7 +85,17 @@ const formatRating = (rating: number) => {
     {badge && <div class="product-badge">{badge}</div>}
   </div>
   <div class="product-info">
-    <h3 class="product-title">{title}</h3>
+    <div class="flex items-start justify-between mb-2">
+      <h3 class="product-title">{title}</h3>
+      <div class="flex space-x-1">
+        {nft && showNFT && (
+          <span class="px-2 py-1 text-xs bg-purple-100 text-purple-800 rounded-full">NFT</span>
+        )}
+        {solana && showSolana && (
+          <span class="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full">SOL</span>
+        )}
+      </div>
+    </div>
     <p class="product-description">{description}</p>
     <div class="product-price">
       <span class="price-current">{formatPrice(price)}</span>
@@ -62,7 +110,13 @@ const formatRating = (rating: number) => {
       <span class="product-seller">by {seller}</span>
     </div>
     <div class="mt-2 text-sm text-gray-500">
-      <span>{location}</span>
+      <span>{category}</span>
+      {location && (
+        <>
+          <span class="mx-2">•</span>
+          <span>{location}</span>
+        </>
+      )}
       <span class="mx-2">•</span>
       <span>{condition}</span>
     </div>
@@ -93,4 +147,3 @@ const formatRating = (rating: number) => {
     });
   });
 </script>
-

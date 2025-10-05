@@ -1,0 +1,537 @@
+---
+// TransactionHistory.astro - Transaction tracking component
+export interface Props {
+  walletAddress?: string;
+  limit?: number;
+  showFilters?: boolean;
+  autoRefresh?: boolean;
+  refreshInterval?: number;
+}
+
+const { 
+  walletAddress = '',
+  limit = 20,
+  showFilters = true,
+  autoRefresh = true,
+  refreshInterval = 30000
+} = Astro.props;
+---
+
+<div id="transaction-history" class="transaction-history-container">
+  <div class="history-header">
+    <h3 class="history-title">Transaction History</h3>
+    <div class="history-actions">
+      <button id="refresh-transactions" class="btn btn-outline btn-sm">
+        <span class="btn-icon">🔄</span>
+        Refresh
+      </button>
+      <button id="export-transactions" class="btn btn-outline btn-sm">
+        <span class="btn-icon">📥</span>
+        Export
+      </button>
+    </div>
+  </div>
+
+  {showFilters && (
+    <div class="history-filters">
+      <div class="filter-group">
+        <label for="status-filter" class="filter-label">Status</label>
+        <select id="status-filter" class="filter-select">
+          <option value="">All</option>
+          <option value="confirmed">Confirmed</option>
+          <option value="pending">Pending</option>
+          <option value="failed">Failed</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label for="type-filter" class="filter-label">Type</label>
+        <select id="type-filter" class="filter-select">
+          <option value="">All</option>
+          <option value="payment">Payment</option>
+          <option value="nft">NFT</option>
+          <option value="token">Token</option>
+        </select>
+      </div>
+      
+      <div class="filter-group">
+        <label for="date-filter" class="filter-label">Date Range</label>
+        <select id="date-filter" class="filter-select">
+          <option value="">All Time</option>
+          <option value="today">Today</option>
+          <option value="week">This Week</option>
+          <option value="month">This Month</option>
+        </select>
+      </div>
+    </div>
+  )}
+
+  <div class="history-content">
+    <div id="transactions-loading" class="loading-state" style="display: none;">
+      <div class="loading-spinner"></div>
+      <p>Loading transactions...</p>
+    </div>
+    
+    <div id="transactions-empty" class="empty-state" style="display: none;">
+      <div class="empty-icon">📋</div>
+      <p>No transactions found</p>
+    </div>
+    
+    <div id="transactions-list" class="transactions-list">
+      <!-- Transactions will be populated here -->
+    </div>
+    
+    <div id="load-more-container" class="load-more-container" style="display: none;">
+      <button id="load-more" class="btn btn-outline">
+        Load More
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+  import { enhancedSolanaWalletService } from '../../services/solana/solana-wallet';
+  import { solanaTransactionService } from '../../services/solana/solana-transaction';
+
+  interface TransactionHistoryProps {
+    walletAddress: string;
+    limit: number;
+    showFilters: boolean;
+    autoRefresh: boolean;
+    refreshInterval: number;
+  }
+
+  class TransactionHistoryComponent {
+    private walletService = enhancedSolanaWalletService;
+    private transactionService = solanaTransactionService;
+    private props: TransactionHistoryProps;
+    private transactions: any[] = [];
+    private currentPage = 0;
+    private isLoading = false;
+    private refreshTimer: number | null = null;
+
+    constructor(props: TransactionHistoryProps) {
+      this.props = props;
+      this.initializeElements();
+      this.setupEventListeners();
+      this.loadTransactions();
+      
+      if (props.autoRefresh) {
+        this.startAutoRefresh();
+      }
+    }
+
+    private initializeElements() {
+      // Elements will be initialized when DOM is ready
+    }
+
+    private setupEventListeners() {
+      document.addEventListener('DOMContentLoaded', () => {
+        const refreshBtn = document.getElementById('refresh-transactions');
+        const exportBtn = document.getElementById('export-transactions');
+        const loadMoreBtn = document.getElementById('load-more');
+        const statusFilter = document.getElementById('status-filter') as HTMLSelectElement;
+        const typeFilter = document.getElementById('type-filter') as HTMLSelectElement;
+        const dateFilter = document.getElementById('date-filter') as HTMLSelectElement;
+
+        refreshBtn?.addEventListener('click', () => this.refreshTransactions());
+        exportBtn?.addEventListener('click', () => this.exportTransactions());
+        loadMoreBtn?.addEventListener('click', () => this.loadMoreTransactions());
+        
+        statusFilter?.addEventListener('change', () => this.filterTransactions());
+        typeFilter?.addEventListener('change', () => this.filterTransactions());
+        dateFilter?.addEventListener('change', () => this.filterTransactions());
+      });
+    }
+
+    private async loadTransactions() {
+      if (this.isLoading) return;
+
+      this.setLoading(true);
+      this.hideEmptyState();
+
+      try {
+        const walletAddress = this.props.walletAddress || this.walletService.getPublicKey();
+        
+        if (!walletAddress) {
+          this.showEmptyState('Please connect your wallet to view transactions');
+          return;
+        }
+
+        const newTransactions = await this.transactionService.getTransactionHistory(
+          walletAddress,
+          this.props.limit,
+          this.currentPage * this.props.limit
+        );
+
+        if (this.currentPage === 0) {
+          this.transactions = newTransactions;
+        } else {
+          this.transactions.push(...newTransactions);
+        }
+
+        this.renderTransactions();
+        this.updateLoadMoreButton();
+
+      } catch (error) {
+        console.error('Failed to load transactions:', error);
+        this.showError('Failed to load transactions');
+      } finally {
+        this.setLoading(false);
+      }
+    }
+
+    private async refreshTransactions() {
+      this.currentPage = 0;
+      await this.loadTransactions();
+    }
+
+    private async loadMoreTransactions() {
+      this.currentPage++;
+      await this.loadTransactions();
+    }
+
+    private renderTransactions() {
+      const listElement = document.getElementById('transactions-list');
+      if (!listElement) return;
+
+      if (this.transactions.length === 0) {
+        this.showEmptyState();
+        return;
+      }
+
+      listElement.innerHTML = this.transactions.map(transaction => this.renderTransaction(transaction)).join('');
+    }
+
+    private renderTransaction(transaction: any): string {
+      const statusColor = this.transactionService.getStatusColor(transaction.status);
+      const statusIcon = this.transactionService.getStatusIcon(transaction.status);
+      const formattedAmount = this.transactionService.formatTransactionAmount(transaction.amount);
+      const formattedSignature = this.transactionService.formatSignature(transaction.signature);
+      const formattedDate = new Date(transaction.created_at).toLocaleString();
+
+      return `
+        <div class="transaction-item" data-signature="${transaction.signature}">
+          <div class="transaction-main">
+            <div class="transaction-icon">
+              <span class="icon">💸</span>
+            </div>
+            
+            <div class="transaction-details">
+              <div class="transaction-header">
+                <span class="transaction-type">Payment</span>
+                <span class="transaction-status ${statusColor}">
+                  ${statusIcon} ${transaction.status}
+                </span>
+              </div>
+              
+              <div class="transaction-amount">
+                ${formattedAmount} SOL
+              </div>
+              
+              <div class="transaction-addresses">
+                <span class="address-label">From:</span>
+                <span class="address-value">${this.walletService.formatAddress(transaction.from)}</span>
+                <span class="address-label">To:</span>
+                <span class="address-value">${this.walletService.formatAddress(transaction.to)}</span>
+              </div>
+              
+              <div class="transaction-meta">
+                <span class="transaction-signature" data-signature="${transaction.signature}">
+                  ${formattedSignature}
+                </span>
+                <span class="transaction-date">${formattedDate}</span>
+              </div>
+            </div>
+          </div>
+          
+          <div class="transaction-actions">
+            <button class="btn btn-sm btn-outline copy-signature" data-signature="${transaction.signature}">
+              Copy
+            </button>
+            <button class="btn btn-sm btn-outline view-details" data-signature="${transaction.signature}">
+              Details
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    private filterTransactions() {
+      // In a real implementation, this would filter the transactions
+      // based on the selected filters
+      this.renderTransactions();
+    }
+
+    private async exportTransactions() {
+      try {
+        const csvContent = this.generateCSV();
+        const blob = new Blob([csvContent], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `transactions-${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Failed to export transactions:', error);
+        this.showError('Failed to export transactions');
+      }
+    }
+
+    private generateCSV(): string {
+      const headers = ['Date', 'Type', 'From', 'To', 'Amount', 'Status', 'Signature'];
+      const rows = this.transactions.map(tx => [
+        new Date(tx.created_at).toISOString(),
+        'Payment',
+        tx.from,
+        tx.to,
+        tx.amount,
+        tx.status,
+        tx.signature
+      ]);
+
+      return [headers, ...rows].map(row => row.join(',')).join('\n');
+    }
+
+    private setLoading(loading: boolean) {
+      this.isLoading = loading;
+      const loadingElement = document.getElementById('transactions-loading');
+      
+      if (loadingElement) {
+        loadingElement.style.display = loading ? 'block' : 'none';
+      }
+    }
+
+    private showEmptyState(message: string = 'No transactions found') {
+      const emptyElement = document.getElementById('transactions-empty');
+      const listElement = document.getElementById('transactions-list');
+      
+      if (emptyElement) {
+        emptyElement.querySelector('p')!.textContent = message;
+        emptyElement.style.display = 'block';
+      }
+      
+      if (listElement) {
+        listElement.style.display = 'none';
+      }
+    }
+
+    private hideEmptyState() {
+      const emptyElement = document.getElementById('transactions-empty');
+      const listElement = document.getElementById('transactions-list');
+      
+      if (emptyElement) {
+        emptyElement.style.display = 'none';
+      }
+      
+      if (listElement) {
+        listElement.style.display = 'block';
+      }
+    }
+
+    private updateLoadMoreButton() {
+      const loadMoreContainer = document.getElementById('load-more-container');
+      const loadMoreBtn = document.getElementById('load-more');
+      
+      if (loadMoreContainer && loadMoreBtn) {
+        // Show load more button if we have transactions and they might be more
+        const shouldShow = this.transactions.length > 0 && this.transactions.length % this.props.limit === 0;
+        loadMoreContainer.style.display = shouldShow ? 'block' : 'none';
+      }
+    }
+
+    private showError(message: string) {
+      // Create error notification
+      const notification = document.createElement('div');
+      notification.className = 'notification notification-error';
+      notification.textContent = message;
+      
+      document.body.appendChild(notification);
+      
+      setTimeout(() => {
+        notification.remove();
+      }, 5000);
+    }
+
+    private startAutoRefresh() {
+      this.refreshTimer = window.setInterval(() => {
+        this.loadTransactions();
+      }, this.props.refreshInterval);
+    }
+
+    public destroy() {
+      if (this.refreshTimer) {
+        clearInterval(this.refreshTimer);
+      }
+    }
+  }
+
+  // Initialize component when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    const props: TransactionHistoryProps = {
+      walletAddress: '',
+      limit: 20,
+      showFilters: true,
+      autoRefresh: true,
+      refreshInterval: 30000
+    };
+
+    window.transactionHistory = new TransactionHistoryComponent(props);
+  });
+</script>
+
+<style>
+  .transaction-history-container {
+    @apply bg-white rounded-lg shadow-md;
+  }
+
+  .history-header {
+    @apply flex items-center justify-between p-6 border-b border-gray-200;
+  }
+
+  .history-title {
+    @apply text-xl font-semibold text-gray-900;
+  }
+
+  .history-actions {
+    @apply flex items-center space-x-2;
+  }
+
+  .history-filters {
+    @apply flex items-center space-x-4 p-6 border-b border-gray-200 bg-gray-50;
+  }
+
+  .filter-group {
+    @apply flex flex-col space-y-1;
+  }
+
+  .filter-label {
+    @apply text-sm font-medium text-gray-700;
+  }
+
+  .filter-select {
+    @apply px-3 py-1 border border-gray-300 rounded-md text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
+  }
+
+  .history-content {
+    @apply p-6;
+  }
+
+  .loading-state,
+  .empty-state {
+    @apply flex flex-col items-center justify-center py-12 text-gray-500;
+  }
+
+  .loading-spinner {
+    @apply w-8 h-8 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin mb-4;
+  }
+
+  .empty-icon {
+    @apply text-4xl mb-4;
+  }
+
+  .transactions-list {
+    @apply space-y-4;
+  }
+
+  .transaction-item {
+    @apply flex items-center justify-between p-4 border border-gray-200 rounded-lg hover:bg-gray-50 transition-colors;
+  }
+
+  .transaction-main {
+    @apply flex items-center space-x-4 flex-1;
+  }
+
+  .transaction-icon {
+    @apply flex-shrink-0;
+  }
+
+  .transaction-icon .icon {
+    @apply text-2xl;
+  }
+
+  .transaction-details {
+    @apply flex-1 min-w-0;
+  }
+
+  .transaction-header {
+    @apply flex items-center justify-between mb-2;
+  }
+
+  .transaction-type {
+    @apply text-sm font-medium text-gray-900;
+  }
+
+  .transaction-status {
+    @apply text-sm font-medium;
+  }
+
+  .transaction-amount {
+    @apply text-lg font-semibold text-gray-900 mb-2;
+  }
+
+  .transaction-addresses {
+    @apply text-sm text-gray-600 space-x-2;
+  }
+
+  .address-label {
+    @apply font-medium;
+  }
+
+  .address-value {
+    @apply font-mono;
+  }
+
+  .transaction-meta {
+    @apply flex items-center justify-between text-xs text-gray-500 mt-2;
+  }
+
+  .transaction-signature {
+    @apply font-mono cursor-pointer hover:text-blue-600 transition-colors;
+  }
+
+  .transaction-actions {
+    @apply flex items-center space-x-2;
+  }
+
+  .load-more-container {
+    @apply flex justify-center mt-6;
+  }
+
+  .btn {
+    @apply px-4 py-2 rounded-lg font-medium transition-colors;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1 text-sm;
+  }
+
+  .btn-outline {
+    @apply border border-gray-300 text-gray-700 hover:bg-gray-50;
+  }
+
+  .btn-icon {
+    @apply mr-1;
+  }
+
+  .notification {
+    @apply fixed top-4 right-4 px-4 py-2 rounded-lg text-white font-medium z-50;
+  }
+
+  .notification-error {
+    @apply bg-red-600;
+  }
+</style>
+
+<script>
+  // Global functions for external use
+  declare global {
+    interface Window {
+      transactionHistory: TransactionHistoryComponent;
+    }
+  }
+</script>

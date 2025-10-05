@@ -1,0 +1,667 @@
+---
+import Layout from '../../layouts/Layout.astro';
+import Navigation from '../../components/Navigation.astro';
+
+// Sample seller data
+const sellerStats = {
+  totalSales: 156,
+  totalRevenue: 45230.50,
+  activeListings: 23,
+  pendingOrders: 7,
+  rating: 4.8,
+  totalReviews: 89
+};
+
+const recentOrders = [
+  {
+    id: "ORD-001",
+    customer: "John Doe",
+    product: "Vintage Camera Collection",
+    amount: 299.99,
+    status: "Shipped",
+    date: "2024-01-20",
+    paymentMethod: "SOL"
+  },
+  {
+    id: "ORD-002",
+    customer: "Jane Smith", 
+    product: "Wireless Headphones",
+    amount: 199.99,
+    status: "Pending",
+    date: "2024-01-19",
+    paymentMethod: "USDC"
+  }
+];
+
+const recentListings = [
+  {
+    id: 1,
+    title: "Vintage Camera Collection",
+    price: 299.99,
+    status: "Active",
+    views: 45,
+    watchers: 3,
+    sales: 2
+  },
+  {
+    id: 2,
+    title: "Wireless Headphones",
+    price: 199.99,
+    status: "Sold",
+    views: 89,
+    watchers: 7,
+    sales: 1
+  }
+];
+
+const analytics = {
+  salesChart: {
+    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
+    data: [1200, 1900, 3000, 5000, 2000, 3000]
+  },
+  topCategories: [
+    { name: "Electronics", sales: 45, revenue: 15230.50 },
+    { name: "Fashion", sales: 32, revenue: 8900.25 },
+    { name: "Home & Garden", sales: 28, revenue: 5600.75 }
+  ]
+};
+---
+
+<Layout title="Seller Dashboard - Soladia">
+  <Navigation />
+  
+  <div class="dashboard-container">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <!-- Dashboard Header -->
+      <div class="dashboard-header">
+        <h1 class="page-title">Seller Dashboard</h1>
+        <div class="header-actions">
+          <button class="btn-secondary">View Store</button>
+          <button class="btn-primary">Add Product</button>
+        </div>
+      </div>
+
+      <!-- Stats Overview -->
+      <div class="stats-overview">
+        <div class="stat-card">
+          <div class="stat-icon">💰</div>
+          <div class="stat-content">
+            <h3 class="stat-title">Total Revenue</h3>
+            <p class="stat-value">${sellerStats.totalRevenue.toLocaleString()}</p>
+            <span class="stat-change positive">+12.5% from last month</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">🛒</div>
+          <div class="stat-content">
+            <h3 class="stat-title">Total Sales</h3>
+            <p class="stat-value">{sellerStats.totalSales}</p>
+            <span class="stat-change positive">+8.2% from last month</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">📦</div>
+          <div class="stat-content">
+            <h3 class="stat-title">Active Listings</h3>
+            <p class="stat-value">{sellerStats.activeListings}</p>
+            <span class="stat-change neutral">No change</span>
+          </div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-icon">⏳</div>
+          <div class="stat-content">
+            <h3 class="stat-title">Pending Orders</h3>
+            <p class="stat-value">{sellerStats.pendingOrders}</p>
+            <span class="stat-change negative">+2 from yesterday</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="dashboard-content">
+        <!-- Recent Orders -->
+        <div class="dashboard-section">
+          <div class="section-header">
+            <h2 class="section-title">Recent Orders</h2>
+            <a href="/seller/orders" class="view-all-link">View All</a>
+          </div>
+          <div class="orders-table">
+            <div class="table-header">
+              <span>Order ID</span>
+              <span>Customer</span>
+              <span>Product</span>
+              <span>Amount</span>
+              <span>Status</span>
+              <span>Date</span>
+              <span>Actions</span>
+            </div>
+            {recentOrders.map((order) => (
+              <div class="table-row">
+                <span class="order-id">{order.id}</span>
+                <span class="customer-name">{order.customer}</span>
+                <span class="product-name">{order.product}</span>
+                <span class="order-amount">${order.amount.toFixed(2)}</span>
+                <span class={`order-status status-${order.status.toLowerCase()}`}>{order.status}</span>
+                <span class="order-date">{new Date(order.date).toLocaleDateString()}</span>
+                <div class="order-actions">
+                  <button class="action-btn view-btn" data-order-id={order.id}>View</button>
+                  <button class="action-btn update-btn" data-order-id={order.id}>Update</button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- My Listings -->
+        <div class="dashboard-section">
+          <div class="section-header">
+            <h2 class="section-title">My Listings</h2>
+            <a href="/seller/listings" class="view-all-link">View All</a>
+          </div>
+          <div class="listings-grid">
+            {recentListings.map((listing) => (
+              <div class="listing-card">
+                <div class="listing-image">
+                  <img src="https://via.placeholder.com/200x150/4F46E5/FFFFFF?text=Product" alt={listing.title} />
+                </div>
+                <div class="listing-info">
+                  <h3 class="listing-title">{listing.title}</h3>
+                  <p class="listing-price">${listing.price.toFixed(2)}</p>
+                  <div class="listing-stats">
+                    <div class="stat">
+                      <span class="stat-value">{listing.views}</span>
+                      <span class="stat-label">Views</span>
+                    </div>
+                    <div class="stat">
+                      <span class="stat-value">{listing.watchers}</span>
+                      <span class="stat-label">Watchers</span>
+                    </div>
+                    <div class="stat">
+                      <span class="stat-value">{listing.sales}</span>
+                      <span class="stat-label">Sales</span>
+                    </div>
+                  </div>
+                  <div class="listing-actions">
+                    <span class={`status-badge status-${listing.status.toLowerCase()}`}>{listing.status}</span>
+                    <button class="btn-small">Edit</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <!-- Analytics -->
+        <div class="dashboard-section">
+          <h2 class="section-title">Analytics</h2>
+          <div class="analytics-grid">
+            <!-- Sales Chart -->
+            <div class="chart-container">
+              <h3 class="chart-title">Sales Over Time</h3>
+              <div class="chart-placeholder">
+                <canvas id="sales-chart" width="400" height="200"></canvas>
+              </div>
+            </div>
+
+            <!-- Top Categories -->
+            <div class="categories-container">
+              <h3 class="chart-title">Top Categories</h3>
+              <div class="categories-list">
+                {analytics.topCategories.map((category) => (
+                  <div class="category-item">
+                    <div class="category-info">
+                      <span class="category-name">{category.name}</span>
+                      <span class="category-sales">{category.sales} sales</span>
+                    </div>
+                    <div class="category-revenue">${category.revenue.toFixed(2)}</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="dashboard-section">
+          <h2 class="section-title">Quick Actions</h2>
+          <div class="quick-actions">
+            <button class="quick-action-btn" id="add-product-btn">
+              <span class="action-icon">➕</span>
+              <span class="action-text">Add Product</span>
+            </button>
+            <button class="quick-action-btn" id="view-orders-btn">
+              <span class="action-icon">📋</span>
+              <span class="action-text">View Orders</span>
+            </button>
+            <button class="quick-action-btn" id="analytics-btn">
+              <span class="action-icon">📊</span>
+              <span class="action-text">View Analytics</span>
+            </button>
+            <button class="quick-action-btn" id="settings-btn">
+              <span class="action-icon">⚙️</span>
+              <span class="action-text">Settings</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    initializeDashboard();
+    setupEventListeners();
+    renderSalesChart();
+  });
+
+  function initializeDashboard() {
+    // Initialize dashboard components
+    console.log('Dashboard initialized');
+  }
+
+  function setupEventListeners() {
+    // Order action buttons
+    const viewBtns = document.querySelectorAll('.view-btn');
+    const updateBtns = document.querySelectorAll('.update-btn');
+    
+    viewBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const orderId = this.getAttribute('data-order-id');
+        viewOrder(orderId);
+      });
+    });
+
+    updateBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        const orderId = this.getAttribute('data-order-id');
+        updateOrder(orderId);
+      });
+    });
+
+    // Quick action buttons
+    const addProductBtn = document.getElementById('add-product-btn');
+    const viewOrdersBtn = document.getElementById('view-orders-btn');
+    const analyticsBtn = document.getElementById('analytics-btn');
+    const settingsBtn = document.getElementById('settings-btn');
+
+    if (addProductBtn) {
+      addProductBtn.addEventListener('click', () => {
+        window.location.href = '/seller/add-product';
+      });
+    }
+
+    if (viewOrdersBtn) {
+      viewOrdersBtn.addEventListener('click', () => {
+        window.location.href = '/seller/orders';
+      });
+    }
+
+    if (analyticsBtn) {
+      analyticsBtn.addEventListener('click', () => {
+        window.location.href = '/seller/analytics';
+      });
+    }
+
+    if (settingsBtn) {
+      settingsBtn.addEventListener('click', () => {
+        window.location.href = '/seller/settings';
+      });
+    }
+  }
+
+  function viewOrder(orderId: string | null) {
+    if (orderId) {
+      window.location.href = `/seller/orders/${orderId}`;
+    }
+  }
+
+  function updateOrder(orderId: string | null) {
+    if (orderId) {
+      // In a real app, this would open an order update modal
+      showNotification(`Updating order ${orderId}`, 'info');
+    }
+  }
+
+  function renderSalesChart() {
+    const canvas = document.getElementById('sales-chart') as HTMLCanvasElement;
+    if (!canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Simple chart rendering (in a real app, you'd use Chart.js or similar)
+    const data = [1200, 1900, 3000, 5000, 2000, 3000];
+    const labels = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+    const maxValue = Math.max(...data);
+
+    ctx.strokeStyle = '#4F46E5';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+
+    data.forEach((value, index) => {
+      const x = (index / (data.length - 1)) * canvas.width;
+      const y = canvas.height - (value / maxValue) * canvas.height;
+      
+      if (index === 0) {
+        ctx.moveTo(x, y);
+      } else {
+        ctx.lineTo(x, y);
+      }
+    });
+
+    ctx.stroke();
+
+    // Add data points
+    ctx.fillStyle = '#4F46E5';
+    data.forEach((value, index) => {
+      const x = (index / (data.length - 1)) * canvas.width;
+      const y = canvas.height - (value / maxValue) * canvas.height;
+      
+      ctx.beginPath();
+      ctx.arc(x, y, 4, 0, 2 * Math.PI);
+      ctx.fill();
+    });
+  }
+
+  function showNotification(message: string, type: 'success' | 'error' | 'info') {
+    const notification = document.createElement('div');
+    notification.className = `notification notification-${type}`;
+    notification.textContent = message;
+    
+    document.body.appendChild(notification);
+    
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
+  }
+</script>
+
+<style>
+  .dashboard-container {
+    @apply min-h-screen bg-gray-50;
+  }
+
+  .dashboard-header {
+    @apply flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8;
+  }
+
+  .page-title {
+    @apply text-3xl font-bold text-gray-900 mb-4 sm:mb-0;
+  }
+
+  .header-actions {
+    @apply flex space-x-3;
+  }
+
+  .stats-overview {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8;
+  }
+
+  .stat-card {
+    @apply bg-white rounded-lg shadow-sm p-6 flex items-center space-x-4;
+  }
+
+  .stat-icon {
+    @apply text-3xl;
+  }
+
+  .stat-content {
+    @apply flex-1;
+  }
+
+  .stat-title {
+    @apply text-sm font-medium text-gray-600 mb-1;
+  }
+
+  .stat-value {
+    @apply text-2xl font-bold text-gray-900 mb-1;
+  }
+
+  .stat-change {
+    @apply text-sm font-medium;
+  }
+
+  .stat-change.positive {
+    @apply text-green-600;
+  }
+
+  .stat-change.negative {
+    @apply text-red-600;
+  }
+
+  .stat-change.neutral {
+    @apply text-gray-600;
+  }
+
+  .dashboard-content {
+    @apply space-y-8;
+  }
+
+  .dashboard-section {
+    @apply bg-white rounded-lg shadow-sm p-6;
+  }
+
+  .section-header {
+    @apply flex justify-between items-center mb-6;
+  }
+
+  .section-title {
+    @apply text-xl font-semibold text-gray-900;
+  }
+
+  .view-all-link {
+    @apply text-blue-600 hover:text-blue-800 font-medium;
+  }
+
+  .orders-table {
+    @apply space-y-2;
+  }
+
+  .table-header {
+    @apply grid grid-cols-7 gap-4 py-3 font-semibold text-gray-700 border-b-2 border-gray-200;
+  }
+
+  .table-row {
+    @apply grid grid-cols-7 gap-4 py-3 hover:bg-gray-50 transition-colors;
+  }
+
+  .order-id {
+    @apply font-mono text-sm text-blue-600;
+  }
+
+  .customer-name {
+    @apply font-medium text-gray-900;
+  }
+
+  .product-name {
+    @apply text-gray-600;
+  }
+
+  .order-amount {
+    @apply font-semibold text-gray-900;
+  }
+
+  .order-status {
+    @apply px-2 py-1 rounded-full text-xs font-medium;
+  }
+
+  .status-shipped {
+    @apply bg-blue-100 text-blue-800;
+  }
+
+  .status-pending {
+    @apply bg-yellow-100 text-yellow-800;
+  }
+
+  .status-delivered {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .order-date {
+    @apply text-gray-600;
+  }
+
+  .order-actions {
+    @apply flex space-x-2;
+  }
+
+  .action-btn {
+    @apply px-3 py-1 text-sm rounded font-medium transition-colors;
+  }
+
+  .view-btn {
+    @apply bg-blue-100 text-blue-700 hover:bg-blue-200;
+  }
+
+  .update-btn {
+    @apply bg-gray-100 text-gray-700 hover:bg-gray-200;
+  }
+
+  .listings-grid {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+  }
+
+  .listing-card {
+    @apply border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow;
+  }
+
+  .listing-image {
+    @apply aspect-video overflow-hidden;
+  }
+
+  .listing-image img {
+    @apply w-full h-full object-cover;
+  }
+
+  .listing-info {
+    @apply p-4;
+  }
+
+  .listing-title {
+    @apply font-semibold text-gray-900 mb-2;
+  }
+
+  .listing-price {
+    @apply text-lg font-bold text-green-600 mb-3;
+  }
+
+  .listing-stats {
+    @apply flex space-x-4 mb-3;
+  }
+
+  .stat {
+    @apply text-center;
+  }
+
+  .stat-value {
+    @apply block font-semibold text-gray-900;
+  }
+
+  .stat-label {
+    @apply text-xs text-gray-600;
+  }
+
+  .listing-actions {
+    @apply flex justify-between items-center;
+  }
+
+  .status-badge {
+    @apply px-2 py-1 rounded-full text-xs font-medium;
+  }
+
+  .status-active {
+    @apply bg-green-100 text-green-800;
+  }
+
+  .status-sold {
+    @apply bg-gray-100 text-gray-800;
+  }
+
+  .btn-small {
+    @apply px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors;
+  }
+
+  .analytics-grid {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-6;
+  }
+
+  .chart-container {
+    @apply space-y-4;
+  }
+
+  .chart-title {
+    @apply text-lg font-semibold text-gray-900;
+  }
+
+  .chart-placeholder {
+    @apply bg-gray-50 rounded-lg p-4;
+  }
+
+  .categories-container {
+    @apply space-y-4;
+  }
+
+  .categories-list {
+    @apply space-y-3;
+  }
+
+  .category-item {
+    @apply flex justify-between items-center p-3 bg-gray-50 rounded-lg;
+  }
+
+  .category-info {
+    @apply space-y-1;
+  }
+
+  .category-name {
+    @apply font-medium text-gray-900;
+  }
+
+  .category-sales {
+    @apply text-sm text-gray-600;
+  }
+
+  .category-revenue {
+    @apply font-semibold text-green-600;
+  }
+
+  .quick-actions {
+    @apply grid grid-cols-2 md:grid-cols-4 gap-4;
+  }
+
+  .quick-action-btn {
+    @apply flex flex-col items-center p-6 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors cursor-pointer;
+  }
+
+  .action-icon {
+    @apply text-3xl mb-2;
+  }
+
+  .action-text {
+    @apply font-medium text-gray-900;
+  }
+
+  .btn-primary {
+    @apply px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors;
+  }
+
+  .btn-secondary {
+    @apply px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition-colors;
+  }
+
+  .notification {
+    @apply fixed top-4 right-4 px-4 py-2 rounded-lg text-white font-medium z-50;
+  }
+
+  .notification-success {
+    @apply bg-green-600;
+  }
+
+  .notification-error {
+    @apply bg-red-600;
+  }
+
+  .notification-info {
+    @apply bg-blue-600;
+  }
+</style>

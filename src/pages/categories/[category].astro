@@ -1,0 +1,327 @@
+---
+// Dynamic category page
+import Layout from '../../layouts/Layout.astro';
+import ProductCard from '../../components/ProductCard.astro';
+import AdvancedSearch from '../../components/AdvancedSearch.astro';
+
+export async function getStaticPaths() {
+  const categories = [
+    'electronics',
+    'digital-art',
+    'gaming',
+    'music',
+    'virtual-world',
+    'trading-cards',
+    '3d-assets',
+    'photography',
+    'collectibles',
+    'sports',
+    'fashion',
+    'real-estate'
+  ];
+
+  return categories.map(category => ({
+    params: { category }
+  }));
+}
+
+const { category } = Astro.params;
+
+// Mock products data for different categories
+const categoryProducts = {
+  'electronics': [
+    {
+      id: 1,
+      name: "Smartphone NFT",
+      price: 15.0,
+      image: "/api/placeholder/300/200",
+      category: "Electronics",
+      seller: "TechSeller",
+      description: "Digital representation of latest smartphone",
+      nft: true,
+      solana: true
+    },
+    {
+      id: 2,
+      name: "Laptop NFT",
+      price: 25.0,
+      image: "/api/placeholder/300/200",
+      category: "Electronics",
+      seller: "TechSeller",
+      description: "High-end laptop as NFT",
+      nft: true,
+      solana: true
+    }
+  ],
+  'digital-art': [
+    {
+      id: 3,
+      name: "Abstract Art #001",
+      price: 2.5,
+      image: "/api/placeholder/300/200",
+      category: "Digital Art",
+      seller: "Artist123",
+      description: "Unique abstract digital artwork",
+      nft: true,
+      solana: true
+    },
+    {
+      id: 4,
+      name: "Pixel Art Collection",
+      price: 1.8,
+      image: "/api/placeholder/300/200",
+      category: "Digital Art",
+      seller: "PixelArtist",
+      description: "Retro pixel art collection",
+      nft: true,
+      solana: true
+    }
+  ],
+  'gaming': [
+    {
+      id: 5,
+      name: "Legendary Sword",
+      price: 8.5,
+      image: "/api/placeholder/300/200",
+      category: "Gaming",
+      seller: "GameMaster",
+      description: "Rare legendary sword from RPG",
+      nft: true,
+      solana: true
+    },
+    {
+      id: 6,
+      name: "Character Skin",
+      price: 3.2,
+      image: "/api/placeholder/300/200",
+      category: "Gaming",
+      seller: "SkinCreator",
+      description: "Exclusive character skin",
+      nft: true,
+      solana: true
+    }
+  ]
+};
+
+const products = categoryProducts[category as keyof typeof categoryProducts] || [];
+
+const categoryInfo = {
+  'electronics': {
+    name: 'Electronics',
+    description: 'Digital representations of electronic devices and gadgets',
+    icon: '📱'
+  },
+  'digital-art': {
+    name: 'Digital Art',
+    description: 'Unique digital artworks and creative pieces',
+    icon: '🎨'
+  },
+  'gaming': {
+    name: 'Gaming',
+    description: 'Gaming assets, characters, and collectibles',
+    icon: '🎮'
+  },
+  'music': {
+    name: 'Music',
+    description: 'Music NFTs, albums, and audio experiences',
+    icon: '🎵'
+  },
+  'virtual-world': {
+    name: 'Virtual World',
+    description: 'Virtual land, buildings, and metaverse assets',
+    icon: '🌐'
+  },
+  'trading-cards': {
+    name: 'Trading Cards',
+    description: 'Digital trading cards and collectibles',
+    icon: '🃏'
+  },
+  '3d-assets': {
+    name: '3D Assets',
+    description: '3D models, animations, and virtual objects',
+    icon: '🎯'
+  },
+  'photography': {
+    name: 'Photography',
+    description: 'Digital photography and visual art',
+    icon: '📸'
+  },
+  'collectibles': {
+    name: 'Collectibles',
+    description: 'Rare and unique collectible items',
+    icon: '💎'
+  },
+  'sports': {
+    name: 'Sports',
+    description: 'Sports memorabilia and athlete NFTs',
+    icon: '⚽'
+  },
+  'fashion': {
+    name: 'Fashion',
+    description: 'Digital fashion items and wearables',
+    icon: '👗'
+  },
+  'real-estate': {
+    name: 'Real Estate',
+    description: 'Virtual real estate and property',
+    icon: '🏠'
+  }
+};
+
+const info = categoryInfo[category as keyof typeof categoryInfo] || {
+  name: 'Category',
+  description: 'Explore items in this category',
+  icon: '📦'
+};
+---
+
+<Layout title={`${info.name} - Soladia Marketplace`}>
+  <main class="min-h-screen bg-gray-50">
+    <!-- Category Header -->
+    <div class="bg-white shadow-sm">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div class="flex items-center space-x-4">
+          <div class="text-4xl">{info.icon}</div>
+          <div>
+            <h1 class="text-3xl font-bold text-gray-900">{info.name}</h1>
+            <p class="mt-2 text-gray-600">{info.description}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <!-- Sidebar -->
+        <div class="lg:col-span-1">
+          <!-- Advanced Search -->
+          <div class="bg-white rounded-lg shadow-sm p-6">
+            <AdvancedSearch />
+          </div>
+
+          <!-- Category Stats -->
+          <div class="mt-6 bg-white rounded-lg shadow-sm p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Category Stats</h3>
+            <div class="space-y-3">
+              <div class="flex justify-between">
+                <span class="text-sm text-gray-600">Total Items</span>
+                <span class="text-sm font-medium text-gray-900">{products.length}</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-sm text-gray-600">Floor Price</span>
+                <span class="text-sm font-medium text-gray-900">
+                  {products.length > 0 ? Math.min(...products.map((p: any) => p.price)).toFixed(2) : '0.00'} SOL
+                </span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-sm text-gray-600">Volume (24h)</span>
+                <span class="text-sm font-medium text-gray-900">12.5 SOL</span>
+              </div>
+              <div class="flex justify-between">
+                <span class="text-sm text-gray-600">Owners</span>
+                <span class="text-sm font-medium text-gray-900">45</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Related Categories -->
+          <div class="mt-6 bg-white rounded-lg shadow-sm p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">Related Categories</h3>
+            <div class="space-y-2">
+              {Object.entries(categoryInfo).filter(([key]) => key !== category).slice(0, 5).map(([key, cat]) => (
+                <a 
+                  href={`/categories/${key}`}
+                  class="flex items-center space-x-2 text-sm text-gray-600 hover:text-blue-600 transition-colors"
+                >
+                  <span>{cat.icon}</span>
+                  <span>{cat.name}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="lg:col-span-3">
+          <!-- Filters and Sort -->
+          <div class="bg-white rounded-lg shadow-sm p-4 mb-6">
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between">
+              <div class="flex items-center space-x-4">
+                <span class="text-sm text-gray-600">
+                  {products.length} items in {info.name}
+                </span>
+              </div>
+              <div class="mt-4 sm:mt-0 flex space-x-4">
+                <select class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option>Sort by: Newest</option>
+                  <option>Sort by: Price (Low to High)</option>
+                  <option>Sort by: Price (High to Low)</option>
+                  <option>Sort by: Most Popular</option>
+                </select>
+                <select class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option>All Items</option>
+                  <option>On Sale</option>
+                  <option>Auctions</option>
+                  <option>New</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Products Grid -->
+          {products.length > 0 ? (
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+              {products.map((product: any) => (
+                <ProductCard 
+                  product={product}
+                  showSolana={true}
+                  showNFT={true}
+                />
+              ))}
+            </div>
+          ) : (
+            <div class="text-center py-12">
+              <div class="text-6xl mb-4">{info.icon}</div>
+              <h3 class="text-lg font-medium text-gray-900 mb-2">No items found</h3>
+              <p class="text-gray-600 mb-6">There are no items in this category yet.</p>
+              <button class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                Be the first to create one
+              </button>
+            </div>
+          )}
+
+          <!-- Load More -->
+          {products.length > 0 && (
+            <div class="text-center mt-8">
+              <button class="bg-gray-200 text-gray-700 px-6 py-3 rounded-lg hover:bg-gray-300 transition-colors">
+                Load More Items
+              </button>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  // Add client-side functionality for sorting and filtering
+  document.addEventListener('DOMContentLoaded', () => {
+    const sortSelect = document.querySelector('select');
+    const filterSelect = document.querySelectorAll('select')[1];
+    
+    if (sortSelect) {
+      sortSelect.addEventListener('change', (e) => {
+        console.log('Sort changed:', (e.target as HTMLSelectElement).value);
+        // In a real implementation, this would trigger a re-sort
+      });
+    }
+    
+    if (filterSelect) {
+      filterSelect.addEventListener('change', (e) => {
+        console.log('Filter changed:', (e.target as HTMLSelectElement).value);
+        // In a real implementation, this would trigger a re-filter
+      });
+    }
+  });
+</script>
