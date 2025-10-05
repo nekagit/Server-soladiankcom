@@ -21,14 +21,31 @@
   --soladia-light: #F8F9FA;
   --soladia-border: #E1E5E9;
   
+  /* Enhanced Color Palette */
+  --soladia-primary-50: #fef2f2;
+  --soladia-primary-100: #fee2e2;
+  --soladia-primary-200: #fecaca;
+  --soladia-primary-300: #fca5a5;
+  --soladia-primary-400: #f87171;
+  --soladia-primary-500: #E60012;
+  --soladia-primary-600: #dc2626;
+  --soladia-primary-700: #b91c1c;
+  --soladia-primary-800: #991b1b;
+  --soladia-primary-900: #7f1d1d;
+  
   /* Optimized Gradients */
   --soladia-gradient: linear-gradient(135deg, #E60012 0%, #0066CC 100%);
   --soladia-gradient-gold: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  --soladia-gradient-soft: linear-gradient(135deg, rgba(230, 0, 18, 0.1) 0%, rgba(0, 102, 204, 0.1) 100%);
+  --soladia-gradient-hero: linear-gradient(135deg, rgba(230, 0, 18, 0.05) 0%, rgba(0, 102, 204, 0.05) 100%);
   
-  /* Optimized Shadows */
+  /* Enhanced Shadows */
   --soladia-shadow: 0 4px 20px rgba(230, 0, 18, 0.15);
   --soladia-shadow-lg: 0 8px 40px rgba(230, 0, 18, 0.25);
   --soladia-shadow-card: 0 2px 12px rgba(0, 0, 0, 0.08);
+  --soladia-shadow-hover: 0 8px 25px rgba(230, 0, 18, 0.2);
+  --soladia-shadow-soft: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --soladia-shadow-button: 0 4px 14px rgba(230, 0, 18, 0.3);
   
   /* Typography */
   --soladia-font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
@@ -47,6 +64,20 @@
   --soladia-radius-md: 8px;
   --soladia-radius-lg: 12px;
   --soladia-radius-xl: 16px;
+  --soladia-radius-2xl: 20px;
+  
+  /* Animation Properties */
+  --soladia-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --soladia-transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --soladia-transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  
+  /* Z-Index Scale */
+  --soladia-z-dropdown: 1000;
+  --soladia-z-sticky: 1020;
+  --soladia-z-fixed: 1030;
+  --soladia-z-modal: 1040;
+  --soladia-z-popover: 1050;
+  --soladia-z-tooltip: 1060;
 }
 
 /* Optimized Reset and Base Styles */
@@ -70,9 +101,11 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
 }
 
-/* Optimized Static Background */
+/* Enhanced Animated Background */
 body::before {
   content: '';
   position: fixed;
@@ -80,40 +113,54 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background: 
-    radial-gradient(circle at 20% 80%, rgba(230, 0, 18, 0.05) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(0, 102, 204, 0.05) 0%, transparent 50%);
+  background: var(--soladia-gradient-hero);
+  background-size: 400% 400%;
+  animation: gradientShift 20s ease infinite;
   z-index: -1;
-  will-change: auto;
+  will-change: transform;
 }
 
-/* Navigation Styles */
+@keyframes gradientShift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Enhanced Navigation Styles */
 nav {
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
   border-bottom: 3px solid var(--soladia-primary);
   box-shadow: var(--soladia-shadow);
   position: sticky;
   top: 0;
-  z-index: 1000;
-  transition: all 0.3s ease;
+  z-index: var(--soladia-z-sticky);
+  transition: var(--soladia-transition);
+  border-radius: 0 0 var(--soladia-radius-lg) var(--soladia-radius-lg);
 }
 
 nav:hover {
-  box-shadow: var(--soladia-shadow-lg);
+  box-shadow: var(--soladia-shadow-hover);
+  transform: translateY(-1px);
 }
 
-/* Soladia Logo */
+/* Enhanced Soladia Logo */
 .soladia-logo {
   display: flex;
   align-items: center;
   gap: var(--soladia-space-sm);
   text-decoration: none;
-  transition: all 0.3s ease;
+  transition: var(--soladia-transition);
+  position: relative;
 }
 
 .soladia-logo:hover {
   transform: scale(1.05);
+}
+
+.soladia-logo:active {
+  transform: scale(0.98);
 }
 
 .soladia-logo-icon {
@@ -127,6 +174,7 @@ nav:hover {
   position: relative;
   overflow: hidden;
   box-shadow: var(--soladia-shadow);
+  transition: var(--soladia-transition);
 }
 
 .soladia-logo-icon::before {
@@ -136,13 +184,20 @@ nav:hover {
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(45deg, transparent, rgba(255, 255, 255, 0.3), transparent);
   opacity: 0;
-  transition: opacity 0.3s ease;
+  transition: var(--soladia-transition);
+  transform: translateX(-100%);
 }
 
 .soladia-logo:hover .soladia-logo-icon::before {
   opacity: 1;
+  transform: translateX(100%);
+}
+
+.soladia-logo:hover .soladia-logo-icon {
+  box-shadow: var(--soladia-shadow-button);
+  transform: rotate(5deg);
 }
 
 .soladia-logo-icon span {
@@ -1020,6 +1075,135 @@ nav:hover {
 }
 
 /* Reduced Motion Support */
+/* Enhanced Button Styles */
+.btn-primary {
+  background: var(--soladia-gradient);
+  color: white;
+  border: none;
+  border-radius: var(--soladia-radius-lg);
+  padding: var(--soladia-space-md) var(--soladia-space-xl);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--soladia-transition);
+  box-shadow: var(--soladia-shadow);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  transition: var(--soladia-transition);
+}
+
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--soladia-shadow-button);
+}
+
+.btn-primary:hover::before {
+  left: 100%;
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: var(--soladia-shadow);
+}
+
+.btn-secondary {
+  background: white;
+  color: var(--soladia-primary);
+  border: 2px solid var(--soladia-primary);
+  border-radius: var(--soladia-radius-lg);
+  padding: var(--soladia-space-md) var(--soladia-space-xl);
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: var(--soladia-transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.btn-secondary::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 0;
+  height: 100%;
+  background: var(--soladia-primary);
+  transition: var(--soladia-transition);
+  z-index: -1;
+}
+
+.btn-secondary:hover {
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: var(--soladia-shadow-hover);
+}
+
+.btn-secondary:hover::before {
+  width: 100%;
+}
+
+.btn-secondary:active {
+  transform: translateY(0);
+}
+
+/* Enhanced Form Styles */
+input, select, textarea {
+  border: 2px solid var(--soladia-border);
+  border-radius: var(--soladia-radius-md);
+  padding: var(--soladia-space-md);
+  font-family: var(--soladia-font-primary);
+  transition: var(--soladia-transition);
+  background: white;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: none;
+  border-color: var(--soladia-primary);
+  box-shadow: 0 0 0 3px rgba(230, 0, 18, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Enhanced Card Styles */
+.card {
+  background: white;
+  border-radius: var(--soladia-radius-xl);
+  box-shadow: var(--soladia-shadow-card);
+  transition: var(--soladia-transition);
+  overflow: hidden;
+  position: relative;
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--soladia-shadow-hover);
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 4px;
+  background: var(--soladia-gradient);
+  transform: scaleX(0);
+  transition: var(--soladia-transition);
+}
+
+.card:hover::before {
+  transform: scaleX(1);
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

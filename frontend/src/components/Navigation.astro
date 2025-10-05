@@ -95,12 +95,14 @@ import MobileMenu from './MobileMenu.astro';
   .navigation {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-bottom: 3px solid var(--soladia-primary);
     box-shadow: var(--soladia-shadow);
     position: sticky;
     top: 0;
-    z-index: 1000;
-    transition: all 0.3s ease;
+    z-index: var(--soladia-z-sticky);
+    transition: var(--soladia-transition);
+    border-radius: 0 0 var(--soladia-radius-lg) var(--soladia-radius-lg);
   }
 
   .nav-container {
@@ -199,18 +201,20 @@ import MobileMenu from './MobileMenu.astro';
   .search-input {
     width: 100%;
     padding: 0.75rem 1rem 0.75rem 3rem;
-    border: 2px solid #E1E5E9;
-    border-radius: 0.75rem;
+    border: 2px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
     font-size: 1rem;
     background: white;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: all 0.2s ease;
+    box-shadow: var(--soladia-shadow-soft);
+    transition: var(--soladia-transition);
+    font-family: var(--soladia-font-primary);
   }
 
   .search-input:focus {
     outline: none;
-    border-color: #3B82F6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    border-color: var(--soladia-primary);
+    box-shadow: 0 0 0 3px rgba(230, 0, 18, 0.1);
+    transform: translateY(-1px);
   }
 
   .search-icon {
