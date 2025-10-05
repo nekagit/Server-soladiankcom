@@ -230,20 +230,21 @@ import MobileMenu from './MobileMenu.astro';
     right: 0.5rem;
     top: 50%;
     transform: translateY(-50%);
-    background: #3B82F6;
+    background: var(--soladia-gradient);
     color: white;
     padding: 0.5rem 1rem;
-    border-radius: 0.5rem;
+    border-radius: var(--soladia-radius-md);
     font-size: 0.875rem;
     font-weight: 600;
     border: none;
     cursor: pointer;
-    transition: all 0.2s ease;
+    transition: var(--soladia-transition);
+    box-shadow: var(--soladia-shadow);
   }
 
   .search-button:hover {
-    background: #2563EB;
-    transform: translateY(-50%) translateY(-1px);
+    transform: translateY(-50%) translateY(-2px);
+    box-shadow: var(--soladia-shadow-button);
   }
 
   /* Navigation Actions */
