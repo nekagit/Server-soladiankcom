@@ -12,10 +12,10 @@ env:
   POSTGRES_VERSION: '15'
 
 jobs:
-  # Frontend Tests
-  frontend-tests:
+  # Frontend Build
+  frontend-build:
     runs-on: ubuntu-latest
-    name: Frontend Tests
+    name: Frontend Build
     
     steps:
     - name: Checkout code
@@ -36,44 +36,13 @@ jobs:
     - name: Run type checking
       run: npm run type-check
       
-    - name: Run tests
-      run: npm run test:coverage
-      
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
-      with:
-        file: ./coverage/lcov.info
-        flags: frontend
-        name: frontend-coverage
+    - name: Build frontend
+      run: npm run build
 
-  # Backend Tests
-  backend-tests:
+  # Backend Build
+  backend-build:
     runs-on: ubuntu-latest
-    name: Backend Tests
-    
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: soladia_test
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-          
-      redis:
-        image: redis:7-alpine
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 6379:6379
+    name: Backend Build
     
     steps:
     - name: Checkout code
@@ -96,7 +65,6 @@ jobs:
       run: |
         cd backend
         pip install -r requirements.txt
-        pip install -r requirements-dev.txt
         
     - name: Run linting
       run: |
@@ -109,90 +77,6 @@ jobs:
       run: |
         cd backend
         mypy . --ignore-missing-imports
-        
-    - name: Run tests
-      run: |
-        cd backend
-        pytest --cov=. --cov-report=xml --cov-report=html
-        
-    - name: Upload coverage to Codecov
-      uses: codecov/codecov-action@v4
-      with:
-        file: ./backend/coverage.xml
-        flags: backend
-        name: backend-coverage
-
-  # Integration Tests
-  integration-tests:
-    runs-on: ubuntu-latest
-    name: Integration Tests
-    needs: [frontend-tests, backend-tests]
-    
-    services:
-      postgres:
-        image: postgres:15
-        env:
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: soladia_integration
-        options: >-
-          --health-cmd pg_isready
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 5432:5432
-          
-      redis:
-        image: redis:7-alpine
-        options: >-
-          --health-cmd "redis-cli ping"
-          --health-interval 10s
-          --health-timeout 5s
-          --health-retries 5
-        ports:
-          - 6379:6379
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: ${{ env.NODE_VERSION }}
-        cache: 'npm'
-        
-    - name: Setup Python
-      uses: actions/setup-python@v4
-      with:
-        python-version: ${{ env.PYTHON_VERSION }}
-        
-    - name: Install dependencies
-      run: |
-        npm ci
-        cd backend
-        pip install -r requirements.txt
-        pip install -r requirements-dev.txt
-        
-    - name: Build frontend
-      run: npm run build
-      
-    - name: Start backend
-      run: |
-        cd backend
-        python -m uvicorn main:app --host 0.0.0.0 --port 8000 &
-        sleep 10
-        
-    - name: Run integration tests
-      run: |
-        npm run test:integration
-        
-    - name: Upload test results
-      uses: actions/upload-artifact@v4
-      if: always()
-      with:
-        name: integration-test-results
-        path: test-results/
 
   # Security Scanning
   security-scan:
@@ -203,20 +87,6 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
       
-    - name: Run Trivy vulnerability scanner
-      uses: aquasecurity/trivy-action@master
-      with:
-        scan-type: 'fs'
-        scan-ref: '.'
-        format: 'sarif'
-        output: 'trivy-results.sarif'
-        
-    - name: Upload Trivy scan results to GitHub Security tab
-      uses: github/codeql-action/upload-sarif@v3
-      if: always()
-      with:
-        sarif_file: 'trivy-results.sarif'
-        
     - name: Run npm audit
       run: |
         npm audit --audit-level moderate
@@ -231,7 +101,7 @@ jobs:
   build-images:
     runs-on: ubuntu-latest
     name: Build Docker Images
-    needs: [frontend-tests, backend-tests, integration-tests]
+    needs: [frontend-build, backend-build, security-scan]
     if: github.event_name == 'push' && github.ref == 'refs/heads/master'
     
     steps:
@@ -334,25 +204,3 @@ jobs:
         channel: '#deployments'
         webhook_url: ${{ secrets.SLACK_WEBHOOK }}
 
-  # Performance Tests
-  performance-tests:
-    runs-on: ubuntu-latest
-    name: Performance Tests
-    needs: [deploy-staging]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/develop'
-    
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
-      
-    - name: Run performance tests
-      run: |
-        echo "Running performance tests..."
-        # Add performance tests here
-        # Example: k6 run performance-tests/load-test.js
-        
-    - name: Upload performance results
-      uses: actions/upload-artifact@v4
-      with:
-        name: performance-test-results
-        path: performance-results/

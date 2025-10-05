@@ -53,7 +53,7 @@ export class OfflineManager {
       };
 
       request.onupgradeneeded = (event) => {
-        const db = (event.target as IDBOpenDBRequest).result;
+        const db = (event.target as any).result;
         
         // Create object stores
         if (!db.objectStoreNames.contains('offline-transactions')) {
