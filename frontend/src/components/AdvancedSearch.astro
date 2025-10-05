@@ -36,8 +36,8 @@ const aiRecommendations = [
     type: "trending",
     title: "Trending This Week",
     items: [
-      { name: "Bored Ape #1234", price: 15.5, image: "/images/nft1.jpg" },
-      { name: "CryptoPunk #5678", price: 25.0, image: "/images/nft2.jpg" }
+      { name: "Bored Ape #1234", price: 15.5, image: "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=100&h=100&fit=crop&crop=center" },
+      { name: "CryptoPunk #5678", price: 25.0, image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=100&h=100&fit=crop&crop=center" }
     ]
   },
   {
@@ -45,8 +45,8 @@ const aiRecommendations = [
     type: "personalized",
     title: "Recommended for You",
     items: [
-      { name: "Digital Art Collection", price: 8.5, image: "/images/nft3.jpg" },
-      { name: "Gaming NFT Pack", price: 12.0, image: "/images/nft4.jpg" }
+      { name: "Digital Art Collection", price: 8.5, image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100&h=100&fit=crop&crop=center" },
+      { name: "Gaming NFT Pack", price: 12.0, image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=100&h=100&fit=crop&crop=center" }
     ]
   },
   {
@@ -54,8 +54,8 @@ const aiRecommendations = [
     type: "new",
     title: "Newly Listed",
     items: [
-      { name: "Fresh NFT Drop", price: 5.0, image: "/images/nft5.jpg" },
-      { name: "Limited Edition", price: 18.0, image: "/images/nft6.jpg" }
+      { name: "Fresh NFT Drop", price: 5.0, image: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=100&h=100&fit=crop&crop=center" },
+      { name: "Limited Edition", price: 18.0, image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=100&h=100&fit=crop&crop=center" }
     ]
   }
 ];
@@ -711,7 +711,7 @@ const aiRecommendations = [
 
 <style>
   .advanced-search {
-    @apply w-full max-w-4xl mx-auto;
+    @apply w-full;
   }
 
   .search-container {
@@ -723,51 +723,51 @@ const aiRecommendations = [
   }
 
   .search-icon {
-    @apply p-3 text-gray-400;
+    @apply p-2 text-gray-400;
   }
 
   .search-input {
-    @apply flex-1 px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none;
+    @apply flex-1 px-3 py-2 text-sm text-gray-900 placeholder-gray-500 focus:outline-none;
   }
 
   .search-button {
-    @apply px-6 py-3 bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors;
+    @apply px-3 py-2 bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors;
   }
 
   .filter-toggle {
-    @apply px-4 py-3 bg-gray-100 text-gray-700 font-medium hover:bg-gray-200 transition-colors flex items-center space-x-2;
+    @apply px-3 py-2 bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200 transition-colors flex items-center space-x-1;
   }
 
   .ai-recommendations {
-    @apply mt-6 p-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg;
+    @apply mt-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg;
   }
 
   .recommendations-title {
-    @apply text-lg font-semibold text-gray-900 mb-4;
+    @apply text-sm font-semibold text-gray-900 mb-3;
   }
 
   .recommendations-grid {
-    @apply grid grid-cols-1 md:grid-cols-3 gap-4;
+    @apply grid grid-cols-1 gap-3;
   }
 
   .recommendation-card {
-    @apply bg-white rounded-lg p-4 shadow-sm;
+    @apply bg-white rounded-lg p-3 shadow-sm;
   }
 
   .recommendation-title {
-    @apply font-medium text-gray-900 mb-3;
+    @apply text-xs font-medium text-gray-900 mb-2;
   }
 
   .recommendation-items {
-    @apply space-y-2;
+    @apply space-y-1;
   }
 
   .recommendation-item {
-    @apply flex items-center space-x-3 p-2 rounded hover:bg-gray-50 cursor-pointer;
+    @apply flex items-center space-x-2 p-1 rounded hover:bg-gray-50 cursor-pointer;
   }
 
   .item-image {
-    @apply w-10 h-10 rounded object-cover;
+    @apply w-6 h-6 rounded object-cover;
   }
 
   .item-info {
@@ -775,7 +775,7 @@ const aiRecommendations = [
   }
 
   .item-name {
-    @apply block text-sm font-medium text-gray-900 truncate;
+    @apply block text-xs font-medium text-gray-900 truncate;
   }
 
   .item-price {
