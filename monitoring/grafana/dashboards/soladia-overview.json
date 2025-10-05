@@ -1,8 +1,8 @@
 {
   "dashboard": {
     "id": null,
-    "title": "Soladia Overview",
-    "tags": ["soladia", "overview"],
+    "title": "Soladia Marketplace Overview",
+    "tags": ["soladia", "marketplace", "overview"],
     "style": "dark",
     "timezone": "browser",
     "panels": [
@@ -12,29 +12,18 @@
         "type": "stat",
         "targets": [
           {
-            "expr": "up",
-            "legendFormat": "Services Up"
+            "expr": "up{job=\"soladia-backend\"}",
+            "legendFormat": "Backend Status"
+          },
+          {
+            "expr": "up{job=\"soladia-frontend\"}",
+            "legendFormat": "Frontend Status"
+          },
+          {
+            "expr": "up{job=\"postgres\"}",
+            "legendFormat": "Database Status"
           }
         ],
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "thresholds": {
-              "steps": [
-                {
-                  "color": "red",
-                  "value": 0
-                },
-                {
-                  "color": "green",
-                  "value": 1
-                }
-              ]
-            }
-          }
-        },
         "gridPos": {
           "h": 8,
           "w": 12,
@@ -108,7 +97,15 @@
         "targets": [
           {
             "expr": "pg_stat_database_numbackends",
-            "legendFormat": "Active connections"
+            "legendFormat": "Active Connections"
+          },
+          {
+            "expr": "pg_stat_database_xact_commit",
+            "legendFormat": "Transactions Committed"
+          },
+          {
+            "expr": "pg_stat_database_xact_rollback",
+            "legendFormat": "Transactions Rolled Back"
           }
         ],
         "gridPos": {
@@ -120,16 +117,20 @@
       },
       {
         "id": 6,
-        "title": "Memory Usage",
+        "title": "Solana Network Health",
         "type": "graph",
         "targets": [
           {
-            "expr": "node_memory_MemTotal_bytes - node_memory_MemAvailable_bytes",
-            "legendFormat": "Used memory"
+            "expr": "solana_network_health",
+            "legendFormat": "Network Health"
           },
           {
-            "expr": "node_memory_MemTotal_bytes",
-            "legendFormat": "Total memory"
+            "expr": "solana_transaction_count",
+            "legendFormat": "Transaction Count"
+          },
+          {
+            "expr": "solana_block_height",
+            "legendFormat": "Block Height"
           }
         ],
         "gridPos": {
@@ -138,12 +139,49 @@
           "x": 12,
           "y": 16
         }
+      },
+      {
+        "id": 7,
+        "title": "Memory Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "process_resident_memory_bytes",
+            "legendFormat": "{{instance}}"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 0,
+          "y": 24
+        }
+      },
+      {
+        "id": 8,
+        "title": "CPU Usage",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "rate(process_cpu_seconds_total[5m])",
+            "legendFormat": "{{instance}}"
+          }
+        ],
+        "gridPos": {
+          "h": 8,
+          "w": 12,
+          "x": 12,
+          "y": 24
+        }
       }
     ],
     "time": {
       "from": "now-1h",
       "to": "now"
     },
-    "refresh": "30s"
+    "refresh": "30s",
+    "schemaVersion": 27,
+    "version": 1,
+    "links": []
   }
 }

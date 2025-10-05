@@ -1,0 +1,1156 @@
+---
+// Blockchain Analytics Dashboard Component
+export interface Props {
+  showNetworkStats?: boolean;
+  showTransactionFlow?: boolean;
+  showTokenAnalytics?: boolean;
+  showNFTAnalytics?: boolean;
+}
+
+const { 
+  showNetworkStats = true,
+  showTransactionFlow = true,
+  showTokenAnalytics = true,
+  showNFTAnalytics = true
+} = Astro.props;
+
+// Mock blockchain data
+const networkStats = {
+  solana: {
+    name: 'Solana',
+    price: '$23.45',
+    change: '+2.34%',
+    marketCap: '$9.8B',
+    volume24h: '$1.2B',
+    tps: 3000,
+    activeValidators: 2000,
+    networkHealth: 98.5
+  },
+  ethereum: {
+    name: 'Ethereum',
+    price: '$1,850.23',
+    change: '-1.45%',
+    marketCap: '$222.5B',
+    volume24h: '$8.9B',
+    tps: 15,
+    activeValidators: 500000,
+    networkHealth: 99.2
+  }
+};
+
+const transactionFlow = {
+  totalTransactions: 1250000,
+  successfulTransactions: 1245000,
+  failedTransactions: 5000,
+  averageGasPrice: '0.000005 SOL',
+  averageTransactionTime: '400ms',
+  topTransactionTypes: [
+    { type: 'Token Transfer', count: 450000, percentage: 36 },
+    { type: 'NFT Mint', count: 320000, percentage: 25.6 },
+    { type: 'DEX Swap', count: 280000, percentage: 22.4 },
+    { type: 'Staking', count: 200000, percentage: 16 }
+  ]
+};
+
+const tokenAnalytics = {
+  topTokens: [
+    {
+      symbol: 'SOL',
+      name: 'Solana',
+      price: '$23.45',
+      change: '+2.34%',
+      volume: '$1.2B',
+      marketCap: '$9.8B'
+    },
+    {
+      symbol: 'USDC',
+      name: 'USD Coin',
+      price: '$1.00',
+      change: '0.00%',
+      volume: '$800M',
+      marketCap: '$32.1B'
+    },
+    {
+      symbol: 'RAY',
+      name: 'Raydium',
+      price: '$2.15',
+      change: '+5.67%',
+      volume: '$45M',
+      marketCap: '$890M'
+    }
+  ],
+  tokenFlow: {
+    totalVolume: '$2.1B',
+    uniqueTokens: 15420,
+    newTokens: 234,
+    topGainers: [
+      { symbol: 'BONK', change: '+45.67%' },
+      { symbol: 'JUP', change: '+23.45%' },
+      { symbol: 'WIF', change: '+18.92%' }
+    ],
+    topLosers: [
+      { symbol: 'ORCA', change: '-12.34%' },
+      { symbol: 'SRM', change: '-8.76%' },
+      { symbol: 'MNGO', change: '-5.43%' }
+    ]
+  }
+};
+
+const nftAnalytics = {
+  totalNFTs: 12500000,
+  totalVolume: '$45.6M',
+  averagePrice: '$3.65',
+  floorPrice: '$0.89',
+  topCollections: [
+    {
+      name: 'Mad Lads',
+      volume: '$2.3M',
+      floorPrice: '$8.5K',
+      change: '+12.5%',
+      items: 10000
+    },
+    {
+      name: 'Tensorians',
+      volume: '$1.8M',
+      floorPrice: '$1.2K',
+      change: '+8.7%',
+      items: 5000
+    },
+    {
+      name: 'Froganna',
+      volume: '$1.2M',
+      floorPrice: '$450',
+      change: '+15.3%',
+      items: 10000
+    }
+  ],
+  nftFlow: {
+    totalMints: 456000,
+    totalSales: 234000,
+    totalTransfers: 890000,
+    averageSalePrice: '$3.65',
+    topCategories: [
+      { category: 'Art', volume: '$18.2M', percentage: 40 },
+      { category: 'Gaming', volume: '$12.8M', percentage: 28 },
+      { category: 'Collectibles', volume: '$8.9M', percentage: 20 },
+      { category: 'Music', volume: '$5.7M', percentage: 12 }
+    ]
+  }
+};
+---
+
+<div class="blockchain-analytics-dashboard">
+  <div class="dashboard-header">
+    <h3 class="dashboard-title">
+      <span class="dashboard-icon">📊</span>
+      Blockchain Analytics
+    </h3>
+    <p class="dashboard-subtitle">Real-time blockchain data and insights</p>
+  </div>
+
+  {showNetworkStats && (
+    <div class="analytics-section">
+      <div class="section-header">
+        <h4 class="section-title">Network Statistics</h4>
+        <div class="time-range">
+          <select class="time-select" id="network-time-range">
+            <option value="1h">Last Hour</option>
+            <option value="24h" selected>Last 24 Hours</option>
+            <option value="7d">Last 7 Days</option>
+            <option value="30d">Last 30 Days</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="network-stats-grid">
+        {Object.entries(networkStats).map(([key, network]) => (
+          <div class="network-card">
+            <div class="network-header">
+              <h5 class="network-name">{network.name}</h5>
+              <div class="network-status">
+                <span class="status-dot"></span>
+                <span class="status-text">Online</span>
+              </div>
+            </div>
+            
+            <div class="network-price">
+              <span class="price-value">{network.price}</span>
+              <span class="price-change {network.change.startsWith('+') ? 'positive' : 'negative'}">
+                {network.change}
+              </span>
+            </div>
+            
+            <div class="network-stats">
+              <div class="stat-row">
+                <span class="stat-label">Market Cap:</span>
+                <span class="stat-value">{network.marketCap}</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">24h Volume:</span>
+                <span class="stat-value">{network.volume24h}</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">TPS:</span>
+                <span class="stat-value">{network.tps.toLocaleString()}</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Validators:</span>
+                <span class="stat-value">{network.activeValidators.toLocaleString()}</span>
+              </div>
+              <div class="stat-row">
+                <span class="stat-label">Health:</span>
+                <span class="stat-value">{network.networkHealth}%</span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+
+  {showTransactionFlow && (
+    <div class="analytics-section">
+      <div class="section-header">
+        <h4 class="section-title">Transaction Flow</h4>
+        <div class="refresh-indicator">
+          <span class="refresh-text">Last updated: 2 minutes ago</span>
+          <button class="refresh-btn" id="refresh-transactions">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="23 4 23 10 17 10"></polyline>
+              <polyline points="1 20 1 14 7 14"></polyline>
+              <path d="m3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="transaction-overview">
+        <div class="overview-card">
+          <div class="overview-title">Total Transactions</div>
+          <div class="overview-value">{transactionFlow.totalTransactions.toLocaleString()}</div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-title">Success Rate</div>
+          <div class="overview-value">
+            {((transactionFlow.successfulTransactions / transactionFlow.totalTransactions) * 100).toFixed(2)}%
+          </div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-title">Avg Gas Price</div>
+          <div class="overview-value">{transactionFlow.averageGasPrice}</div>
+        </div>
+        <div class="overview-card">
+          <div class="overview-title">Avg Time</div>
+          <div class="overview-value">{transactionFlow.averageTransactionTime}</div>
+        </div>
+      </div>
+
+      <div class="transaction-types">
+        <h5 class="types-title">Transaction Types</h5>
+        <div class="types-list">
+          {transactionFlow.topTransactionTypes.map(type => (
+            <div class="type-item">
+              <div class="type-info">
+                <span class="type-name">{type.type}</span>
+                <span class="type-count">{type.count.toLocaleString()}</span>
+              </div>
+              <div class="type-bar">
+                <div 
+                  class="type-fill" 
+                  style={`width: ${type.percentage}%`}
+                ></div>
+              </div>
+              <span class="type-percentage">{type.percentage}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )}
+
+  {showTokenAnalytics && (
+    <div class="analytics-section">
+      <div class="section-header">
+        <h4 class="section-title">Token Analytics</h4>
+        <div class="view-toggle">
+          <button class="toggle-btn active" data-view="tokens">Tokens</button>
+          <button class="toggle-btn" data-view="flow">Flow</button>
+        </div>
+      </div>
+
+      <div class="token-content">
+        <div class="tokens-view active" id="tokens-view">
+          <div class="tokens-table">
+            <div class="table-header">
+              <div class="col-symbol">Symbol</div>
+              <div class="col-name">Name</div>
+              <div class="col-price">Price</div>
+              <div class="col-change">Change</div>
+              <div class="col-volume">Volume</div>
+              <div class="col-marketcap">Market Cap</div>
+            </div>
+            {tokenAnalytics.topTokens.map(token => (
+              <div class="table-row">
+                <div class="col-symbol">
+                  <span class="token-symbol">{token.symbol}</span>
+                </div>
+                <div class="col-name">{token.name}</div>
+                <div class="col-price">{token.price}</div>
+                <div class="col-change">
+                  <span class={`change-value ${token.change.startsWith('+') ? 'positive' : 'negative'}`}>
+                    {token.change}
+                  </span>
+                </div>
+                <div class="col-volume">{token.volume}</div>
+                <div class="col-marketcap">{token.marketCap}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div class="flow-view" id="flow-view">
+          <div class="flow-stats">
+            <div class="flow-card">
+              <div class="flow-title">Total Volume</div>
+              <div class="flow-value">{tokenAnalytics.tokenFlow.totalVolume}</div>
+            </div>
+            <div class="flow-card">
+              <div class="flow-title">Unique Tokens</div>
+              <div class="flow-value">{tokenAnalytics.tokenFlow.uniqueTokens.toLocaleString()}</div>
+            </div>
+            <div class="flow-card">
+              <div class="flow-title">New Tokens</div>
+              <div class="flow-value">{tokenAnalytics.tokenFlow.newTokens}</div>
+            </div>
+          </div>
+
+          <div class="gainers-losers">
+            <div class="gainers">
+              <h6 class="gainers-title">Top Gainers</h6>
+              <div class="gainers-list">
+                {tokenAnalytics.tokenFlow.topGainers.map(token => (
+                  <div class="gainer-item">
+                    <span class="token-symbol">{token.symbol}</span>
+                    <span class="change-value positive">{token.change}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div class="losers">
+              <h6 class="losers-title">Top Losers</h6>
+              <div class="losers-list">
+                {tokenAnalytics.tokenFlow.topLosers.map(token => (
+                  <div class="loser-item">
+                    <span class="token-symbol">{token.symbol}</span>
+                    <span class="change-value negative">{token.change}</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+
+  {showNFTAnalytics && (
+    <div class="analytics-section">
+      <div class="section-header">
+        <h4 class="section-title">NFT Analytics</h4>
+        <div class="nft-filters">
+          <select class="filter-select" id="nft-category-filter">
+            <option value="all">All Categories</option>
+            <option value="art">Art</option>
+            <option value="gaming">Gaming</option>
+            <option value="collectibles">Collectibles</option>
+            <option value="music">Music</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="nft-overview">
+        <div class="nft-stats">
+          <div class="nft-stat">
+            <div class="stat-label">Total NFTs</div>
+            <div class="stat-value">{nftAnalytics.totalNFTs.toLocaleString()}</div>
+          </div>
+          <div class="nft-stat">
+            <div class="stat-label">Total Volume</div>
+            <div class="stat-value">{nftAnalytics.totalVolume}</div>
+          </div>
+          <div class="nft-stat">
+            <div class="stat-label">Average Price</div>
+            <div class="stat-value">{nftAnalytics.averagePrice}</div>
+          </div>
+          <div class="nft-stat">
+            <div class="stat-label">Floor Price</div>
+            <div class="stat-value">{nftAnalytics.floorPrice}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="nft-collections">
+        <h5 class="collections-title">Top Collections</h5>
+        <div class="collections-list">
+          {nftAnalytics.topCollections.map(collection => (
+            <div class="collection-item">
+              <div class="collection-info">
+                <h6 class="collection-name">{collection.name}</h6>
+                <div class="collection-stats">
+                  <div class="collection-stat">
+                    <span class="stat-label">Volume:</span>
+                    <span class="stat-value">{collection.volume}</span>
+                  </div>
+                  <div class="collection-stat">
+                    <span class="stat-label">Floor:</span>
+                    <span class="stat-value">{collection.floorPrice}</span>
+                  </div>
+                  <div class="collection-stat">
+                    <span class="stat-label">Items:</span>
+                    <span class="stat-value">{collection.items.toLocaleString()}</span>
+                  </div>
+                </div>
+              </div>
+              <div class="collection-change">
+                <span class="change-value positive">{collection.change}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <div class="nft-categories">
+        <h5 class="categories-title">Volume by Category</h5>
+        <div class="categories-chart">
+          {nftAnalytics.nftFlow.topCategories.map(category => (
+            <div class="category-item">
+              <div class="category-info">
+                <span class="category-name">{category.category}</span>
+                <span class="category-volume">{category.volume}</span>
+              </div>
+              <div class="category-bar">
+                <div 
+                  class="category-fill" 
+                  style={`width: ${category.percentage}%`}
+                ></div>
+              </div>
+              <span class="category-percentage">{category.percentage}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+
+<style>
+  .blockchain-analytics-dashboard {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #E5E7EB;
+  }
+
+  .dashboard-header {
+    margin-bottom: 2rem;
+  }
+
+  .dashboard-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.25rem;
+  }
+
+  .dashboard-icon {
+    font-size: 1.5rem;
+  }
+
+  .dashboard-subtitle {
+    font-size: 0.875rem;
+    color: #6B7280;
+  }
+
+  .analytics-section {
+    margin-bottom: 2rem;
+  }
+
+  .analytics-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .time-range,
+  .nft-filters {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .time-select,
+  .filter-select {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    color: #374151;
+    background: white;
+  }
+
+  .refresh-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .refresh-text {
+    font-size: 0.75rem;
+    color: #6B7280;
+  }
+
+  .refresh-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: #F3F4F6;
+    border: 1px solid #D1D5DB;
+    border-radius: 4px;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .refresh-btn:hover {
+    background: #E5E7EB;
+  }
+
+  .network-stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+
+  .network-card {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .network-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .network-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+  }
+
+  .network-status {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10B981;
+  }
+
+  .status-text {
+    font-size: 0.75rem;
+    color: #6B7280;
+  }
+
+  .network-price {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .price-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .price-change {
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .price-change.positive {
+    color: #059669;
+  }
+
+  .price-change.negative {
+    color: #DC2626;
+  }
+
+  .network-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: #6B7280;
+  }
+
+  .stat-value {
+    font-size: 0.75rem;
+    color: #374151;
+    font-weight: 500;
+  }
+
+  .transaction-overview {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .overview-card {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .overview-title {
+    font-size: 0.75rem;
+    color: #6B7280;
+    margin-bottom: 0.5rem;
+  }
+
+  .overview-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .transaction-types {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .types-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 1rem;
+  }
+
+  .types-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .type-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .type-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 150px;
+  }
+
+  .type-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #111827;
+  }
+
+  .type-count {
+    font-size: 0.75rem;
+    color: #6B7280;
+  }
+
+  .type-bar {
+    flex: 1;
+    height: 8px;
+    background: #E5E7EB;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .type-fill {
+    height: 100%;
+    background: #E60012;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+
+  .type-percentage {
+    font-size: 0.75rem;
+    color: #374151;
+    font-weight: 500;
+    min-width: 40px;
+    text-align: right;
+  }
+
+  .view-toggle {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .toggle-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #D1D5DB;
+    background: white;
+    color: #374151;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .toggle-btn.active {
+    background: #E60012;
+    color: white;
+    border-color: #E60012;
+  }
+
+  .toggle-btn:hover:not(.active) {
+    background: #F3F4F6;
+  }
+
+  .token-content {
+    position: relative;
+  }
+
+  .tokens-view,
+  .flow-view {
+    display: none;
+  }
+
+  .tokens-view.active,
+  .flow-view.active {
+    display: block;
+  }
+
+  .tokens-table {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .table-header {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr 1fr 1fr 1fr;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    background: #F3F4F6;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #374151;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .table-row {
+    display: grid;
+    grid-template-columns: 1fr 2fr 1fr 1fr 1fr 1fr;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #E5E7EB;
+    font-size: 0.875rem;
+    color: #374151;
+  }
+
+  .table-row:last-child {
+    border-bottom: none;
+  }
+
+  .token-symbol {
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .change-value {
+    font-weight: 500;
+  }
+
+  .change-value.positive {
+    color: #059669;
+  }
+
+  .change-value.negative {
+    color: #DC2626;
+  }
+
+  .flow-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .flow-card {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .flow-title {
+    font-size: 0.75rem;
+    color: #6B7280;
+    margin-bottom: 0.5rem;
+  }
+
+  .flow-value {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+  }
+
+  .gainers-losers {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .gainers,
+  .losers {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .gainers-title,
+  .losers-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.75rem;
+  }
+
+  .gainers-list,
+  .losers-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .gainer-item,
+  .loser-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem;
+    background: white;
+    border-radius: 4px;
+  }
+
+  .nft-overview {
+    margin-bottom: 1.5rem;
+  }
+
+  .nft-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+  }
+
+  .nft-stat {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .nft-collections {
+    margin-bottom: 1.5rem;
+  }
+
+  .collections-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 1rem;
+  }
+
+  .collections-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .collection-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+  }
+
+  .collection-info {
+    flex: 1;
+  }
+
+  .collection-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.5rem;
+  }
+
+  .collection-stats {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .collection-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .collection-change {
+    text-align: right;
+  }
+
+  .nft-categories {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .categories-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 1rem;
+  }
+
+  .categories-chart {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .category-item {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .category-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    min-width: 150px;
+  }
+
+  .category-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #111827;
+  }
+
+  .category-volume {
+    font-size: 0.75rem;
+    color: #6B7280;
+  }
+
+  .category-bar {
+    flex: 1;
+    height: 8px;
+    background: #E5E7EB;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .category-fill {
+    height: 100%;
+    background: #E60012;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+
+  .category-percentage {
+    font-size: 0.75rem;
+    color: #374151;
+    font-weight: 500;
+    min-width: 40px;
+    text-align: right;
+  }
+
+  /* Dark mode */
+  .dark .blockchain-analytics-dashboard {
+    background: #1A1A1A;
+    border-color: #333333;
+  }
+
+  .dark .dashboard-title {
+    color: #FFFFFF;
+  }
+
+  .dark .dashboard-subtitle {
+    color: #666666;
+  }
+
+  .dark .section-title {
+    color: #FFFFFF;
+  }
+
+  .dark .network-card,
+  .dark .overview-card,
+  .dark .transaction-types,
+  .dark .tokens-table,
+  .dark .flow-card,
+  .dark .gainers,
+  .dark .losers,
+  .dark .nft-stat,
+  .dark .collection-item,
+  .dark .nft-categories {
+    background: #2D2D2D;
+    border-color: #333333;
+  }
+
+  .dark .network-name,
+  .dark .price-value,
+  .dark .overview-value,
+  .dark .flow-value,
+  .dark .collection-name,
+  .dark .category-name {
+    color: #FFFFFF;
+  }
+
+  .dark .stat-label,
+  .dark .refresh-text,
+  .dark .overview-title,
+  .dark .flow-title {
+    color: #666666;
+  }
+
+  .dark .stat-value,
+  .dark .type-name,
+  .dark .category-volume {
+    color: #FFFFFF;
+  }
+
+  .dark .table-header {
+    background: #333333;
+    color: #FFFFFF;
+  }
+
+  .dark .table-row {
+    border-bottom-color: #333333;
+    color: #FFFFFF;
+  }
+
+  .dark .token-symbol {
+    color: #FFFFFF;
+  }
+
+  .dark .gainer-item,
+  .dark .loser-item {
+    background: #333333;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Time range change
+    const timeRangeSelect = document.getElementById('network-time-range');
+    if (timeRangeSelect) {
+      timeRangeSelect.addEventListener('change', (e) => {
+        console.log('Time range changed to:', e.target.value);
+        // Here you would typically fetch new data based on the selected time range
+      });
+    }
+
+    // Refresh transactions
+    const refreshBtn = document.getElementById('refresh-transactions');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', () => {
+        console.log('Refreshing transaction data...');
+        // Here you would typically refresh the transaction data
+      });
+    }
+
+    // View toggle
+    const toggleButtons = document.querySelectorAll('.toggle-btn');
+    const tokensView = document.getElementById('tokens-view');
+    const flowView = document.getElementById('flow-view');
+
+    toggleButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const view = button.getAttribute('data-view');
+        
+        // Remove active class from all buttons and views
+        toggleButtons.forEach(btn => btn.classList.remove('active'));
+        tokensView?.classList.remove('active');
+        flowView?.classList.remove('active');
+        
+        // Add active class to clicked button and corresponding view
+        button.classList.add('active');
+        if (view === 'tokens') {
+          tokensView?.classList.add('active');
+        } else if (view === 'flow') {
+          flowView?.classList.add('active');
+        }
+      });
+    });
+
+    // NFT category filter
+    const categoryFilter = document.getElementById('nft-category-filter');
+    if (categoryFilter) {
+      categoryFilter.addEventListener('change', (e) => {
+        console.log('NFT category filter changed to:', e.target.value);
+        // Here you would typically filter NFT data based on the selected category
+      });
+    }
+  });
+</script>

@@ -1,0 +1,1229 @@
+---
+// Social Trading Dashboard Component
+export interface Props {
+  showLeaderboard?: boolean;
+  showSocialFeed?: boolean;
+  showCopyTrading?: boolean;
+  showCommunity?: boolean;
+}
+
+const { 
+  showLeaderboard = true,
+  showSocialFeed = true,
+  showCopyTrading = true,
+  showCommunity = true
+} = Astro.props;
+
+// Mock social trading data
+const leaderboard = [
+  {
+    rank: 1,
+    username: 'CryptoWhale',
+    avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face',
+    totalReturn: '+245.67%',
+    followers: 15420,
+    winRate: 89.2,
+    totalTrades: 1247,
+    verified: true
+  },
+  {
+    rank: 2,
+    username: 'NFTMaster',
+    avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face',
+    totalReturn: '+198.34%',
+    followers: 12350,
+    winRate: 85.7,
+    totalTrades: 892,
+    verified: true
+  },
+  {
+    rank: 3,
+    username: 'SolanaTrader',
+    avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face',
+    totalReturn: '+156.89%',
+    followers: 9876,
+    winRate: 82.3,
+    totalTrades: 654,
+    verified: false
+  }
+];
+
+const socialFeed = [
+  {
+    id: 1,
+    user: {
+      username: 'CryptoWhale',
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face',
+      verified: true
+    },
+    content: 'Just made a 45% profit on this NFT flip! The key was timing the market right. 🚀',
+    timestamp: '2 hours ago',
+    likes: 234,
+    comments: 45,
+    shares: 12,
+    type: 'trade',
+    tradeData: {
+      asset: 'Bored Ape #1234',
+      entryPrice: '2.5 SOL',
+      exitPrice: '3.6 SOL',
+      profit: '+44%'
+    }
+  },
+  {
+    id: 2,
+    user: {
+      username: 'NFTMaster',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face',
+      verified: true
+    },
+    content: 'Market analysis: Solana NFTs are showing strong momentum. Expecting a 20% increase in the next week.',
+    timestamp: '4 hours ago',
+    likes: 189,
+    comments: 23,
+    shares: 8,
+    type: 'analysis',
+    tags: ['#Solana', '#NFTs', '#Analysis']
+  },
+  {
+    id: 3,
+    user: {
+      username: 'SolanaTrader',
+      avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=40&h=40&fit=crop&crop=face',
+      verified: false
+    },
+    content: 'New to the platform! Excited to learn from the best traders here. Any tips for a beginner?',
+    timestamp: '6 hours ago',
+    likes: 67,
+    comments: 34,
+    shares: 2,
+    type: 'question',
+    tags: ['#Beginner', '#Help']
+  }
+];
+
+const copyTrading = {
+  topTraders: [
+    {
+      id: 1,
+      username: 'CryptoWhale',
+      avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face',
+      totalReturn: '+245.67%',
+      followers: 15420,
+      winRate: 89.2,
+      isFollowing: true,
+      lastTrade: '2 hours ago'
+    },
+    {
+      id: 2,
+      username: 'NFTMaster',
+      avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face',
+      totalReturn: '+198.34%',
+      followers: 12350,
+      winRate: 85.7,
+      isFollowing: false,
+      lastTrade: '4 hours ago'
+    }
+  ],
+  myPortfolio: {
+    totalValue: '12.5 SOL',
+    totalReturn: '+23.45%',
+    following: 5,
+    copiedTrades: 47,
+    successRate: 78.3
+  }
+};
+
+const community = {
+  stats: {
+    totalMembers: 125000,
+    activeToday: 15420,
+    newMembers: 234,
+    totalTrades: 1250000
+  },
+  trending: [
+    { topic: 'Solana NFT Market', posts: 1234, engagement: 'high' },
+    { topic: 'DeFi Strategies', posts: 892, engagement: 'medium' },
+    { topic: 'Trading Tips', posts: 567, engagement: 'high' },
+    { topic: 'Market Analysis', posts: 445, engagement: 'medium' }
+  ]
+};
+---
+
+<div class="social-trading-dashboard">
+  <div class="dashboard-header">
+    <h3 class="dashboard-title">
+      <span class="dashboard-icon">👥</span>
+      Social Trading
+    </h3>
+    <p class="dashboard-subtitle">Connect, learn, and trade with the community</p>
+  </div>
+
+  {showLeaderboard && (
+    <div class="trading-section">
+      <div class="section-header">
+        <h4 class="section-title">Top Traders</h4>
+        <div class="leaderboard-filters">
+          <select class="filter-select" id="leaderboard-period">
+            <option value="7d">Last 7 Days</option>
+            <option value="30d" selected>Last 30 Days</option>
+            <option value="90d">Last 90 Days</option>
+            <option value="all">All Time</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="leaderboard-list">
+        {leaderboard.map(trader => (
+          <div class="trader-card">
+            <div class="trader-rank">
+              <span class="rank-number">#{trader.rank}</span>
+            </div>
+            
+            <div class="trader-info">
+              <div class="trader-avatar">
+                <img src={trader.avatar} alt={trader.username} />
+                {trader.verified && (
+                  <div class="verified-badge">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M9 12l2 2 4-4"></path>
+                      <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h18z"></path>
+                    </svg>
+                  </div>
+                )}
+              </div>
+              
+              <div class="trader-details">
+                <h5 class="trader-username">{trader.username}</h5>
+                <div class="trader-stats">
+                  <div class="stat-item">
+                    <span class="stat-label">Return:</span>
+                    <span class="stat-value positive">{trader.totalReturn}</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-label">Win Rate:</span>
+                    <span class="stat-value">{trader.winRate}%</span>
+                  </div>
+                  <div class="stat-item">
+                    <span class="stat-label">Trades:</span>
+                    <span class="stat-value">{trader.totalTrades}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <div class="trader-actions">
+              <div class="follower-count">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                <span>{trader.followers.toLocaleString()}</span>
+              </div>
+              <button class="follow-btn" data-trader-id={trader.rank}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                  <circle cx="9" cy="7" r="4"></circle>
+                  <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                  <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                </svg>
+                Follow
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+
+  {showSocialFeed && (
+    <div class="trading-section">
+      <div class="section-header">
+        <h4 class="section-title">Social Feed</h4>
+        <div class="feed-actions">
+          <button class="create-post-btn" id="create-post-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <line x1="5" y1="12" x2="19" y2="12"></line>
+            </svg>
+            Create Post
+          </button>
+        </div>
+      </div>
+
+      <div class="social-feed">
+        {socialFeed.map(post => (
+          <div class="feed-post">
+            <div class="post-header">
+              <div class="post-user">
+                <div class="user-avatar">
+                  <img src={post.user.avatar} alt={post.user.username} />
+                  {post.user.verified && (
+                    <div class="verified-badge">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 12l2 2 4-4"></path>
+                        <path d="M21 12c.552 0 1-.448 1-1V5c0-.552-.448-1-1-1H3c-.552 0-1 .448-1 1v6c0 .552.448 1 1 1h18z"></path>
+                      </svg>
+                    </div>
+                  )}
+                </div>
+                <div class="user-info">
+                  <h6 class="username">{post.user.username}</h6>
+                  <span class="post-time">{post.timestamp}</span>
+                </div>
+              </div>
+              <div class="post-type">
+                <span class={`type-badge type-${post.type}`}>{post.type}</span>
+              </div>
+            </div>
+            
+            <div class="post-content">
+              <p class="post-text">{post.content}</p>
+              
+              {post.tradeData && (
+                <div class="trade-data">
+                  <div class="trade-info">
+                    <span class="trade-asset">{post.tradeData.asset}</span>
+                    <div class="trade-prices">
+                      <span class="entry-price">Entry: {post.tradeData.entryPrice}</span>
+                      <span class="exit-price">Exit: {post.tradeData.exitPrice}</span>
+                    </div>
+                    <span class="trade-profit positive">{post.tradeData.profit}</span>
+                  </div>
+                </div>
+              )}
+              
+              {post.tags && (
+                <div class="post-tags">
+                  {post.tags.map(tag => (
+                    <span class="tag">{tag}</span>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            <div class="post-actions">
+              <button class="action-btn like-btn" data-post-id={post.id}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+                <span>{post.likes}</span>
+              </button>
+              <button class="action-btn comment-btn" data-post-id={post.id}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+                <span>{post.comments}</span>
+              </button>
+              <button class="action-btn share-btn" data-post-id={post.id}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"></path>
+                  <polyline points="16,6 12,2 8,6"></polyline>
+                  <line x1="12" y1="2" x2="12" y2="15"></line>
+                </svg>
+                <span>{post.shares}</span>
+              </button>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+
+  {showCopyTrading && (
+    <div class="trading-section">
+      <div class="section-header">
+        <h4 class="section-title">Copy Trading</h4>
+        <div class="copy-stats">
+          <div class="stat-item">
+            <span class="stat-label">Portfolio Value:</span>
+            <span class="stat-value">{copyTrading.myPortfolio.totalValue}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Return:</span>
+            <span class="stat-value positive">{copyTrading.myPortfolio.totalReturn}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="copy-trading-content">
+        <div class="my-portfolio">
+          <h5 class="portfolio-title">My Portfolio</h5>
+          <div class="portfolio-stats">
+            <div class="portfolio-stat">
+              <span class="stat-label">Following:</span>
+              <span class="stat-value">{copyTrading.myPortfolio.following}</span>
+            </div>
+            <div class="portfolio-stat">
+              <span class="stat-label">Copied Trades:</span>
+              <span class="stat-value">{copyTrading.myPortfolio.copiedTrades}</span>
+            </div>
+            <div class="portfolio-stat">
+              <span class="stat-label">Success Rate:</span>
+              <span class="stat-value">{copyTrading.myPortfolio.successRate}%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="traders-to-follow">
+          <h5 class="traders-title">Traders to Follow</h5>
+          <div class="traders-list">
+            {copyTrading.topTraders.map(trader => (
+              <div class="trader-item">
+                <div class="trader-avatar">
+                  <img src={trader.avatar} alt={trader.username} />
+                </div>
+                <div class="trader-info">
+                  <h6 class="trader-username">{trader.username}</h6>
+                  <div class="trader-metrics">
+                    <span class="metric-item">
+                      <span class="metric-label">Return:</span>
+                      <span class="metric-value positive">{trader.totalReturn}</span>
+                    </span>
+                    <span class="metric-item">
+                      <span class="metric-label">Win Rate:</span>
+                      <span class="metric-value">{trader.winRate}%</span>
+                    </span>
+                    <span class="metric-item">
+                      <span class="metric-label">Last Trade:</span>
+                      <span class="metric-value">{trader.lastTrade}</span>
+                    </span>
+                  </div>
+                </div>
+                <div class="trader-actions">
+                  <button class={`follow-trader-btn ${trader.isFollowing ? 'following' : ''}`} data-trader-id={trader.id}>
+                    {trader.isFollowing ? 'Following' : 'Follow'}
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+
+  {showCommunity && (
+    <div class="trading-section">
+      <div class="section-header">
+        <h4 class="section-title">Community</h4>
+        <div class="community-stats">
+          <div class="stat-item">
+            <span class="stat-label">Members:</span>
+            <span class="stat-value">{community.stats.totalMembers.toLocaleString()}</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">Active Today:</span>
+            <span class="stat-value">{community.stats.activeToday.toLocaleString()}</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="community-content">
+        <div class="trending-topics">
+          <h5 class="topics-title">Trending Topics</h5>
+          <div class="topics-list">
+            {community.trending.map(topic => (
+              <div class="topic-item">
+                <div class="topic-info">
+                  <h6 class="topic-name">{topic.topic}</h6>
+                  <div class="topic-meta">
+                    <span class="topic-posts">{topic.posts} posts</span>
+                    <span class={`engagement-badge engagement-${topic.engagement}`}>
+                      {topic.engagement}
+                    </span>
+                  </div>
+                </div>
+                <button class="join-topic-btn" data-topic={topic.topic}>
+                  Join
+                </button>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+
+<style>
+  .social-trading-dashboard {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #E5E7EB;
+  }
+
+  .dashboard-header {
+    margin-bottom: 2rem;
+  }
+
+  .dashboard-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.25rem;
+  }
+
+  .dashboard-icon {
+    font-size: 1.5rem;
+  }
+
+  .dashboard-subtitle {
+    font-size: 0.875rem;
+    color: #6B7280;
+  }
+
+  .trading-section {
+    margin-bottom: 2rem;
+  }
+
+  .trading-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .leaderboard-filters,
+  .feed-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .filter-select {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    color: #374151;
+    background: white;
+  }
+
+  .create-post-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #E60012;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .create-post-btn:hover {
+    background: #CC0010;
+  }
+
+  .leaderboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .trader-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+  }
+
+  .trader-card:hover {
+    border-color: #D1D5DB;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .trader-rank {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    background: #E60012;
+    color: white;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 0.875rem;
+  }
+
+  .trader-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+  }
+
+  .trader-avatar {
+    position: relative;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  .trader-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .verified-badge {
+    position: absolute;
+    bottom: -2px;
+    right: -2px;
+    width: 16px;
+    height: 16px;
+    background: #3B82F6;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid white;
+  }
+
+  .trader-details {
+    flex: 1;
+  }
+
+  .trader-username {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.5rem;
+  }
+
+  .trader-stats {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: #6B7280;
+  }
+
+  .stat-value {
+    font-size: 0.75rem;
+    color: #374151;
+    font-weight: 500;
+  }
+
+  .stat-value.positive {
+    color: #059669;
+  }
+
+  .trader-actions {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .follower-count {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    color: #6B7280;
+  }
+
+  .follow-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #E60012;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .follow-btn:hover {
+    background: #CC0010;
+  }
+
+  .social-feed {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .feed-post {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .post-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .post-user {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .user-avatar {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  .user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .user-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .username {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+  }
+
+  .post-time {
+    font-size: 0.75rem;
+    color: #6B7280;
+  }
+
+  .post-type {
+    display: flex;
+    align-items: center;
+  }
+
+  .type-badge {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  .type-badge.type-trade {
+    background: #D1FAE5;
+    color: #065F46;
+  }
+
+  .type-badge.type-analysis {
+    background: #E0F2FE;
+    color: #0C4A6E;
+  }
+
+  .type-badge.type-question {
+    background: #FEF3C7;
+    color: #92400E;
+  }
+
+  .post-content {
+    margin-bottom: 1rem;
+  }
+
+  .post-text {
+    font-size: 0.875rem;
+    color: #374151;
+    line-height: 1.5;
+    margin-bottom: 1rem;
+  }
+
+  .trade-data {
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+    padding: 0.75rem;
+    margin-bottom: 1rem;
+  }
+
+  .trade-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .trade-asset {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .trade-prices {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    color: #6B7280;
+  }
+
+  .trade-profit {
+    font-size: 0.875rem;
+    font-weight: 600;
+  }
+
+  .trade-profit.positive {
+    color: #059669;
+  }
+
+  .post-tags {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+  }
+
+  .tag {
+    background: #F3F4F6;
+    color: #374151;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+  }
+
+  .post-actions {
+    display: flex;
+    gap: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #E5E7EB;
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+    color: #6B7280;
+    font-size: 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .action-btn:hover {
+    color: #374151;
+    background: #F3F4F6;
+    border-radius: 4px;
+  }
+
+  .copy-trading-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 1.5rem;
+  }
+
+  .my-portfolio {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .portfolio-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 1rem;
+  }
+
+  .portfolio-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .portfolio-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .traders-to-follow {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .traders-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 1rem;
+  }
+
+  .traders-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .trader-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+  }
+
+  .trader-item .trader-avatar {
+    width: 32px;
+    height: 32px;
+  }
+
+  .trader-item .trader-info {
+    flex: 1;
+  }
+
+  .trader-item .trader-username {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.25rem;
+  }
+
+  .trader-metrics {
+    display: flex;
+    gap: 0.75rem;
+  }
+
+  .metric-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+  }
+
+  .metric-label {
+    font-size: 0.625rem;
+    color: #6B7280;
+  }
+
+  .metric-value {
+    font-size: 0.75rem;
+    color: #374151;
+    font-weight: 500;
+  }
+
+  .metric-value.positive {
+    color: #059669;
+  }
+
+  .follow-trader-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #D1D5DB;
+    background: white;
+    color: #374151;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .follow-trader-btn:hover {
+    background: #F3F4F6;
+  }
+
+  .follow-trader-btn.following {
+    background: #E60012;
+    color: white;
+    border-color: #E60012;
+  }
+
+  .community-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+
+  .trending-topics {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .topics-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 1rem;
+  }
+
+  .topics-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .topic-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+  }
+
+  .topic-info {
+    flex: 1;
+  }
+
+  .topic-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.25rem;
+  }
+
+  .topic-meta {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .topic-posts {
+    font-size: 0.75rem;
+    color: #6B7280;
+  }
+
+  .engagement-badge {
+    padding: 0.125rem 0.375rem;
+    border-radius: 3px;
+    font-size: 0.625rem;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  .engagement-badge.engagement-high {
+    background: #D1FAE5;
+    color: #065F46;
+  }
+
+  .engagement-badge.engagement-medium {
+    background: #FEF3C7;
+    color: #92400E;
+  }
+
+  .join-topic-btn {
+    padding: 0.5rem 1rem;
+    background: #E60012;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .join-topic-btn:hover {
+    background: #CC0010;
+  }
+
+  .copy-stats,
+  .community-stats {
+    display: flex;
+    gap: 1rem;
+  }
+
+  /* Dark mode */
+  .dark .social-trading-dashboard {
+    background: #1A1A1A;
+    border-color: #333333;
+  }
+
+  .dark .dashboard-title {
+    color: #FFFFFF;
+  }
+
+  .dark .dashboard-subtitle {
+    color: #666666;
+  }
+
+  .dark .section-title {
+    color: #FFFFFF;
+  }
+
+  .dark .trader-card,
+  .dark .feed-post,
+  .dark .my-portfolio,
+  .dark .traders-to-follow,
+  .dark .trending-topics {
+    background: #2D2D2D;
+    border-color: #333333;
+  }
+
+  .dark .trader-username,
+  .dark .username,
+  .dark .portfolio-title,
+  .dark .traders-title,
+  .dark .topics-title,
+  .dark .topic-name {
+    color: #FFFFFF;
+  }
+
+  .dark .stat-label,
+  .dark .post-time,
+  .dark .topic-posts {
+    color: #666666;
+  }
+
+  .dark .stat-value,
+  .dark .post-text {
+    color: #FFFFFF;
+  }
+
+  .dark .trader-item,
+  .dark .topic-item {
+    background: #333333;
+    border-color: #333333;
+  }
+
+  .dark .follow-trader-btn {
+    background: #2D2D2D;
+    border-color: #333333;
+    color: #FFFFFF;
+  }
+
+  .dark .follow-trader-btn:hover {
+    background: #333333;
+  }
+
+  .dark .trade-data {
+    background: #333333;
+    border-color: #333333;
+  }
+
+  .dark .trade-asset {
+    color: #FFFFFF;
+  }
+
+  .dark .trade-prices {
+    color: #666666;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Leaderboard period change
+    const leaderboardPeriod = document.getElementById('leaderboard-period');
+    if (leaderboardPeriod) {
+      leaderboardPeriod.addEventListener('change', (e) => {
+        console.log('Leaderboard period changed to:', e.target.value);
+        // Here you would typically fetch new leaderboard data
+      });
+    }
+
+    // Follow trader functionality
+    const followButtons = document.querySelectorAll('.follow-btn, .follow-trader-btn');
+    followButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const traderId = button.getAttribute('data-trader-id');
+        const isFollowing = button.classList.contains('following');
+        
+        if (isFollowing) {
+          button.classList.remove('following');
+          button.textContent = 'Follow';
+        } else {
+          button.classList.add('following');
+          button.textContent = 'Following';
+        }
+        
+        console.log(`Follow action for trader ${traderId}: ${isFollowing ? 'unfollowed' : 'followed'}`);
+      });
+    });
+
+    // Post actions
+    const postActionButtons = document.querySelectorAll('.action-btn');
+    postActionButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const postId = button.getAttribute('data-post-id');
+        const action = button.classList.contains('like-btn') ? 'like' : 
+                      button.classList.contains('comment-btn') ? 'comment' : 'share';
+        
+        console.log(`Post action: ${action} for post ${postId}`);
+        
+        // Update button state for likes
+        if (action === 'like') {
+          const count = button.querySelector('span');
+          if (count) {
+            const currentCount = parseInt(count.textContent);
+            count.textContent = currentCount + 1;
+          }
+        }
+      });
+    });
+
+    // Create post functionality
+    const createPostBtn = document.getElementById('create-post-btn');
+    if (createPostBtn) {
+      createPostBtn.addEventListener('click', () => {
+        console.log('Create post clicked');
+        // Here you would typically open a modal or form to create a new post
+      });
+    }
+
+    // Join topic functionality
+    const joinTopicButtons = document.querySelectorAll('.join-topic-btn');
+    joinTopicButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const topic = button.getAttribute('data-topic');
+        console.log(`Joining topic: ${topic}`);
+        
+        // Update button state
+        button.textContent = 'Joined';
+        button.style.background = '#059669';
+        button.disabled = true;
+      });
+    });
+  });
+</script>

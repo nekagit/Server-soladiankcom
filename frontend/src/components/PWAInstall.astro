@@ -1,0 +1,605 @@
+---
+// PWA Installation Component
+export interface Props {
+  showInstallPrompt?: boolean;
+  showUpdatePrompt?: boolean;
+}
+
+const { 
+  showInstallPrompt = true,
+  showUpdatePrompt = true
+} = Astro.props;
+---
+
+<div class="pwa-install" id="pwa-install">
+  <div class="install-prompt" id="install-prompt">
+    <div class="install-content">
+      <div class="install-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+          <path d="M2 17l10 5 10-5"></path>
+          <path d="M2 12l10 5 10-5"></path>
+        </svg>
+      </div>
+      <div class="install-text">
+        <h3 class="install-title">Install Soladia</h3>
+        <p class="install-description">
+          Get the full app experience with offline access, push notifications, and faster loading.
+        </p>
+      </div>
+    </div>
+    <div class="install-actions">
+      <button class="install-btn" id="install-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+          <polyline points="7,10 12,15 17,10"></polyline>
+          <line x1="12" y1="15" x2="12" y2="3"></line>
+        </svg>
+        Install
+      </button>
+      <button class="dismiss-btn" id="dismiss-install">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="update-prompt" id="update-prompt">
+    <div class="update-content">
+      <div class="update-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <polyline points="1 20 1 14 7 14"></polyline>
+          <path d="m3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+        </svg>
+      </div>
+      <div class="update-text">
+        <h3 class="update-title">Update Available</h3>
+        <p class="update-description">
+          A new version of Soladia is available with improved features and performance.
+        </p>
+      </div>
+    </div>
+    <div class="update-actions">
+      <button class="update-btn" id="update-btn">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="23 4 23 10 17 10"></polyline>
+          <polyline points="1 20 1 14 7 14"></polyline>
+          <path d="m3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+        </svg>
+        Update
+      </button>
+      <button class="dismiss-btn" id="dismiss-update">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="pwa-features">
+    <div class="features-grid">
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+            <path d="M2 17l10 5 10-5"></path>
+            <path d="M2 12l10 5 10-5"></path>
+          </svg>
+        </div>
+        <div class="feature-content">
+          <h4 class="feature-title">Offline Access</h4>
+          <p class="feature-description">Browse and trade even without internet connection</p>
+        </div>
+      </div>
+      
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+        </div>
+        <div class="feature-content">
+          <h4 class="feature-title">Push Notifications</h4>
+          <p class="feature-description">Get instant alerts for price changes and new listings</p>
+        </div>
+      </div>
+      
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+          </svg>
+        </div>
+        <div class="feature-content">
+          <h4 class="feature-title">Fast Loading</h4>
+          <p class="feature-description">Optimized performance with instant app startup</p>
+        </div>
+      </div>
+      
+      <div class="feature-item">
+        <div class="feature-icon">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+        </div>
+        <div class="feature-content">
+          <h4 class="feature-title">Desktop App</h4>
+          <p class="feature-description">Install as a native desktop application</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .pwa-install {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 1000;
+    max-width: 400px;
+    width: 100%;
+  }
+
+  .install-prompt,
+  .update-prompt {
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    margin-bottom: 1rem;
+    display: none;
+    animation: slideUp 0.3s ease-out;
+  }
+
+  .install-prompt.show,
+  .update-prompt.show {
+    display: block;
+  }
+
+  @keyframes slideUp {
+    from {
+      transform: translateY(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  .install-content,
+  .update-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .install-icon,
+  .update-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    background: #E60012;
+    color: white;
+    border-radius: 12px;
+    flex-shrink: 0;
+  }
+
+  .install-text,
+  .update-text {
+    flex: 1;
+  }
+
+  .install-title,
+  .update-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.25rem;
+  }
+
+  .install-description,
+  .update-description {
+    font-size: 0.875rem;
+    color: #6B7280;
+    line-height: 1.4;
+  }
+
+  .install-actions,
+  .update-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .install-btn,
+  .update-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #E60012;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    flex: 1;
+    justify-content: center;
+  }
+
+  .install-btn:hover,
+  .update-btn:hover {
+    background: #CC0010;
+    transform: translateY(-1px);
+  }
+
+  .dismiss-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #F3F4F6;
+    color: #6B7280;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .dismiss-btn:hover {
+    background: #E5E7EB;
+    color: #374151;
+  }
+
+  .pwa-features {
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+    padding: 1rem;
+    display: none;
+  }
+
+  .pwa-features.show {
+    display: block;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .feature-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
+  }
+
+  .feature-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #F3F4F6;
+    color: #E60012;
+    border-radius: 8px;
+    flex-shrink: 0;
+  }
+
+  .feature-content {
+    flex: 1;
+  }
+
+  .feature-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.25rem;
+  }
+
+  .feature-description {
+    font-size: 0.75rem;
+    color: #6B7280;
+    line-height: 1.4;
+  }
+
+  /* Mobile responsiveness */
+  @media (max-width: 640px) {
+    .pwa-install {
+      bottom: 0.5rem;
+      right: 0.5rem;
+      left: 0.5rem;
+      max-width: none;
+    }
+
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .install-content,
+    .update-content {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .install-icon,
+    .update-icon {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  /* Dark mode */
+  .dark .install-prompt,
+  .dark .update-prompt,
+  .dark .pwa-features {
+    background: #1A1A1A;
+    border-color: #333333;
+  }
+
+  .dark .install-title,
+  .dark .update-title,
+  .dark .feature-title {
+    color: #FFFFFF;
+  }
+
+  .dark .install-description,
+  .dark .update-description,
+  .dark .feature-description {
+    color: #666666;
+  }
+
+  .dark .dismiss-btn {
+    background: #333333;
+    color: #666666;
+  }
+
+  .dark .dismiss-btn:hover {
+    background: #444444;
+    color: #FFFFFF;
+  }
+
+  .dark .feature-icon {
+    background: #333333;
+    color: #E60012;
+  }
+</style>
+
+<script>
+  class PWAInstall {
+    private deferredPrompt: any = null;
+    private isInstalled: boolean = false;
+    private isUpdateAvailable: boolean = false;
+
+    constructor() {
+      this.init();
+    }
+
+    private init() {
+      // Check if app is already installed
+      this.checkInstallationStatus();
+      
+      // Listen for beforeinstallprompt event
+      window.addEventListener('beforeinstallprompt', (e) => {
+        console.log('PWA: beforeinstallprompt event fired');
+        e.preventDefault();
+        this.deferredPrompt = e;
+        this.showInstallPrompt();
+      });
+
+      // Listen for appinstalled event
+      window.addEventListener('appinstalled', () => {
+        console.log('PWA: App was installed');
+        this.isInstalled = true;
+        this.hideInstallPrompt();
+        this.showInstallSuccess();
+      });
+
+      // Listen for service worker updates
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.addEventListener('controllerchange', () => {
+          console.log('PWA: Service worker updated');
+          this.showUpdatePrompt();
+        });
+      }
+
+      // Setup event listeners
+      this.setupEventListeners();
+    }
+
+    private checkInstallationStatus() {
+      // Check if running as PWA
+      if (window.matchMedia('(display-mode: standalone)').matches) {
+        this.isInstalled = true;
+        console.log('PWA: Running as installed app');
+      }
+
+      // Check if running on mobile
+      if (window.matchMedia('(display-mode: standalone)').matches || 
+          (window.navigator as any).standalone === true) {
+        this.isInstalled = true;
+        console.log('PWA: Running on mobile as installed app');
+      }
+    }
+
+    private setupEventListeners() {
+      // Install button
+      const installBtn = document.getElementById('install-btn');
+      if (installBtn) {
+        installBtn.addEventListener('click', () => {
+          this.installApp();
+        });
+      }
+
+      // Dismiss install button
+      const dismissInstallBtn = document.getElementById('dismiss-install');
+      if (dismissInstallBtn) {
+        dismissInstallBtn.addEventListener('click', () => {
+          this.hideInstallPrompt();
+        });
+      }
+
+      // Update button
+      const updateBtn = document.getElementById('update-btn');
+      if (updateBtn) {
+        updateBtn.addEventListener('click', () => {
+          this.updateApp();
+        });
+      }
+
+      // Dismiss update button
+      const dismissUpdateBtn = document.getElementById('dismiss-update');
+      if (dismissUpdateBtn) {
+        dismissUpdateBtn.addEventListener('click', () => {
+          this.hideUpdatePrompt();
+        });
+      }
+    }
+
+    private showInstallPrompt() {
+      if (this.isInstalled) return;
+
+      const installPrompt = document.getElementById('install-prompt');
+      if (installPrompt) {
+        installPrompt.classList.add('show');
+        
+        // Show features after a delay
+        setTimeout(() => {
+          this.showFeatures();
+        }, 2000);
+      }
+    }
+
+    private hideInstallPrompt() {
+      const installPrompt = document.getElementById('install-prompt');
+      if (installPrompt) {
+        installPrompt.classList.remove('show');
+      }
+    }
+
+    private showUpdatePrompt() {
+      const updatePrompt = document.getElementById('update-prompt');
+      if (updatePrompt) {
+        updatePrompt.classList.add('show');
+      }
+    }
+
+    private hideUpdatePrompt() {
+      const updatePrompt = document.getElementById('update-prompt');
+      if (updatePrompt) {
+        updatePrompt.classList.remove('show');
+      }
+    }
+
+    private showFeatures() {
+      const features = document.querySelector('.pwa-features');
+      if (features) {
+        features.classList.add('show');
+      }
+    }
+
+    private async installApp() {
+      if (!this.deferredPrompt) {
+        console.log('PWA: No install prompt available');
+        return;
+      }
+
+      try {
+        // Show the install prompt
+        this.deferredPrompt.prompt();
+        
+        // Wait for the user to respond
+        const { outcome } = await this.deferredPrompt.userChoice;
+        
+        console.log(`PWA: User choice: ${outcome}`);
+        
+        if (outcome === 'accepted') {
+          console.log('PWA: User accepted the install prompt');
+        } else {
+          console.log('PWA: User dismissed the install prompt');
+        }
+        
+        // Clear the deferred prompt
+        this.deferredPrompt = null;
+        this.hideInstallPrompt();
+        
+      } catch (error) {
+        console.error('PWA: Error during installation:', error);
+      }
+    }
+
+    private async updateApp() {
+      try {
+        if ('serviceWorker' in navigator) {
+          const registration = await navigator.serviceWorker.getRegistration();
+          if (registration && registration.waiting) {
+            // Tell the waiting service worker to skip waiting
+            registration.waiting.postMessage({ type: 'SKIP_WAITING' });
+            
+            // Reload the page
+            window.location.reload();
+          }
+        }
+      } catch (error) {
+        console.error('PWA: Error during update:', error);
+      }
+    }
+
+    private showInstallSuccess() {
+      // Show a success message
+      const notification = document.createElement('div');
+      notification.className = 'pwa-success-notification';
+      notification.innerHTML = `
+        <div style="
+          position: fixed;
+          top: 1rem;
+          right: 1rem;
+          background: #10B981;
+          color: white;
+          padding: 1rem;
+          border-radius: 8px;
+          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+          z-index: 1001;
+          animation: slideIn 0.3s ease-out;
+        ">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="20,6 9,17 4,12"></polyline>
+            </svg>
+            <span>Soladia installed successfully!</span>
+          </div>
+        </div>
+      `;
+      
+      document.body.appendChild(notification);
+      
+      // Remove after 3 seconds
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+  }
+
+  // Initialize PWA install functionality
+  document.addEventListener('DOMContentLoaded', () => {
+    new PWAInstall();
+  });
+</script>
