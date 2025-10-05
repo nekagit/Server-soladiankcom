@@ -284,6 +284,9 @@ const formatRating = (rating: number) => {
 <script>
   // Interactive functionality for the product card
   class InteractiveProductCard {
+    element;
+    productId;
+    
     constructor(element) {
       this.element = element;
       this.productId = element.dataset.productId;
@@ -437,7 +440,7 @@ const formatRating = (rating: number) => {
       document.dispatchEvent(event);
     }
 
-    showNotification(message, type) {
+    showNotification(message: string, type: string) {
       // Show notification
       const event = new CustomEvent('showNotification', {
         detail: { message, type }
