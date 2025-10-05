@@ -19,6 +19,13 @@
   --soladia-light: #F8F9FA;         /* Light background */
   --soladia-border: #E1E5E9;        /* Border color */
   
+  /* Dark Mode Colors */
+  --soladia-dark-bg: #0F0F0F;        /* Dark background */
+  --soladia-dark-surface: #1A1A1A;   /* Dark surface */
+  --soladia-dark-text: #FFFFFF;      /* Dark mode text */
+  --soladia-dark-border: #333333;    /* Dark mode border */
+  --soladia-dark-muted: #666666;     /* Dark mode muted text */
+  
   /* Gradients */
   --soladia-gradient: linear-gradient(135deg, #E60012 0%, #0066CC 100%);
   --soladia-gradient-gold: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
@@ -64,6 +71,60 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Dark Mode Styles */
+.dark body {
+  background: var(--soladia-dark-bg);
+  color: var(--soladia-dark-text);
+}
+
+.dark .hero-section {
+  background: linear-gradient(135deg, rgba(230, 0, 18, 0.05) 0%, rgba(0, 102, 204, 0.05) 100%);
+}
+
+.dark nav {
+  background: rgba(26, 26, 26, 0.95);
+  border-bottom-color: var(--soladia-primary);
+}
+
+.dark .category-card,
+.dark .product-card,
+.dark .feature-card {
+  background: var(--soladia-dark-surface);
+  border-color: var(--soladia-dark-border);
+  color: var(--soladia-dark-text);
+}
+
+.dark .category-card:hover,
+.dark .product-card:hover,
+.dark .feature-card:hover {
+  border-color: var(--soladia-primary);
+}
+
+.dark .product-title,
+.dark .category-name,
+.dark .feature-title {
+  color: var(--soladia-dark-text);
+}
+
+.dark .product-description,
+.dark .feature-description,
+.dark .category-count {
+  color: var(--soladia-dark-muted);
+}
+
+.dark .footer {
+  background: var(--soladia-dark-surface);
+}
+
+.dark .footer-links a {
+  color: var(--soladia-dark-muted);
+}
+
+.dark .footer-links a:hover {
+  color: var(--soladia-dark-text);
 }
 
 /* Animated Background */

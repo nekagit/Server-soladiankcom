@@ -1,0 +1,301 @@
+---
+// Gift Cards page - Digital gift cards and vouchers
+import Layout from '../layouts/Layout.astro';
+import SolanaWallet from '../components/solana/SolanaWallet.astro';
+---
+
+<Layout title="Gift Cards - Soladia">
+  <main class="min-h-screen bg-gray-50">
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-green-600 to-blue-600 text-white py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+          <h1 class="text-4xl md:text-6xl font-bold mb-6">
+            🎁 Gift Cards
+          </h1>
+          <p class="text-xl md:text-2xl mb-8 opacity-90">
+            Give the gift of digital assets and NFTs
+          </p>
+          <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <button class="bg-white text-green-600 px-8 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">
+              Buy Gift Card
+            </button>
+            <button class="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white hover:text-green-600 transition-colors">
+              Redeem Gift Card
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Solana Wallet Integration -->
+    <section class="py-8 bg-white">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <SolanaWallet client:load />
+      </div>
+    </section>
+
+    <!-- Gift Card Options -->
+    <section class="py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">Choose Your Gift Card</h2>
+          <p class="text-lg text-gray-600">Perfect for any occasion</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <!-- Gift Card 1 -->
+          <div class="bg-white rounded-lg shadow-lg overflow-hidden border-2 border-green-500 hover:shadow-xl transition-shadow">
+            <div class="bg-gradient-to-r from-green-500 to-blue-500 p-6 text-white">
+              <div class="text-center">
+                <div class="text-3xl font-bold mb-2">5 SOL</div>
+                <div class="text-lg opacity-90">Digital Gift Card</div>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Starter Pack</h3>
+              <p class="text-gray-600 mb-4">Perfect for beginners exploring the NFT space</p>
+              <ul class="text-sm text-gray-600 mb-6">
+                <li>• Access to exclusive collections</li>
+                <li>• Priority customer support</li>
+                <li>• No expiration date</li>
+              </ul>
+              <button class="w-full bg-green-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-green-600 transition-colors">
+                Buy Now - 5 SOL
+              </button>
+            </div>
+          </div>
+
+          <!-- Gift Card 2 -->
+          <div class="bg-white rounded-lg shadow-lg overflow-hidden border-2 border-blue-500 hover:shadow-xl transition-shadow">
+            <div class="bg-gradient-to-r from-blue-500 to-purple-500 p-6 text-white">
+              <div class="text-center">
+                <div class="text-3xl font-bold mb-2">10 SOL</div>
+                <div class="text-lg opacity-90">Digital Gift Card</div>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Explorer Pack</h3>
+              <p class="text-gray-600 mb-4">Great for discovering new artists and creators</p>
+              <ul class="text-sm text-gray-600 mb-6">
+                <li>• Access to premium collections</li>
+                <li>• Early access to new drops</li>
+                <li>• Exclusive marketplace features</li>
+              </ul>
+              <button class="w-full bg-blue-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-blue-600 transition-colors">
+                Buy Now - 10 SOL
+              </button>
+            </div>
+          </div>
+
+          <!-- Gift Card 3 -->
+          <div class="bg-white rounded-lg shadow-lg overflow-hidden border-2 border-purple-500 hover:shadow-xl transition-shadow">
+            <div class="bg-gradient-to-r from-purple-500 to-pink-500 p-6 text-white">
+              <div class="text-center">
+                <div class="text-3xl font-bold mb-2">25 SOL</div>
+                <div class="text-lg opacity-90">Digital Gift Card</div>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Collector Pack</h3>
+              <p class="text-gray-600 mb-4">For serious collectors and investors</p>
+              <ul class="text-sm text-gray-600 mb-6">
+                <li>• Access to rare collections</li>
+                <li>• VIP marketplace features</li>
+                <li>• Personal account manager</li>
+              </ul>
+              <button class="w-full bg-purple-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-purple-600 transition-colors">
+                Buy Now - 25 SOL
+              </button>
+            </div>
+          </div>
+
+          <!-- Gift Card 4 -->
+          <div class="bg-white rounded-lg shadow-lg overflow-hidden border-2 border-orange-500 hover:shadow-xl transition-shadow">
+            <div class="bg-gradient-to-r from-orange-500 to-red-500 p-6 text-white">
+              <div class="text-center">
+                <div class="text-3xl font-bold mb-2">50 SOL</div>
+                <div class="text-lg opacity-90">Digital Gift Card</div>
+              </div>
+            </div>
+            <div class="p-6">
+              <h3 class="text-xl font-bold text-gray-900 mb-2">VIP Pack</h3>
+              <p class="text-gray-600 mb-4">Ultimate experience for NFT enthusiasts</p>
+              <ul class="text-sm text-gray-600 mb-6">
+                <li>• Access to exclusive auctions</li>
+                <li>• Priority minting rights</li>
+                <li>• White-glove service</li>
+              </ul>
+              <button class="w-full bg-orange-500 text-white py-2 px-4 rounded-lg font-semibold hover:bg-orange-600 transition-colors">
+                Buy Now - 50 SOL
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Custom Amount -->
+    <section class="py-16 bg-gray-100">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+          <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Custom Amount</h2>
+            <p class="text-lg text-gray-600">Create a gift card with any amount you choose</p>
+          </div>
+
+          <div class="max-w-md mx-auto">
+            <div class="mb-6">
+              <label for="custom-amount" class="block text-sm font-medium text-gray-700 mb-2">
+                Gift Card Amount (SOL)
+              </label>
+              <input 
+                type="number" 
+                id="custom-amount" 
+                min="1" 
+                max="1000" 
+                step="0.1"
+                placeholder="Enter amount"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+            </div>
+
+            <div class="mb-6">
+              <label for="recipient-email" class="block text-sm font-medium text-gray-700 mb-2">
+                Recipient Email (Optional)
+              </label>
+              <input 
+                type="email" 
+                id="recipient-email" 
+                placeholder="recipient@example.com"
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              >
+            </div>
+
+            <div class="mb-6">
+              <label for="gift-message" class="block text-sm font-medium text-gray-700 mb-2">
+                Gift Message (Optional)
+              </label>
+              <textarea 
+                id="gift-message" 
+                rows="3"
+                placeholder="Write a personal message..."
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              ></textarea>
+            </div>
+
+            <button class="w-full bg-blue-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-blue-600 transition-colors">
+              Create Custom Gift Card
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">How It Works</h2>
+          <p class="text-lg text-gray-600">Simple steps to gift digital assets</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div class="text-center">
+            <div class="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">🛒</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">1. Choose Amount</h3>
+            <p class="text-gray-600">Select a pre-made gift card or create a custom amount</p>
+          </div>
+
+          <div class="text-center">
+            <div class="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">💳</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">2. Purchase</h3>
+            <p class="text-gray-600">Pay with your Solana wallet or other supported methods</p>
+          </div>
+
+          <div class="text-center">
+            <div class="bg-purple-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
+              <span class="text-2xl">🎁</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">3. Send or Redeem</h3>
+            <p class="text-gray-600">Send to a friend or redeem for yourself</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Benefits -->
+    <section class="py-16 bg-gray-100">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">Why Choose Soladia Gift Cards?</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="bg-white p-6 rounded-lg shadow-sm">
+            <div class="text-3xl mb-4">🔒</div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">Secure</h3>
+            <p class="text-gray-600">Blockchain-powered security with no expiration</p>
+          </div>
+
+          <div class="bg-white p-6 rounded-lg shadow-sm">
+            <div class="text-3xl mb-4">⚡</div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">Instant</h3>
+            <p class="text-gray-600">Digital delivery in seconds, not days</p>
+          </div>
+
+          <div class="bg-white p-6 rounded-lg shadow-sm">
+            <div class="text-3xl mb-4">🌍</div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">Global</h3>
+            <p class="text-gray-600">Send to anyone, anywhere in the world</p>
+          </div>
+
+          <div class="bg-white p-6 rounded-lg shadow-sm">
+            <div class="text-3xl mb-4">🎨</div>
+            <h3 class="text-lg font-bold text-gray-900 mb-2">Flexible</h3>
+            <p class="text-gray-600">Use for any digital asset on our platform</p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<script>
+  // Gift card purchase functionality
+  document.addEventListener('DOMContentLoaded', () => {
+    const giftCardButtons = document.querySelectorAll('[data-gift-card]');
+    const customAmountButton = document.querySelector('#custom-amount');
+    const customAmountInput = document.querySelector('#custom-amount');
+    const recipientEmailInput = document.querySelector('#recipient-email');
+    const giftMessageInput = document.querySelector('#gift-message');
+
+    giftCardButtons.forEach(button => {
+      button.addEventListener('click', () => {
+        const amount = button.dataset.amount;
+        const type = button.dataset.type;
+        
+        // In a real app, this would open a purchase modal
+        alert(`Opening purchase flow for ${amount} SOL ${type} gift card`);
+      });
+    });
+
+    customAmountButton?.addEventListener('click', () => {
+      const amount = customAmountInput?.value;
+      const email = recipientEmailInput?.value;
+      const message = giftMessageInput?.value;
+
+      if (!amount || amount < 1) {
+        alert('Please enter a valid amount');
+        return;
+      }
+
+      // In a real app, this would process the custom gift card
+      alert(`Creating custom gift card for ${amount} SOL${email ? ` to ${email}` : ''}${message ? ` with message: "${message}"` : ''}`);
+    });
+  });
+</script>

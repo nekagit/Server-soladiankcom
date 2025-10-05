@@ -1,1073 +1,685 @@
 ---
-// SocialTrading.astro - Social trading features and community components
-export interface Props {
-  userId?: string;
-  showLeaderboard?: boolean;
-  showSocialFeed?: boolean;
-  showCopyTrading?: boolean;
-  showCommunity?: boolean;
-}
-
-const {
-  userId = '',
-  showLeaderboard = true,
-  showSocialFeed = true,
-  showCopyTrading = true,
-  showCommunity = true
-} = Astro.props;
-
-// Mock social trading data
-const leaderboard = [
-  { rank: 1, username: 'CryptoWhale', pnl: 125000, winRate: 87.5, followers: 12500, avatar: '/avatars/whale.jpg' },
-  { rank: 2, username: 'NFTMaster', pnl: 98000, winRate: 82.3, followers: 8900, avatar: '/avatars/master.jpg' },
-  { rank: 3, username: 'SolanaTrader', pnl: 87500, winRate: 79.1, followers: 6700, avatar: '/avatars/trader.jpg' },
-  { rank: 4, username: 'ArtCollector', pnl: 72000, winRate: 75.8, followers: 5400, avatar: '/avatars/collector.jpg' },
-  { rank: 5, username: 'DeFiGuru', pnl: 68000, winRate: 73.2, followers: 4200, avatar: '/avatars/guru.jpg' }
-];
-
-const socialFeed = [
-  {
-    id: 1,
-    user: { username: 'CryptoWhale', avatar: '/avatars/whale.jpg', verified: true },
-    content: 'Just bought 10 Bored Apes at floor price. Bullish on the collection! 🚀',
-    timestamp: '2h ago',
-    likes: 245,
-    comments: 32,
-    shares: 15,
-    type: 'trade',
-    tradeData: { action: 'bought', item: 'Bored Ape #1234', price: 45.2, quantity: 10 }
-  },
-  {
-    id: 2,
-    user: { username: 'NFTMaster', avatar: '/avatars/master.jpg', verified: true },
-    content: 'My analysis on the current NFT market trends. What do you think?',
-    timestamp: '4h ago',
-    likes: 189,
-    comments: 28,
-    shares: 12,
-    type: 'analysis',
-    analysisData: { title: 'NFT Market Analysis Q1 2024', views: 1250 }
-  },
-  {
-    id: 3,
-    user: { username: 'ArtCollector', avatar: '/avatars/collector.jpg', verified: false },
-    content: 'Check out this amazing digital art piece I just discovered!',
-    timestamp: '6h ago',
-    likes: 156,
-    comments: 19,
-    shares: 8,
-    type: 'discovery',
-    discoveryData: { item: 'Digital Art #5678', artist: 'CryptoArtist', price: 12.5 }
-  }
-];
-
-const copyTraders = [
-  { id: 1, username: 'CryptoWhale', pnl: 125000, winRate: 87.5, followers: 12500, copyFee: 5.0, isFollowing: true },
-  { id: 2, username: 'NFTMaster', pnl: 98000, winRate: 82.3, followers: 8900, copyFee: 3.5, isFollowing: false },
-  { id: 3, username: 'SolanaTrader', pnl: 87500, winRate: 79.1, followers: 6700, copyFee: 2.0, isFollowing: true }
-];
-
-const communityStats = {
-  totalMembers: 125000,
-  activeTraders: 8900,
-  totalVolume: 2500000,
-  averagePnl: 15.2,
-  topPerformer: 'CryptoWhale',
-  trendingCollection: 'Bored Ape Yacht Club'
-};
+// Social Trading Component for Soladia
+// Implements social trading features, leaderboards, and community features
 ---
 
-<div class="social-trading" id="social-trading">
-  <div class="social-header">
-    <h2 class="social-title">Social Trading</h2>
-    <div class="social-stats">
-      <div class="stat-item">
-        <span class="stat-value">{communityStats.totalMembers.toLocaleString()}</span>
-        <span class="stat-label">Members</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-value">{communityStats.activeTraders.toLocaleString()}</span>
-        <span class="stat-label">Active Traders</span>
-      </div>
-      <div class="stat-item">
-        <span class="stat-value">${communityStats.totalVolume.toLocaleString()}</span>
-        <span class="stat-label">Total Volume</span>
-      </div>
-    </div>
+<div class="social-trading-container">
+  <!-- Social Trading Header -->
+  <div class="social-trading-header">
+    <h2 class="social-trading-title">Social Trading</h2>
+    <p class="social-trading-subtitle">Follow top traders and copy their strategies</p>
   </div>
 
-  <div class="social-content">
-    {showLeaderboard && (
+  <!-- Trading Leaderboard -->
       <div class="leaderboard-section">
-        <h3 class="section-title">Top Traders</h3>
-        <div class="leaderboard">
-          {leaderboard.map((trader) => (
-            <div class="leaderboard-item" data-rank={trader.rank}>
-              <div class="rank">#{trader.rank}</div>
-              <div class="trader-info">
-                <img src={trader.avatar} alt={trader.username} class="trader-avatar" />
-                <div class="trader-details">
-                  <div class="trader-name">
-                    {trader.username}
-                    <span class="verified-badge">✓</span>
+    <div class="leaderboard-header">
+      <h3 class="leaderboard-title">Top Traders</h3>
+      <div class="leaderboard-filters">
+        <select class="filter-select" id="timeframe-filter">
+          <option value="24h">24 Hours</option>
+          <option value="7d">7 Days</option>
+          <option value="30d">30 Days</option>
+          <option value="all">All Time</option>
+        </select>
+        <select class="filter-select" id="category-filter">
+          <option value="all">All Categories</option>
+          <option value="nft">NFT Trading</option>
+          <option value="token">Token Trading</option>
+          <option value="defi">DeFi</option>
+        </select>
                   </div>
-                  <div class="trader-stats">
-                    <span class="stat">${trader.pnl.toLocaleString()} PnL</span>
-                    <span class="stat">{trader.winRate}% Win Rate</span>
-                    <span class="stat">{trader.followers.toLocaleString()} Followers</span>
                   </div>
+
+    <div class="leaderboard-list" id="leaderboard-list">
+      <!-- Leaderboard items will be populated here -->
                 </div>
               </div>
-              <div class="trader-actions">
-                <button class="follow-btn" data-user={trader.username}>
-                  Follow
-                </button>
-                <button class="copy-btn" data-user={trader.username}>
-                  Copy
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    )}
 
-    {showSocialFeed && (
+  <!-- Social Feed -->
       <div class="social-feed-section">
-        <h3 class="section-title">Social Feed</h3>
-        <div class="feed-container">
-          <div class="feed-composer">
-            <div class="composer-header">
-              <img src="/avatars/user.jpg" alt="You" class="composer-avatar" />
-              <input type="text" placeholder="Share your trading insights..." class="composer-input" />
-            </div>
-            <div class="composer-actions">
-              <button class="composer-btn" data-type="trade">
-                <span class="btn-icon">💰</span>
-                Trade
-              </button>
-              <button class="composer-btn" data-type="analysis">
-                <span class="btn-icon">📊</span>
-                Analysis
-              </button>
-              <button class="composer-btn" data-type="discovery">
-                <span class="btn-icon">🔍</span>
-                Discovery
-              </button>
-              <button class="post-btn">Post</button>
+    <div class="social-feed-header">
+      <h3 class="social-feed-title">Trading Activity</h3>
+      <div class="social-feed-actions">
+        <button class="btn-primary" id="post-trade-btn">Post Trade</button>
+        <button class="btn-secondary" id="refresh-feed-btn">Refresh</button>
             </div>
           </div>
 
-          <div class="feed-list">
-            {socialFeed.map((post) => (
-              <div class="feed-item" data-post-id={post.id}>
-                <div class="post-header">
-                  <img src={post.user.avatar} alt={post.user.username} class="post-avatar" />
-                  <div class="post-user">
-                    <div class="post-username">
-                      {post.user.username}
-                      {post.user.verified && <span class="verified-badge">✓</span>}
+    <div class="social-feed" id="social-feed">
+      <!-- Social feed items will be populated here -->
                     </div>
-                    <div class="post-timestamp">{post.timestamp}</div>
-                  </div>
-                  <button class="post-menu">⋯</button>
                 </div>
                 
-                <div class="post-content">
-                  <p class="post-text">{post.content}</p>
-                  
-                  {post.type === 'trade' && post.tradeData && (
-                    <div class="trade-card">
-                      <div class="trade-info">
-                        <span class="trade-action">{post.tradeData.action}</span>
-                        <span class="trade-item">{post.tradeData.item}</span>
-                        <span class="trade-price">{post.tradeData.price} SOL</span>
-                        {post.tradeData.quantity > 1 && (
-                          <span class="trade-quantity">x{post.tradeData.quantity}</span>
-                        )}
-                      </div>
-                    </div>
-                  )}
-                  
-                  {post.type === 'analysis' && post.analysisData && (
-                    <div class="analysis-card">
-                      <div class="analysis-title">{post.analysisData.title}</div>
-                      <div class="analysis-views">{post.analysisData.views} views</div>
-                    </div>
-                  )}
-                  
-                  {post.type === 'discovery' && post.discoveryData && (
-                    <div class="discovery-card">
-                      <div class="discovery-item">{post.discoveryData.item}</div>
-                      <div class="discovery-artist">by {post.discoveryData.artist}</div>
-                      <div class="discovery-price">{post.discoveryData.price} SOL</div>
-                    </div>
-                  )}
-                </div>
-                
-                <div class="post-actions">
-                  <button class="action-btn like-btn" data-post-id={post.id}>
-                    <span class="btn-icon">❤️</span>
-                    {post.likes}
-                  </button>
-                  <button class="action-btn comment-btn" data-post-id={post.id}>
-                    <span class="btn-icon">💬</span>
-                    {post.comments}
-                  </button>
-                  <button class="action-btn share-btn" data-post-id={post.id}>
-                    <span class="btn-icon">🔄</span>
-                    {post.shares}
-                  </button>
-                  <button class="action-btn copy-trade-btn" data-post-id={post.id}>
-                    <span class="btn-icon">📋</span>
-                    Copy Trade
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
-    )}
-
-    {showCopyTrading && (
+  <!-- Copy Trading -->
       <div class="copy-trading-section">
-        <h3 class="section-title">Copy Trading</h3>
-        <div class="copy-traders">
-          {copyTraders.map((trader) => (
-            <div class="copy-trader-card" data-trader-id={trader.id}>
-              <div class="trader-header">
-                <img src="/avatars/trader.jpg" alt={trader.username} class="trader-avatar" />
-                <div class="trader-info">
-                  <div class="trader-name">{trader.username}</div>
-                  <div class="trader-followers">{trader.followers.toLocaleString()} followers</div>
-                </div>
-                <div class="trader-status">
-                  {trader.isFollowing ? (
-                    <span class="status-following">Following</span>
-                  ) : (
-                    <span class="status-available">Available</span>
-                  )}
+    <div class="copy-trading-header">
+      <h3 class="copy-trading-title">Copy Trading</h3>
+      <p class="copy-trading-subtitle">Automatically copy trades from top performers</p>
+              </div>
+              
+    <div class="copy-trading-list" id="copy-trading-list">
+      <!-- Copy trading options will be populated here -->
                 </div>
               </div>
               
-              <div class="trader-metrics">
-                <div class="metric">
-                  <span class="metric-label">PnL</span>
-                  <span class="metric-value positive">${trader.pnl.toLocaleString()}</span>
-                </div>
-                <div class="metric">
-                  <span class="metric-label">Win Rate</span>
-                  <span class="metric-value">{trader.winRate}%</span>
-                </div>
-                <div class="metric">
-                  <span class="metric-label">Copy Fee</span>
-                  <span class="metric-value">{trader.copyFee}%</span>
-                </div>
-              </div>
-              
-              <div class="trader-actions">
-                {trader.isFollowing ? (
-                  <button class="unfollow-btn" data-trader-id={trader.id}>
-                    Unfollow
-                  </button>
-                ) : (
-                  <button class="follow-btn" data-trader-id={trader.id}>
-                    Follow
-                  </button>
-                )}
-                <button class="copy-btn" data-trader-id={trader.id}>
-                  Copy Trades
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    )}
-
-    {showCommunity && (
+  <!-- Community Features -->
       <div class="community-section">
-        <h3 class="section-title">Community</h3>
-        <div class="community-content">
-          <div class="community-stats">
-            <div class="stat-card">
-              <div class="stat-icon">👥</div>
-              <div class="stat-content">
-                <div class="stat-value">{communityStats.totalMembers.toLocaleString()}</div>
-                <div class="stat-label">Total Members</div>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon">📈</div>
-              <div class="stat-content">
-                <div class="stat-value">{communityStats.averagePnl}%</div>
-                <div class="stat-label">Average PnL</div>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon">🏆</div>
-              <div class="stat-content">
-                <div class="stat-value">{communityStats.topPerformer}</div>
-                <div class="stat-label">Top Performer</div>
-              </div>
-            </div>
-            <div class="stat-card">
-              <div class="stat-icon">🔥</div>
-              <div class="stat-content">
-                <div class="stat-value">{communityStats.trendingCollection}</div>
-                <div class="stat-label">Trending Collection</div>
-              </div>
-            </div>
+    <div class="community-header">
+      <h3 class="community-title">Community</h3>
           </div>
           
           <div class="community-features">
-            <div class="feature-card">
-              <div class="feature-icon">💬</div>
-              <div class="feature-content">
-                <h4 class="feature-title">Discord Community</h4>
-                <p class="feature-description">Join our Discord for real-time discussions and trading tips</p>
-                <button class="feature-btn">Join Discord</button>
+      <div class="community-feature">
+        <div class="feature-icon">👥</div>
+        <h4 class="feature-title">Trading Groups</h4>
+        <p class="feature-description">Join trading groups and share strategies</p>
+        <button class="feature-btn">Join Groups</button>
               </div>
+
+      <div class="community-feature">
+        <div class="feature-icon">📊</div>
+        <h4 class="feature-title">Portfolio Sharing</h4>
+        <p class="feature-description">Share your portfolio with the community</p>
+        <button class="feature-btn">Share Portfolio</button>
             </div>
             
-            <div class="feature-card">
-              <div class="feature-icon">📚</div>
-              <div class="feature-content">
-                <h4 class="feature-title">Trading Academy</h4>
-                <p class="feature-description">Learn from the best traders with our educational content</p>
-                <button class="feature-btn">Start Learning</button>
-              </div>
+      <div class="community-feature">
+        <div class="feature-icon">💬</div>
+        <h4 class="feature-title">Trading Chat</h4>
+        <p class="feature-description">Discuss trades and strategies in real-time</p>
+        <button class="feature-btn">Join Chat</button>
             </div>
             
-            <div class="feature-card">
-              <div class="feature-icon">🎯</div>
-              <div class="feature-content">
-                <h4 class="feature-title">Trading Challenges</h4>
-                <p class="feature-description">Participate in weekly trading challenges and win prizes</p>
-                <button class="feature-btn">Join Challenge</button>
+      <div class="community-feature">
+        <div class="feature-icon">🏆</div>
+        <h4 class="feature-title">Competitions</h4>
+        <p class="feature-description">Participate in trading competitions</p>
+        <button class="feature-btn">Join Competition</button>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-    )}
   </div>
 </div>
 
-<script>
-  class SocialTrading {
-    private userId: string;
-    private following: Set<string> = new Set();
-    private likedPosts: Set<string> = new Set();
-
-    constructor(userId: string = '') {
-      this.userId = userId;
-      this.initializeElements();
-      this.setupEventListeners();
-      this.loadUserData();
-    }
-
-    private initializeElements() {
-      // This will be called when the component is mounted
-    }
-
-    private setupEventListeners() {
-      document.addEventListener('DOMContentLoaded', () => {
-        // Follow/Unfollow buttons
-        const followBtns = document.querySelectorAll('.follow-btn');
-        followBtns.forEach(btn => {
-          btn.addEventListener('click', (e) => this.handleFollow(e));
-        });
-
-        // Copy trade buttons
-        const copyBtns = document.querySelectorAll('.copy-btn');
-        copyBtns.forEach(btn => {
-          btn.addEventListener('click', (e) => this.handleCopyTrade(e));
-        });
-
-        // Post actions
-        const likeBtns = document.querySelectorAll('.like-btn');
-        likeBtns.forEach(btn => {
-          btn.addEventListener('click', (e) => this.handleLike(e));
-        });
-
-        const commentBtns = document.querySelectorAll('.comment-btn');
-        commentBtns.forEach(btn => {
-          btn.addEventListener('click', (e) => this.handleComment(e));
-        });
-
-        const shareBtns = document.querySelectorAll('.share-btn');
-        shareBtns.forEach(btn => {
-          btn.addEventListener('click', (e) => this.handleShare(e));
-        });
-
-        const copyTradeBtns = document.querySelectorAll('.copy-trade-btn');
-        copyTradeBtns.forEach(btn => {
-          btn.addEventListener('click', (e) => this.handleCopyTradeFromPost(e));
-        });
-
-        // Composer actions
-        const composerBtns = document.querySelectorAll('.composer-btn');
-        composerBtns.forEach(btn => {
-          btn.addEventListener('click', (e) => this.handleComposerAction(e));
-        });
-
-        const postBtn = document.querySelector('.post-btn');
-        postBtn?.addEventListener('click', () => this.handlePost());
-      });
-    }
-
-    private loadUserData() {
-      // Load user's following list and liked posts
-      const followingData = localStorage.getItem('soladia_following');
-      if (followingData) {
-        this.following = new Set(JSON.parse(followingData));
-      }
-
-      const likedData = localStorage.getItem('soladia_liked_posts');
-      if (likedData) {
-        this.likedPosts = new Set(JSON.parse(likedData));
-      }
-
-      this.updateUI();
-    }
-
-    private updateUI() {
-      // Update follow buttons based on following status
-      const followBtns = document.querySelectorAll('.follow-btn');
-      followBtns.forEach(btn => {
-        const username = btn.getAttribute('data-user');
-        if (username && this.following.has(username)) {
-          btn.textContent = 'Following';
-          btn.classList.add('following');
-        }
-      });
-
-      // Update like buttons based on liked status
-      const likeBtns = document.querySelectorAll('.like-btn');
-      likeBtns.forEach(btn => {
-        const postId = btn.getAttribute('data-post-id');
-        if (postId && this.likedPosts.has(postId)) {
-          btn.classList.add('liked');
-        }
-      });
-    }
-
-    private async handleFollow(event: Event) {
-      const btn = event.target as HTMLButtonElement;
-      const username = btn.getAttribute('data-user') || btn.getAttribute('data-trader-id');
-      
-      if (!username) return;
-
-      try {
-        if (this.following.has(username)) {
-          // Unfollow
-          this.following.delete(username);
-          btn.textContent = 'Follow';
-          btn.classList.remove('following');
-          this.showNotification(`Unfollowed ${username}`, 'info');
-        } else {
-          // Follow
-          this.following.add(username);
-          btn.textContent = 'Following';
-          btn.classList.add('following');
-          this.showNotification(`Following ${username}`, 'success');
-        }
-
-        // Save to localStorage
-        localStorage.setItem('soladia_following', JSON.stringify([...this.following]));
-        
-        // In a real implementation, this would call the API
-        await this.updateFollowStatus(username, this.following.has(username));
-        
-      } catch (error) {
-        this.showNotification('Failed to update follow status', 'error');
-        console.error('Follow error:', error);
-      }
-    }
-
-    private async handleCopyTrade(event: Event) {
-      const btn = event.target as HTMLButtonElement;
-      const traderId = btn.getAttribute('data-trader-id') || btn.getAttribute('data-user');
-      
-      if (!traderId) return;
-
-      try {
-        this.showNotification('Setting up copy trading...', 'info');
-        
-        // In a real implementation, this would set up copy trading
-        await this.setupCopyTrading(traderId);
-        
-        this.showNotification('Copy trading activated!', 'success');
-        btn.textContent = 'Copying...';
-        btn.disabled = true;
-        
-      } catch (error) {
-        this.showNotification('Failed to setup copy trading', 'error');
-        console.error('Copy trade error:', error);
-      }
-    }
-
-    private async handleLike(event: Event) {
-      const btn = event.target as HTMLButtonElement;
-      const postId = btn.getAttribute('data-post-id');
-      
-      if (!postId) return;
-
-      try {
-        const isLiked = this.likedPosts.has(postId);
-        
-        if (isLiked) {
-          this.likedPosts.delete(postId);
-          btn.classList.remove('liked');
-          // Decrease like count
-          const count = parseInt(btn.textContent || '0');
-          btn.textContent = (count - 1).toString();
-        } else {
-          this.likedPosts.add(postId);
-          btn.classList.add('liked');
-          // Increase like count
-          const count = parseInt(btn.textContent || '0');
-          btn.textContent = (count + 1).toString();
-        }
-
-        // Save to localStorage
-        localStorage.setItem('soladia_liked_posts', JSON.stringify([...this.likedPosts]));
-        
-        // In a real implementation, this would call the API
-        await this.updateLikeStatus(postId, !isLiked);
-        
-      } catch (error) {
-        this.showNotification('Failed to update like status', 'error');
-        console.error('Like error:', error);
-      }
-    }
-
-    private async handleComment(event: Event) {
-      const btn = event.target as HTMLButtonElement;
-      const postId = btn.getAttribute('data-post-id');
-      
-      if (!postId) return;
-
-      // In a real implementation, this would open a comment modal
-      this.showNotification('Comment feature coming soon!', 'info');
-    }
-
-    private async handleShare(event: Event) {
-      const btn = event.target as HTMLButtonElement;
-      const postId = btn.getAttribute('data-post-id');
-      
-      if (!postId) return;
-
-      try {
-        // In a real implementation, this would share the post
-        if (navigator.share) {
-          await navigator.share({
-            title: 'Check out this trade on Soladia',
-            text: 'Amazing trading insight on Soladia marketplace',
-            url: window.location.href
-          });
-        } else {
-          // Fallback to copying to clipboard
-          await navigator.clipboard.writeText(window.location.href);
-          this.showNotification('Link copied to clipboard!', 'success');
-        }
-        
-        // Update share count
-        const count = parseInt(btn.textContent || '0');
-        btn.textContent = (count + 1).toString();
-        
-      } catch (error) {
-        this.showNotification('Failed to share post', 'error');
-        console.error('Share error:', error);
-      }
-    }
-
-    private async handleCopyTradeFromPost(event: Event) {
-      const btn = event.target as HTMLButtonElement;
-      const postId = btn.getAttribute('data-post-id');
-      
-      if (!postId) return;
-
-      try {
-        this.showNotification('Copying trade from post...', 'info');
-        
-        // In a real implementation, this would extract trade data from the post
-        // and set up copy trading
-        await this.copyTradeFromPost(postId);
-        
-        this.showNotification('Trade copied successfully!', 'success');
-        
-      } catch (error) {
-        this.showNotification('Failed to copy trade', 'error');
-        console.error('Copy trade from post error:', error);
-      }
-    }
-
-    private handleComposerAction(event: Event) {
-      const btn = event.target as HTMLButtonElement;
-      const type = btn.getAttribute('data-type');
-      
-      // In a real implementation, this would open different composer modes
-      this.showNotification(`${type} composer coming soon!`, 'info');
-    }
-
-    private async handlePost() {
-      const input = document.querySelector('.composer-input') as HTMLInputElement;
-      const content = input?.value.trim();
-      
-      if (!content) {
-        this.showNotification('Please enter some content', 'error');
-        return;
-      }
-
-      try {
-        this.showNotification('Posting...', 'info');
-        
-        // In a real implementation, this would post to the social feed
-        await this.createPost(content);
-        
-        this.showNotification('Post published!', 'success');
-        input.value = '';
-        
-        // Refresh the feed
-        this.refreshFeed();
-        
-      } catch (error) {
-        this.showNotification('Failed to publish post', 'error');
-        console.error('Post error:', error);
-      }
-    }
-
-    private async updateFollowStatus(username: string, isFollowing: boolean): Promise<void> {
-      // Mock API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    }
-
-    private async setupCopyTrading(traderId: string): Promise<void> {
-      // Mock API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-    }
-
-    private async updateLikeStatus(postId: string, isLiked: boolean): Promise<void> {
-      // Mock API call
-      await new Promise(resolve => setTimeout(resolve, 500));
-    }
-
-    private async copyTradeFromPost(postId: string): Promise<void> {
-      // Mock API call
-      await new Promise(resolve => setTimeout(resolve, 1500));
-    }
-
-    private async createPost(content: string): Promise<void> {
-      // Mock API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-    }
-
-    private refreshFeed() {
-      // In a real implementation, this would refresh the social feed
-      console.log('Refreshing social feed...');
-    }
-
-    private showNotification(message: string, type: 'success' | 'error' | 'info') {
-      const notification = document.createElement('div');
-      notification.className = `notification notification-${type}`;
-      notification.textContent = message;
-      
-      document.body.appendChild(notification);
-      
-      setTimeout(() => {
-        notification.remove();
-      }, 3000);
-    }
-  }
-
-  // Initialize social trading when DOM is loaded
-  let socialTrading: SocialTrading;
-  
-  document.addEventListener('DOMContentLoaded', () => {
-    socialTrading = new SocialTrading('${userId}');
-  });
-
-  // Export for external use
-  window.getSocialTrading = () => socialTrading;
-</script>
-
 <style>
-  .social-trading {
-    @apply bg-white rounded-lg shadow-sm border border-gray-200 p-6;
+  .social-trading-container {
+    @apply max-w-7xl mx-auto px-4 py-8;
   }
 
-  .social-header {
-    @apply flex justify-between items-center mb-6;
+  .social-trading-header {
+    @apply text-center mb-12;
   }
 
-  .social-title {
-    @apply text-2xl font-bold text-gray-900;
+  .social-trading-title {
+    @apply text-4xl font-bold text-gray-900 dark:text-white mb-4;
   }
 
-  .social-stats {
-    @apply flex space-x-6;
-  }
-
-  .stat-item {
-    @apply text-center;
-  }
-
-  .stat-value {
-    @apply block text-lg font-bold text-gray-900;
-  }
-
-  .stat-label {
-    @apply text-sm text-gray-600;
-  }
-
-  .social-content {
-    @apply space-y-8;
-  }
-
-  .section-title {
-    @apply text-lg font-semibold text-gray-900 mb-4;
+  .social-trading-subtitle {
+    @apply text-xl text-gray-600 dark:text-gray-300;
   }
 
   .leaderboard-section {
-    @apply space-y-4;
+    @apply mb-12;
   }
 
-  .leaderboard {
-    @apply space-y-3;
+  .leaderboard-header {
+    @apply flex justify-between items-center mb-6;
+  }
+
+  .leaderboard-title {
+    @apply text-2xl font-bold text-gray-900 dark:text-white;
+  }
+
+  .leaderboard-filters {
+    @apply flex gap-4;
+  }
+
+  .filter-select {
+    @apply px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white;
+  }
+
+  .leaderboard-list {
+    @apply space-y-4;
   }
 
   .leaderboard-item {
-    @apply flex items-center justify-between p-4 bg-gray-50 rounded-lg;
+    @apply flex items-center justify-between p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow;
   }
 
-  .rank {
-    @apply text-2xl font-bold text-blue-600 w-12;
+  .leaderboard-rank {
+    @apply text-2xl font-bold text-blue-600 dark:text-blue-400 w-12;
   }
 
-  .trader-info {
-    @apply flex items-center space-x-3 flex-1;
+  .leaderboard-trader {
+    @apply flex items-center space-x-4 flex-1;
   }
 
   .trader-avatar {
-    @apply w-12 h-12 rounded-full object-cover;
+    @apply w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold;
   }
 
-  .trader-details {
-    @apply flex-1;
+  .trader-info h4 {
+    @apply font-semibold text-gray-900 dark:text-white;
   }
 
-  .trader-name {
-    @apply font-semibold text-gray-900 flex items-center space-x-1;
+  .trader-info p {
+    @apply text-sm text-gray-600 dark:text-gray-300;
   }
 
-  .verified-badge {
-    @apply text-blue-500 text-sm;
+  .leaderboard-stats {
+    @apply text-right;
   }
 
-  .trader-stats {
-    @apply text-sm text-gray-600 space-x-4;
+  .stat-value {
+    @apply text-lg font-semibold text-gray-900 dark:text-white;
   }
 
-  .stat {
-    @apply inline-block;
-  }
-
-  .trader-actions {
-    @apply flex space-x-2;
-  }
-
-  .follow-btn,
-  .copy-btn {
-    @apply px-4 py-2 rounded-lg font-medium transition-colors;
-  }
-
-  .follow-btn {
-    @apply bg-blue-600 text-white hover:bg-blue-700;
-  }
-
-  .follow-btn.following {
-    @apply bg-gray-200 text-gray-700;
-  }
-
-  .copy-btn {
-    @apply bg-green-600 text-white hover:bg-green-700;
+  .stat-label {
+    @apply text-sm text-gray-600 dark:text-gray-300;
   }
 
   .social-feed-section {
-    @apply space-y-4;
+    @apply mb-12;
   }
 
-  .feed-container {
-    @apply space-y-4;
+  .social-feed-header {
+    @apply flex justify-between items-center mb-6;
   }
 
-  .feed-composer {
-    @apply bg-gray-50 rounded-lg p-4 space-y-3;
+  .social-feed-title {
+    @apply text-2xl font-bold text-gray-900 dark:text-white;
   }
 
-  .composer-header {
-    @apply flex items-center space-x-3;
+  .social-feed-actions {
+    @apply flex gap-4;
   }
 
-  .composer-avatar {
-    @apply w-10 h-10 rounded-full object-cover;
-  }
-
-  .composer-input {
-    @apply flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
-  }
-
-  .composer-actions {
-    @apply flex items-center space-x-2;
-  }
-
-  .composer-btn {
-    @apply px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors flex items-center space-x-1;
-  }
-
-  .post-btn {
-    @apply px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors;
-  }
-
-  .feed-list {
-    @apply space-y-4;
+  .social-feed {
+    @apply space-y-6;
   }
 
   .feed-item {
-    @apply bg-white border border-gray-200 rounded-lg p-4;
+    @apply p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md;
   }
 
-  .post-header {
-    @apply flex items-center space-x-3 mb-3;
+  .feed-item-header {
+    @apply flex items-center justify-between mb-4;
   }
 
-  .post-avatar {
-    @apply w-10 h-10 rounded-full object-cover;
+  .feed-item-user {
+    @apply flex items-center space-x-3;
   }
 
-  .post-user {
-    @apply flex-1;
+  .feed-item-avatar {
+    @apply w-10 h-10 rounded-full bg-gradient-to-r from-green-500 to-blue-600 flex items-center justify-center text-white font-bold;
   }
 
-  .post-username {
-    @apply font-semibold text-gray-900 flex items-center space-x-1;
+  .feed-item-info h4 {
+    @apply font-semibold text-gray-900 dark:text-white;
   }
 
-  .post-timestamp {
-    @apply text-sm text-gray-500;
+  .feed-item-info p {
+    @apply text-sm text-gray-600 dark:text-gray-300;
   }
 
-  .post-menu {
-    @apply p-1 text-gray-400 hover:text-gray-600;
+  .feed-item-content {
+    @apply mb-4;
   }
 
-  .post-content {
-    @apply mb-3;
-  }
-
-  .post-text {
-    @apply text-gray-900 mb-3;
-  }
-
-  .trade-card,
-  .analysis-card,
-  .discovery-card {
-    @apply bg-blue-50 border border-blue-200 rounded-lg p-3;
+  .feed-item-trade {
+    @apply p-4 bg-gray-50 dark:bg-gray-700 rounded-lg;
   }
 
   .trade-info {
-    @apply flex items-center space-x-2 text-sm;
+    @apply flex justify-between items-center mb-2;
   }
 
-  .trade-action {
-    @apply font-semibold text-blue-600;
-  }
-
-  .trade-item {
-    @apply text-gray-900;
+  .trade-symbol {
+    @apply font-semibold text-gray-900 dark:text-white;
   }
 
   .trade-price {
-    @apply font-mono text-green-600;
+    @apply text-lg font-bold text-green-600 dark:text-green-400;
   }
 
-  .trade-quantity {
-    @apply text-gray-600;
+  .trade-details {
+    @apply text-sm text-gray-600 dark:text-gray-300;
   }
 
-  .analysis-title {
-    @apply font-semibold text-gray-900;
-  }
-
-  .analysis-views {
-    @apply text-sm text-gray-600;
-  }
-
-  .discovery-item {
-    @apply font-semibold text-gray-900;
-  }
-
-  .discovery-artist {
-    @apply text-sm text-gray-600;
-  }
-
-  .discovery-price {
-    @apply font-mono text-green-600;
-  }
-
-  .post-actions {
+  .feed-item-actions {
     @apply flex items-center space-x-4;
   }
 
   .action-btn {
-    @apply flex items-center space-x-1 text-sm text-gray-600 hover:text-gray-900 transition-colors;
+    @apply flex items-center space-x-2 px-3 py-2 rounded-lg transition-colors;
   }
 
-  .action-btn.liked {
-    @apply text-red-600;
-  }
-
-  .btn-icon {
-    @apply text-sm;
+  .action-btn:hover {
+    @apply bg-gray-100 dark:bg-gray-600;
   }
 
   .copy-trading-section {
-    @apply space-y-4;
+    @apply mb-12;
   }
 
-  .copy-traders {
-    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4;
+  .copy-trading-header {
+    @apply text-center mb-8;
   }
 
-  .copy-trader-card {
-    @apply bg-white border border-gray-200 rounded-lg p-4 space-y-3;
+  .copy-trading-title {
+    @apply text-2xl font-bold text-gray-900 dark:text-white mb-2;
   }
 
-  .trader-header {
+  .copy-trading-subtitle {
+    @apply text-gray-600 dark:text-gray-300;
+  }
+
+  .copy-trading-list {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+  }
+
+  .copy-trading-item {
+    @apply p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-shadow;
+  }
+
+  .copy-trading-header {
+    @apply flex items-center justify-between mb-4;
+  }
+
+  .copy-trader-info {
     @apply flex items-center space-x-3;
   }
 
-  .trader-status {
-    @apply ml-auto;
+  .copy-trader-avatar {
+    @apply w-12 h-12 rounded-full bg-gradient-to-r from-purple-500 to-pink-600 flex items-center justify-center text-white font-bold;
   }
 
-  .status-following {
-    @apply text-sm text-green-600 font-medium;
+  .copy-trader-details h4 {
+    @apply font-semibold text-gray-900 dark:text-white;
   }
 
-  .status-available {
-    @apply text-sm text-gray-600;
+  .copy-trader-details p {
+    @apply text-sm text-gray-600 dark:text-gray-300;
   }
 
-  .trader-metrics {
-    @apply grid grid-cols-3 gap-4;
+  .copy-trading-stats {
+    @apply mb-4;
   }
 
-  .metric {
-    @apply text-center;
+  .copy-stat {
+    @apply flex justify-between items-center mb-2;
   }
 
-  .metric-label {
-    @apply block text-xs text-gray-600 mb-1;
+  .copy-stat-label {
+    @apply text-sm text-gray-600 dark:text-gray-300;
   }
 
-  .metric-value {
-    @apply block text-sm font-semibold;
+  .copy-stat-value {
+    @apply font-semibold text-gray-900 dark:text-white;
   }
 
-  .metric-value.positive {
-    @apply text-green-600;
+  .copy-trading-actions {
+    @apply flex gap-2;
   }
 
-  .trader-actions {
-    @apply flex space-x-2;
+  .copy-btn {
+    @apply flex-1 px-4 py-2 rounded-lg font-medium transition-colors;
   }
 
-  .unfollow-btn {
-    @apply px-3 py-1 text-sm bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors;
+  .copy-btn-primary {
+    @apply bg-blue-600 text-white hover:bg-blue-700;
+  }
+
+  .copy-btn-secondary {
+    @apply bg-gray-200 dark:bg-gray-600 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-500;
   }
 
   .community-section {
-    @apply space-y-4;
+    @apply mb-12;
   }
 
-  .community-content {
-    @apply space-y-6;
+  .community-header {
+    @apply text-center mb-8;
   }
 
-  .community-stats {
-    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4;
-  }
-
-  .stat-card {
-    @apply bg-gray-50 rounded-lg p-4 flex items-center space-x-3;
-  }
-
-  .stat-icon {
-    @apply text-2xl;
-  }
-
-  .stat-content {
-    @apply flex-1;
-  }
-
-  .stat-value {
-    @apply block text-lg font-bold text-gray-900;
-  }
-
-  .stat-label {
-    @apply block text-sm text-gray-600;
+  .community-title {
+    @apply text-2xl font-bold text-gray-900 dark:text-white;
   }
 
   .community-features {
-    @apply grid grid-cols-1 md:grid-cols-3 gap-4;
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6;
   }
 
-  .feature-card {
-    @apply bg-white border border-gray-200 rounded-lg p-4 space-y-3;
+  .community-feature {
+    @apply p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md text-center hover:shadow-lg transition-shadow;
   }
 
   .feature-icon {
-    @apply text-2xl;
+    @apply text-4xl mb-4;
   }
 
   .feature-title {
-    @apply font-semibold text-gray-900;
+    @apply text-xl font-semibold text-gray-900 dark:text-white mb-2;
   }
 
   .feature-description {
-    @apply text-sm text-gray-600;
+    @apply text-gray-600 dark:text-gray-300 mb-4;
   }
 
   .feature-btn {
-    @apply px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors;
+    @apply w-full px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors;
   }
 
-  .notification {
-    @apply fixed top-4 right-4 px-4 py-2 rounded-lg text-white font-medium z-50;
+  /* Dark mode styles */
+  .dark .leaderboard-item,
+  .dark .feed-item,
+  .dark .copy-trading-item,
+  .dark .community-feature {
+    @apply bg-gray-800 border border-gray-700;
   }
 
-  .notification-success {
-    @apply bg-green-600;
-  }
-
-  .notification-error {
-    @apply bg-red-600;
-  }
-
-  .notification-info {
-    @apply bg-blue-600;
+  .dark .filter-select {
+    @apply bg-gray-800 border-gray-600;
   }
 </style>
 
-<!-- Global types for TypeScript -->
 <script>
-  declare global {
-    interface Window {
-      getSocialTrading: () => SocialTrading;
+  // Social Trading functionality
+  class SocialTrading {
+    constructor() {
+      this.leaderboardData = [];
+      this.socialFeedData = [];
+      this.copyTradingData = [];
+      this.init();
+    }
+
+    async init() {
+      await this.loadLeaderboard();
+      await this.loadSocialFeed();
+      await this.loadCopyTrading();
+      this.setupEventListeners();
+    }
+
+    async loadLeaderboard() {
+      try {
+        // Mock leaderboard data
+        this.leaderboardData = [
+          {
+            rank: 1,
+            name: "CryptoTrader",
+            avatar: "CT",
+            profit: "+245.6%",
+            trades: 156,
+            followers: 1250,
+            winRate: "87%"
+          },
+          {
+            rank: 2,
+            name: "NFTHunter",
+            avatar: "NH",
+            profit: "+198.3%",
+            trades: 89,
+            followers: 980,
+            winRate: "82%"
+          },
+          {
+            rank: 3,
+            name: "DeFiMaster",
+            avatar: "DM",
+            profit: "+167.2%",
+            trades: 203,
+            followers: 756,
+            winRate: "79%"
+          }
+        ];
+
+        this.renderLeaderboard();
+      } catch (error) {
+        console.error('Failed to load leaderboard:', error);
+      }
+    }
+
+    async loadSocialFeed() {
+      try {
+        // Mock social feed data
+        this.socialFeedData = [
+          {
+            id: 1,
+            user: "CryptoTrader",
+            avatar: "CT",
+            time: "2 hours ago",
+            content: "Just made a profitable trade on SOL! 🚀",
+            trade: {
+              symbol: "SOL",
+              action: "BUY",
+              price: "$45.67",
+              amount: "100 SOL",
+              profit: "+$234.50"
+            },
+            likes: 45,
+            comments: 12,
+            shares: 8
+          },
+          {
+            id: 2,
+            user: "NFTHunter",
+            avatar: "NH",
+            time: "4 hours ago",
+            content: "New NFT collection looking promising 📈",
+            trade: {
+              symbol: "NFT",
+              action: "BUY",
+              price: "2.5 SOL",
+              amount: "1 NFT",
+              profit: "+$125.00"
+            },
+            likes: 32,
+            comments: 7,
+            shares: 5
+          }
+        ];
+
+        this.renderSocialFeed();
+      } catch (error) {
+        console.error('Failed to load social feed:', error);
+      }
+    }
+
+    async loadCopyTrading() {
+      try {
+        // Mock copy trading data
+        this.copyTradingData = [
+          {
+            id: 1,
+            trader: "CryptoTrader",
+            avatar: "CT",
+            profit: "+245.6%",
+            trades: 156,
+            winRate: "87%",
+            followers: 1250,
+            isFollowing: false
+          },
+          {
+            id: 2,
+            trader: "NFTHunter",
+            avatar: "NH",
+            profit: "+198.3%",
+            trades: 89,
+            winRate: "82%",
+            followers: 980,
+            isFollowing: true
+          }
+        ];
+
+        this.renderCopyTrading();
+      } catch (error) {
+        console.error('Failed to load copy trading:', error);
+      }
+    }
+
+    renderLeaderboard() {
+      const leaderboardList = document.getElementById('leaderboard-list');
+      if (!leaderboardList) return;
+
+      leaderboardList.innerHTML = this.leaderboardData.map(item => `
+        <div class="leaderboard-item">
+          <div class="leaderboard-rank">#${item.rank}</div>
+          <div class="leaderboard-trader">
+            <div class="trader-avatar">${item.avatar}</div>
+            <div class="trader-info">
+              <h4>${item.name}</h4>
+              <p>${item.followers} followers</p>
+            </div>
+          </div>
+          <div class="leaderboard-stats">
+            <div class="stat-value">${item.profit}</div>
+            <div class="stat-label">Profit</div>
+            <div class="stat-value">${item.trades}</div>
+            <div class="stat-label">Trades</div>
+            <div class="stat-value">${item.winRate}</div>
+            <div class="stat-label">Win Rate</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    renderSocialFeed() {
+      const socialFeed = document.getElementById('social-feed');
+      if (!socialFeed) return;
+
+      socialFeed.innerHTML = this.socialFeedData.map(item => `
+        <div class="feed-item">
+          <div class="feed-item-header">
+            <div class="feed-item-user">
+              <div class="feed-item-avatar">${item.avatar}</div>
+              <div class="feed-item-info">
+                <h4>${item.user}</h4>
+                <p>${item.time}</p>
+              </div>
+            </div>
+          </div>
+          <div class="feed-item-content">
+            <p class="mb-4">${item.content}</p>
+            <div class="feed-item-trade">
+              <div class="trade-info">
+                <span class="trade-symbol">${item.trade.symbol}</span>
+                <span class="trade-price">${item.trade.price}</span>
+              </div>
+              <div class="trade-details">
+                ${item.trade.action} ${item.trade.amount} • ${item.trade.profit}
+              </div>
+            </div>
+          </div>
+          <div class="feed-item-actions">
+            <button class="action-btn">
+              <span>👍</span>
+              <span>${item.likes}</span>
+            </button>
+            <button class="action-btn">
+              <span>💬</span>
+              <span>${item.comments}</span>
+            </button>
+            <button class="action-btn">
+              <span>🔄</span>
+              <span>${item.shares}</span>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    renderCopyTrading() {
+      const copyTradingList = document.getElementById('copy-trading-list');
+      if (!copyTradingList) return;
+
+      copyTradingList.innerHTML = this.copyTradingData.map(item => `
+        <div class="copy-trading-item">
+          <div class="copy-trading-header">
+            <div class="copy-trader-info">
+              <div class="copy-trader-avatar">${item.avatar}</div>
+              <div class="copy-trader-details">
+                <h4>${item.trader}</h4>
+                <p>${item.followers} followers</p>
+              </div>
+            </div>
+          </div>
+          <div class="copy-trading-stats">
+            <div class="copy-stat">
+              <span class="copy-stat-label">Profit</span>
+              <span class="copy-stat-value">${item.profit}</span>
+            </div>
+            <div class="copy-stat">
+              <span class="copy-stat-label">Trades</span>
+              <span class="copy-stat-value">${item.trades}</span>
+            </div>
+            <div class="copy-stat">
+              <span class="copy-stat-label">Win Rate</span>
+              <span class="copy-stat-value">${item.winRate}</span>
+            </div>
+          </div>
+          <div class="copy-trading-actions">
+            <button class="copy-btn ${item.isFollowing ? 'copy-btn-secondary' : 'copy-btn-primary'}" 
+                    data-trader-id="${item.id}">
+              ${item.isFollowing ? 'Following' : 'Copy Trades'}
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    setupEventListeners() {
+      // Filter changes
+      const timeframeFilter = document.getElementById('timeframe-filter');
+      const categoryFilter = document.getElementById('category-filter');
+      
+      if (timeframeFilter) {
+        timeframeFilter.addEventListener('change', () => this.loadLeaderboard());
+      }
+      
+      if (categoryFilter) {
+        categoryFilter.addEventListener('change', () => this.loadLeaderboard());
+      }
+
+      // Post trade button
+      const postTradeBtn = document.getElementById('post-trade-btn');
+      if (postTradeBtn) {
+        postTradeBtn.addEventListener('click', () => this.showPostTradeModal());
+      }
+
+      // Refresh feed button
+      const refreshFeedBtn = document.getElementById('refresh-feed-btn');
+      if (refreshFeedBtn) {
+        refreshFeedBtn.addEventListener('click', () => this.loadSocialFeed());
+      }
+
+      // Copy trading buttons
+      document.addEventListener('click', (e) => {
+        if (e.target.classList.contains('copy-btn')) {
+          const traderId = e.target.dataset.traderId;
+          this.toggleCopyTrading(traderId);
+        }
+      });
+    }
+
+    showPostTradeModal() {
+      // Show modal for posting a trade
+      console.log('Show post trade modal');
+    }
+
+    toggleCopyTrading(traderId) {
+      const trader = this.copyTradingData.find(t => t.id == traderId);
+      if (trader) {
+        trader.isFollowing = !trader.isFollowing;
+        this.renderCopyTrading();
+      }
+    }
+  }
+
+  // Initialize social trading when DOM is ready
+  if (typeof document !== 'undefined') {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', () => new SocialTrading());
+    } else {
+      new SocialTrading();
     }
   }
 </script>

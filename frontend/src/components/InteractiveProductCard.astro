@@ -1,0 +1,465 @@
+---
+// Interactive Product Card Component with partial hydration
+// Demonstrates Astro component islands pattern
+---
+
+export interface Props {
+  product: {
+    id: string;
+    name: string;
+    price: number;
+    image: string;
+    description: string;
+    category: string;
+    rating: number;
+    reviews: number;
+    inStock: boolean;
+    isNft: boolean;
+    isSolana: boolean;
+  };
+  showWishlist?: boolean;
+  showCompare?: boolean;
+  showQuickView?: boolean;
+}
+
+const { 
+  product, 
+  showWishlist = true, 
+  showCompare = true, 
+  showQuickView = true 
+} = Astro.props;
+
+const formatPrice = (price: number) => {
+  return new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 2
+  }).format(price);
+};
+
+const formatRating = (rating: number) => {
+  return rating.toFixed(1);
+};
+---
+
+<div class="product-card" data-product-id={product.id}>
+  <!-- Product Image -->
+  <div class="product-image-container">
+    <img 
+      src={product.image} 
+      alt={product.name}
+      class="product-image"
+      loading="lazy"
+    />
+    
+    <!-- Product Badges -->
+    <div class="product-badges">
+      {product.isNft && (
+        <span class="badge badge-nft">NFT</span>
+      )}
+      {product.isSolana && (
+        <span class="badge badge-solana">Solana</span>
+      )}
+      {!product.inStock && (
+        <span class="badge badge-out-of-stock">Out of Stock</span>
+      )}
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="product-actions">
+      {showQuickView && (
+        <button 
+          class="action-btn quick-view-btn"
+          data-product-id={product.id}
+          title="Quick View"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+          </svg>
+        </button>
+      )}
+      
+      {showWishlist && (
+        <button 
+          class="action-btn wishlist-btn"
+          data-product-id={product.id}
+          title="Add to Wishlist"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+          </svg>
+        </button>
+      )}
+    </div>
+  </div>
+
+  <!-- Product Info -->
+  <div class="product-info">
+    <div class="product-category">{product.category}</div>
+    
+    <h3 class="product-name">
+      <a href={`/product/${product.id}`} class="product-link">
+        {product.name}
+      </a>
+    </h3>
+    
+    <p class="product-description">{product.description}</p>
+    
+    <!-- Rating -->
+    <div class="product-rating">
+      <div class="stars">
+        {Array.from({ length: 5 }, (_, i) => (
+          <svg 
+            key={i}
+            class={`star ${i < Math.floor(product.rating) ? 'filled' : ''}`}
+            fill="currentColor" 
+            viewBox="0 0 20 20"
+          >
+            <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
+          </svg>
+        ))}
+      </div>
+      <span class="rating-value">{formatRating(product.rating)}</span>
+      <span class="review-count">({product.reviews} reviews)</span>
+    </div>
+
+    <!-- Price -->
+    <div class="product-price">
+      <span class="current-price">{formatPrice(product.price)}</span>
+      {product.isSolana && (
+        <span class="solana-price">≈ {Math.round(product.price * 0.05)} SOL</span>
+      )}
+    </div>
+
+    <!-- Actions -->
+    <div class="product-actions-bottom">
+      {product.inStock ? (
+        <button 
+          class="btn-primary add-to-cart-btn"
+          data-product-id={product.id}
+        >
+          Add to Cart
+        </button>
+      ) : (
+        <button class="btn-secondary" disabled>
+          Out of Stock
+        </button>
+      )}
+      
+      {showCompare && (
+        <button 
+          class="btn-outline compare-btn"
+          data-product-id={product.id}
+        >
+          Compare
+        </button>
+      )}
+    </div>
+  </div>
+</div>
+
+<style>
+  .product-card {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700;
+  }
+
+  .product-image-container {
+    @apply relative overflow-hidden;
+  }
+
+  .product-image {
+    @apply w-full h-48 object-cover transition-transform duration-300;
+  }
+
+  .product-card:hover .product-image {
+    @apply scale-105;
+  }
+
+  .product-badges {
+    @apply absolute top-2 left-2 flex flex-col gap-1;
+  }
+
+  .badge {
+    @apply px-2 py-1 text-xs font-semibold rounded-full text-white;
+  }
+
+  .badge-nft {
+    @apply bg-purple-600;
+  }
+
+  .badge-solana {
+    @apply bg-gradient-to-r from-purple-500 to-pink-500;
+  }
+
+  .badge-out-of-stock {
+    @apply bg-red-600;
+  }
+
+  .product-actions {
+    @apply absolute top-2 right-2 flex flex-col gap-2 opacity-0 transition-opacity duration-300;
+  }
+
+  .product-card:hover .product-actions {
+    @apply opacity-100;
+  }
+
+  .action-btn {
+    @apply w-10 h-10 bg-white dark:bg-gray-800 rounded-full shadow-md flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors;
+  }
+
+  .product-info {
+    @apply p-4;
+  }
+
+  .product-category {
+    @apply text-sm text-gray-500 dark:text-gray-400 uppercase tracking-wide;
+  }
+
+  .product-name {
+    @apply text-lg font-semibold text-gray-900 dark:text-white mt-1;
+  }
+
+  .product-link {
+    @apply hover:text-blue-600 dark:hover:text-blue-400 transition-colors;
+  }
+
+  .product-description {
+    @apply text-gray-600 dark:text-gray-300 text-sm mt-2 line-clamp-2;
+  }
+
+  .product-rating {
+    @apply flex items-center gap-2 mt-3;
+  }
+
+  .stars {
+    @apply flex gap-1;
+  }
+
+  .star {
+    @apply w-4 h-4 text-gray-300;
+  }
+
+  .star.filled {
+    @apply text-yellow-400;
+  }
+
+  .rating-value {
+    @apply text-sm font-medium text-gray-900 dark:text-white;
+  }
+
+  .review-count {
+    @apply text-sm text-gray-500 dark:text-gray-400;
+  }
+
+  .product-price {
+    @apply mt-3;
+  }
+
+  .current-price {
+    @apply text-xl font-bold text-gray-900 dark:text-white;
+  }
+
+  .solana-price {
+    @apply text-sm text-purple-600 dark:text-purple-400 ml-2;
+  }
+
+  .product-actions-bottom {
+    @apply flex gap-2 mt-4;
+  }
+
+  .btn-primary {
+    @apply flex-1 bg-blue-600 text-white px-4 py-2 rounded-lg font-medium hover:bg-blue-700 transition-colors;
+  }
+
+  .btn-secondary {
+    @apply flex-1 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg font-medium cursor-not-allowed;
+  }
+
+  .btn-outline {
+    @apply px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors;
+  }
+
+  /* Dark mode styles */
+  .dark .product-card {
+    @apply bg-gray-800 border-gray-700;
+  }
+
+  .dark .action-btn {
+    @apply bg-gray-700;
+  }
+</style>
+
+<script>
+  // Interactive functionality for the product card
+  class InteractiveProductCard {
+    constructor(element: HTMLElement) {
+      this.element = element;
+      this.productId = element.dataset.productId;
+      this.init();
+    }
+
+    init() {
+      this.setupEventListeners();
+      this.loadWishlistState();
+    }
+
+    setupEventListeners() {
+      // Add to cart button
+      const addToCartBtn = this.element.querySelector('.add-to-cart-btn');
+      if (addToCartBtn) {
+        addToCartBtn.addEventListener('click', () => this.addToCart());
+      }
+
+      // Wishlist button
+      const wishlistBtn = this.element.querySelector('.wishlist-btn');
+      if (wishlistBtn) {
+        wishlistBtn.addEventListener('click', () => this.toggleWishlist());
+      }
+
+      // Quick view button
+      const quickViewBtn = this.element.querySelector('.quick-view-btn');
+      if (quickViewBtn) {
+        quickViewBtn.addEventListener('click', () => this.showQuickView());
+      }
+
+      // Compare button
+      const compareBtn = this.element.querySelector('.compare-btn');
+      if (compareBtn) {
+        compareBtn.addEventListener('click', () => this.toggleCompare());
+      }
+    }
+
+    async addToCart() {
+      try {
+        // Add product to cart
+        const response = await fetch('/api/cart/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            productId: this.productId,
+            quantity: 1
+          })
+        });
+
+        if (response.ok) {
+          // Show success message
+          this.showNotification('Product added to cart!', 'success');
+          
+          // Update cart count
+          this.updateCartCount();
+        } else {
+          throw new Error('Failed to add to cart');
+        }
+      } catch (error) {
+        console.error('Error adding to cart:', error);
+        this.showNotification('Failed to add product to cart', 'error');
+      }
+    }
+
+    async toggleWishlist() {
+      try {
+        const wishlistBtn = this.element.querySelector('.wishlist-btn');
+        const isInWishlist = wishlistBtn?.classList.contains('active');
+
+        const response = await fetch('/api/wishlist/toggle', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            productId: this.productId
+          })
+        });
+
+        if (response.ok) {
+          const result = await response.json();
+          
+          if (result.inWishlist) {
+            wishlistBtn?.classList.add('active');
+            this.showNotification('Added to wishlist!', 'success');
+          } else {
+            wishlistBtn?.classList.remove('active');
+            this.showNotification('Removed from wishlist', 'info');
+          }
+        } else {
+          throw new Error('Failed to toggle wishlist');
+        }
+      } catch (error) {
+        console.error('Error toggling wishlist:', error);
+        this.showNotification('Failed to update wishlist', 'error');
+      }
+    }
+
+    showQuickView() {
+      // Show quick view modal
+      const event = new CustomEvent('showQuickView', {
+        detail: { productId: this.productId }
+      });
+      document.dispatchEvent(event);
+    }
+
+    toggleCompare() {
+      // Toggle compare state
+      const compareBtn = this.element.querySelector('.compare-btn');
+      const isComparing = compareBtn?.classList.contains('active');
+
+      if (isComparing) {
+        compareBtn?.classList.remove('active');
+        this.showNotification('Removed from compare', 'info');
+      } else {
+        compareBtn?.classList.add('active');
+        this.showNotification('Added to compare', 'success');
+      }
+
+      // Update compare count
+      this.updateCompareCount();
+    }
+
+    async loadWishlistState() {
+      try {
+        const response = await fetch(`/api/wishlist/check?productId=${this.productId}`);
+        if (response.ok) {
+          const result = await response.json();
+          const wishlistBtn = this.element.querySelector('.wishlist-btn');
+          
+          if (result.inWishlist) {
+            wishlistBtn?.classList.add('active');
+          }
+        }
+      } catch (error) {
+        console.error('Error loading wishlist state:', error);
+      }
+    }
+
+    updateCartCount() {
+      // Update cart count in header
+      const event = new CustomEvent('cartUpdated');
+      document.dispatchEvent(event);
+    }
+
+    updateCompareCount() {
+      // Update compare count
+      const event = new CustomEvent('compareUpdated');
+      document.dispatchEvent(event);
+    }
+
+    showNotification(message: string, type: 'success' | 'error' | 'info') {
+      // Show notification
+      const event = new CustomEvent('showNotification', {
+        detail: { message, type }
+      });
+      document.dispatchEvent(event);
+    }
+  }
+
+  // Initialize interactive product cards
+  document.addEventListener('DOMContentLoaded', () => {
+    const productCards = document.querySelectorAll('.product-card');
+    productCards.forEach(card => {
+      new InteractiveProductCard(card as HTMLElement);
+    });
+  });
+</script>

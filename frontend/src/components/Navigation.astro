@@ -1,5 +1,7 @@
 ---
 // Navigation component for Soladia marketplace
+import MobileMenu from './MobileMenu.astro';
+import ThemeToggle from './ThemeToggle.astro';
 ---
 
 <nav>
@@ -40,12 +42,23 @@
       
       <!-- User Actions -->
       <div class="flex items-center space-x-4">
-        <a href="/auth" class="text-gray-600 hover:text-gray-800 font-medium transition-colors">Sign In</a>
-        <a href="/auth" class="btn-primary">Register</a>
+        <!-- Desktop Theme Toggle -->
+        <div class="theme-toggle-container hidden md:block">
+          <ThemeToggle />
+        </div>
+        
+        <!-- Desktop Auth Links -->
+        <div class="hidden md:flex items-center space-x-4">
+          <a href="/auth" class="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-white font-medium transition-colors">Sign In</a>
+          <a href="/auth" class="btn-primary">Register</a>
+        </div>
       </div>
     </div>
   </div>
 </nav>
+
+<!-- Mobile Menu -->
+<MobileMenu />
 
 <script>
   // Search functionality

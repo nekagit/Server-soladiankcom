@@ -1,0 +1,373 @@
+---
+// Contact page - Get in touch with Soladia team
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Contact Us - Soladia">
+  <main class="min-h-screen bg-gray-50">
+    <!-- Hero Section -->
+    <section class="bg-gradient-to-r from-purple-600 to-pink-600 text-white py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center">
+          <h1 class="text-4xl md:text-6xl font-bold mb-6">
+            📞 Contact Us
+          </h1>
+          <p class="text-xl md:text-2xl mb-8 opacity-90">
+            We'd love to hear from you
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Methods -->
+    <section class="py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">Get in Touch</h2>
+          <p class="text-lg text-gray-600">Choose the best way to reach us</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <!-- Contact Method 1 -->
+          <div class="bg-white rounded-lg shadow-lg p-6 text-center hover:shadow-xl transition-shadow">
+            <div class="text-4xl mb-4">📧</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Email Support</h3>
+            <p class="text-gray-600 mb-4">Get help via email within 24 hours</p>
+            <a href="mailto:support@soladia.com" class="text-blue-500 hover:text-blue-600 font-semibold">
+              support@soladia.com
+            </a>
+          </div>
+
+          <!-- Contact Method 2 -->
+          <div class="bg-white rounded-lg shadow-lg p-6 text-center hover:shadow-xl transition-shadow">
+            <div class="text-4xl mb-4">💬</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Discord</h3>
+            <p class="text-gray-600 mb-4">Join our community for real-time help</p>
+            <button class="bg-indigo-500 text-white px-4 py-2 rounded-lg hover:bg-indigo-600 transition-colors">
+              Join Discord
+            </button>
+          </div>
+
+          <!-- Contact Method 3 -->
+          <div class="bg-white rounded-lg shadow-lg p-6 text-center hover:shadow-xl transition-shadow">
+            <div class="text-4xl mb-4">🐦</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Twitter</h3>
+            <p class="text-gray-600 mb-4">Follow us for updates and support</p>
+            <button class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors">
+              Follow @Soladia
+            </button>
+          </div>
+
+          <!-- Contact Method 4 -->
+          <div class="bg-white rounded-lg shadow-lg p-6 text-center hover:shadow-xl transition-shadow">
+            <div class="text-4xl mb-4">📚</div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Help Center</h3>
+            <p class="text-gray-600 mb-4">Find answers in our knowledge base</p>
+            <a href="/help" class="text-green-500 hover:text-green-600 font-semibold">
+              Visit Help Center
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact Form -->
+    <section class="py-16 bg-gray-100">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="bg-white rounded-lg shadow-lg p-8">
+          <div class="text-center mb-8">
+            <h2 class="text-3xl font-bold text-gray-900 mb-4">Send us a Message</h2>
+            <p class="text-lg text-gray-600">We'll get back to you as soon as possible</p>
+          </div>
+
+          <form class="space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label for="firstName" class="block text-sm font-medium text-gray-700 mb-2">
+                  First Name *
+                </label>
+                <input 
+                  type="text" 
+                  id="firstName" 
+                  required
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
+              </div>
+              <div>
+                <label for="lastName" class="block text-sm font-medium text-gray-700 mb-2">
+                  Last Name *
+                </label>
+                <input 
+                  type="text" 
+                  id="lastName" 
+                  required
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label for="email" class="block text-sm font-medium text-gray-700 mb-2">
+                  Email Address *
+                </label>
+                <input 
+                  type="email" 
+                  id="email" 
+                  required
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
+              </div>
+              <div>
+                <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">
+                  Phone Number
+                </label>
+                <input 
+                  type="tel" 
+                  id="phone"
+                  class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                >
+              </div>
+            </div>
+
+            <div>
+              <label for="subject" class="block text-sm font-medium text-gray-700 mb-2">
+                Subject *
+              </label>
+              <select 
+                id="subject" 
+                required
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              >
+                <option value="">Select a subject</option>
+                <option value="general">General Inquiry</option>
+                <option value="support">Technical Support</option>
+                <option value="billing">Billing Question</option>
+                <option value="partnership">Partnership Opportunity</option>
+                <option value="media">Media Inquiry</option>
+                <option value="feedback">Feedback</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
+                Message *
+              </label>
+              <textarea 
+                id="message" 
+                rows="5"
+                required
+                placeholder="Tell us how we can help you..."
+                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+              ></textarea>
+            </div>
+
+            <div class="flex items-center">
+              <input 
+                type="checkbox" 
+                id="newsletter"
+                class="h-4 w-4 text-purple-600 focus:ring-purple-500 border-gray-300 rounded"
+              >
+              <label for="newsletter" class="ml-2 block text-sm text-gray-700">
+                I'd like to receive updates about Soladia
+              </label>
+            </div>
+
+            <button 
+              type="submit"
+              class="w-full bg-purple-500 text-white py-3 px-6 rounded-lg font-semibold hover:bg-purple-600 transition-colors"
+            >
+              Send Message
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- Office Information -->
+    <section class="py-16">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">Our Office</h2>
+          <p class="text-lg text-gray-600">Visit us or send us mail</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <!-- Office Details -->
+          <div class="bg-white rounded-lg shadow-lg p-8">
+            <h3 class="text-2xl font-bold text-gray-900 mb-6">Soladia Headquarters</h3>
+            
+            <div class="space-y-4">
+              <div class="flex items-start">
+                <div class="text-2xl mr-4">📍</div>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Address</h4>
+                  <p class="text-gray-600">
+                    123 Blockchain Street<br>
+                    Web3 District, Digital City<br>
+                    DC 12345, United States
+                  </p>
+                </div>
+              </div>
+
+              <div class="flex items-start">
+                <div class="text-2xl mr-4">📞</div>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Phone</h4>
+                  <p class="text-gray-600">+1 (555) 123-4567</p>
+                </div>
+              </div>
+
+              <div class="flex items-start">
+                <div class="text-2xl mr-4">📧</div>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Email</h4>
+                  <p class="text-gray-600">hello@soladia.com</p>
+                </div>
+              </div>
+
+              <div class="flex items-start">
+                <div class="text-2xl mr-4">🕒</div>
+                <div>
+                  <h4 class="font-semibold text-gray-900">Business Hours</h4>
+                  <p class="text-gray-600">
+                    Monday - Friday: 9:00 AM - 6:00 PM PST<br>
+                    Saturday: 10:00 AM - 4:00 PM PST<br>
+                    Sunday: Closed
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Map Placeholder -->
+          <div class="bg-gray-200 rounded-lg shadow-lg p-8 flex items-center justify-center">
+            <div class="text-center">
+              <div class="text-6xl mb-4">🗺️</div>
+              <h3 class="text-xl font-bold text-gray-900 mb-2">Interactive Map</h3>
+              <p class="text-gray-600">Map would be embedded here</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Team -->
+    <section class="py-16 bg-gray-100">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">Meet Our Team</h2>
+          <p class="text-lg text-gray-600">The people behind Soladia</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <!-- Team Member 1 -->
+          <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <div class="w-24 h-24 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+              <span class="text-2xl text-white">👨‍💼</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Alex Johnson</h3>
+            <p class="text-blue-500 font-semibold mb-2">CEO & Founder</p>
+            <p class="text-gray-600 text-sm">
+              Blockchain enthusiast with 10+ years in fintech. Leading Soladia's vision for decentralized commerce.
+            </p>
+          </div>
+
+          <!-- Team Member 2 -->
+          <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <div class="w-24 h-24 bg-gradient-to-r from-green-500 to-blue-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+              <span class="text-2xl text-white">👩‍💻</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Sarah Chen</h3>
+            <p class="text-green-500 font-semibold mb-2">CTO</p>
+            <p class="text-gray-600 text-sm">
+              Full-stack developer and Solana expert. Building the technical foundation of our platform.
+            </p>
+          </div>
+
+          <!-- Team Member 3 -->
+          <div class="bg-white rounded-lg shadow-lg p-6 text-center">
+            <div class="w-24 h-24 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full mx-auto mb-4 flex items-center justify-center">
+              <span class="text-2xl text-white">👨‍🎨</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Mike Rodriguez</h3>
+            <p class="text-purple-500 font-semibold mb-2">Head of Design</p>
+            <p class="text-gray-600 text-sm">
+              Creative director with a passion for user experience. Making Soladia beautiful and intuitive.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="py-16">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">Quick Questions</h2>
+          <p class="text-lg text-gray-600">Common questions about contacting us</p>
+        </div>
+
+        <div class="space-y-4">
+          <div class="bg-white rounded-lg shadow-sm p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">How quickly do you respond to messages?</h3>
+            <p class="text-gray-600">
+              We typically respond to all inquiries within 24 hours during business days. 
+              For urgent issues, please mention "URGENT" in your subject line.
+            </p>
+          </div>
+
+          <div class="bg-white rounded-lg shadow-sm p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Do you offer phone support?</h3>
+            <p class="text-gray-600">
+              Currently, we provide support via email, Discord, and our help center. 
+              Phone support is available for enterprise customers.
+            </p>
+          </div>
+
+          <div class="bg-white rounded-lg shadow-sm p-6">
+            <h3 class="text-lg font-semibold text-gray-900 mb-2">Can I schedule a meeting?</h3>
+            <p class="text-gray-600">
+              Yes! For business inquiries, partnerships, or media requests, 
+              please mention your preferred meeting time in your message.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Contact form submission
+    const contactForm = document.querySelector('form');
+    contactForm?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      
+      const formData = new FormData(contactForm);
+      const data = Object.fromEntries(formData);
+      
+      // In a real app, this would send the data to a backend
+      alert('Thank you for your message! We\'ll get back to you within 24 hours.');
+      
+      // Reset form
+      contactForm.reset();
+    });
+
+    // Discord and Twitter buttons
+    const discordButton = document.querySelector('button[class*="bg-indigo-500"]');
+    const twitterButton = document.querySelector('button[class*="bg-blue-500"]');
+
+    discordButton?.addEventListener('click', () => {
+      // In a real app, this would open Discord
+      alert('Opening Discord server...');
+    });
+
+    twitterButton?.addEventListener('click', () => {
+      // In a real app, this would open Twitter
+      alert('Opening Twitter profile...');
+    });
+  });
+</script>
