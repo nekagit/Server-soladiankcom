@@ -1,97 +1,6 @@
 version: '3.8'
 
 services:
-  # PostgreSQL Database
-  postgres:
-    image: postgres:15-alpine
-    container_name: soladia-postgres
-    environment:
-      POSTGRES_DB: soladia_production
-      POSTGRES_USER: soladia_user
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
-    ports:
-      - "5432:5432"
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U soladia_user -d soladia_production"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # Redis for caching and sessions
-  redis:
-    image: redis:7-alpine
-    container_name: soladia-redis
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
-    volumes:
-      - redis_data:/data
-    ports:
-      - "6379:6379"
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # Backend API
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile.prod
-    container_name: soladia-backend
-    environment:
-      - DATABASE_URL=postgresql://soladia_user:${POSTGRES_PASSWORD}@postgres:5432/soladia_production
-      - REDIS_URL=redis://:${REDIS_PASSWORD}@redis:6379/0
-      - SOLANA_RPC_URL=${SOLANA_RPC_URL}
-      - SOLANA_NETWORK=${SOLANA_NETWORK}
-      - SECRET_KEY=${SECRET_KEY}
-      - DEBUG=false
-      - LOG_LEVEL=INFO
-      - ENVIRONMENT=production
-    ports:
-      - "8000:8000"
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    volumes:
-      - ./backend/logs:/app/logs
-
-  # Frontend
-  frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile.frontend.prod
-    container_name: soladia-frontend
-    environment:
-      - NODE_ENV=production
-      - VITE_API_URL=${VITE_API_URL}
-      - VITE_SOLANA_RPC_URL=${SOLANA_RPC_URL}
-      - VITE_SOLANA_NETWORK=${SOLANA_NETWORK}
-    ports:
-      - "80:80"
-      - "443:443"
-    depends_on:
-      - backend
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-  # Nginx Reverse Proxy
   nginx:
     image: nginx:alpine
     container_name: soladia-nginx
@@ -101,18 +10,79 @@ services:
     volumes:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/ssl:/etc/nginx/ssl
-      - ./nginx/logs:/var/log/nginx
+      - ./frontend/dist:/usr/share/nginx/html
     depends_on:
       - frontend
       - backend
     restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+    networks:
+      - soladia-network
 
-  # Monitoring with Prometheus
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: production
+    container_name: soladia-frontend
+    environment:
+      - NODE_ENV=production
+      - VITE_API_BASE_URL=https://api.soladia.com
+      - VITE_SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
+      - VITE_SOLANA_NETWORK=mainnet-beta
+    restart: unless-stopped
+    networks:
+      - soladia-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production
+    container_name: soladia-backend
+    environment:
+      - DATABASE_URL=postgresql://soladia:${DB_PASSWORD}@postgres:5432/soladia
+      - REDIS_URL=redis://redis:6379
+      - SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
+      - SOLANA_NETWORK=mainnet-beta
+      - JWT_SECRET=${JWT_SECRET}
+      - ENVIRONMENT=production
+    depends_on:
+      - postgres
+      - redis
+    restart: unless-stopped
+    networks:
+      - soladia-network
+    volumes:
+      - ./backend/logs:/app/logs
+
+  postgres:
+    image: postgres:15-alpine
+    container_name: soladia-postgres
+    environment:
+      - POSTGRES_DB=soladia
+      - POSTGRES_USER=soladia
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+    restart: unless-stopped
+    networks:
+      - soladia-network
+    ports:
+      - "5432:5432"
+
+  redis:
+    image: redis:7-alpine
+    container_name: soladia-redis
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    networks:
+      - soladia-network
+    ports:
+      - "6379:6379"
+
   prometheus:
     image: prom/prometheus:latest
     container_name: soladia-prometheus
@@ -129,72 +99,165 @@ services:
       - '--storage.tsdb.retention.time=200h'
       - '--web.enable-lifecycle'
     restart: unless-stopped
+    networks:
+      - soladia-network
 
-  # Monitoring with Grafana
   grafana:
     image: grafana/grafana:latest
     container_name: soladia-grafana
     ports:
-      - "3000:3000"
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - "3001:3000"
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
-      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
+    environment:
+      - GF_SECURITY_ADMIN_USER=${GRAFANA_USER}
+      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_PASSWORD}
+      - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_SECURITY_DISABLE_GRAVATAR=true
+    restart: unless-stopped
+    networks:
+      - soladia-network
     depends_on:
       - prometheus
-    restart: unless-stopped
 
-  # Log aggregation with ELK Stack
-  elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
-    container_name: soladia-elasticsearch
-    environment:
-      - discovery.type=single-node
-      - xpack.security.enabled=false
-      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+  alertmanager:
+    image: prom/alertmanager:latest
+    container_name: soladia-alertmanager
+    ports:
+      - "9093:9093"
     volumes:
-      - elasticsearch_data:/usr/share/elasticsearch/data
-    ports:
-      - "9200:9200"
+      - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - alertmanager_data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=https://alerts.soladia.com'
     restart: unless-stopped
+    networks:
+      - soladia-network
 
-  logstash:
-    image: docker.elastic.co/logstash/logstash:8.8.0
-    container_name: soladia-logstash
-    volumes:
-      - ./monitoring/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+  jaeger:
+    image: jaegertracing/all-in-one:latest
+    container_name: soladia-jaeger
     ports:
-      - "5044:5044"
-    depends_on:
-      - elasticsearch
-    restart: unless-stopped
-
-  kibana:
-    image: docker.elastic.co/kibana/kibana:8.8.0
-    container_name: soladia-kibana
+      - "16686:16686"
+      - "14268:14268"
     environment:
-      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
-    ports:
-      - "5601:5601"
-    depends_on:
-      - elasticsearch
+      - COLLECTOR_OTLP_ENABLED=true
     restart: unless-stopped
+    networks:
+      - soladia-network
+
+  loki:
+    image: grafana/loki:latest
+    container_name: soladia-loki
+    ports:
+      - "3100:3100"
+    volumes:
+      - loki_data:/loki
+    command: -config.file=/etc/loki/local-config.yaml
+    restart: unless-stopped
+    networks:
+      - soladia-network
+
+  promtail:
+    image: grafana/promtail:latest
+    container_name: soladia-promtail
+    volumes:
+      - ./monitoring/promtail.yml:/etc/promtail/config.yml
+      - /var/log:/var/log:ro
+      - ./backend/logs:/app/logs:ro
+    command: -config.file=/etc/promtail/config.yml
+    restart: unless-stopped
+    networks:
+      - soladia-network
+    depends_on:
+      - loki
+
+  uptime-kuma:
+    image: louislam/uptime-kuma:latest
+    container_name: soladia-uptime-kuma
+    ports:
+      - "3002:3001"
+    volumes:
+      - uptime_kuma_data:/app/data
+    restart: unless-stopped
+    networks:
+      - soladia-network
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: soladia-cadvisor
+    ports:
+      - "8080:8080"
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    privileged: true
+    devices:
+      - /dev/kmsg
+    restart: unless-stopped
+    networks:
+      - soladia-network
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: soladia-node-exporter
+    ports:
+      - "9100:9100"
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.rootfs=/rootfs'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    restart: unless-stopped
+    networks:
+      - soladia-network
+
+  postgres-exporter:
+    image: prometheuscommunity/postgres-exporter:latest
+    container_name: soladia-postgres-exporter
+    ports:
+      - "9187:9187"
+    environment:
+      - DATA_SOURCE_NAME=postgresql://soladia:${DB_PASSWORD}@postgres:5432/soladia?sslmode=disable
+    restart: unless-stopped
+    networks:
+      - soladia-network
+    depends_on:
+      - postgres
+
+  redis-exporter:
+    image: oliver006/redis_exporter:latest
+    container_name: soladia-redis-exporter
+    ports:
+      - "9121:9121"
+    environment:
+      - REDIS_ADDR=redis://:${REDIS_PASSWORD}@redis:6379
+    restart: unless-stopped
+    networks:
+      - soladia-network
+    depends_on:
+      - redis
 
 volumes:
   postgres_data:
-    driver: local
   redis_data:
-    driver: local
   prometheus_data:
-    driver: local
   grafana_data:
-    driver: local
-  elasticsearch_data:
-    driver: local
+  alertmanager_data:
+  loki_data:
+  uptime_kuma_data:
 
 networks:
-  default:
-    name: soladia-network
+  soladia-network:
     driver: bridge

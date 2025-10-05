@@ -79,10 +79,11 @@
 </style>
 
 <script>
-  // Theme management
+  // Enhanced Theme Management with better UX
   class ThemeManager {
     constructor() {
       this.theme = this.getStoredTheme() || this.getSystemTheme();
+      this.isTransitioning = false;
       this.init();
     }
 
@@ -105,16 +106,25 @@
         this.applyTheme(this.theme);
         this.setupListeners();
         this.watchSystemTheme();
+        this.setupKeyboardShortcuts();
+        this.announceThemeChange();
       }
     }
 
     applyTheme(theme) {
-      if (typeof document !== 'undefined') {
+      if (typeof document !== 'undefined' && !this.isTransitioning) {
+        this.isTransitioning = true;
         const root = document.documentElement;
         
+        // Add transition class for smooth theme switching
+        root.classList.add('theme-transitioning');
+        
+        // Apply theme
         if (theme === 'dark') {
           root.classList.add('dark');
+          root.classList.remove('light');
         } else {
+          root.classList.add('light');
           root.classList.remove('dark');
         }
         
@@ -122,31 +132,135 @@
         if (typeof localStorage !== 'undefined') {
           localStorage.setItem('theme', theme);
         }
+        
+        // Update theme toggle button
+        this.updateToggleButton(theme);
+        
+        // Update meta theme-color for mobile browsers
+        this.updateMetaThemeColor(theme);
+        
+        // Remove transition class after animation
+        setTimeout(() => {
+          root.classList.remove('theme-transitioning');
+          this.isTransitioning = false;
+        }, 300);
       }
     }
 
     toggleTheme() {
       this.theme = this.theme === 'light' ? 'dark' : 'light';
       this.applyTheme(this.theme);
+      this.announceThemeChange();
+    }
+
+    updateToggleButton(theme) {
+      const toggleBtn = document.getElementById('theme-toggle');
+      const icon = toggleBtn?.querySelector('.theme-icon');
+      const text = toggleBtn?.querySelector('.theme-text');
+      
+      if (toggleBtn && icon && text) {
+        if (theme === 'dark') {
+          icon.innerHTML = '🌙';
+          text.textContent = 'Dark Mode';
+          toggleBtn.setAttribute('aria-label', 'Switch to light mode');
+        } else {
+          icon.innerHTML = '☀️';
+          text.textContent = 'Light Mode';
+          toggleBtn.setAttribute('aria-label', 'Switch to dark mode');
+        }
+      }
+    }
+
+    updateMetaThemeColor(theme) {
+      const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+      if (metaThemeColor) {
+        metaThemeColor.content = theme === 'dark' ? '#0F0F0F' : '#F8F9FA';
+      }
+    }
+
+    announceThemeChange() {
+      // Announce theme change for screen readers
+      const announcement = document.createElement('div');
+      announcement.setAttribute('aria-live', 'polite');
+      announcement.setAttribute('aria-atomic', 'true');
+      announcement.style.position = 'absolute';
+      announcement.style.left = '-10000px';
+      announcement.style.width = '1px';
+      announcement.style.height = '1px';
+      announcement.style.overflow = 'hidden';
+      
+      announcement.textContent = `Switched to ${this.theme} mode`;
+      document.body.appendChild(announcement);
+      
+      setTimeout(() => {
+        document.body.removeChild(announcement);
+      }, 1000);
     }
 
     setupListeners() {
       const toggleBtn = document.getElementById('theme-toggle');
       if (toggleBtn) {
-        toggleBtn.addEventListener('click', () => this.toggleTheme());
+        toggleBtn.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.toggleTheme();
+        });
+        
+        // Add keyboard support
+        toggleBtn.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            this.toggleTheme();
+          }
+        });
       }
+    }
+
+    setupKeyboardShortcuts() {
+      document.addEventListener('keydown', (e) => {
+        // Ctrl/Cmd + Shift + T to toggle theme
+        if ((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'T') {
+          e.preventDefault();
+          this.toggleTheme();
+        }
+      });
     }
 
     watchSystemTheme() {
       if (typeof window !== 'undefined' && window.matchMedia) {
         const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
         mediaQuery.addEventListener('change', (e) => {
+          // Only auto-switch if user hasn't manually set a preference
           if (!this.getStoredTheme()) {
             this.theme = e.matches ? 'dark' : 'light';
             this.applyTheme(this.theme);
+            this.announceThemeChange();
           }
         });
       }
+    }
+
+    // Public method to get current theme
+    getCurrentTheme() {
+      return this.theme;
+    }
+
+    // Public method to set theme programmatically
+    setTheme(theme) {
+      if (theme === 'light' || theme === 'dark') {
+        this.theme = theme;
+        this.applyTheme(this.theme);
+        this.announceThemeChange();
+      }
+    }
+
+    // Public method to reset to system theme
+    resetToSystemTheme() {
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem('theme');
+      }
+      this.theme = this.getSystemTheme();
+      this.applyTheme(this.theme);
+      this.announceThemeChange();
     }
   }
 

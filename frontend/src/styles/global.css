@@ -81,57 +81,577 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Dark Mode Styles */
+/* ========================================
+   COMPREHENSIVE DARK MODE OPTIMIZATION
+   ======================================== */
+
+/* Dark Mode Base Styles */
 .dark body {
   background: var(--soladia-dark-bg);
   color: var(--soladia-dark-text);
 }
 
-.dark .hero-section {
-  background: linear-gradient(135deg, rgba(230, 0, 18, 0.05) 0%, rgba(0, 102, 204, 0.05) 100%);
+/* Dark Mode Background Patterns */
+.dark body::before {
+  background: 
+    radial-gradient(circle at 20% 80%, rgba(230, 0, 18, 0.03) 0%, transparent 50%),
+    radial-gradient(circle at 80% 20%, rgba(0, 102, 204, 0.03) 0%, transparent 50%),
+    linear-gradient(135deg, rgba(15, 15, 15, 0.8) 0%, rgba(26, 26, 26, 0.9) 100%);
 }
 
+/* Navigation Dark Mode */
 .dark nav {
-  background: rgba(26, 26, 26, 0.95);
+  background: rgba(15, 15, 15, 0.95);
   border-bottom-color: var(--soladia-primary);
+  backdrop-filter: blur(20px);
 }
 
+.dark nav:hover {
+  background: rgba(15, 15, 15, 0.98);
+}
+
+/* Logo and Brand Elements */
+.dark .soladia-logo {
+  color: var(--soladia-dark-text);
+}
+
+.dark .soladia-logo:hover {
+  color: var(--soladia-primary);
+}
+
+/* Navigation Links */
+.dark nav a {
+  color: var(--soladia-dark-text);
+  transition: color 0.3s ease;
+}
+
+.dark nav a:hover {
+  color: var(--soladia-primary);
+}
+
+.dark nav a.active {
+  color: var(--soladia-primary);
+  font-weight: 600;
+}
+
+/* Cards and Components */
 .dark .category-card,
 .dark .product-card,
-.dark .feature-card {
+.dark .feature-card,
+.dark .enhanced-product-card,
+.dark .ai-recommendations,
+.dark .enterprise-api,
+.dark .advanced-nft-tools,
+.dark .blockchain-analytics-dashboard,
+.dark .social-trading-dashboard {
   background: var(--soladia-dark-surface);
   border-color: var(--soladia-dark-border);
   color: var(--soladia-dark-text);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
 }
 
 .dark .category-card:hover,
 .dark .product-card:hover,
-.dark .feature-card:hover {
+.dark .feature-card:hover,
+.dark .enhanced-product-card:hover {
   border-color: var(--soladia-primary);
+  box-shadow: 0 8px 30px rgba(230, 0, 18, 0.2);
+  transform: translateY(-2px);
 }
 
+/* Typography in Dark Mode */
 .dark .product-title,
 .dark .category-name,
-.dark .feature-title {
+.dark .feature-title,
+.dark .dashboard-title,
+.dark .section-title,
+.dark .recommendations-title,
+.dark .api-title,
+.dark .tools-title {
   color: var(--soladia-dark-text);
 }
 
 .dark .product-description,
 .dark .feature-description,
-.dark .category-count {
+.dark .category-count,
+.dark .dashboard-subtitle,
+.dark .section-description,
+.dark .recommendation-description,
+.dark .api-description,
+.dark .tools-description {
   color: var(--soladia-dark-muted);
 }
 
+/* Buttons in Dark Mode */
+.dark .btn-primary,
+.dark .connect-wallet-btn,
+.dark .install-btn,
+.dark .update-btn,
+.dark .apply-filters,
+.dark .mint-button,
+.dark .create-key-button,
+.dark .generate-key-button {
+  background: var(--soladia-primary);
+  color: white;
+  border-color: var(--soladia-primary);
+}
+
+.dark .btn-primary:hover,
+.dark .connect-wallet-btn:hover,
+.dark .install-btn:hover,
+.dark .update-btn:hover,
+.dark .apply-filters:hover,
+.dark .mint-button:hover,
+.dark .create-key-button:hover,
+.dark .generate-key-button:hover {
+  background: #CC0010;
+  border-color: #CC0010;
+  box-shadow: 0 4px 15px rgba(230, 0, 18, 0.3);
+}
+
+.dark .btn-secondary,
+.dark .dismiss-btn,
+.dark .reset-filters,
+.dark .edit-button,
+.dark .delete-button {
+  background: transparent;
+  color: var(--soladia-primary);
+  border-color: var(--soladia-primary);
+}
+
+.dark .btn-secondary:hover,
+.dark .dismiss-btn:hover,
+.dark .reset-filters:hover,
+.dark .edit-button:hover,
+.dark .delete-button:hover {
+  background: rgba(230, 0, 18, 0.1);
+  color: var(--soladia-primary);
+}
+
+/* Form Elements in Dark Mode */
+.dark input,
+.dark textarea,
+.dark select,
+.dark .price-input,
+.dark .filter-select,
+.dark .checkbox-input {
+  background: var(--soladia-dark-bg);
+  border-color: var(--soladia-dark-border);
+  color: var(--soladia-dark-text);
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus,
+.dark .price-input:focus,
+.dark .filter-select:focus {
+  border-color: var(--soladia-primary);
+  box-shadow: 0 0 0 3px rgba(230, 0, 18, 0.1);
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: var(--soladia-dark-muted);
+}
+
+/* Tables and Lists in Dark Mode */
+.dark table,
+.dark .leaderboard-list,
+.dark .api-key-list,
+.dark .webhook-list,
+.dark .collection-list {
+  background: var(--soladia-dark-surface);
+  border-color: var(--soladia-dark-border);
+}
+
+.dark th,
+.dark td,
+.dark .leaderboard-item,
+.dark .api-key-item,
+.dark .webhook-item,
+.dark .collection-item {
+  border-color: var(--soladia-dark-border);
+  color: var(--soladia-dark-text);
+}
+
+.dark th {
+  background: var(--soladia-dark-bg);
+  color: var(--soladia-dark-text);
+  font-weight: 600;
+}
+
+/* Status Indicators in Dark Mode */
+.dark .status-active,
+.dark .status-online,
+.dark .status-healthy {
+  background: rgba(0, 166, 80, 0.2);
+  color: #00A650;
+  border-color: #00A650;
+}
+
+.dark .status-inactive,
+.dark .status-offline,
+.dark .status-error {
+  background: rgba(255, 140, 0, 0.2);
+  color: #FF8C00;
+  border-color: #FF8C00;
+}
+
+.dark .status-pending {
+  background: rgba(255, 215, 0, 0.2);
+  color: #FFD700;
+  border-color: #FFD700;
+}
+
+/* Charts and Visualizations in Dark Mode */
+.dark .chart-container,
+.dark .analytics-chart,
+.dark .usage-chart {
+  background: var(--soladia-dark-surface);
+  border-color: var(--soladia-dark-border);
+}
+
+.dark .chart-grid {
+  stroke: var(--soladia-dark-border);
+}
+
+.dark .chart-text {
+  fill: var(--soladia-dark-text);
+}
+
+/* Modals and Overlays in Dark Mode */
+.dark .modal,
+.dark .overlay,
+.dark .install-prompt,
+.dark .update-prompt,
+.dark .wallet-connect-modal,
+.dark .payment-modal {
+  background: rgba(15, 15, 15, 0.95);
+  backdrop-filter: blur(20px);
+  border-color: var(--soladia-dark-border);
+}
+
+.dark .modal-content,
+.dark .overlay-content {
+  background: var(--soladia-dark-surface);
+  border-color: var(--soladia-dark-border);
+}
+
+/* Footer in Dark Mode */
 .dark .footer {
   background: var(--soladia-dark-surface);
+  border-top-color: var(--soladia-dark-border);
 }
 
 .dark .footer-links a {
   color: var(--soladia-dark-muted);
+  transition: color 0.3s ease;
 }
 
 .dark .footer-links a:hover {
   color: var(--soladia-dark-text);
+}
+
+.dark .footer-copyright {
+  color: var(--soladia-dark-muted);
+}
+
+/* Sidebar and Navigation in Dark Mode */
+.dark .sidebar,
+.dark .category-sidebar,
+.dark .advanced-search-sidebar {
+  background: var(--soladia-dark-surface);
+  border-color: var(--soladia-dark-border);
+}
+
+.dark .sidebar-card,
+.dark .filter-group {
+  background: var(--soladia-dark-bg);
+  border-color: var(--soladia-dark-border);
+}
+
+.dark .filter-title,
+.dark .sidebar-title {
+  color: var(--soladia-dark-text);
+}
+
+/* Loading States in Dark Mode */
+.dark .loading-spinner {
+  border-color: var(--soladia-dark-border);
+  border-top-color: var(--soladia-primary);
+}
+
+.dark .loading-text {
+  color: var(--soladia-dark-muted);
+}
+
+/* Error States in Dark Mode */
+.dark .error-message,
+.dark .error-state {
+  background: rgba(230, 0, 18, 0.1);
+  border-color: var(--soladia-primary);
+  color: var(--soladia-primary);
+}
+
+.dark .success-message {
+  background: rgba(0, 166, 80, 0.1);
+  border-color: #00A650;
+  color: #00A650;
+}
+
+.dark .warning-message {
+  background: rgba(255, 140, 0, 0.1);
+  border-color: #FF8C00;
+  color: #FF8C00;
+}
+
+/* PWA Install Prompt in Dark Mode */
+.dark .pwa-install {
+  background: var(--soladia-dark-surface);
+  border-color: var(--soladia-dark-border);
+}
+
+.dark .install-prompt,
+.dark .update-prompt {
+  background: var(--soladia-dark-surface);
+  border-color: var(--soladia-dark-border);
+}
+
+.dark .install-icon,
+.dark .update-icon {
+  background: var(--soladia-primary);
+  color: white;
+}
+
+.dark .feature-icon {
+  background: var(--soladia-dark-bg);
+  color: var(--soladia-primary);
+}
+
+/* Offline Page in Dark Mode */
+.dark .offline-container {
+  background: linear-gradient(135deg, #E60012 0%, #0066CC 100%);
+  color: white;
+}
+
+.dark .offline-features {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+}
+
+/* Accessibility Improvements for Dark Mode */
+.dark *:focus {
+  outline: 2px solid var(--soladia-primary);
+  outline-offset: 2px;
+}
+
+.dark a:focus,
+.dark button:focus {
+  outline: 2px solid var(--soladia-primary);
+  outline-offset: 2px;
+}
+
+/* High Contrast Mode Support */
+@media (prefers-contrast: high) {
+  .dark {
+    --soladia-dark-bg: #000000;
+    --soladia-dark-surface: #1A1A1A;
+    --soladia-dark-text: #FFFFFF;
+    --soladia-dark-border: #FFFFFF;
+    --soladia-dark-muted: #CCCCCC;
+  }
+}
+
+/* Theme Transition Effects */
+.theme-transitioning * {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+.theme-transitioning {
+  transition: all 0.3s ease;
+}
+
+/* Smooth theme switching animations */
+@keyframes themeFadeIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.theme-transitioning .category-card,
+.theme-transitioning .product-card,
+.theme-transitioning .feature-card,
+.theme-transitioning .enhanced-product-card {
+  animation: themeFadeIn 0.3s ease-out;
+}
+
+/* Dark mode specific transitions */
+.dark .category-card,
+.dark .product-card,
+.dark .feature-card,
+.dark .enhanced-product-card {
+  transition: all 0.3s ease;
+}
+
+.dark .category-card:hover,
+.dark .product-card:hover,
+.dark .feature-card:hover,
+.dark .enhanced-product-card:hover {
+  transition: all 0.2s ease;
+}
+
+/* Button transitions in dark mode */
+.dark .btn-primary,
+.dark .btn-secondary,
+.dark .connect-wallet-btn,
+.dark .install-btn,
+.dark .update-btn {
+  transition: all 0.2s ease;
+}
+
+.dark .btn-primary:hover,
+.dark .btn-secondary:hover,
+.dark .connect-wallet-btn:hover,
+.dark .install-btn:hover,
+.dark .update-btn:hover {
+  transition: all 0.2s ease;
+  transform: translateY(-1px);
+}
+
+/* Form element transitions */
+.dark input,
+.dark textarea,
+.dark select,
+.dark .price-input,
+.dark .filter-select {
+  transition: all 0.2s ease;
+}
+
+.dark input:focus,
+.dark textarea:focus,
+.dark select:focus,
+.dark .price-input:focus,
+.dark .filter-select:focus {
+  transition: all 0.2s ease;
+  transform: scale(1.02);
+}
+
+/* Navigation transitions */
+.dark nav {
+  transition: all 0.3s ease;
+}
+
+.dark nav a {
+  transition: color 0.2s ease;
+}
+
+.dark nav a:hover {
+  transition: color 0.2s ease;
+}
+
+/* Card hover effects in dark mode */
+.dark .category-card:hover,
+.dark .product-card:hover,
+.dark .feature-card:hover,
+.dark .enhanced-product-card:hover {
+  transition: all 0.3s ease;
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(230, 0, 18, 0.25);
+}
+
+/* Status indicator transitions */
+.dark .status-active,
+.dark .status-online,
+.dark .status-healthy,
+.dark .status-inactive,
+.dark .status-offline,
+.dark .status-error,
+.dark .status-pending {
+  transition: all 0.2s ease;
+}
+
+/* Chart and visualization transitions */
+.dark .chart-container,
+.dark .analytics-chart,
+.dark .usage-chart {
+  transition: all 0.3s ease;
+}
+
+/* Modal and overlay transitions */
+.dark .modal,
+.dark .overlay,
+.dark .install-prompt,
+.dark .update-prompt {
+  transition: all 0.3s ease;
+}
+
+/* Footer transitions */
+.dark .footer {
+  transition: all 0.3s ease;
+}
+
+.dark .footer-links a {
+  transition: color 0.2s ease;
+}
+
+/* Sidebar transitions */
+.dark .sidebar,
+.dark .category-sidebar,
+.dark .advanced-search-sidebar {
+  transition: all 0.3s ease;
+}
+
+.dark .sidebar-card,
+.dark .filter-group {
+  transition: all 0.2s ease;
+}
+
+/* Loading and error state transitions */
+.dark .loading-spinner {
+  transition: all 0.2s ease;
+}
+
+.dark .error-message,
+.dark .success-message,
+.dark .warning-message {
+  transition: all 0.2s ease;
+}
+
+/* PWA install prompt transitions */
+.dark .pwa-install {
+  transition: all 0.3s ease;
+}
+
+.dark .install-prompt,
+.dark .update-prompt {
+  transition: all 0.3s ease;
+}
+
+.dark .install-prompt:hover,
+.dark .update-prompt:hover {
+  transition: all 0.2s ease;
+  transform: translateY(-2px);
+}
+
+/* Reduced Motion Support */
+@media (prefers-reduced-motion: reduce) {
+  .dark *,
+  .theme-transitioning * {
+    transition: none !important;
+    animation: none !important;
+  }
+  
+  .dark .category-card:hover,
+  .dark .product-card:hover,
+  .dark .feature-card:hover,
+  .dark .enhanced-product-card:hover {
+    transform: none !important;
+  }
 }
 
 /* Optimized Static Background */

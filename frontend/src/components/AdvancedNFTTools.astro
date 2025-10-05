@@ -1,0 +1,1098 @@
+---
+// Advanced NFT Tools Component
+export interface Props {
+  showMinting?: boolean;
+  showMetadata?: boolean;
+  showIPFS?: boolean;
+  showValidation?: boolean;
+}
+
+const { 
+  showMinting = true,
+  showMetadata = true,
+  showIPFS = true,
+  showValidation = true
+} = Astro.props;
+
+// Mock NFT collections data
+const collections = [
+  {
+    id: 'collection_1',
+    name: 'Digital Art Collection',
+    description: 'A curated collection of digital artworks',
+    image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=300&h=200&fit=crop&crop=center',
+    totalSupply: 1000,
+    minted: 456,
+    floorPrice: '2.5 SOL',
+    volume: '1,234 SOL',
+    status: 'active'
+  },
+  {
+    id: 'collection_2',
+    name: 'Gaming Assets',
+    description: 'In-game items and collectibles',
+    image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=300&h=200&fit=crop&crop=center',
+    totalSupply: 500,
+    minted: 500,
+    floorPrice: '0.8 SOL',
+    volume: '856 SOL',
+    status: 'completed'
+  }
+];
+
+// Mock IPFS data
+const ipfsData = {
+  gateway: 'https://ipfs.io/ipfs/',
+  pinning: {
+    service: 'Pinata',
+    apiKey: 'pk_...',
+    status: 'active'
+  },
+  files: [
+    {
+      hash: 'QmXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXx',
+      name: 'nft-image-1.png',
+      size: '2.3 MB',
+      type: 'image/png',
+      uploaded: '2 hours ago'
+    },
+    {
+      hash: 'QmYyYyYyYyYyYyYyYyYyYyYyYyYyYyYyYyYyYyYyYyYyYyYy',
+      name: 'metadata-1.json',
+      size: '1.2 KB',
+      type: 'application/json',
+      uploaded: '1 day ago'
+    }
+  ]
+};
+---
+
+<div class="advanced-nft-tools">
+  <div class="tools-header">
+    <h3 class="tools-title">
+      <span class="tools-icon">🛠️</span>
+      Advanced NFT Tools
+    </h3>
+    <p class="tools-subtitle">Professional NFT creation and management tools</p>
+  </div>
+
+  {showMinting && (
+    <div class="tools-section">
+      <div class="section-header">
+        <h4 class="section-title">NFT Minting</h4>
+        <button class="create-collection-btn" id="create-collection-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Create Collection
+        </button>
+      </div>
+
+      <div class="collections-grid">
+        {collections.map(collection => (
+          <div class="collection-card">
+            <div class="collection-image">
+              <img src={collection.image} alt={collection.name} />
+              <div class="collection-status status-{collection.status}">
+                {collection.status}
+              </div>
+            </div>
+            
+            <div class="collection-content">
+              <h5 class="collection-name">{collection.name}</h5>
+              <p class="collection-description">{collection.description}</p>
+              
+              <div class="collection-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Supply:</span>
+                  <span class="stat-value">{collection.minted} / {collection.totalSupply}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Floor Price:</span>
+                  <span class="stat-value">{collection.floorPrice}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Volume:</span>
+                  <span class="stat-value">{collection.volume}</span>
+                </div>
+              </div>
+              
+              <div class="collection-actions">
+                <button class="action-btn primary" data-action="mint" data-collection-id={collection.id}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="16"></line>
+                    <line x1="8" y1="12" x2="16" y2="12"></line>
+                  </svg>
+                  Mint NFT
+                </button>
+                <button class="action-btn secondary" data-action="edit" data-collection-id={collection.id}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="m18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                  Edit
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+
+  {showMetadata && (
+    <div class="tools-section">
+      <div class="section-header">
+        <h4 class="section-title">Metadata Management</h4>
+        <button class="create-metadata-btn" id="create-metadata-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Create Metadata
+        </button>
+      </div>
+
+      <div class="metadata-tools">
+        <div class="metadata-form">
+          <div class="form-group">
+            <label class="form-label">NFT Name</label>
+            <input type="text" class="form-input" placeholder="Enter NFT name" />
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <textarea class="form-textarea" placeholder="Enter NFT description" rows="3"></textarea>
+          </div>
+          
+          <div class="form-group">
+            <label class="form-label">Attributes</label>
+            <div class="attributes-container">
+              <div class="attribute-item">
+                <input type="text" placeholder="Trait Type" class="form-input" />
+                <input type="text" placeholder="Value" class="form-input" />
+                <button class="remove-attribute-btn">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            <button class="add-attribute-btn" id="add-attribute-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"></line>
+                <line x1="5" y1="12" x2="19" y2="12"></line>
+              </svg>
+              Add Attribute
+            </button>
+          </div>
+          
+          <div class="form-actions">
+            <button class="generate-metadata-btn" id="generate-metadata-btn">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                <path d="M2 17l10 5 10-5"></path>
+                <path d="M2 12l10 5 10-5"></path>
+              </svg>
+              Generate Metadata
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+
+  {showIPFS && (
+    <div class="tools-section">
+      <div class="section-header">
+        <h4 class="section-title">IPFS Integration</h4>
+        <div class="ipfs-status">
+          <span class="status-indicator active"></span>
+          <span class="status-text">Connected</span>
+        </div>
+      </div>
+
+      <div class="ipfs-tools">
+        <div class="ipfs-info">
+          <div class="info-item">
+            <span class="info-label">Gateway:</span>
+            <span class="info-value">{ipfsData.gateway}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Pinning Service:</span>
+            <span class="info-value">{ipfsData.pinning.service}</span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Status:</span>
+            <span class="info-value status-{ipfsData.pinning.status}">{ipfsData.pinning.status}</span>
+          </div>
+        </div>
+
+        <div class="ipfs-files">
+          <h5 class="files-title">Uploaded Files</h5>
+          <div class="files-list">
+            {ipfsData.files.map(file => (
+              <div class="file-item">
+                <div class="file-info">
+                  <div class="file-name">{file.name}</div>
+                  <div class="file-meta">
+                    <span class="file-size">{file.size}</span>
+                    <span class="file-type">{file.type}</span>
+                    <span class="file-date">{file.uploaded}</span>
+                  </div>
+                </div>
+                <div class="file-hash">
+                  <code>{file.hash}</code>
+                  <button class="copy-hash-btn" data-hash={file.hash}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                      <path d="m5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <div class="ipfs-upload">
+          <button class="upload-btn" id="upload-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+              <polyline points="7,10 12,15 17,10"></polyline>
+              <line x1="12" y1="15" x2="12" y2="3"></line>
+            </svg>
+            Upload to IPFS
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
+
+  {showValidation && (
+    <div class="tools-section">
+      <div class="section-header">
+        <h4 class="section-title">Metadata Validation</h4>
+        <button class="validate-all-btn" id="validate-all-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20,6 9,17 4,12"></polyline>
+          </svg>
+          Validate All
+        </button>
+      </div>
+
+      <div class="validation-tools">
+        <div class="validation-form">
+          <div class="form-group">
+            <label class="form-label">Metadata URL</label>
+            <div class="url-input-group">
+              <input type="url" class="form-input" placeholder="https://ipfs.io/ipfs/..." id="metadata-url" />
+              <button class="validate-url-btn" id="validate-url-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="20,6 9,17 4,12"></polyline>
+                </svg>
+                Validate
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="validation-results" id="validation-results">
+          <div class="result-item">
+            <div class="result-icon success">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20,6 9,17 4,12"></polyline>
+              </svg>
+            </div>
+            <div class="result-content">
+              <div class="result-title">Metadata Structure</div>
+              <div class="result-description">Valid JSON structure with required fields</div>
+            </div>
+          </div>
+          
+          <div class="result-item">
+            <div class="result-icon success">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20,6 9,17 4,12"></polyline>
+              </svg>
+            </div>
+            <div class="result-content">
+              <div class="result-title">Image URL</div>
+              <div class="result-description">Valid image URL accessible</div>
+            </div>
+          </div>
+          
+          <div class="result-item">
+            <div class="result-icon warning">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
+                <line x1="12" y1="9" x2="12" y2="13"></line>
+                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+              </svg>
+            </div>
+            <div class="result-content">
+              <div class="result-title">Attributes</div>
+              <div class="result-description">Consider adding more attributes for better discoverability</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+
+<style>
+  .advanced-nft-tools {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #E5E7EB;
+  }
+
+  .tools-header {
+    margin-bottom: 2rem;
+  }
+
+  .tools-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.25rem;
+  }
+
+  .tools-icon {
+    font-size: 1.5rem;
+  }
+
+  .tools-subtitle {
+    font-size: 0.875rem;
+    color: #6B7280;
+  }
+
+  .tools-section {
+    margin-bottom: 2rem;
+  }
+
+  .tools-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .create-collection-btn,
+  .create-metadata-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #E60012;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .create-collection-btn:hover,
+  .create-metadata-btn:hover {
+    background: #CC0010;
+  }
+
+  .collections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+
+  .collection-card {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    overflow: hidden;
+    transition: all 0.2s ease;
+  }
+
+  .collection-card:hover {
+    border-color: #D1D5DB;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .collection-image {
+    position: relative;
+    width: 100%;
+    height: 150px;
+    overflow: hidden;
+  }
+
+  .collection-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .collection-status {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  .status-active {
+    background: #D1FAE5;
+    color: #065F46;
+  }
+
+  .status-completed {
+    background: #FEE2E2;
+    color: #991B1B;
+  }
+
+  .collection-content {
+    padding: 1rem;
+  }
+
+  .collection-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.5rem;
+  }
+
+  .collection-description {
+    font-size: 0.75rem;
+    color: #6B7280;
+    margin-bottom: 1rem;
+    line-height: 1.4;
+  }
+
+  .collection-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+
+  .stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: #6B7280;
+  }
+
+  .stat-value {
+    font-size: 0.75rem;
+    color: #374151;
+    font-weight: 500;
+  }
+
+  .collection-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem 0.75rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .action-btn.primary {
+    background: #E60012;
+    color: white;
+    border: none;
+  }
+
+  .action-btn.primary:hover {
+    background: #CC0010;
+  }
+
+  .action-btn.secondary {
+    background: #F3F4F6;
+    color: #374151;
+    border: 1px solid #D1D5DB;
+  }
+
+  .action-btn.secondary:hover {
+    background: #E5E7EB;
+  }
+
+  .metadata-tools {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .metadata-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .form-label {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #374151;
+  }
+
+  .form-input,
+  .form-textarea {
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    color: #374151;
+    background: white;
+  }
+
+  .form-input:focus,
+  .form-textarea:focus {
+    outline: none;
+    border-color: #E60012;
+    box-shadow: 0 0 0 3px rgba(230, 0, 18, 0.1);
+  }
+
+  .attributes-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .attribute-item {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .attribute-item .form-input {
+    flex: 1;
+  }
+
+  .remove-attribute-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #FEE2E2;
+    color: #991B1B;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .remove-attribute-btn:hover {
+    background: #FECACA;
+  }
+
+  .add-attribute-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #F3F4F6;
+    color: #374151;
+    border: 1px solid #D1D5DB;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .add-attribute-btn:hover {
+    background: #E5E7EB;
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: flex-end;
+  }
+
+  .generate-metadata-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #E60012;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .generate-metadata-btn:hover {
+    background: #CC0010;
+  }
+
+  .ipfs-tools {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .ipfs-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .info-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .info-label {
+    font-size: 0.875rem;
+    color: #6B7280;
+  }
+
+  .info-value {
+    font-size: 0.875rem;
+    color: #374151;
+    font-weight: 500;
+  }
+
+  .status-active {
+    color: #059669;
+  }
+
+  .ipfs-files {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .files-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    margin-bottom: 0.75rem;
+  }
+
+  .files-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .file-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+  }
+
+  .file-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+
+  .file-name {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #111827;
+  }
+
+  .file-meta {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.75rem;
+    color: #6B7280;
+  }
+
+  .file-hash {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .file-hash code {
+    background: #F3F4F6;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #374151;
+  }
+
+  .copy-hash-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #E60012;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .copy-hash-btn:hover {
+    background: #CC0010;
+  }
+
+  .ipfs-upload {
+    display: flex;
+    justify-content: center;
+  }
+
+  .upload-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1.5rem;
+    background: #E60012;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .upload-btn:hover {
+    background: #CC0010;
+  }
+
+  .validation-tools {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .validation-form {
+    margin-bottom: 1rem;
+  }
+
+  .url-input-group {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .url-input-group .form-input {
+    flex: 1;
+  }
+
+  .validate-url-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #E60012;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .validate-url-btn:hover {
+    background: #CC0010;
+  }
+
+  .validation-results {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .result-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    background: white;
+    border: 1px solid #E5E7EB;
+    border-radius: 6px;
+  }
+
+  .result-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+  }
+
+  .result-icon.success {
+    background: #D1FAE5;
+    color: #059669;
+  }
+
+  .result-icon.warning {
+    background: #FEF3C7;
+    color: #D97706;
+  }
+
+  .result-content {
+    flex: 1;
+  }
+
+  .result-title {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: #111827;
+    margin-bottom: 0.25rem;
+  }
+
+  .result-description {
+    font-size: 0.75rem;
+    color: #6B7280;
+  }
+
+  .ipfs-status {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .status-indicator {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  .status-indicator.active {
+    background: #10B981;
+  }
+
+  .status-text {
+    font-size: 0.875rem;
+    color: #374151;
+  }
+
+  .validate-all-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #E60012;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .validate-all-btn:hover {
+    background: #CC0010;
+  }
+
+  /* Dark mode */
+  .dark .advanced-nft-tools {
+    background: #1A1A1A;
+    border-color: #333333;
+  }
+
+  .dark .tools-title {
+    color: #FFFFFF;
+  }
+
+  .dark .tools-subtitle {
+    color: #666666;
+  }
+
+  .dark .section-title {
+    color: #FFFFFF;
+  }
+
+  .dark .collection-card,
+  .dark .metadata-tools,
+  .dark .validation-tools {
+    background: #2D2D2D;
+    border-color: #333333;
+  }
+
+  .dark .collection-name,
+  .dark .file-name,
+  .dark .result-title {
+    color: #FFFFFF;
+  }
+
+  .dark .collection-description,
+  .dark .file-meta,
+  .dark .result-description {
+    color: #666666;
+  }
+
+  .dark .form-input,
+  .dark .form-textarea {
+    background: #2D2D2D;
+    border-color: #333333;
+    color: #FFFFFF;
+  }
+
+  .dark .form-input:focus,
+  .dark .form-textarea:focus {
+    border-color: #E60012;
+  }
+
+  .dark .file-hash code {
+    background: #333333;
+    color: #FFFFFF;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Add attribute functionality
+    const addAttributeBtn = document.getElementById('add-attribute-btn');
+    const attributesContainer = document.querySelector('.attributes-container');
+    
+    if (addAttributeBtn && attributesContainer) {
+      addAttributeBtn.addEventListener('click', () => {
+        const attributeItem = document.createElement('div');
+        attributeItem.className = 'attribute-item';
+        attributeItem.innerHTML = `
+          <input type="text" placeholder="Trait Type" class="form-input" />
+          <input type="text" placeholder="Value" class="form-input" />
+          <button class="remove-attribute-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        `;
+        
+        attributesContainer.appendChild(attributeItem);
+        
+        // Add remove functionality to new button
+        const removeBtn = attributeItem.querySelector('.remove-attribute-btn');
+        removeBtn.addEventListener('click', () => {
+          attributeItem.remove();
+        });
+      });
+    }
+
+    // Copy hash functionality
+    const copyHashButtons = document.querySelectorAll('.copy-hash-btn');
+    copyHashButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const hash = button.getAttribute('data-hash');
+        if (hash) {
+          navigator.clipboard.writeText(hash).then(() => {
+            const originalContent = button.innerHTML;
+            button.innerHTML = `
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20,6 9,17 4,12"></polyline>
+              </svg>
+            `;
+            setTimeout(() => {
+              button.innerHTML = originalContent;
+            }, 2000);
+          });
+        }
+      });
+    });
+
+    // Generate metadata functionality
+    const generateMetadataBtn = document.getElementById('generate-metadata-btn');
+    if (generateMetadataBtn) {
+      generateMetadataBtn.addEventListener('click', () => {
+        console.log('Generating metadata...');
+        // Here you would typically generate and validate metadata
+      });
+    }
+
+    // Validate URL functionality
+    const validateUrlBtn = document.getElementById('validate-url-btn');
+    if (validateUrlBtn) {
+      validateUrlBtn.addEventListener('click', () => {
+        const url = document.getElementById('metadata-url').value;
+        if (url) {
+          console.log('Validating metadata URL:', url);
+          // Here you would typically validate the metadata URL
+        }
+      });
+    }
+
+    // Upload functionality
+    const uploadBtn = document.getElementById('upload-btn');
+    if (uploadBtn) {
+      uploadBtn.addEventListener('click', () => {
+        console.log('Uploading to IPFS...');
+        // Here you would typically handle file upload to IPFS
+      });
+    }
+
+    // Action buttons
+    const actionButtons = document.querySelectorAll('.action-btn');
+    actionButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const action = button.getAttribute('data-action');
+        const collectionId = button.getAttribute('data-collection-id');
+        
+        console.log(`Action: ${action}, Collection ID: ${collectionId}`);
+        
+        switch (action) {
+          case 'mint':
+            console.log('Minting NFT...');
+            break;
+          case 'edit':
+            console.log('Editing collection...');
+            break;
+        }
+      });
+    });
+  });
+</script>

@@ -29,33 +29,67 @@ const {
 } = Astro.props;
 ---
 
-<!DOCTYPE html>
-<html lang="en" class="light">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="generator" content={Astro.generator} />
-    
-    <!-- SEO Component -->
-    <SEO 
-      title={title}
-      description={description}
-      canonical={canonical}
-      ogImage={ogImage}
-      ogType={ogType}
-      keywords={keywords}
-      author={author}
-      publishedTime={publishedTime}
-      modifiedTime={modifiedTime}
-      structuredData={structuredData}
-    />
-    
-    <!-- Payment Permissions Policy -->
-    <meta http-equiv="Permissions-Policy" content="payment=*, camera=(), microphone=(), geolocation=()" />
-    
-    <!-- Security Headers -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost:8000;" />
-  </head>
+       <!DOCTYPE html>
+       <html lang="en" class="light">
+         <head>
+           <meta charset="UTF-8" />
+           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+           <meta name="generator" content={Astro.generator} />
+           
+           <!-- Theme Color Meta Tag -->
+           <meta name="theme-color" content="#F8F9FA" />
+           <meta name="msapplication-TileColor" content="#E60012" />
+           <meta name="msapplication-config" content="/browserconfig.xml" />
+
+           <!-- SEO Component -->
+           <SEO
+             title={title}
+             description={description}
+             canonical={canonical}
+             ogImage={ogImage}
+             ogType={ogType}
+             keywords={keywords}
+             author={author}
+             publishedTime={publishedTime}
+             modifiedTime={modifiedTime}
+             structuredData={structuredData}
+           />
+
+           <!-- Payment Permissions Policy -->
+           <meta http-equiv="Permissions-Policy" content="payment=*, camera=(), microphone=(), geolocation=()" />
+
+           <!-- Security Headers -->
+           <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost:8000;" />
+           
+           <!-- Dark Mode Script (Inline for immediate execution) -->
+           <script is:inline>
+             // Prevent flash of wrong theme
+             (function() {
+               const theme = localStorage.getItem('theme') || 
+                 (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+               
+               if (theme === 'dark') {
+                 document.documentElement.classList.add('dark');
+                 document.documentElement.classList.remove('light');
+                 
+                 // Update theme-color meta tag
+                 const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+                 if (metaThemeColor) {
+                   metaThemeColor.content = '#0F0F0F';
+                 }
+               } else {
+                 document.documentElement.classList.add('light');
+                 document.documentElement.classList.remove('dark');
+                 
+                 // Update theme-color meta tag
+                 const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+                 if (metaThemeColor) {
+                   metaThemeColor.content = '#F8F9FA';
+                 }
+               }
+             })();
+           </script>
+         </head>
   <body>
     <!-- Sticky Navigation -->
     <Navigation />

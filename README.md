@@ -1,16 +1,40 @@
 # Soladia Marketplace
 
-A modern, decentralized marketplace built with Astro, TypeScript, FastAPI, and Solana blockchain integration.
+A premium Solana-powered marketplace that combines cutting-edge blockchain technology with exceptional user experience. Built with modern web technologies and comprehensive Solana integration.
 
-## 🚀 Features
+## 🎨 Brand Identity
 
-- **Modern Frontend**: Built with Astro, TypeScript, and Tailwind CSS
-- **Fast Backend**: FastAPI with PostgreSQL database
-- **Blockchain Integration**: Solana wallet integration for payments
-- **Responsive Design**: Mobile-first approach with beautiful UI
-- **Type Safety**: Full TypeScript support throughout
-- **Performance**: Static site generation with Astro
-- **Security**: JWT authentication and rate limiting
+**Soladia** represents innovation, trust, and the future of digital commerce. Our brand values include:
+- **Innovation**: Leading the future of blockchain commerce
+- **Trust**: Secure, transparent, and reliable transactions
+- **Accessibility**: Making blockchain technology accessible to everyone
+- **Community**: Building a vibrant ecosystem of creators and collectors
+
+## 🚀 Core Features
+
+### Marketplace Features
+- **NFT Marketplace**: Complete NFT listing, bidding, and trading system
+- **Multi-Wallet Support**: Phantom, Solflare, Backpack wallet integration
+- **SPL Token Support**: Native SOL and SPL token transactions
+- **Escrow System**: Secure payment processing with smart contracts
+- **Auction System**: Real-time bidding with automatic settlement
+- **Search & Filtering**: Advanced search with AI-powered recommendations
+
+### Advanced Features
+- **AI/ML Engine**: Personalized recommendations and fraud detection
+- **Social Trading**: Leaderboards, social feed, and copy trading
+- **Enterprise API**: API key management, webhooks, and analytics
+- **Blockchain Analytics**: Real-time network stats and visualization
+- **PWA Support**: Offline capabilities and mobile app installation
+- **Real-time Updates**: WebSocket integration for live data
+
+### Technical Features
+- **Dark Mode**: Complete theme switching with smooth transitions
+- **Responsive Design**: Mobile-first approach with breakpoint optimization
+- **Accessibility**: WCAG 2.1 AA compliance with screen reader support
+- **Performance**: Optimized CSS with hardware acceleration
+- **Security**: Advanced security features and fraud detection
+- **Monitoring**: Comprehensive monitoring with Prometheus and Grafana
 
 ## 🛠️ Technology Stack
 
@@ -179,6 +203,28 @@ The backend provides comprehensive API documentation:
 - **Swagger UI**: http://localhost:8000/docs
 - **ReDoc**: http://localhost:8000/redoc
 - **OpenAPI Schema**: http://localhost:8000/openapi.json
+
+## 📚 Comprehensive Documentation
+
+### Brand & Design System
+- [**Brand Guidelines**](./docs/BRAND_GUIDELINES.md) - Complete brand identity and design system
+- [**Styling Status**](./docs/STYLING_STATUS.md) - Current styling architecture and status
+- [**Color Schema**](./docs/COLOR_SCHEMA.md) - Structured color definitions
+- [**Brand Implementation**](./docs/BRAND_IMPLEMENTATION.md) - Implementation guide for brand elements
+- [**Dark Mode Optimization**](./docs/DARK_MODE_OPTIMIZATION.md) - Dark mode implementation guide
+
+### Technical Documentation
+- [**Features Documentation**](./docs/FEATURES_DOCUMENTATION.md) - Comprehensive feature overview
+- [**API Documentation**](./docs/API.md) - Complete API documentation
+- [**Developer Guide**](./docs/DEVELOPER_GUIDE.md) - Developer setup and contribution guide
+- [**Deployment Guide**](./docs/DEPLOYMENT_GUIDE.md) - Production deployment guide
+- [**Monitoring Guide**](./docs/MONITORING_GUIDE.md) - Monitoring and observability guide
+
+### User Documentation
+- [**User Guide**](./docs/USER_GUIDE.md) - User manual and tutorials
+- [**Project Structure**](./PROJECT_STRUCTURE.md) - Detailed project architecture
+- [**Solana Migration Demo**](./SOLANA_MIGRATION_DEMO.md) - Solana integration demonstration
+- [**Solana Migration Success**](./SOLANA_MIGRATION_SUCCESS.md) - Migration completion summary
 
 ## 🧪 Testing
 
