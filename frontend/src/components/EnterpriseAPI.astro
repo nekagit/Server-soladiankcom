@@ -1,0 +1,827 @@
+---
+// Enterprise API Management Component
+export interface Props {
+  showKeys?: boolean;
+  showUsage?: boolean;
+  showWebhooks?: boolean;
+}
+
+const { 
+  showKeys = true,
+  showUsage = true,
+  showWebhooks = true
+} = Astro.props;
+
+// Mock API keys data
+const apiKeys = [
+  {
+    id: 'key_1',
+    name: 'Production API Key',
+    key: 'sk_live_...',
+    status: 'active',
+    permissions: ['read', 'write', 'webhooks'],
+    lastUsed: '2 hours ago',
+    usage: {
+      requests: 12543,
+      limit: 100000,
+      resetDate: '2024-11-01'
+    }
+  },
+  {
+    id: 'key_2',
+    name: 'Development API Key',
+    key: 'sk_test_...',
+    status: 'active',
+    permissions: ['read'],
+    lastUsed: '1 day ago',
+    usage: {
+      requests: 2341,
+      limit: 10000,
+      resetDate: '2024-11-01'
+    }
+  }
+];
+
+// Mock webhooks data
+const webhooks = [
+  {
+    id: 'webhook_1',
+    name: 'Payment Notifications',
+    url: 'https://api.example.com/webhooks/payments',
+    status: 'active',
+    events: ['payment.completed', 'payment.failed'],
+    lastTriggered: '5 minutes ago',
+    successRate: 98.5
+  },
+  {
+    id: 'webhook_2',
+    name: 'NFT Events',
+    url: 'https://api.example.com/webhooks/nft',
+    status: 'inactive',
+    events: ['nft.minted', 'nft.transferred'],
+    lastTriggered: '2 days ago',
+    successRate: 95.2
+  }
+];
+---
+
+<div class="enterprise-api">
+  <div class="api-header">
+    <h3 class="api-title">
+      <span class="api-icon">🔑</span>
+      Enterprise API Management
+    </h3>
+    <p class="api-subtitle">Manage your API keys, usage, and webhooks</p>
+  </div>
+
+  {showKeys && (
+    <div class="api-section">
+      <div class="section-header">
+        <h4 class="section-title">API Keys</h4>
+        <button class="create-key-btn" id="create-key-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Create New Key
+        </button>
+      </div>
+
+      <div class="api-keys-list">
+        {apiKeys.map(key => (
+          <div class="api-key-card">
+            <div class="key-header">
+              <div class="key-info">
+                <h5 class="key-name">{key.name}</h5>
+                <div class="key-status status-{key.status}">
+                  {key.status}
+                </div>
+              </div>
+              <div class="key-actions">
+                <button class="action-btn" data-action="copy" data-key={key.key}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="m5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                </button>
+                <button class="action-btn" data-action="edit" data-key-id={key.id}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="m18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </button>
+                <button class="action-btn" data-action="delete" data-key-id={key.id}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3,6 5,6 21,6"></polyline>
+                    <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <div class="key-details">
+              <div class="key-value">
+                <code>{key.key}</code>
+                <button class="copy-key-btn" data-key={key.key}>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                    <path d="m5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                  </svg>
+                </button>
+              </div>
+              
+              <div class="key-meta">
+                <div class="meta-item">
+                  <span class="meta-label">Permissions:</span>
+                  <div class="permissions">
+                    {key.permissions.map(permission => (
+                      <span class="permission-tag">{permission}</span>
+                    ))}
+                  </div>
+                </div>
+                <div class="meta-item">
+                  <span class="meta-label">Last Used:</span>
+                  <span class="meta-value">{key.lastUsed}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+
+  {showUsage && (
+    <div class="api-section">
+      <div class="section-header">
+        <h4 class="section-title">Usage Analytics</h4>
+        <div class="usage-period">
+          <select class="period-select" id="usage-period">
+            <option value="7d">Last 7 days</option>
+            <option value="30d" selected>Last 30 days</option>
+            <option value="90d">Last 90 days</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="usage-stats">
+        {apiKeys.map(key => (
+          <div class="usage-card">
+            <div class="usage-header">
+              <h5 class="usage-title">{key.name}</h5>
+              <div class="usage-status status-{key.status}">
+                {key.status}
+              </div>
+            </div>
+            
+            <div class="usage-progress">
+              <div class="progress-bar">
+                <div 
+                  class="progress-fill" 
+                  style={`width: ${(key.usage.requests / key.usage.limit) * 100}%`}
+                ></div>
+              </div>
+              <div class="progress-text">
+                {key.usage.requests.toLocaleString()} / {key.usage.limit.toLocaleString()} requests
+              </div>
+            </div>
+            
+            <div class="usage-details">
+              <div class="detail-item">
+                <span class="detail-label">Reset Date:</span>
+                <span class="detail-value">{key.usage.resetDate}</span>
+              </div>
+              <div class="detail-item">
+                <span class="detail-label">Remaining:</span>
+                <span class="detail-value">
+                  {(key.usage.limit - key.usage.requests).toLocaleString()} requests
+                </span>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+
+  {showWebhooks && (
+    <div class="api-section">
+      <div class="section-header">
+        <h4 class="section-title">Webhooks</h4>
+        <button class="create-webhook-btn" id="create-webhook-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+          </svg>
+          Create Webhook
+        </button>
+      </div>
+
+      <div class="webhooks-list">
+        {webhooks.map(webhook => (
+          <div class="webhook-card">
+            <div class="webhook-header">
+              <div class="webhook-info">
+                <h5 class="webhook-name">{webhook.name}</h5>
+                <div class="webhook-status status-{webhook.status}">
+                  {webhook.status}
+                </div>
+              </div>
+              <div class="webhook-actions">
+                <button class="action-btn" data-action="test" data-webhook-id={webhook.id}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="5,3 19,12 5,21 5,3"></polygon>
+                  </svg>
+                </button>
+                <button class="action-btn" data-action="edit" data-webhook-id={webhook.id}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="m11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                    <path d="m18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                  </svg>
+                </button>
+                <button class="action-btn" data-action="delete" data-webhook-id={webhook.id}>
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polyline points="3,6 5,6 21,6"></polyline>
+                    <path d="m19,6v14a2,2 0 0,1 -2,2H7a2,2 0 0,1 -2,-2V6m3,0V4a2,2 0 0,1 2,-2h4a2,2 0 0,1 2,2v2"></path>
+                  </svg>
+                </button>
+              </div>
+            </div>
+            
+            <div class="webhook-details">
+              <div class="webhook-url">
+                <span class="url-label">URL:</span>
+                <code class="url-value">{webhook.url}</code>
+              </div>
+              
+              <div class="webhook-events">
+                <span class="events-label">Events:</span>
+                <div class="events-list">
+                  {webhook.events.map(event => (
+                    <span class="event-tag">{event}</span>
+                  ))}
+                </div>
+              </div>
+              
+              <div class="webhook-stats">
+                <div class="stat-item">
+                  <span class="stat-label">Last Triggered:</span>
+                  <span class="stat-value">{webhook.lastTriggered}</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-label">Success Rate:</span>
+                  <span class="stat-value success-rate">{webhook.successRate}%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )}
+</div>
+
+<style>
+  .enterprise-api {
+    background: white;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    border: 1px solid #E5E7EB;
+  }
+
+  .api-header {
+    margin-bottom: 2rem;
+  }
+
+  .api-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 0.25rem;
+  }
+
+  .api-icon {
+    font-size: 1.5rem;
+  }
+
+  .api-subtitle {
+    font-size: 0.875rem;
+    color: #6B7280;
+  }
+
+  .api-section {
+    margin-bottom: 2rem;
+  }
+
+  .api-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .section-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #111827;
+  }
+
+  .create-key-btn,
+  .create-webhook-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background: #E60012;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .create-key-btn:hover,
+  .create-webhook-btn:hover {
+    background: #CC0010;
+  }
+
+  .api-keys-list,
+  .webhooks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .api-key-card,
+  .webhook-card {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 1rem;
+    transition: all 0.2s ease;
+  }
+
+  .api-key-card:hover,
+  .webhook-card:hover {
+    border-color: #D1D5DB;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  }
+
+  .key-header,
+  .webhook-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .key-info,
+  .webhook-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .key-name,
+  .webhook-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+  }
+
+  .key-status,
+  .webhook-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+
+  .status-active {
+    background: #D1FAE5;
+    color: #065F46;
+  }
+
+  .status-inactive {
+    background: #FEE2E2;
+    color: #991B1B;
+  }
+
+  .key-actions,
+  .webhook-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: #F3F4F6;
+    border: 1px solid #D1D5DB;
+    border-radius: 4px;
+    color: #374151;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .action-btn:hover {
+    background: #E5E7EB;
+    border-color: #9CA3AF;
+  }
+
+  .key-details,
+  .webhook-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .key-value {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .key-value code {
+    background: #F3F4F6;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #374151;
+    flex: 1;
+  }
+
+  .copy-key-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    background: #E60012;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .copy-key-btn:hover {
+    background: #CC0010;
+  }
+
+  .key-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .meta-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .meta-label {
+    font-size: 0.75rem;
+    color: #6B7280;
+    min-width: 80px;
+  }
+
+  .meta-value {
+    font-size: 0.75rem;
+    color: #374151;
+  }
+
+  .permissions {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .permission-tag {
+    background: #E0F2FE;
+    color: #0C4A6E;
+    padding: 0.125rem 0.375rem;
+    border-radius: 3px;
+    font-size: 0.625rem;
+    font-weight: 500;
+  }
+
+  .usage-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+
+  .usage-card {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 8px;
+    padding: 1rem;
+  }
+
+  .usage-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .usage-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #111827;
+    margin: 0;
+  }
+
+  .usage-progress {
+    margin-bottom: 1rem;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #E5E7EB;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: #E60012;
+    border-radius: 4px;
+    transition: width 0.3s ease;
+  }
+
+  .progress-text {
+    font-size: 0.75rem;
+    color: #6B7280;
+  }
+
+  .usage-details {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .detail-label {
+    font-size: 0.75rem;
+    color: #6B7280;
+  }
+
+  .detail-value {
+    font-size: 0.75rem;
+    color: #374151;
+    font-weight: 500;
+  }
+
+  .webhook-url {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .url-label {
+    font-size: 0.75rem;
+    color: #6B7280;
+    min-width: 40px;
+  }
+
+  .url-value {
+    background: #F3F4F6;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+    color: #374151;
+    flex: 1;
+  }
+
+  .webhook-events {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .events-label {
+    font-size: 0.75rem;
+    color: #6B7280;
+    min-width: 60px;
+  }
+
+  .events-list {
+    display: flex;
+    gap: 0.25rem;
+  }
+
+  .event-tag {
+    background: #FEF3C7;
+    color: #92400E;
+    padding: 0.125rem 0.375rem;
+    border-radius: 3px;
+    font-size: 0.625rem;
+    font-weight: 500;
+  }
+
+  .webhook-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .stat-label {
+    font-size: 0.75rem;
+    color: #6B7280;
+  }
+
+  .stat-value {
+    font-size: 0.75rem;
+    color: #374151;
+    font-weight: 500;
+  }
+
+  .success-rate {
+    color: #059669;
+  }
+
+  .usage-period {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .period-select {
+    padding: 0.25rem 0.5rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    color: #374151;
+    background: white;
+  }
+
+  /* Dark mode */
+  .dark .enterprise-api {
+    background: #1A1A1A;
+    border-color: #333333;
+  }
+
+  .dark .api-title {
+    color: #FFFFFF;
+  }
+
+  .dark .api-subtitle {
+    color: #666666;
+  }
+
+  .dark .section-title {
+    color: #FFFFFF;
+  }
+
+  .dark .api-key-card,
+  .dark .webhook-card,
+  .dark .usage-card {
+    background: #2D2D2D;
+    border-color: #333333;
+  }
+
+  .dark .key-name,
+  .dark .webhook-name,
+  .dark .usage-title {
+    color: #FFFFFF;
+  }
+
+  .dark .key-value code,
+  .dark .url-value {
+    background: #333333;
+    color: #FFFFFF;
+  }
+
+  .dark .meta-label,
+  .dark .url-label,
+  .dark .events-label,
+  .dark .stat-label,
+  .dark .detail-label {
+    color: #666666;
+  }
+
+  .dark .meta-value,
+  .dark .stat-value,
+  .dark .detail-value {
+    color: #FFFFFF;
+  }
+
+  .dark .progress-bar {
+    background: #333333;
+  }
+
+  .dark .period-select {
+    background: #2D2D2D;
+    border-color: #333333;
+    color: #FFFFFF;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Copy API key functionality
+    const copyButtons = document.querySelectorAll('[data-action="copy"], .copy-key-btn');
+    copyButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const key = button.getAttribute('data-key');
+        if (key) {
+          navigator.clipboard.writeText(key).then(() => {
+            // Show success feedback
+            const originalContent = button.innerHTML;
+            button.innerHTML = `
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="20,6 9,17 4,12"></polyline>
+              </svg>
+            `;
+            setTimeout(() => {
+              button.innerHTML = originalContent;
+            }, 2000);
+          });
+        }
+      });
+    });
+
+    // Usage period change
+    const periodSelect = document.getElementById('usage-period');
+    if (periodSelect) {
+      periodSelect.addEventListener('change', (e) => {
+        console.log('Usage period changed to:', e.target.value);
+        // Here you would typically fetch new data based on the selected period
+      });
+    }
+
+    // Create key button
+    const createKeyBtn = document.getElementById('create-key-btn');
+    if (createKeyBtn) {
+      createKeyBtn.addEventListener('click', () => {
+        console.log('Create new API key');
+        // Here you would typically open a modal or form to create a new key
+      });
+    }
+
+    // Create webhook button
+    const createWebhookBtn = document.getElementById('create-webhook-btn');
+    if (createWebhookBtn) {
+      createWebhookBtn.addEventListener('click', () => {
+        console.log('Create new webhook');
+        // Here you would typically open a modal or form to create a new webhook
+      });
+    }
+
+    // Action buttons
+    const actionButtons = document.querySelectorAll('.action-btn');
+    actionButtons.forEach(button => {
+      button.addEventListener('click', (e) => {
+        const action = button.getAttribute('data-action');
+        const keyId = button.getAttribute('data-key-id');
+        const webhookId = button.getAttribute('data-webhook-id');
+        
+        console.log(`Action: ${action}, Key ID: ${keyId}, Webhook ID: ${webhookId}`);
+        
+        switch (action) {
+          case 'edit':
+            console.log('Edit item');
+            break;
+          case 'delete':
+            console.log('Delete item');
+            break;
+          case 'test':
+            console.log('Test webhook');
+            break;
+        }
+      });
+    });
+  });
+</script>
