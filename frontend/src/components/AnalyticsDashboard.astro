@@ -61,10 +61,10 @@ const analyticsData = {
     <h2 class="dashboard-title">Analytics Dashboard</h2>
     <div class="dashboard-controls">
       <select class="time-range-select" id="time-range-select">
-        <option value="1h" {timeRange === '1h' ? 'selected' : ''}>Last Hour</option>
-        <option value="24h" {timeRange === '24h' ? 'selected' : ''}>Last 24 Hours</option>
-        <option value="7d" {timeRange === '7d' ? 'selected' : ''}>Last 7 Days</option>
-        <option value="30d" {timeRange === '30d' ? 'selected' : ''}>Last 30 Days</option>
+        <option value="1h" selected={timeRange === '1h'}>Last Hour</option>
+        <option value="24h" selected={timeRange === '24h'}>Last 24 Hours</option>
+        <option value="7d" selected={timeRange === '7d'}>Last 7 Days</option>
+        <option value="30d" selected={timeRange === '30d'}>Last 30 Days</option>
       </select>
       <button class="btn-secondary" id="refresh-analytics">
         <span class="btn-icon">🔄</span>

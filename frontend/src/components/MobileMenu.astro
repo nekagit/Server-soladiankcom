@@ -276,6 +276,13 @@
 <script>
   // Mobile Menu Functionality
   class MobileMenu {
+    menu;
+    trigger;
+    close;
+    overlay;
+    searchInput;
+    searchButton;
+    
     constructor() {
       this.menu = document.getElementById('mobile-menu');
       this.trigger = document.getElementById('mobile-menu-trigger');
@@ -305,7 +312,7 @@
       }
       
       if (this.searchInput) {
-        this.searchInput.addEventListener('keypress', (e) => {
+        this.searchInput.addEventListener('keypress', (e: KeyboardEvent) => {
           if (e.key === 'Enter') {
             this.handleSearch();
           }
@@ -313,7 +320,7 @@
       }
 
       // Close menu on escape key
-      document.addEventListener('keydown', (e) => {
+      document.addEventListener('keydown', (e: KeyboardEvent) => {
         if (e.key === 'Escape' && this.menu?.classList.contains('active')) {
           this.closeMenu();
         }
@@ -342,7 +349,7 @@
     }
 
     handleSearch() {
-      const query = this.searchInput?.value.trim();
+      const query = (this.searchInput as HTMLInputElement)?.value.trim();
       if (query) {
         window.location.href = `/search?q=${encodeURIComponent(query)}`;
       }

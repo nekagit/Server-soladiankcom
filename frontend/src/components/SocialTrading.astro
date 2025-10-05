@@ -374,6 +374,10 @@
 <script>
   // Social Trading functionality
   class SocialTrading {
+    leaderboardData;
+    socialFeedData;
+    copyTradingData;
+    
     constructor() {
       this.leaderboardData = [];
       this.socialFeedData = [];
@@ -509,7 +513,7 @@
       const leaderboardList = document.getElementById('leaderboard-list');
       if (!leaderboardList) return;
 
-      leaderboardList.innerHTML = this.leaderboardData.map(item => `
+      leaderboardList.innerHTML = this.leaderboardData.map((item: any) => `
         <div class="leaderboard-item">
           <div class="leaderboard-rank">#${item.rank}</div>
           <div class="leaderboard-trader">
@@ -535,7 +539,7 @@
       const socialFeed = document.getElementById('social-feed');
       if (!socialFeed) return;
 
-      socialFeed.innerHTML = this.socialFeedData.map(item => `
+      socialFeed.innerHTML = this.socialFeedData.map((item: any) => `
         <div class="feed-item">
           <div class="feed-item-header">
             <div class="feed-item-user">
@@ -580,7 +584,7 @@
       const copyTradingList = document.getElementById('copy-trading-list');
       if (!copyTradingList) return;
 
-      copyTradingList.innerHTML = this.copyTradingData.map(item => `
+      copyTradingList.innerHTML = this.copyTradingData.map((item: any) => `
         <div class="copy-trading-item">
           <div class="copy-trading-header">
             <div class="copy-trader-info">
@@ -642,8 +646,9 @@
 
       // Copy trading buttons
       document.addEventListener('click', (e) => {
-        if (e.target.classList.contains('copy-btn')) {
-          const traderId = e.target.dataset.traderId;
+        const target = e.target as HTMLElement;
+        if (target && target.classList.contains('copy-btn')) {
+          const traderId = target.dataset.traderId;
           this.toggleCopyTrading(traderId);
         }
       });
@@ -654,8 +659,8 @@
       console.log('Show post trade modal');
     }
 
-    toggleCopyTrading(traderId) {
-      const trader = this.copyTradingData.find(t => t.id == traderId);
+    toggleCopyTrading(traderId: string) {
+      const trader = this.copyTradingData.find((t: any) => t.id == traderId);
       if (trader) {
         trader.isFollowing = !trader.isFollowing;
         this.renderCopyTrading();
