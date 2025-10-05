@@ -109,6 +109,26 @@ const features = [
         <p class="hero-subtitle mobile-text-base sm:mobile-text-lg lg:mobile-text-xl">
           The Ultimate Marketplace Powered by Solana Blockchain
         </p>
+        
+        <!-- Status Badges -->
+        <div class="status-badges flex flex-wrap justify-center gap-3 mt-6 mb-8">
+          <div class="status-badge status-online">
+            <div class="status-dot"></div>
+            <span>Online</span>
+          </div>
+          <div class="status-badge status-active">
+            <div class="status-dot"></div>
+            <span>Active Trading</span>
+          </div>
+          <div class="status-badge status-secure">
+            <div class="status-dot"></div>
+            <span>Secure</span>
+          </div>
+          <div class="status-badge status-fast">
+            <div class="status-dot"></div>
+            <span>Fast Transactions</span>
+          </div>
+        </div>
         <div class="hero-actions mobile-flex sm:flex-row">
           <a href="/products" class="btn-primary btn-large mobile-btn sm:w-auto">
             Start Shopping
@@ -167,27 +187,6 @@ const features = [
     </div>
   </section>
 
-  <!-- Why Choose Soladia -->
-  <section class="features-section">
-    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
-      <h2 class="section-title mobile-text-2xl sm:mobile-text-3xl lg:mobile-text-4xl">
-        Why Choose Soladia?
-      </h2>
-      <div class="features-grid mobile-grid sm:grid-cols-2 lg:grid-cols-4">
-        {features.map((feature) => (
-          <div class="feature-card mobile-card">
-            <div class="feature-icon text-3xl sm:text-4xl lg:text-5xl">{feature.icon}</div>
-            <h3 class="feature-title mobile-text-lg sm:mobile-text-xl lg:mobile-text-2xl">
-              {feature.title}
-            </h3>
-            <p class="feature-description mobile-text-sm sm:mobile-text-base">
-              {feature.description}
-            </p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
 
   <!-- Footer -->
   <footer class="footer">
