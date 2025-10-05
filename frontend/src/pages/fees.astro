@@ -1,0 +1,199 @@
+---
+// Fees and pricing information page
+import Layout from '../layouts/Layout.astro';
+---
+
+<Layout title="Fees & Pricing - Soladia Marketplace">
+  <main class="fees-page">
+    <div class="container mx-auto px-4 py-8">
+      <!-- Hero Section -->
+      <div class="text-center mb-12">
+        <h1 class="text-4xl font-bold text-gray-900 mb-4">Fees & Pricing</h1>
+        <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+          Transparent pricing with competitive rates for buyers and sellers on the Soladia marketplace
+        </p>
+      </div>
+
+      <!-- Fee Structure -->
+      <div class="grid md:grid-cols-2 gap-8 mb-12">
+        <!-- Seller Fees -->
+        <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+          <div class="flex items-center mb-6">
+            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mr-4">
+              <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+              </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900">Seller Fees</h2>
+          </div>
+          
+          <div class="space-y-4">
+            <div class="flex justify-between items-center py-3 border-b border-gray-100">
+              <span class="text-gray-700">Listing Fee</span>
+              <span class="font-semibold text-green-600">Free</span>
+            </div>
+            <div class="flex justify-between items-center py-3 border-b border-gray-100">
+              <span class="text-gray-700">Transaction Fee</span>
+              <span class="font-semibold text-gray-900">2.5%</span>
+            </div>
+            <div class="flex justify-between items-center py-3 border-b border-gray-100">
+              <span class="text-gray-700">Payment Processing</span>
+              <span class="font-semibold text-gray-900">0.5%</span>
+            </div>
+            <div class="flex justify-between items-center py-3">
+              <span class="text-gray-700 font-semibold">Total Seller Fee</span>
+              <span class="font-bold text-gray-900">3.0%</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buyer Fees -->
+        <div class="bg-white rounded-xl shadow-lg p-8 border border-gray-200">
+          <div class="flex items-center mb-6">
+            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mr-4">
+              <svg class="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01"></path>
+              </svg>
+            </div>
+            <h2 class="text-2xl font-bold text-gray-900">Buyer Fees</h2>
+          </div>
+          
+          <div class="space-y-4">
+            <div class="flex justify-between items-center py-3 border-b border-gray-100">
+              <span class="text-gray-700">Purchase Fee</span>
+              <span class="font-semibold text-green-600">Free</span>
+            </div>
+            <div class="flex justify-between items-center py-3 border-b border-gray-100">
+              <span class="text-gray-700">Solana Network Fee</span>
+              <span class="font-semibold text-gray-900">~0.00025 SOL</span>
+            </div>
+            <div class="flex justify-between items-center py-3 border-b border-gray-100">
+              <span class="text-gray-700">Wallet Connection</span>
+              <span class="font-semibold text-green-600">Free</span>
+            </div>
+            <div class="flex justify-between items-center py-3">
+              <span class="text-gray-700 font-semibold">Total Buyer Cost</span>
+              <span class="font-bold text-gray-900">Network fees only</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- NFT Fees -->
+      <div class="bg-gradient-to-r from-purple-50 to-pink-50 rounded-xl p-8 mb-12">
+        <div class="text-center mb-8">
+          <h2 class="text-3xl font-bold text-gray-900 mb-4">NFT Marketplace Fees</h2>
+          <p class="text-gray-600">Special rates for digital art and collectibles</p>
+        </div>
+        
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="bg-white rounded-lg p-6 text-center">
+            <div class="w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Minting</h3>
+            <p class="text-3xl font-bold text-purple-600 mb-2">1.0%</p>
+            <p class="text-gray-600">One-time fee for NFT creation</p>
+          </div>
+          
+          <div class="bg-white rounded-lg p-6 text-center">
+            <div class="w-16 h-16 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-pink-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Trading</h3>
+            <p class="text-3xl font-bold text-pink-600 mb-2">2.5%</p>
+            <p class="text-gray-600">Per transaction on marketplace</p>
+          </div>
+          
+          <div class="bg-white rounded-lg p-6 text-center">
+            <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Royalties</h3>
+            <p class="text-3xl font-bold text-indigo-600 mb-2">5-10%</p>
+            <p class="text-gray-600">Set by creator for future sales</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment Methods -->
+      <div class="bg-white rounded-xl shadow-lg p-8 mb-12">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Accepted Payment Methods</h2>
+        
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div class="text-center p-4 border border-gray-200 rounded-lg">
+            <div class="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+              <span class="text-2xl">₿</span>
+            </div>
+            <h3 class="font-semibold text-gray-900">SOL</h3>
+            <p class="text-sm text-gray-600">Native Solana</p>
+          </div>
+          
+          <div class="text-center p-4 border border-gray-200 rounded-lg">
+            <div class="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+              <span class="text-2xl">💎</span>
+            </div>
+            <h3 class="font-semibold text-gray-900">SPL Tokens</h3>
+            <p class="text-sm text-gray-600">USDC, USDT, etc.</p>
+          </div>
+          
+          <div class="text-center p-4 border border-gray-200 rounded-lg">
+            <div class="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+              <span class="text-2xl">💳</span>
+            </div>
+            <h3 class="font-semibold text-gray-900">Credit Cards</h3>
+            <p class="text-sm text-gray-600">Coming Soon</p>
+          </div>
+          
+          <div class="text-center p-4 border border-gray-200 rounded-lg">
+            <div class="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+              <span class="text-2xl">🏦</span>
+            </div>
+            <h3 class="font-semibold text-gray-900">Bank Transfer</h3>
+            <p class="text-sm text-gray-600">Coming Soon</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAQ Section -->
+      <div class="bg-gray-50 rounded-xl p-8">
+        <h2 class="text-2xl font-bold text-gray-900 mb-6 text-center">Frequently Asked Questions</h2>
+        
+        <div class="space-y-6">
+          <div class="bg-white rounded-lg p-6">
+            <h3 class="font-semibold text-gray-900 mb-2">When are fees charged?</h3>
+            <p class="text-gray-600">Fees are only charged when a sale is completed. No upfront costs for listing items.</p>
+          </div>
+          
+          <div class="bg-white rounded-lg p-6">
+            <h3 class="font-semibold text-gray-900 mb-2">Are there any hidden fees?</h3>
+            <p class="text-gray-600">No hidden fees. All costs are transparent and shown before you complete any transaction.</p>
+          </div>
+          
+          <div class="bg-white rounded-lg p-6">
+            <h3 class="font-semibold text-gray-900 mb-2">How do I receive my payments?</h3>
+            <p class="text-gray-600">Payments are sent directly to your connected Solana wallet after each successful sale.</p>
+          </div>
+          
+          <div class="bg-white rounded-lg p-6">
+            <h3 class="font-semibold text-gray-900 mb-2">Can I get a refund on fees?</h3>
+            <p class="text-gray-600">Transaction fees are non-refundable, but we offer full refunds for failed transactions.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<style>
+  .fees-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  }
+</style>

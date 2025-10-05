@@ -274,7 +274,7 @@ const formatCount = (count: number) => {
       card.addEventListener('click', () => {
         const categoryName = card.getAttribute('data-category');
         if (categoryName) {
-          window.location.href = `/categories/${categoryName.toLowerCase().replace(/\s+/g, '-')}`;
+          window.location.href = `/categories/${categoryName.toLowerCase().replace(/\s+/g, '-').replace(/&/g, '')}`;
         }
       });
     });
