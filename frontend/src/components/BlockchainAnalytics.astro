@@ -79,11 +79,11 @@ const nftAnalytics = {
     <h2 class="analytics-title">Blockchain Analytics</h2>
     <div class="analytics-controls">
       <select class="time-range-select" id="time-range-select">
-        <option value="1h" {timeRange === '1h' ? 'selected' : ''}>Last Hour</option>
-        <option value="24h" {timeRange === '24h' ? 'selected' : ''}>Last 24 Hours</option>
-        <option value="7d" {timeRange === '7d' ? 'selected' : ''}>Last 7 Days</option>
-        <option value="30d" {timeRange === '30d' ? 'selected' : ''}>Last 30 Days</option>
-        <option value="90d" {timeRange === '90d' ? 'selected' : ''}>Last 90 Days</option>
+        <option value="1h" selected={timeRange === '1h'}>Last Hour</option>
+        <option value="24h" selected={timeRange === '24h'}>Last 24 Hours</option>
+        <option value="7d" selected={timeRange === '7d'}>Last 7 Days</option>
+        <option value="30d" selected={timeRange === '30d'}>Last 30 Days</option>
+        <option value="90d" selected={timeRange === '90d'}>Last 90 Days</option>
       </select>
       <button class="refresh-btn" id="refresh-analytics">
         <span class="btn-icon">🔄</span>
@@ -177,7 +177,7 @@ const nftAnalytics = {
           <h4 class="flow-list-title">Recent Transactions</h4>
           <div class="flow-items">
             {transactionFlow.map((tx, index) => (
-              <div class="flow-item" key={index}>
+              <div class="flow-item">
                 <div class="flow-item-header">
                   <span class="flow-amount">{tx.amount} {tx.token}</span>
                   <span class="flow-time">{new Date(tx.timestamp).toLocaleTimeString()}</span>
