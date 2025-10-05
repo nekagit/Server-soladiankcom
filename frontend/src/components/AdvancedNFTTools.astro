@@ -938,59 +938,6 @@ const ipfsData = {
     background: #CC0010;
   }
 
-  /* Dark mode */
-  .dark .advanced-nft-tools {
-    background: #1A1A1A;
-    border-color: #333333;
-  }
-
-  .dark .tools-title {
-    color: #FFFFFF;
-  }
-
-  .dark .tools-subtitle {
-    color: #666666;
-  }
-
-  .dark .section-title {
-    color: #FFFFFF;
-  }
-
-  .dark .collection-card,
-  .dark .metadata-tools,
-  .dark .validation-tools {
-    background: #2D2D2D;
-    border-color: #333333;
-  }
-
-  .dark .collection-name,
-  .dark .file-name,
-  .dark .result-title {
-    color: #FFFFFF;
-  }
-
-  .dark .collection-description,
-  .dark .file-meta,
-  .dark .result-description {
-    color: #666666;
-  }
-
-  .dark .form-input,
-  .dark .form-textarea {
-    background: #2D2D2D;
-    border-color: #333333;
-    color: #FFFFFF;
-  }
-
-  .dark .form-input:focus,
-  .dark .form-textarea:focus {
-    border-color: #E60012;
-  }
-
-  .dark .file-hash code {
-    background: #333333;
-    color: #FFFFFF;
-  }
 </style>
 
 <script>
@@ -1018,9 +965,11 @@ const ipfsData = {
         
         // Add remove functionality to new button
         const removeBtn = attributeItem.querySelector('.remove-attribute-btn');
-        removeBtn.addEventListener('click', () => {
-          attributeItem.remove();
-        });
+        if (removeBtn) {
+          removeBtn.addEventListener('click', () => {
+            attributeItem.remove();
+          });
+        }
       });
     }
 
@@ -1058,10 +1007,13 @@ const ipfsData = {
     const validateUrlBtn = document.getElementById('validate-url-btn');
     if (validateUrlBtn) {
       validateUrlBtn.addEventListener('click', () => {
-        const url = document.getElementById('metadata-url').value;
-        if (url) {
-          console.log('Validating metadata URL:', url);
-          // Here you would typically validate the metadata URL
+        const urlInput = document.getElementById('metadata-url') as HTMLInputElement;
+        if (urlInput) {
+          const url = urlInput.value;
+          if (url) {
+            console.log('Validating metadata URL:', url);
+            // Here you would typically validate the metadata URL
+          }
         }
       });
     }

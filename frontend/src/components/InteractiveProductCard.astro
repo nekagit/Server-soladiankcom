@@ -1,7 +1,6 @@
 ---
 // Interactive Product Card Component with partial hydration
 // Demonstrates Astro component islands pattern
----
 
 export interface Props {
   product: {
@@ -111,7 +110,6 @@ const formatRating = (rating: number) => {
       <div class="stars">
         {Array.from({ length: 5 }, (_, i) => (
           <svg 
-            key={i}
             class={`star ${i < Math.floor(product.rating) ? 'filled' : ''}`}
             fill="currentColor" 
             viewBox="0 0 20 20"
@@ -161,7 +159,7 @@ const formatRating = (rating: number) => {
 
 <style>
   .product-card {
-    @apply bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200 dark:border-gray-700;
+    @apply bg-white rounded-lg shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden border border-gray-200;
   }
 
   .product-image-container {
@@ -205,7 +203,7 @@ const formatRating = (rating: number) => {
   }
 
   .action-btn {
-    @apply w-10 h-10 bg-white dark:bg-gray-800 rounded-full shadow-md flex items-center justify-center text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 transition-colors;
+    @apply w-10 h-10 bg-white rounded-full shadow-md flex items-center justify-center text-gray-600 hover:text-blue-600 transition-colors;
   }
 
   .product-info {
@@ -213,19 +211,19 @@ const formatRating = (rating: number) => {
   }
 
   .product-category {
-    @apply text-sm text-gray-500 dark:text-gray-400 uppercase tracking-wide;
+    @apply text-sm text-gray-500 uppercase tracking-wide;
   }
 
   .product-name {
-    @apply text-lg font-semibold text-gray-900 dark:text-white mt-1;
+    @apply text-lg font-semibold text-gray-900 mt-1;
   }
 
   .product-link {
-    @apply hover:text-blue-600 dark:hover:text-blue-400 transition-colors;
+    @apply hover:text-blue-600 transition-colors;
   }
 
   .product-description {
-    @apply text-gray-600 dark:text-gray-300 text-sm mt-2 line-clamp-2;
+    @apply text-gray-600 text-sm mt-2 line-clamp-2;
   }
 
   .product-rating {
@@ -245,11 +243,11 @@ const formatRating = (rating: number) => {
   }
 
   .rating-value {
-    @apply text-sm font-medium text-gray-900 dark:text-white;
+    @apply text-sm font-medium text-gray-900;
   }
 
   .review-count {
-    @apply text-sm text-gray-500 dark:text-gray-400;
+    @apply text-sm text-gray-500;
   }
 
   .product-price {
@@ -257,11 +255,11 @@ const formatRating = (rating: number) => {
   }
 
   .current-price {
-    @apply text-xl font-bold text-gray-900 dark:text-white;
+    @apply text-xl font-bold text-gray-900;
   }
 
   .solana-price {
-    @apply text-sm text-purple-600 dark:text-purple-400 ml-2;
+    @apply text-sm text-purple-600 ml-2;
   }
 
   .product-actions-bottom {
@@ -273,27 +271,20 @@ const formatRating = (rating: number) => {
   }
 
   .btn-secondary {
-    @apply flex-1 bg-gray-200 dark:bg-gray-600 text-gray-700 dark:text-gray-300 px-4 py-2 rounded-lg font-medium cursor-not-allowed;
+    @apply flex-1 bg-gray-200 text-gray-700 px-4 py-2 rounded-lg font-medium cursor-not-allowed;
   }
 
   .btn-outline {
-    @apply px-4 py-2 border border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg font-medium hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors;
+    @apply px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors;
   }
 
-  /* Dark mode styles */
-  .dark .product-card {
-    @apply bg-gray-800 border-gray-700;
-  }
 
-  .dark .action-btn {
-    @apply bg-gray-700;
-  }
 </style>
 
 <script>
   // Interactive functionality for the product card
   class InteractiveProductCard {
-    constructor(element: HTMLElement) {
+    constructor(element) {
       this.element = element;
       this.productId = element.dataset.productId;
       this.init();
@@ -446,7 +437,7 @@ const formatRating = (rating: number) => {
       document.dispatchEvent(event);
     }
 
-    showNotification(message: string, type: 'success' | 'error' | 'info') {
+    showNotification(message, type) {
       // Show notification
       const event = new CustomEvent('showNotification', {
         detail: { message, type }
@@ -459,7 +450,7 @@ const formatRating = (rating: number) => {
   document.addEventListener('DOMContentLoaded', () => {
     const productCards = document.querySelectorAll('.product-card');
     productCards.forEach(card => {
-      new InteractiveProductCard(card as HTMLElement);
+      new InteractiveProductCard(card);
     });
   });
 </script>

@@ -30,7 +30,7 @@ const {
 ---
 
        <!DOCTYPE html>
-       <html lang="en" class="light">
+       <html lang="en">
          <head>
            <meta charset="UTF-8" />
            <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -60,35 +60,6 @@ const {
 
            <!-- Security Headers -->
            <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost:8000;" />
-           
-           <!-- Dark Mode Script (Inline for immediate execution) -->
-           <script is:inline>
-             // Prevent flash of wrong theme
-             (function() {
-               const theme = localStorage.getItem('theme') || 
-                 (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
-               
-               if (theme === 'dark') {
-                 document.documentElement.classList.add('dark');
-                 document.documentElement.classList.remove('light');
-                 
-                 // Update theme-color meta tag
-                 const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-                 if (metaThemeColor) {
-                   metaThemeColor.content = '#0F0F0F';
-                 }
-               } else {
-                 document.documentElement.classList.add('light');
-                 document.documentElement.classList.remove('dark');
-                 
-                 // Update theme-color meta tag
-                 const metaThemeColor = document.querySelector('meta[name="theme-color"]');
-                 if (metaThemeColor) {
-                   metaThemeColor.content = '#F8F9FA';
-                 }
-               }
-             })();
-           </script>
          </head>
   <body>
     <!-- Sticky Navigation -->
@@ -213,6 +184,7 @@ const {
   body {
     margin: 0;
     padding: 0;
+    overflow-x: hidden;
   }
   
   /* Sticky Navigation Styles */
@@ -229,9 +201,407 @@ const {
     transition: all 0.3s ease;
   }
   
-  /* Dark mode navigation */
-  .dark nav {
-    background: rgba(26, 26, 26, 0.95);
-    border-bottom-color: var(--soladia-primary);
+  /* Mobile Responsive Layout */
+  @media (max-width: 1024px) {
+    .main-content {
+      min-height: calc(100vh - 72px);
+      padding-top: 72px;
+    }
   }
+  
+  @media (max-width: 768px) {
+    .main-content {
+      min-height: calc(100vh - 64px);
+      padding-top: 64px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .main-content {
+      min-height: calc(100vh - 56px);
+      padding-top: 56px;
+    }
+  }
+  
+  /* Mobile-first responsive containers */
+  .container {
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 1rem;
+  }
+  
+  @media (min-width: 640px) {
+    .container {
+      max-width: 640px;
+      padding: 0 1.5rem;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .container {
+      max-width: 768px;
+      padding: 0 2rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .container {
+      max-width: 1024px;
+      padding: 0 2rem;
+    }
+  }
+  
+  @media (min-width: 1280px) {
+    .container {
+      max-width: 1280px;
+      padding: 0 2rem;
+    }
+  }
+  
+  /* Mobile-optimized spacing */
+  .section-padding {
+    padding: 2rem 0;
+  }
+  
+  @media (min-width: 768px) {
+    .section-padding {
+      padding: 4rem 0;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .section-padding {
+      padding: 6rem 0;
+    }
+  }
+  
+  /* Mobile-friendly touch targets */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Mobile-optimized typography */
+  .mobile-text-sm {
+    font-size: 0.875rem;
+    line-height: 1.25rem;
+  }
+  
+  .mobile-text-base {
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+  
+  .mobile-text-lg {
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+  }
+  
+  .mobile-text-xl {
+    font-size: 1.25rem;
+    line-height: 1.75rem;
+  }
+  
+  .mobile-text-2xl {
+    font-size: 1.5rem;
+    line-height: 2rem;
+  }
+  
+  .mobile-text-3xl {
+    font-size: 1.875rem;
+    line-height: 2.25rem;
+  }
+  
+  @media (min-width: 768px) {
+    .mobile-text-sm {
+      font-size: 1rem;
+      line-height: 1.5rem;
+    }
+    
+    .mobile-text-base {
+      font-size: 1.125rem;
+      line-height: 1.75rem;
+    }
+    
+    .mobile-text-lg {
+      font-size: 1.25rem;
+      line-height: 1.75rem;
+    }
+    
+    .mobile-text-xl {
+      font-size: 1.5rem;
+      line-height: 2rem;
+    }
+    
+    .mobile-text-2xl {
+      font-size: 2rem;
+      line-height: 2.5rem;
+    }
+    
+    .mobile-text-3xl {
+      font-size: 2.25rem;
+      line-height: 2.5rem;
+    }
+  }
+  
+  /* Mobile-optimized grids */
+  .mobile-grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: 1fr;
+  }
+  
+  @media (min-width: 640px) {
+    .mobile-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+  }
+  
+  @media (min-width: 768px) {
+    .mobile-grid {
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+  }
+  
+  @media (min-width: 1024px) {
+    .mobile-grid {
+      grid-template-columns: repeat(4, 1fr);
+      gap: 2rem;
+    }
+  }
+  
+  /* Mobile-optimized flex layouts */
+  .mobile-flex {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  @media (min-width: 768px) {
+    .mobile-flex {
+      flex-direction: row;
+      gap: 2rem;
+    }
+  }
+  
+  /* Mobile-optimized spacing */
+  .mobile-space-y > * + * {
+    margin-top: 1rem;
+  }
+  
+  @media (min-width: 768px) {
+    .mobile-space-y > * + * {
+      margin-top: 2rem;
+    }
+  }
+  
+  /* Mobile-optimized buttons */
+  .mobile-btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+  
+  @media (min-width: 640px) {
+    .mobile-btn {
+      width: auto;
+      padding: 0.75rem 1.5rem;
+    }
+  }
+  
+  /* Mobile-optimized forms */
+  .mobile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .mobile-form input,
+  .mobile-form textarea,
+  .mobile-form select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #E1E5E9;
+    border-radius: 0.5rem;
+    font-size: 1rem;
+    min-height: 44px;
+    transition: border-color 0.2s ease;
+  }
+  
+  .mobile-form input:focus,
+  .mobile-form textarea:focus,
+  .mobile-form select:focus {
+    outline: none;
+    border-color: #3B82F6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+  }
+  
+  /* Mobile-optimized cards */
+  .mobile-card {
+    background: white;
+    border-radius: 0.75rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    padding: 1rem;
+    transition: all 0.3s ease;
+  }
+  
+  @media (min-width: 768px) {
+    .mobile-card {
+      padding: 1.5rem;
+      border-radius: 1rem;
+    }
+  }
+  
+  .mobile-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  }
+  
+  /* Mobile-optimized images */
+  .mobile-img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    border-radius: 0.5rem;
+  }
+  
+  @media (min-width: 768px) {
+    .mobile-img {
+      border-radius: 0.75rem;
+    }
+  }
+  
+  /* Mobile-optimized navigation */
+  .mobile-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  @media (min-width: 768px) {
+    .mobile-nav {
+      flex-direction: row;
+      gap: 1rem;
+    }
+  }
+  
+  .mobile-nav a {
+    display: block;
+    padding: 0.75rem 1rem;
+    color: #6B7280;
+    text-decoration: none;
+    font-weight: 500;
+    border-radius: 0.5rem;
+    transition: all 0.2s ease;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+  }
+  
+  .mobile-nav a:hover {
+    background: #F3F4F6;
+    color: #1F2937;
+  }
+  
+  /* Mobile-optimized tables */
+  .mobile-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+  }
+  
+  @media (min-width: 768px) {
+    .mobile-table {
+      font-size: 1rem;
+    }
+  }
+  
+  .mobile-table th,
+  .mobile-table td {
+    padding: 0.5rem;
+    text-align: left;
+    border-bottom: 1px solid #E1E5E9;
+  }
+  
+  @media (min-width: 768px) {
+    .mobile-table th,
+    .mobile-table td {
+      padding: 0.75rem;
+    }
+  }
+  
+  /* Mobile-optimized modals */
+  .mobile-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+    padding: 1rem;
+  }
+  
+  .mobile-modal-content {
+    background: white;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    max-width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    width: 100%;
+  }
+  
+  @media (min-width: 640px) {
+    .mobile-modal-content {
+      max-width: 32rem;
+      padding: 2rem;
+    }
+  }
+  
+  /* Mobile-optimized utilities */
+  .mobile-hidden {
+    display: none;
+  }
+  
+  @media (min-width: 768px) {
+    .mobile-hidden {
+      display: block;
+    }
+  }
+  
+  .mobile-only {
+    display: block;
+  }
+  
+  @media (min-width: 768px) {
+    .mobile-only {
+      display: none;
+    }
+  }
+  
+  /* Mobile-optimized animations */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+  
 </style>

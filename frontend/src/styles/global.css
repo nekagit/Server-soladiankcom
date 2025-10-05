@@ -21,17 +21,9 @@
   --soladia-light: #F8F9FA;
   --soladia-border: #E1E5E9;
   
-  /* Dark Mode Colors */
-  --soladia-dark-bg: #0F0F0F;
-  --soladia-dark-surface: #1A1A1A;
-  --soladia-dark-text: #FFFFFF;
-  --soladia-dark-border: #333333;
-  --soladia-dark-muted: #666666;
-  
   /* Optimized Gradients */
   --soladia-gradient: linear-gradient(135deg, #E60012 0%, #0066CC 100%);
   --soladia-gradient-gold: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
-  --soladia-gradient-dark: linear-gradient(135deg, #1A1A1A 0%, #333333 100%);
   
   /* Optimized Shadows */
   --soladia-shadow: 0 4px 20px rgba(230, 0, 18, 0.15);
@@ -76,582 +68,8 @@ body {
   margin: 0;
   padding: 0;
   overflow-x: hidden;
-  transition: background-color 0.3s ease, color 0.3s ease;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-}
-
-/* ========================================
-   COMPREHENSIVE DARK MODE OPTIMIZATION
-   ======================================== */
-
-/* Dark Mode Base Styles */
-.dark body {
-  background: var(--soladia-dark-bg);
-  color: var(--soladia-dark-text);
-}
-
-/* Dark Mode Background Patterns */
-.dark body::before {
-  background: 
-    radial-gradient(circle at 20% 80%, rgba(230, 0, 18, 0.03) 0%, transparent 50%),
-    radial-gradient(circle at 80% 20%, rgba(0, 102, 204, 0.03) 0%, transparent 50%),
-    linear-gradient(135deg, rgba(15, 15, 15, 0.8) 0%, rgba(26, 26, 26, 0.9) 100%);
-}
-
-/* Navigation Dark Mode */
-.dark nav {
-  background: rgba(15, 15, 15, 0.95);
-  border-bottom-color: var(--soladia-primary);
-  backdrop-filter: blur(20px);
-}
-
-.dark nav:hover {
-  background: rgba(15, 15, 15, 0.98);
-}
-
-/* Logo and Brand Elements */
-.dark .soladia-logo {
-  color: var(--soladia-dark-text);
-}
-
-.dark .soladia-logo:hover {
-  color: var(--soladia-primary);
-}
-
-/* Navigation Links */
-.dark nav a {
-  color: var(--soladia-dark-text);
-  transition: color 0.3s ease;
-}
-
-.dark nav a:hover {
-  color: var(--soladia-primary);
-}
-
-.dark nav a.active {
-  color: var(--soladia-primary);
-  font-weight: 600;
-}
-
-/* Cards and Components */
-.dark .category-card,
-.dark .product-card,
-.dark .feature-card,
-.dark .enhanced-product-card,
-.dark .ai-recommendations,
-.dark .enterprise-api,
-.dark .advanced-nft-tools,
-.dark .blockchain-analytics-dashboard,
-.dark .social-trading-dashboard {
-  background: var(--soladia-dark-surface);
-  border-color: var(--soladia-dark-border);
-  color: var(--soladia-dark-text);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-}
-
-.dark .category-card:hover,
-.dark .product-card:hover,
-.dark .feature-card:hover,
-.dark .enhanced-product-card:hover {
-  border-color: var(--soladia-primary);
-  box-shadow: 0 8px 30px rgba(230, 0, 18, 0.2);
-  transform: translateY(-2px);
-}
-
-/* Typography in Dark Mode */
-.dark .product-title,
-.dark .category-name,
-.dark .feature-title,
-.dark .dashboard-title,
-.dark .section-title,
-.dark .recommendations-title,
-.dark .api-title,
-.dark .tools-title {
-  color: var(--soladia-dark-text);
-}
-
-.dark .product-description,
-.dark .feature-description,
-.dark .category-count,
-.dark .dashboard-subtitle,
-.dark .section-description,
-.dark .recommendation-description,
-.dark .api-description,
-.dark .tools-description {
-  color: var(--soladia-dark-muted);
-}
-
-/* Buttons in Dark Mode */
-.dark .btn-primary,
-.dark .connect-wallet-btn,
-.dark .install-btn,
-.dark .update-btn,
-.dark .apply-filters,
-.dark .mint-button,
-.dark .create-key-button,
-.dark .generate-key-button {
-  background: var(--soladia-primary);
-  color: white;
-  border-color: var(--soladia-primary);
-}
-
-.dark .btn-primary:hover,
-.dark .connect-wallet-btn:hover,
-.dark .install-btn:hover,
-.dark .update-btn:hover,
-.dark .apply-filters:hover,
-.dark .mint-button:hover,
-.dark .create-key-button:hover,
-.dark .generate-key-button:hover {
-  background: #CC0010;
-  border-color: #CC0010;
-  box-shadow: 0 4px 15px rgba(230, 0, 18, 0.3);
-}
-
-.dark .btn-secondary,
-.dark .dismiss-btn,
-.dark .reset-filters,
-.dark .edit-button,
-.dark .delete-button {
-  background: transparent;
-  color: var(--soladia-primary);
-  border-color: var(--soladia-primary);
-}
-
-.dark .btn-secondary:hover,
-.dark .dismiss-btn:hover,
-.dark .reset-filters:hover,
-.dark .edit-button:hover,
-.dark .delete-button:hover {
-  background: rgba(230, 0, 18, 0.1);
-  color: var(--soladia-primary);
-}
-
-/* Form Elements in Dark Mode */
-.dark input,
-.dark textarea,
-.dark select,
-.dark .price-input,
-.dark .filter-select,
-.dark .checkbox-input {
-  background: var(--soladia-dark-bg);
-  border-color: var(--soladia-dark-border);
-  color: var(--soladia-dark-text);
-}
-
-.dark input:focus,
-.dark textarea:focus,
-.dark select:focus,
-.dark .price-input:focus,
-.dark .filter-select:focus {
-  border-color: var(--soladia-primary);
-  box-shadow: 0 0 0 3px rgba(230, 0, 18, 0.1);
-}
-
-.dark input::placeholder,
-.dark textarea::placeholder {
-  color: var(--soladia-dark-muted);
-}
-
-/* Tables and Lists in Dark Mode */
-.dark table,
-.dark .leaderboard-list,
-.dark .api-key-list,
-.dark .webhook-list,
-.dark .collection-list {
-  background: var(--soladia-dark-surface);
-  border-color: var(--soladia-dark-border);
-}
-
-.dark th,
-.dark td,
-.dark .leaderboard-item,
-.dark .api-key-item,
-.dark .webhook-item,
-.dark .collection-item {
-  border-color: var(--soladia-dark-border);
-  color: var(--soladia-dark-text);
-}
-
-.dark th {
-  background: var(--soladia-dark-bg);
-  color: var(--soladia-dark-text);
-  font-weight: 600;
-}
-
-/* Status Indicators in Dark Mode */
-.dark .status-active,
-.dark .status-online,
-.dark .status-healthy {
-  background: rgba(0, 166, 80, 0.2);
-  color: #00A650;
-  border-color: #00A650;
-}
-
-.dark .status-inactive,
-.dark .status-offline,
-.dark .status-error {
-  background: rgba(255, 140, 0, 0.2);
-  color: #FF8C00;
-  border-color: #FF8C00;
-}
-
-.dark .status-pending {
-  background: rgba(255, 215, 0, 0.2);
-  color: #FFD700;
-  border-color: #FFD700;
-}
-
-/* Charts and Visualizations in Dark Mode */
-.dark .chart-container,
-.dark .analytics-chart,
-.dark .usage-chart {
-  background: var(--soladia-dark-surface);
-  border-color: var(--soladia-dark-border);
-}
-
-.dark .chart-grid {
-  stroke: var(--soladia-dark-border);
-}
-
-.dark .chart-text {
-  fill: var(--soladia-dark-text);
-}
-
-/* Modals and Overlays in Dark Mode */
-.dark .modal,
-.dark .overlay,
-.dark .install-prompt,
-.dark .update-prompt,
-.dark .wallet-connect-modal,
-.dark .payment-modal {
-  background: rgba(15, 15, 15, 0.95);
-  backdrop-filter: blur(20px);
-  border-color: var(--soladia-dark-border);
-}
-
-.dark .modal-content,
-.dark .overlay-content {
-  background: var(--soladia-dark-surface);
-  border-color: var(--soladia-dark-border);
-}
-
-/* Footer in Dark Mode */
-.dark .footer {
-  background: var(--soladia-dark-surface);
-  border-top-color: var(--soladia-dark-border);
-}
-
-.dark .footer-links a {
-  color: var(--soladia-dark-muted);
-  transition: color 0.3s ease;
-}
-
-.dark .footer-links a:hover {
-  color: var(--soladia-dark-text);
-}
-
-.dark .footer-copyright {
-  color: var(--soladia-dark-muted);
-}
-
-/* Sidebar and Navigation in Dark Mode */
-.dark .sidebar,
-.dark .category-sidebar,
-.dark .advanced-search-sidebar {
-  background: var(--soladia-dark-surface);
-  border-color: var(--soladia-dark-border);
-}
-
-.dark .sidebar-card,
-.dark .filter-group {
-  background: var(--soladia-dark-bg);
-  border-color: var(--soladia-dark-border);
-}
-
-.dark .filter-title,
-.dark .sidebar-title {
-  color: var(--soladia-dark-text);
-}
-
-/* Loading States in Dark Mode */
-.dark .loading-spinner {
-  border-color: var(--soladia-dark-border);
-  border-top-color: var(--soladia-primary);
-}
-
-.dark .loading-text {
-  color: var(--soladia-dark-muted);
-}
-
-/* Error States in Dark Mode */
-.dark .error-message,
-.dark .error-state {
-  background: rgba(230, 0, 18, 0.1);
-  border-color: var(--soladia-primary);
-  color: var(--soladia-primary);
-}
-
-.dark .success-message {
-  background: rgba(0, 166, 80, 0.1);
-  border-color: #00A650;
-  color: #00A650;
-}
-
-.dark .warning-message {
-  background: rgba(255, 140, 0, 0.1);
-  border-color: #FF8C00;
-  color: #FF8C00;
-}
-
-/* PWA Install Prompt in Dark Mode */
-.dark .pwa-install {
-  background: var(--soladia-dark-surface);
-  border-color: var(--soladia-dark-border);
-}
-
-.dark .install-prompt,
-.dark .update-prompt {
-  background: var(--soladia-dark-surface);
-  border-color: var(--soladia-dark-border);
-}
-
-.dark .install-icon,
-.dark .update-icon {
-  background: var(--soladia-primary);
-  color: white;
-}
-
-.dark .feature-icon {
-  background: var(--soladia-dark-bg);
-  color: var(--soladia-primary);
-}
-
-/* Offline Page in Dark Mode */
-.dark .offline-container {
-  background: linear-gradient(135deg, #E60012 0%, #0066CC 100%);
-  color: white;
-}
-
-.dark .offline-features {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-}
-
-/* Accessibility Improvements for Dark Mode */
-.dark *:focus {
-  outline: 2px solid var(--soladia-primary);
-  outline-offset: 2px;
-}
-
-.dark a:focus,
-.dark button:focus {
-  outline: 2px solid var(--soladia-primary);
-  outline-offset: 2px;
-}
-
-/* High Contrast Mode Support */
-@media (prefers-contrast: high) {
-  .dark {
-    --soladia-dark-bg: #000000;
-    --soladia-dark-surface: #1A1A1A;
-    --soladia-dark-text: #FFFFFF;
-    --soladia-dark-border: #FFFFFF;
-    --soladia-dark-muted: #CCCCCC;
-  }
-}
-
-/* Theme Transition Effects */
-.theme-transitioning * {
-  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease !important;
-}
-
-.theme-transitioning {
-  transition: all 0.3s ease;
-}
-
-/* Smooth theme switching animations */
-@keyframes themeFadeIn {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.theme-transitioning .category-card,
-.theme-transitioning .product-card,
-.theme-transitioning .feature-card,
-.theme-transitioning .enhanced-product-card {
-  animation: themeFadeIn 0.3s ease-out;
-}
-
-/* Dark mode specific transitions */
-.dark .category-card,
-.dark .product-card,
-.dark .feature-card,
-.dark .enhanced-product-card {
-  transition: all 0.3s ease;
-}
-
-.dark .category-card:hover,
-.dark .product-card:hover,
-.dark .feature-card:hover,
-.dark .enhanced-product-card:hover {
-  transition: all 0.2s ease;
-}
-
-/* Button transitions in dark mode */
-.dark .btn-primary,
-.dark .btn-secondary,
-.dark .connect-wallet-btn,
-.dark .install-btn,
-.dark .update-btn {
-  transition: all 0.2s ease;
-}
-
-.dark .btn-primary:hover,
-.dark .btn-secondary:hover,
-.dark .connect-wallet-btn:hover,
-.dark .install-btn:hover,
-.dark .update-btn:hover {
-  transition: all 0.2s ease;
-  transform: translateY(-1px);
-}
-
-/* Form element transitions */
-.dark input,
-.dark textarea,
-.dark select,
-.dark .price-input,
-.dark .filter-select {
-  transition: all 0.2s ease;
-}
-
-.dark input:focus,
-.dark textarea:focus,
-.dark select:focus,
-.dark .price-input:focus,
-.dark .filter-select:focus {
-  transition: all 0.2s ease;
-  transform: scale(1.02);
-}
-
-/* Navigation transitions */
-.dark nav {
-  transition: all 0.3s ease;
-}
-
-.dark nav a {
-  transition: color 0.2s ease;
-}
-
-.dark nav a:hover {
-  transition: color 0.2s ease;
-}
-
-/* Card hover effects in dark mode */
-.dark .category-card:hover,
-.dark .product-card:hover,
-.dark .feature-card:hover,
-.dark .enhanced-product-card:hover {
-  transition: all 0.3s ease;
-  transform: translateY(-4px);
-  box-shadow: 0 12px 40px rgba(230, 0, 18, 0.25);
-}
-
-/* Status indicator transitions */
-.dark .status-active,
-.dark .status-online,
-.dark .status-healthy,
-.dark .status-inactive,
-.dark .status-offline,
-.dark .status-error,
-.dark .status-pending {
-  transition: all 0.2s ease;
-}
-
-/* Chart and visualization transitions */
-.dark .chart-container,
-.dark .analytics-chart,
-.dark .usage-chart {
-  transition: all 0.3s ease;
-}
-
-/* Modal and overlay transitions */
-.dark .modal,
-.dark .overlay,
-.dark .install-prompt,
-.dark .update-prompt {
-  transition: all 0.3s ease;
-}
-
-/* Footer transitions */
-.dark .footer {
-  transition: all 0.3s ease;
-}
-
-.dark .footer-links a {
-  transition: color 0.2s ease;
-}
-
-/* Sidebar transitions */
-.dark .sidebar,
-.dark .category-sidebar,
-.dark .advanced-search-sidebar {
-  transition: all 0.3s ease;
-}
-
-.dark .sidebar-card,
-.dark .filter-group {
-  transition: all 0.2s ease;
-}
-
-/* Loading and error state transitions */
-.dark .loading-spinner {
-  transition: all 0.2s ease;
-}
-
-.dark .error-message,
-.dark .success-message,
-.dark .warning-message {
-  transition: all 0.2s ease;
-}
-
-/* PWA install prompt transitions */
-.dark .pwa-install {
-  transition: all 0.3s ease;
-}
-
-.dark .install-prompt,
-.dark .update-prompt {
-  transition: all 0.3s ease;
-}
-
-.dark .install-prompt:hover,
-.dark .update-prompt:hover {
-  transition: all 0.2s ease;
-  transform: translateY(-2px);
-}
-
-/* Reduced Motion Support */
-@media (prefers-reduced-motion: reduce) {
-  .dark *,
-  .theme-transitioning * {
-    transition: none !important;
-    animation: none !important;
-  }
-  
-  .dark .category-card:hover,
-  .dark .product-card:hover,
-  .dark .feature-card:hover,
-  .dark .enhanced-product-card:hover {
-    transform: none !important;
-  }
 }
 
 /* Optimized Static Background */
@@ -711,7 +129,6 @@ nav:hover {
   box-shadow: var(--soladia-shadow);
 }
 
-/* Optimized logo without heavy animation */
 .soladia-logo-icon::before {
   content: '';
   position: absolute;
@@ -756,7 +173,6 @@ nav:hover {
   overflow: hidden;
 }
 
-/* Optimized hero section without heavy animation */
 .hero-section::before {
   content: '';
   position: absolute;
@@ -1157,32 +573,449 @@ nav:hover {
   color: #999;
 }
 
-/* Responsive Design */
-@media (max-width: 768px) {
+/* Mobile-First Responsive Design */
+/* Base mobile styles (320px+) */
+.hero-title {
+  font-size: 2rem;
+  line-height: 1.2;
+}
+
+.hero-subtitle {
+  font-size: 1rem;
+  line-height: 1.4;
+}
+
+.hero-actions {
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+}
+
+.categories-grid {
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1rem;
+}
+
+.products-grid {
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.features-grid {
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+.section-title {
+  font-size: 1.75rem;
+  line-height: 1.3;
+}
+
+/* Small mobile (480px+) */
+@media (min-width: 480px) {
+  .hero-title {
+    font-size: 2.25rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.125rem;
+  }
+  
+  .categories-grid {
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 1.25rem;
+  }
+  
+  .products-grid {
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.25rem;
+  }
+  
+  .section-title {
+    font-size: 2rem;
+  }
+}
+
+/* Medium mobile (640px+) */
+@media (min-width: 640px) {
   .hero-title {
     font-size: 2.5rem;
   }
   
   .hero-subtitle {
-    font-size: 1.2rem;
+    font-size: 1.25rem;
   }
   
   .hero-actions {
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row;
+    justify-content: center;
   }
   
   .categories-grid {
-    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-    gap: var(--soladia-space-lg);
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 1.5rem;
   }
   
   .products-grid {
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 1.5rem;
   }
   
   .features-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+  }
+  
+  .section-title {
+    font-size: 2.25rem;
+  }
+}
+
+/* Tablet (768px+) */
+@media (min-width: 768px) {
+  .hero-title {
+    font-size: 3rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.375rem;
+  }
+  
+  .categories-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+  }
+  
+  .products-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 2rem;
+  }
+  
+  .features-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2rem;
+  }
+  
+  .section-title {
+    font-size: 2.5rem;
+  }
+}
+
+/* Desktop (1024px+) */
+@media (min-width: 1024px) {
+  .hero-title {
+    font-size: 4rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.5rem;
+  }
+  
+  .categories-grid {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: var(--soladia-space-xl);
+  }
+  
+  .products-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--soladia-space-xl);
+  }
+  
+  .features-grid {
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--soladia-space-xl);
+  }
+  
+  .section-title {
+    font-size: 2.5rem;
+  }
+}
+
+/* Large desktop (1280px+) */
+@media (min-width: 1280px) {
+  .hero-title {
+    font-size: 4.5rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 1.75rem;
+  }
+  
+  .section-title {
+    font-size: 3rem;
+  }
+}
+
+/* Mobile-optimized component styles */
+@media (max-width: 768px) {
+  /* Mobile navigation adjustments */
+  .soladia-logo-text {
+    font-size: 1.25rem;
+  }
+  
+  .soladia-logo-icon {
+    width: 32px;
+    height: 32px;
+  }
+  
+  .soladia-logo-icon span {
+    font-size: 1rem;
+  }
+  
+  /* Mobile hero section */
+  .hero-section {
+    padding: 2rem 0;
+  }
+  
+  .hero-actions {
+    width: 100%;
+    max-width: 320px;
+  }
+  
+  .btn-large {
+    width: 100%;
+    padding: 1rem 1.5rem;
+    font-size: 1rem;
+  }
+  
+  /* Mobile category cards */
+  .category-card {
+    padding: 1rem;
+    text-align: center;
+  }
+  
+  .category-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .category-name {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .category-count {
+    font-size: 0.8rem;
+  }
+  
+  /* Mobile product cards */
+  .product-card {
+    margin-bottom: 1rem;
+  }
+  
+  .product-info {
+    padding: 1rem;
+  }
+  
+  .product-title {
+    font-size: 1rem;
+    line-height: 1.3;
+  }
+  
+  .product-description {
+    font-size: 0.8rem;
+    line-height: 1.4;
+  }
+  
+  .product-price {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .price-current {
+    font-size: 1.25rem;
+  }
+  
+  .price-original {
+    font-size: 0.9rem;
+  }
+  
+  /* Mobile feature cards */
+  .feature-card {
+    padding: 1.5rem 1rem;
+    text-align: center;
+  }
+  
+  .feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+  }
+  
+  .feature-title {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .feature-description {
+    font-size: 0.9rem;
+    line-height: 1.5;
+  }
+  
+  /* Mobile footer */
+  .footer-content {
     grid-template-columns: 1fr;
+    gap: 2rem;
+    text-align: center;
+  }
+  
+  .footer-section {
+    margin-bottom: 1.5rem;
+  }
+  
+  .footer-title {
+    font-size: 1.25rem;
+  }
+  
+  .footer-subtitle {
+    font-size: 1rem;
+  }
+  
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  .footer-links li {
+    margin-bottom: 0;
+  }
+  
+  .footer-links a {
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 0.5rem;
+    transition: background-color 0.2s ease;
+  }
+  
+  .footer-links a:hover {
+    background: rgba(255, 255, 255, 0.2);
+  }
+}
+
+/* Mobile-specific optimizations */
+@media (max-width: 480px) {
+  /* Extra small mobile adjustments */
+  .hero-title {
+    font-size: 1.75rem;
+  }
+  
+  .hero-subtitle {
+    font-size: 0.9rem;
+  }
+  
+  .categories-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.75rem;
+  }
+  
+  .products-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .category-card {
+    padding: 0.75rem;
+  }
+  
+  .category-icon {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .category-name {
+    font-size: 0.9rem;
+  }
+  
+  .category-count {
+    font-size: 0.75rem;
+  }
+  
+  .product-card {
+    margin-bottom: 0.75rem;
+  }
+  
+  .product-info {
+    padding: 0.75rem;
+  }
+  
+  .product-title {
+    font-size: 0.9rem;
+  }
+  
+  .product-description {
+    font-size: 0.75rem;
+  }
+  
+  .price-current {
+    font-size: 1.125rem;
+  }
+  
+  .feature-card {
+    padding: 1rem 0.75rem;
+  }
+  
+  .feature-icon {
+    font-size: 2rem;
+    margin-bottom: 0.75rem;
+  }
+  
+  .feature-title {
+    font-size: 1.125rem;
+  }
+  
+  .feature-description {
+    font-size: 0.8rem;
+  }
+}
+
+/* Touch-friendly mobile optimizations */
+@media (max-width: 768px) {
+  /* Ensure all interactive elements are touch-friendly */
+  button, 
+  a, 
+  input, 
+  select, 
+  textarea {
+    min-height: 44px;
+    min-width: 44px;
+  }
+  
+  /* Improve touch targets */
+  .btn-primary,
+  .btn-secondary,
+  .btn-large {
+    padding: 0.875rem 1.5rem;
+    font-size: 1rem;
+    min-height: 48px;
+  }
+  
+  /* Mobile-optimized form elements */
+  input,
+  select,
+  textarea {
+    font-size: 16px; /* Prevents zoom on iOS */
+    padding: 0.75rem;
+  }
+  
+  /* Mobile-optimized spacing */
+  .section-padding {
+    padding: 1.5rem 0;
+  }
+  
+  /* Mobile-optimized shadows */
+  .product-card,
+  .category-card,
+  .feature-card {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  }
+  
+  .product-card:hover,
+  .category-card:hover,
+  .feature-card:hover {
+    transform: none; /* Disable hover effects on mobile */
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
 }
 

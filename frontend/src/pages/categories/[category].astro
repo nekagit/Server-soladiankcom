@@ -18,7 +18,10 @@ export async function getStaticPaths() {
     'collectibles',
     'sports',
     'fashion',
-    'real-estate'
+    'real-estate',
+    'home-garden',
+    'automotive',
+    'jewelry'
   ];
 
   return categories.map(category => ({
@@ -101,6 +104,111 @@ const categoryProducts = {
       nft: true,
       solana: true
     }
+  ],
+  'home-garden': [
+    {
+      id: 7,
+      name: "Smart Garden NFT",
+      price: 12.5,
+      image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=300&h=200&fit=crop&crop=center",
+      category: "Home & Garden",
+      seller: "GardenMaster",
+      description: "Digital smart garden with automated systems",
+      nft: true,
+      solana: true
+    },
+    {
+      id: 8,
+      name: "Virtual Furniture Set",
+      price: 8.0,
+      image: "https://images.unsplash.com/photo-1586023492125-27b2c045efd7?w=300&h=200&fit=crop&crop=center",
+      category: "Home & Garden",
+      seller: "HomeDesigner",
+      description: "Premium virtual furniture collection",
+      nft: true,
+      solana: true
+    },
+    {
+      id: 9,
+      name: "Garden Tools NFT",
+      price: 5.5,
+      image: "https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=300&h=200&fit=crop&crop=center",
+      category: "Home & Garden",
+      seller: "ToolExpert",
+      description: "Digital garden tools for virtual gardening",
+      nft: true,
+      solana: true
+    }
+  ],
+  'automotive': [
+    {
+      id: 10,
+      name: "Tesla Model S NFT",
+      price: 25.0,
+      image: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=300&h=200&fit=crop&crop=center",
+      category: "Automotive",
+      seller: "CarCollector",
+      description: "Digital Tesla Model S with custom features",
+      nft: true,
+      solana: true
+    },
+    {
+      id: 11,
+      name: "Racing Car Parts",
+      price: 15.5,
+      image: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=300&h=200&fit=crop&crop=center",
+      category: "Automotive",
+      seller: "SpeedDemon",
+      description: "High-performance racing car components",
+      nft: true,
+      solana: true
+    },
+    {
+      id: 12,
+      name: "Vintage Car Collection",
+      price: 35.0,
+      image: "https://images.unsplash.com/photo-1555215695-3004980ad54e?w=300&h=200&fit=crop&crop=center",
+      category: "Automotive",
+      seller: "ClassicCars",
+      description: "Rare vintage car digital collection",
+      nft: true,
+      solana: true
+    }
+  ],
+  'jewelry': [
+    {
+      id: 13,
+      name: "Diamond Ring NFT",
+      price: 45.0,
+      image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=300&h=200&fit=crop&crop=center",
+      category: "Jewelry",
+      seller: "DiamondDealer",
+      description: "Exclusive digital diamond ring",
+      nft: true,
+      solana: true
+    },
+    {
+      id: 14,
+      name: "Gold Chain Collection",
+      price: 18.5,
+      image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=300&h=200&fit=crop&crop=center",
+      category: "Jewelry",
+      seller: "GoldMaster",
+      description: "Premium digital gold chain collection",
+      nft: true,
+      solana: true
+    },
+    {
+      id: 15,
+      name: "Vintage Watch NFT",
+      price: 28.0,
+      image: "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=300&h=200&fit=crop&crop=center",
+      category: "Jewelry",
+      seller: "WatchCollector",
+      description: "Rare vintage watch digital replica",
+      nft: true,
+      solana: true
+    }
   ]
 };
 
@@ -166,6 +274,21 @@ const categoryInfo = {
     name: 'Real Estate',
     description: 'Virtual real estate and property',
     icon: '🏠'
+  },
+  'home-garden': {
+    name: 'Home & Garden',
+    description: 'Digital home decor, furniture, and garden items',
+    icon: '🏡'
+  },
+  'automotive': {
+    name: 'Automotive',
+    description: 'Digital cars, parts, and automotive accessories',
+    icon: '🚗'
+  },
+  'jewelry': {
+    name: 'Jewelry',
+    description: 'Digital jewelry, watches, and luxury accessories',
+    icon: '💍'
   }
 };
 
@@ -375,12 +498,12 @@ const info = categoryInfo[category as keyof typeof categoryInfo] || {
       });
       
       // Enhanced hover effects
-      card.addEventListener('mouseenter', function() {
+      card.addEventListener('mouseenter', function(this: HTMLElement) {
         this.style.transform = 'translateY(-6px)';
         this.style.boxShadow = '0 8px 40px rgba(230, 0, 18, 0.25)';
       });
       
-      card.addEventListener('mouseleave', function() {
+      card.addEventListener('mouseleave', function(this: HTMLElement) {
         this.style.transform = 'translateY(0)';
         this.style.boxShadow = '0 2px 12px rgba(0, 0, 0, 0.08)';
       });

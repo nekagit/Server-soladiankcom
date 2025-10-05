@@ -101,21 +101,30 @@ const features = [
   
   <!-- Hero Section -->
   <section class="hero-section">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
       <div class="text-center">
-        <h1 class="hero-title">Welcome to Soladia</h1>
-        <p class="hero-subtitle">The Ultimate Marketplace Powered by Solana Blockchain</p>
-        <div class="hero-actions">
-          <a href="/products" class="btn-primary btn-large">Start Shopping</a>
-          <a href="/sell" class="btn-secondary btn-large">Start Selling</a>
-          <button class="btn-solana btn-large" id="connect-wallet-hero">
+        <h1 class="hero-title mobile-text-3xl sm:mobile-text-4xl lg:mobile-text-5xl xl:mobile-text-6xl">
+          Welcome to Soladia
+        </h1>
+        <p class="hero-subtitle mobile-text-base sm:mobile-text-lg lg:mobile-text-xl">
+          The Ultimate Marketplace Powered by Solana Blockchain
+        </p>
+        <div class="hero-actions mobile-flex sm:flex-row">
+          <a href="/products" class="btn-primary btn-large mobile-btn sm:w-auto">
+            Start Shopping
+          </a>
+          <a href="/sell" class="btn-secondary btn-large mobile-btn sm:w-auto">
+            Start Selling
+          </a>
+          <button class="btn-solana btn-large mobile-btn sm:w-auto" id="connect-wallet-hero">
             <span class="btn-icon">☀️</span>
-            Connect Solana Wallet
+            <span class="mobile-only">Connect Wallet</span>
+            <span class="mobile-hidden">Connect Solana Wallet</span>
           </button>
         </div>
         
         <!-- Solana Wallet Integration -->
-        <div class="wallet-section">
+        <div class="wallet-section mt-6 sm:mt-8 max-w-md mx-auto">
           <SolanaWallet />
         </div>
       </div>
@@ -124,14 +133,20 @@ const features = [
 
   <!-- Categories Section -->
   <section class="categories-section">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <h2 class="section-title">Shop by Category</h2>
-      <div class="categories-grid">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+      <h2 class="section-title mobile-text-2xl sm:mobile-text-3xl lg:mobile-text-4xl">
+        Shop by Category
+      </h2>
+      <div class="categories-grid mobile-grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {categories.map((category) => (
-          <div class="category-card" data-category={category.name}>
-            <div class="category-icon">{category.icon}</div>
-            <h3 class="category-name">{category.name}</h3>
-            <p class="category-count">{category.count}</p>
+          <div class="category-card mobile-card" data-category={category.name}>
+            <div class="category-icon text-2xl sm:text-3xl lg:text-4xl">{category.icon}</div>
+            <h3 class="category-name mobile-text-sm sm:mobile-text-base lg:mobile-text-lg">
+              {category.name}
+            </h3>
+            <p class="category-count mobile-text-xs sm:mobile-text-sm">
+              {category.count}
+            </p>
           </div>
         ))}
       </div>
@@ -140,9 +155,11 @@ const features = [
 
   <!-- Featured Products -->
   <section class="featured-section">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <h2 class="section-title">Featured Products</h2>
-      <div class="products-grid">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+      <h2 class="section-title mobile-text-2xl sm:mobile-text-3xl lg:mobile-text-4xl">
+        Featured Products
+      </h2>
+      <div class="products-grid mobile-grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {featuredProducts.map((product) => (
           <ProductCard {...product} />
         ))}
@@ -152,14 +169,20 @@ const features = [
 
   <!-- Why Choose Soladia -->
   <section class="features-section">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-      <h2 class="section-title">Why Choose Soladia?</h2>
-      <div class="features-grid">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 lg:py-16">
+      <h2 class="section-title mobile-text-2xl sm:mobile-text-3xl lg:mobile-text-4xl">
+        Why Choose Soladia?
+      </h2>
+      <div class="features-grid mobile-grid sm:grid-cols-2 lg:grid-cols-4">
         {features.map((feature) => (
-          <div class="feature-card">
-            <div class="feature-icon">{feature.icon}</div>
-            <h3 class="feature-title">{feature.title}</h3>
-            <p class="feature-description">{feature.description}</p>
+          <div class="feature-card mobile-card">
+            <div class="feature-icon text-3xl sm:text-4xl lg:text-5xl">{feature.icon}</div>
+            <h3 class="feature-title mobile-text-lg sm:mobile-text-xl lg:mobile-text-2xl">
+              {feature.title}
+            </h3>
+            <p class="feature-description mobile-text-sm sm:mobile-text-base">
+              {feature.description}
+            </p>
           </div>
         ))}
       </div>
@@ -168,41 +191,45 @@ const features = [
 
   <!-- Footer -->
   <footer class="footer">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-      <div class="footer-content">
+    <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <div class="footer-content mobile-grid sm:grid-cols-2 lg:grid-cols-4">
         <div class="footer-section">
-          <h3 class="footer-title">Soladia</h3>
-          <p class="footer-description">The ultimate marketplace powered by Solana blockchain technology.</p>
+          <h3 class="footer-title mobile-text-lg sm:mobile-text-xl">Soladia</h3>
+          <p class="footer-description mobile-text-sm sm:mobile-text-base">
+            The ultimate marketplace powered by Solana blockchain technology.
+          </p>
         </div>
         <div class="footer-section">
-          <h4 class="footer-subtitle">Buy</h4>
-          <ul class="footer-links">
-            <li><a href="/categories">Categories</a></li>
-            <li><a href="/deals">Daily Deals</a></li>
-            <li><a href="/gift-cards">Gift Cards</a></li>
-            <li><a href="/nft">NFT Marketplace</a></li>
+          <h4 class="footer-subtitle mobile-text-base sm:mobile-text-lg">Buy</h4>
+          <ul class="footer-links mobile-nav">
+            <li><a href="/categories" class="mobile-text-sm sm:mobile-text-base">Categories</a></li>
+            <li><a href="/deals" class="mobile-text-sm sm:mobile-text-base">Daily Deals</a></li>
+            <li><a href="/gift-cards" class="mobile-text-sm sm:mobile-text-base">Gift Cards</a></li>
+            <li><a href="/nft" class="mobile-text-sm sm:mobile-text-base">NFT Marketplace</a></li>
           </ul>
         </div>
         <div class="footer-section">
-          <h4 class="footer-subtitle">Sell</h4>
-          <ul class="footer-links">
-            <li><a href="/sell">Start Selling</a></li>
-            <li><a href="/seller/dashboard">Seller Dashboard</a></li>
-            <li><a href="/fees">Fees & Pricing</a></li>
+          <h4 class="footer-subtitle mobile-text-base sm:mobile-text-lg">Sell</h4>
+          <ul class="footer-links mobile-nav">
+            <li><a href="/sell" class="mobile-text-sm sm:mobile-text-base">Start Selling</a></li>
+            <li><a href="/seller/dashboard" class="mobile-text-sm sm:mobile-text-base">Seller Dashboard</a></li>
+            <li><a href="/fees" class="mobile-text-sm sm:mobile-text-base">Fees & Pricing</a></li>
           </ul>
         </div>
         <div class="footer-section">
-          <h4 class="footer-subtitle">Support</h4>
-          <ul class="footer-links">
-            <li><a href="/help">Help Center</a></li>
-            <li><a href="/contact">Contact Us</a></li>
-            <li><a href="/security">Security</a></li>
-            <li><a href="/wallet">Wallet Guide</a></li>
+          <h4 class="footer-subtitle mobile-text-base sm:mobile-text-lg">Support</h4>
+          <ul class="footer-links mobile-nav">
+            <li><a href="/help" class="mobile-text-sm sm:mobile-text-base">Help Center</a></li>
+            <li><a href="/contact" class="mobile-text-sm sm:mobile-text-base">Contact Us</a></li>
+            <li><a href="/security" class="mobile-text-sm sm:mobile-text-base">Security</a></li>
+            <li><a href="/wallet" class="mobile-text-sm sm:mobile-text-base">Wallet Guide</a></li>
           </ul>
         </div>
       </div>
       <div class="footer-bottom">
-        <p>&copy; 2025 Soladia. All rights reserved. Powered by Solana.</p>
+        <p class="mobile-text-xs sm:mobile-text-sm">
+          &copy; 2025 Soladia. All rights reserved. Powered by Solana.
+        </p>
       </div>
     </div>
   </footer>
@@ -217,7 +244,7 @@ const features = [
     const categoryCards = document.querySelectorAll('.category-card');
     
     categoryCards.forEach(card => {
-      card.addEventListener('click', function() {
+      card.addEventListener('click', function(this: HTMLElement) {
         const category = this.getAttribute('data-category');
         if (category) {
           window.location.href = `/categories/${category.toLowerCase().replace(/\s+/g, '-')}`;

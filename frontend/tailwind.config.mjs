@@ -2,6 +2,14 @@
 export default {
   content: ['./src/**/*.{astro,html,js,jsx,md,mdx,svelte,ts,tsx,vue}'],
   theme: {
+    screens: {
+      'xs': '320px',
+      'sm': '640px',
+      'md': '768px',
+      'lg': '1024px',
+      'xl': '1280px',
+      '2xl': '1536px',
+    },
     extend: {
       colors: {
         'soladia-primary': '#E60012',
@@ -12,11 +20,6 @@ export default {
         'soladia-dark': '#1A1A1A',
         'soladia-light': '#F8F9FA',
         'soladia-border': '#E1E5E9',
-        'soladia-dark-bg': '#0F0F0F',
-        'soladia-dark-surface': '#1A1A1A',
-        'soladia-dark-text': '#FFFFFF',
-        'soladia-dark-border': '#333333',
-        'soladia-dark-muted': '#666666',
       },
       fontFamily: {
         'soladia-primary': ['Inter', 'system-ui', 'sans-serif'],
@@ -29,6 +32,10 @@ export default {
         'soladia-lg': '1.5rem',
         'soladia-xl': '2rem',
         'soladia-2xl': '3rem',
+        'touch': '44px', // Minimum touch target size
+        'mobile': '1rem',
+        'tablet': '1.5rem',
+        'desktop': '2rem',
       },
       borderRadius: {
         'soladia-sm': '4px',
@@ -40,16 +47,31 @@ export default {
         'soladia': '0 4px 20px rgba(230, 0, 18, 0.15)',
         'soladia-lg': '0 8px 40px rgba(230, 0, 18, 0.25)',
         'soladia-card': '0 2px 12px rgba(0, 0, 0, 0.08)',
+        'mobile': '0 1px 3px rgba(0, 0, 0, 0.1)',
+        'mobile-lg': '0 4px 12px rgba(0, 0, 0, 0.15)',
       },
       backgroundImage: {
         'soladia-gradient': 'linear-gradient(135deg, #E60012 0%, #0066CC 100%)',
         'soladia-gradient-gold': 'linear-gradient(135deg, #FFD700 0%, #FFA500 100%)',
-        'soladia-gradient-dark': 'linear-gradient(135deg, #1A1A1A 0%, #333333 100%)',
+      },
+      fontSize: {
+        'mobile-xs': ['0.75rem', '1rem'],
+        'mobile-sm': ['0.875rem', '1.25rem'],
+        'mobile-base': ['1rem', '1.5rem'],
+        'mobile-lg': ['1.125rem', '1.75rem'],
+        'mobile-xl': ['1.25rem', '1.75rem'],
+        'mobile-2xl': ['1.5rem', '2rem'],
+        'mobile-3xl': ['1.875rem', '2.25rem'],
+        'mobile-4xl': ['2.25rem', '2.5rem'],
+        'mobile-5xl': ['3rem', '1'],
+        'mobile-6xl': ['3.75rem', '1'],
       },
       animation: {
         'fade-in': 'fadeIn 0.5s ease-in-out',
         'slide-up': 'slideUp 0.3s ease-out',
         'scale-in': 'scaleIn 0.2s ease-out',
+        'mobile-bounce': 'mobileBounce 0.6s ease-in-out',
+        'mobile-pulse': 'mobilePulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
       },
       keyframes: {
         fadeIn: {
@@ -64,6 +86,39 @@ export default {
           '0%': { transform: 'scale(0.95)', opacity: '0' },
           '100%': { transform: 'scale(1)', opacity: '1' },
         },
+        mobileBounce: {
+          '0%, 20%, 53%, 80%, 100%': { transform: 'translate3d(0,0,0)' },
+          '40%, 43%': { transform: 'translate3d(0, -8px, 0)' },
+          '70%': { transform: 'translate3d(0, -4px, 0)' },
+          '90%': { transform: 'translate3d(0, -2px, 0)' },
+        },
+        mobilePulse: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.5' },
+        },
+      },
+      minHeight: {
+        'touch': '44px',
+        'mobile': '48px',
+        'tablet': '52px',
+        'desktop': '56px',
+      },
+      minWidth: {
+        'touch': '44px',
+        'mobile': '48px',
+        'tablet': '52px',
+        'desktop': '56px',
+      },
+      maxWidth: {
+        'mobile': '320px',
+        'tablet': '768px',
+        'desktop': '1024px',
+        'wide': '1280px',
+      },
+      zIndex: {
+        'mobile-menu': '9999',
+        'mobile-modal': '10000',
+        'mobile-overlay': '9998',
       },
     },
   },
@@ -81,11 +136,6 @@ export default {
           background: 'rgba(255, 255, 255, 0.95)',
           'backdrop-filter': 'blur(20px)',
           'border': '1px solid rgba(255, 255, 255, 0.2)',
-        },
-        '.bg-glass-dark': {
-          background: 'rgba(26, 26, 26, 0.95)',
-          'backdrop-filter': 'blur(20px)',
-          'border': '1px solid rgba(255, 255, 255, 0.1)',
         },
         '.btn-soladia': {
           background: 'linear-gradient(135deg, #E60012 0%, #0066CC 100%)',
@@ -119,7 +169,6 @@ export default {
       addUtilities(newUtilities)
     }
   ],
-  darkMode: 'class',
   future: {
     hoverOnlyWhenSupported: true,
   },

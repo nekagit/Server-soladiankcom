@@ -1,6 +1,5 @@
 ---
 // Mobile Menu Component for responsive navigation
-import ThemeToggle from './ThemeToggle.astro';
 ---
 
 <div class="mobile-menu" id="mobile-menu">
@@ -58,10 +57,6 @@ import ThemeToggle from './ThemeToggle.astro';
       <a href="/auth" class="mobile-register-btn">Register</a>
     </div>
 
-    <!-- Mobile Theme Toggle -->
-    <div class="mobile-theme-toggle">
-      <ThemeToggle />
-    </div>
   </div>
 </div>
 
@@ -104,7 +99,8 @@ import ThemeToggle from './ThemeToggle.astro';
     position: absolute;
     top: 0;
     right: 0;
-    width: 320px;
+    width: 100%;
+    max-width: 320px;
     height: 100%;
     background: white;
     box-shadow: -4px 0 20px rgba(0, 0, 0, 0.1);
@@ -123,6 +119,7 @@ import ThemeToggle from './ThemeToggle.astro';
     align-items: center;
     padding: 1rem;
     border-bottom: 1px solid #E1E5E9;
+    min-height: 60px;
   }
 
   .mobile-logo {
@@ -138,6 +135,11 @@ import ThemeToggle from './ThemeToggle.astro';
     padding: 0.5rem;
     border-radius: 0.5rem;
     transition: background-color 0.2s ease;
+    min-width: 44px;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .mobile-menu-close:hover {
@@ -154,8 +156,9 @@ import ThemeToggle from './ThemeToggle.astro';
     padding: 0.75rem 1rem;
     border: 2px solid #E1E5E9;
     border-radius: 0.5rem;
-    font-size: 1rem;
+    font-size: 16px; /* Prevents zoom on iOS */
     transition: border-color 0.2s ease;
+    min-height: 44px;
   }
 
   .mobile-search-input:focus {
@@ -180,6 +183,9 @@ import ThemeToggle from './ThemeToggle.astro';
     text-decoration: none;
     font-weight: 500;
     transition: background-color 0.2s ease, color 0.2s ease;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
   }
 
   .mobile-nav-link:hover {
@@ -205,6 +211,10 @@ import ThemeToggle from './ThemeToggle.astro';
     border: 1px solid #E1E5E9;
     border-radius: 0.5rem;
     transition: all 0.2s ease;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .mobile-auth-link:hover {
@@ -222,6 +232,10 @@ import ThemeToggle from './ThemeToggle.astro';
     font-weight: 600;
     border-radius: 0.5rem;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .mobile-register-btn:hover {
@@ -229,12 +243,6 @@ import ThemeToggle from './ThemeToggle.astro';
     box-shadow: 0 4px 12px rgba(230, 0, 18, 0.3);
   }
 
-  .mobile-theme-toggle {
-    padding: 1rem;
-    border-top: 1px solid #E1E5E9;
-    display: flex;
-    justify-content: center;
-  }
 
   .mobile-menu-trigger {
     display: none;
@@ -250,46 +258,6 @@ import ThemeToggle from './ThemeToggle.astro';
     background: #F3F4F6;
   }
 
-  /* Dark Mode Styles */
-  .dark .mobile-menu-content {
-    background: #1A1A1A;
-  }
-
-  .dark .mobile-menu-header,
-  .dark .mobile-search,
-  .dark .mobile-user-actions,
-  .dark .mobile-theme-toggle {
-    border-color: #333333;
-  }
-
-  .dark .mobile-nav-link {
-    color: #D1D5DB;
-  }
-
-  .dark .mobile-nav-link:hover {
-    background: #374151;
-    color: #FFFFFF;
-  }
-
-  .dark .mobile-auth-link {
-    color: #9CA3AF;
-    border-color: #333333;
-  }
-
-  .dark .mobile-auth-link:hover {
-    background: #374151;
-    color: #D1D5DB;
-  }
-
-  .dark .mobile-search-input {
-    background: #374151;
-    border-color: #4B5563;
-    color: #FFFFFF;
-  }
-
-  .dark .mobile-search-input:focus {
-    border-color: #3B82F6;
-  }
 
   /* Responsive Design */
   @media (max-width: 768px) {
@@ -308,6 +276,13 @@ import ThemeToggle from './ThemeToggle.astro';
 <script>
   // Mobile Menu Functionality
   class MobileMenu {
+    menu;
+    trigger;
+    close;
+    overlay;
+    searchInput;
+    searchButton;
+    
     constructor() {
       this.menu = document.getElementById('mobile-menu');
       this.trigger = document.getElementById('mobile-menu-trigger');
@@ -337,7 +312,7 @@ import ThemeToggle from './ThemeToggle.astro';
       }
       
       if (this.searchInput) {
-        this.searchInput.addEventListener('keypress', (e) => {
+        this.searchInput.addEventListener('keypress', (e: KeyboardEvent) => {
           if (e.key === 'Enter') {
             this.handleSearch();
           }
@@ -345,7 +320,7 @@ import ThemeToggle from './ThemeToggle.astro';
       }
 
       // Close menu on escape key
-      document.addEventListener('keydown', (e) => {
+      document.addEventListener('keydown', (e: KeyboardEvent) => {
         if (e.key === 'Escape' && this.menu?.classList.contains('active')) {
           this.closeMenu();
         }
@@ -374,7 +349,7 @@ import ThemeToggle from './ThemeToggle.astro';
     }
 
     handleSearch() {
-      const query = this.searchInput?.value.trim();
+      const query = (this.searchInput as HTMLInputElement)?.value.trim();
       if (query) {
         window.location.href = `/search?q=${encodeURIComponent(query)}`;
       }

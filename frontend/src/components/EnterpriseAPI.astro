@@ -687,66 +687,6 @@ const webhooks = [
     background: white;
   }
 
-  /* Dark mode */
-  .dark .enterprise-api {
-    background: #1A1A1A;
-    border-color: #333333;
-  }
-
-  .dark .api-title {
-    color: #FFFFFF;
-  }
-
-  .dark .api-subtitle {
-    color: #666666;
-  }
-
-  .dark .section-title {
-    color: #FFFFFF;
-  }
-
-  .dark .api-key-card,
-  .dark .webhook-card,
-  .dark .usage-card {
-    background: #2D2D2D;
-    border-color: #333333;
-  }
-
-  .dark .key-name,
-  .dark .webhook-name,
-  .dark .usage-title {
-    color: #FFFFFF;
-  }
-
-  .dark .key-value code,
-  .dark .url-value {
-    background: #333333;
-    color: #FFFFFF;
-  }
-
-  .dark .meta-label,
-  .dark .url-label,
-  .dark .events-label,
-  .dark .stat-label,
-  .dark .detail-label {
-    color: #666666;
-  }
-
-  .dark .meta-value,
-  .dark .stat-value,
-  .dark .detail-value {
-    color: #FFFFFF;
-  }
-
-  .dark .progress-bar {
-    background: #333333;
-  }
-
-  .dark .period-select {
-    background: #2D2D2D;
-    border-color: #333333;
-    color: #FFFFFF;
-  }
 </style>
 
 <script>
@@ -777,8 +717,11 @@ const webhooks = [
     const periodSelect = document.getElementById('usage-period');
     if (periodSelect) {
       periodSelect.addEventListener('change', (e) => {
-        console.log('Usage period changed to:', e.target.value);
-        // Here you would typically fetch new data based on the selected period
+        const target = e.target as HTMLSelectElement;
+        if (target) {
+          console.log('Usage period changed to:', target.value);
+          // Here you would typically fetch new data based on the selected period
+        }
       });
     }
 

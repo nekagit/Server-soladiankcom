@@ -379,7 +379,7 @@ const aiRecommendations = [
         if (this.currentQuery.length >= 2) {
           this.performSearch();
         }
-      }, 500);
+      }, 500) as any;
     }
 
     private filterSuggestions(query: string) {
@@ -979,7 +979,7 @@ const aiRecommendations = [
 <script>
   declare global {
     interface Window {
-      getAdvancedSearch: () => AdvancedSearch;
+      getAdvancedSearch: () => any;
     }
   }
 </script>
