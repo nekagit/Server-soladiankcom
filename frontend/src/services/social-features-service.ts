@@ -901,6 +901,193 @@ export class SocialFeaturesService {
     });
     this.saveSocialStateToStorage();
   }
+
+  /**
+   * Get trending items
+   */
+  async getTrendingItems(limit: number = 20): Promise<SocialPost[]> {
+    try {
+      const token = await this.authService.getToken();
+      const response = await fetch(`${this.API_BASE_URL}/api/social/trending?limit=${limit}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        return [];
+      }
+
+      const data = await response.json();
+      return data.map((post: any) => this.transformPost(post));
+    } catch (error) {
+      console.error('Failed to get trending items:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get popular creators
+   */
+  async getPopularCreators(limit: number = 20): Promise<SocialUser[]> {
+    try {
+      const token = await this.authService.getToken();
+      const response = await fetch(`${this.API_BASE_URL}/api/social/creators/popular?limit=${limit}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        return [];
+      }
+
+      const data = await response.json();
+      return data.map((user: any) => this.transformUser(user));
+    } catch (error) {
+      console.error('Failed to get popular creators:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Get featured collections
+   */
+  async getFeaturedCollections(limit: number = 20): Promise<any[]> {
+    try {
+      const token = await this.authService.getToken();
+      const response = await fetch(`${this.API_BASE_URL}/api/social/collections/featured?limit=${limit}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        return [];
+      }
+
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error('Failed to get featured collections:', error);
+      return [];
+    }
+  }
+
+  /**
+   * Check if user is following another user
+   */
+  async isFollowing(userId: string, targetUserId: string): Promise<boolean> {
+    try {
+      const token = await this.authService.getToken();
+      const response = await fetch(`${this.API_BASE_URL}/api/social/users/${userId}/following/${targetUserId}`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        return false;
+      }
+
+      const data = await response.json();
+      return data.isFollowing || false;
+    } catch (error) {
+      console.error('Failed to check following status:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Mark all notifications as read
+   */
+  async markAllNotificationsAsRead(): Promise<boolean> {
+    try {
+      const token = await this.authService.getToken();
+      const response = await fetch(`${this.API_BASE_URL}/api/social/notifications/read-all`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      return response.ok;
+    } catch (error) {
+      console.error('Failed to mark all notifications as read:', error);
+      return false;
+    }
+  }
+
+  /**
+   * Get social stats
+   */
+  async getSocialStats(): Promise<any> {
+    try {
+      const token = await this.authService.getToken();
+      const response = await fetch(`${this.API_BASE_URL}/api/social/stats`, {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
+
+      if (!response.ok) {
+        return {
+          totalUsers: 0,
+          totalPosts: 0,
+          totalLikes: 0,
+          totalComments: 0,
+          activeUsers: 0,
+        };
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error('Failed to get social stats:', error);
+      return {
+        totalUsers: 0,
+        totalPosts: 0,
+        totalLikes: 0,
+        totalComments: 0,
+        activeUsers: 0,
+      };
+    }
+  }
+
+  /**
+   * Save user data to localStorage
+   */
+  saveUserData(): void {
+    this.saveSocialStateToStorage();
+  }
+
+  /**
+   * Clear all user data
+   */
+  clearUserData(): void {
+    this.clearSocialData();
+  }
+
+  /**
+   * Export user data
+   */
+  exportUserData(): any {
+    return {
+      ...this.state,
+      exportedAt: new Date().toISOString(),
+    };
+  }
+
+  /**
+   * Import user data
+   */
+  importUserData(data: any): void {
+    try {
+      this.setState(data);
+      this.saveSocialStateToStorage();
+    } catch (error) {
+      console.error('Failed to import user data:', error);
+    }
+  }
 }
 
 // Export singleton instance

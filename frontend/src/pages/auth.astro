@@ -3,8 +3,8 @@ import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
 
 const demoCredentials = {
-  email: 'demo@soladia.com',
-  password: 'demo123'
+  email: 'admin@example.com',
+  password: 'admin123'
 };
 ---
 
@@ -300,10 +300,37 @@ const demoCredentials = {
       const email = (document.getElementById('signin-email') as HTMLInputElement)?.value;
       const password = (document.getElementById('signin-password') as HTMLInputElement)?.value;
       
-      // Simulate login
-      console.log('Signing in with:', { email, password });
-      // In a real app, you would call the API here
-      alert('Login functionality will be implemented with the backend API');
+      try {
+        console.log('Signing in with:', { email, password });
+        
+        const response = await fetch('http://localhost:8000/api/auth/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, password }),
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Login successful:', data);
+          
+          // Store the token in localStorage
+          localStorage.setItem('auth_token', data.access_token);
+          localStorage.setItem('user_data', JSON.stringify(data.user));
+          
+          alert(`Welcome back, ${data.user.full_name || data.user.username}! Login successful.`);
+          
+          // Redirect to dashboard or home page
+          window.location.href = '/';
+        } else {
+          const errorData = await response.json();
+          alert(`Login failed: ${errorData.detail || 'Invalid credentials'}`);
+        }
+      } catch (error) {
+        console.error('Login error:', error);
+        alert('Login failed. Please check your connection and try again.');
+      }
     });
 
     signupForm?.addEventListener('submit', async (e) => {
@@ -316,10 +343,39 @@ const demoCredentials = {
         password: (document.getElementById('signup-password') as HTMLInputElement)?.value
       };
       
-      // Simulate registration
-      console.log('Signing up with:', userData);
-      // In a real app, you would call the API here
-      alert('Registration functionality will be implemented with the backend API');
+      try {
+        console.log('Signing up with:', userData);
+        
+        const response = await fetch('http://localhost:8000/api/users/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            wallet_address: 'demo-wallet-address', // For demo purposes
+            username: userData.username,
+            email: userData.email,
+            full_name: `${userData.first_name} ${userData.last_name}`,
+            user_type: 'both'
+          }),
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          console.log('Registration successful:', data);
+          alert(`Welcome to Soladia, ${userData.first_name}! Registration successful.`);
+          
+          // Auto-fill the login form
+          (document.getElementById('signin-email') as HTMLInputElement).value = userData.email;
+          (document.getElementById('signin-password') as HTMLInputElement).value = userData.password;
+        } else {
+          const errorData = await response.json();
+          alert(`Registration failed: ${errorData.detail || 'Please try again'}`);
+        }
+      } catch (error) {
+        console.error('Registration error:', error);
+        alert('Registration failed. Please check your connection and try again.');
+      }
     });
 
     // Phantom wallet connection
