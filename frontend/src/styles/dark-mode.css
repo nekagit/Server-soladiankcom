@@ -1,0 +1,471 @@
+/* Dark Mode Implementation for Soladia Marketplace */
+/* Comprehensive dark mode theming across all components */
+
+:root {
+  /* Light mode colors (default) */
+  --soladia-bg-primary: #FFFFFF;
+  --soladia-bg-secondary: #F8F9FA;
+  --soladia-bg-tertiary: #E9ECEF;
+  --soladia-text-primary: #212529;
+  --soladia-text-secondary: #6C757D;
+  --soladia-text-tertiary: #ADB5BD;
+  --soladia-border: #DEE2E6;
+  --soladia-border-light: #E9ECEF;
+  --soladia-shadow: rgba(0, 0, 0, 0.1);
+  --soladia-shadow-lg: rgba(0, 0, 0, 0.15);
+  --soladia-overlay: rgba(0, 0, 0, 0.5);
+  
+  /* Brand colors remain consistent */
+  --soladia-primary: #E60012;
+  --soladia-secondary: #0066CC;
+  --soladia-accent: #FFD700;
+  --soladia-success: #00A650;
+  --soladia-warning: #FF8C00;
+  --soladia-error: #DC2626;
+  --soladia-info: #0EA5E9;
+  
+  /* Gradients */
+  --soladia-gradient-primary: linear-gradient(135deg, #E60012 0%, #FF1744 100%);
+  --soladia-gradient-secondary: linear-gradient(135deg, #0066CC 0%, #2196F3 100%);
+  --soladia-gradient-accent: linear-gradient(135deg, #FFD700 0%, #FFC107 100%);
+  
+  /* Shadows */
+  --soladia-shadow-primary: 0 4px 12px rgba(230, 0, 18, 0.3);
+  --soladia-shadow-primary-hover: 0 8px 24px rgba(230, 0, 18, 0.4);
+  --soladia-shadow-card: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --soladia-shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.15);
+  
+  /* Transitions */
+  --soladia-transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --soladia-transition-fast: all 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+  --soladia-transition-slow: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Dark mode variables */
+[data-theme="dark"] {
+  /* Background colors */
+  --soladia-bg-primary: #0F0F0F;
+  --soladia-bg-secondary: #1A1A1A;
+  --soladia-bg-tertiary: #2A2A2A;
+  --soladia-bg-quaternary: #3A3A3A;
+  
+  /* Text colors */
+  --soladia-text-primary: #FFFFFF;
+  --soladia-text-secondary: #B3B3B3;
+  --soladia-text-tertiary: #808080;
+  --soladia-text-muted: #666666;
+  
+  /* Border colors */
+  --soladia-border: #333333;
+  --soladia-border-light: #2A2A2A;
+  --soladia-border-dark: #404040;
+  
+  /* Shadow adjustments for dark mode */
+  --soladia-shadow: rgba(0, 0, 0, 0.3);
+  --soladia-shadow-lg: rgba(0, 0, 0, 0.5);
+  --soladia-overlay: rgba(0, 0, 0, 0.7);
+  
+  /* Card shadows */
+  --soladia-shadow-card: 0 2px 8px rgba(0, 0, 0, 0.3);
+  --soladia-shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.4);
+  
+  /* Brand colors with dark mode adjustments */
+  --soladia-primary: #FF1744;
+  --soladia-secondary: #2196F3;
+  --soladia-accent: #FFC107;
+  
+  /* Success, warning, error colors adjusted for dark mode */
+  --soladia-success: #4CAF50;
+  --soladia-warning: #FF9800;
+  --soladia-error: #F44336;
+  --soladia-info: #03A9F4;
+  
+  /* Gradients adjusted for dark mode */
+  --soladia-gradient-primary: linear-gradient(135deg, #FF1744 0%, #E91E63 100%);
+  --soladia-gradient-secondary: linear-gradient(135deg, #2196F3 0%, #03A9F4 100%);
+  --soladia-gradient-accent: linear-gradient(135deg, #FFC107 0%, #FF9800 100%);
+}
+
+/* Dark mode base styles */
+[data-theme="dark"] {
+  color-scheme: dark;
+}
+
+[data-theme="dark"] body {
+  background-color: var(--soladia-bg-primary);
+  color: var(--soladia-text-primary);
+}
+
+/* Dark mode component overrides */
+[data-theme="dark"] .card,
+[data-theme="dark"] .modal,
+[data-theme="dark"] .dropdown,
+[data-theme="dark"] .tooltip {
+  background-color: var(--soladia-bg-secondary);
+  border-color: var(--soladia-border);
+  color: var(--soladia-text-primary);
+}
+
+[data-theme="dark"] .card:hover,
+[data-theme="dark"] .modal:hover,
+[data-theme="dark"] .dropdown:hover {
+  box-shadow: var(--soladia-shadow-card-hover);
+}
+
+/* Dark mode form elements */
+[data-theme="dark"] input,
+[data-theme="dark"] textarea,
+[data-theme="dark"] select {
+  background-color: var(--soladia-bg-tertiary);
+  border-color: var(--soladia-border);
+  color: var(--soladia-text-primary);
+}
+
+[data-theme="dark"] input:focus,
+[data-theme="dark"] textarea:focus,
+[data-theme="dark"] select:focus {
+  border-color: var(--soladia-primary);
+  box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.1);
+}
+
+[data-theme="dark"] input::placeholder,
+[data-theme="dark"] textarea::placeholder {
+  color: var(--soladia-text-tertiary);
+}
+
+/* Dark mode buttons */
+[data-theme="dark"] .btn-primary {
+  background: var(--soladia-gradient-primary);
+  color: white;
+  border: none;
+}
+
+[data-theme="dark"] .btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--soladia-shadow-primary-hover);
+}
+
+[data-theme="dark"] .btn-secondary {
+  background-color: var(--soladia-bg-tertiary);
+  color: var(--soladia-text-primary);
+  border: 2px solid var(--soladia-border);
+}
+
+[data-theme="dark"] .btn-secondary:hover {
+  background-color: var(--soladia-bg-quaternary);
+  border-color: var(--soladia-text-primary);
+}
+
+[data-theme="dark"] .btn-outline {
+  background-color: transparent;
+  color: var(--soladia-text-primary);
+  border: 2px solid var(--soladia-border);
+}
+
+[data-theme="dark"] .btn-outline:hover {
+  background-color: var(--soladia-bg-secondary);
+  border-color: var(--soladia-text-primary);
+}
+
+/* Dark mode navigation */
+[data-theme="dark"] .navbar,
+[data-theme="dark"] .nav-tabs,
+[data-theme="dark"] .breadcrumb {
+  background-color: var(--soladia-bg-secondary);
+  border-color: var(--soladia-border);
+}
+
+[data-theme="dark"] .nav-link {
+  color: var(--soladia-text-secondary);
+}
+
+[data-theme="dark"] .nav-link:hover,
+[data-theme="dark"] .nav-link.active {
+  color: var(--soladia-text-primary);
+  background-color: var(--soladia-bg-tertiary);
+}
+
+/* Dark mode tables */
+[data-theme="dark"] table {
+  background-color: var(--soladia-bg-secondary);
+  color: var(--soladia-text-primary);
+}
+
+[data-theme="dark"] th {
+  background-color: var(--soladia-bg-tertiary);
+  color: var(--soladia-text-primary);
+  border-color: var(--soladia-border);
+}
+
+[data-theme="dark"] td {
+  border-color: var(--soladia-border);
+  color: var(--soladia-text-secondary);
+}
+
+[data-theme="dark"] tr:hover {
+  background-color: var(--soladia-bg-tertiary);
+}
+
+/* Dark mode alerts */
+[data-theme="dark"] .alert-success {
+  background-color: rgba(76, 175, 80, 0.1);
+  border-color: var(--soladia-success);
+  color: var(--soladia-success);
+}
+
+[data-theme="dark"] .alert-warning {
+  background-color: rgba(255, 152, 0, 0.1);
+  border-color: var(--soladia-warning);
+  color: var(--soladia-warning);
+}
+
+[data-theme="dark"] .alert-error {
+  background-color: rgba(244, 67, 54, 0.1);
+  border-color: var(--soladia-error);
+  color: var(--soladia-error);
+}
+
+[data-theme="dark"] .alert-info {
+  background-color: rgba(3, 169, 244, 0.1);
+  border-color: var(--soladia-info);
+  color: var(--soladia-info);
+}
+
+/* Dark mode modals */
+[data-theme="dark"] .modal-backdrop {
+  background-color: var(--soladia-overlay);
+}
+
+[data-theme="dark"] .modal-content {
+  background-color: var(--soladia-bg-secondary);
+  border-color: var(--soladia-border);
+  color: var(--soladia-text-primary);
+}
+
+[data-theme="dark"] .modal-header {
+  border-color: var(--soladia-border);
+}
+
+[data-theme="dark"] .modal-footer {
+  border-color: var(--soladia-border);
+}
+
+/* Dark mode dropdowns */
+[data-theme="dark"] .dropdown-menu {
+  background-color: var(--soladia-bg-secondary);
+  border-color: var(--soladia-border);
+  box-shadow: var(--soladia-shadow-lg);
+}
+
+[data-theme="dark"] .dropdown-item {
+  color: var(--soladia-text-primary);
+}
+
+[data-theme="dark"] .dropdown-item:hover {
+  background-color: var(--soladia-bg-tertiary);
+  color: var(--soladia-text-primary);
+}
+
+[data-theme="dark"] .dropdown-divider {
+  border-color: var(--soladia-border);
+}
+
+/* Dark mode tooltips */
+[data-theme="dark"] .tooltip {
+  background-color: var(--soladia-bg-quaternary);
+  color: var(--soladia-text-primary);
+  border: 1px solid var(--soladia-border);
+}
+
+[data-theme="dark"] .tooltip-arrow::before {
+  border-color: var(--soladia-border) transparent;
+}
+
+/* Dark mode progress bars */
+[data-theme="dark"] .progress {
+  background-color: var(--soladia-bg-tertiary);
+}
+
+[data-theme="dark"] .progress-bar {
+  background: var(--soladia-gradient-primary);
+}
+
+/* Dark mode badges */
+[data-theme="dark"] .badge {
+  background-color: var(--soladia-bg-quaternary);
+  color: var(--soladia-text-primary);
+  border: 1px solid var(--soladia-border);
+}
+
+[data-theme="dark"] .badge-primary {
+  background: var(--soladia-gradient-primary);
+  color: white;
+}
+
+[data-theme="dark"] .badge-secondary {
+  background-color: var(--soladia-bg-tertiary);
+  color: var(--soladia-text-primary);
+}
+
+/* Dark mode code blocks */
+[data-theme="dark"] code,
+[data-theme="dark"] pre {
+  background-color: var(--soladia-bg-tertiary);
+  color: var(--soladia-text-primary);
+  border: 1px solid var(--soladia-border);
+}
+
+[data-theme="dark"] pre {
+  background-color: var(--soladia-bg-quaternary);
+}
+
+/* Dark mode scrollbars */
+[data-theme="dark"] ::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-track {
+  background: var(--soladia-bg-secondary);
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb {
+  background: var(--soladia-bg-quaternary);
+  border-radius: 4px;
+}
+
+[data-theme="dark"] ::-webkit-scrollbar-thumb:hover {
+  background: var(--soladia-text-tertiary);
+}
+
+/* Dark mode selection */
+[data-theme="dark"] ::selection {
+  background-color: rgba(255, 23, 68, 0.3);
+  color: var(--soladia-text-primary);
+}
+
+/* Dark mode focus states */
+[data-theme="dark"] *:focus {
+  outline: 2px solid var(--soladia-primary);
+  outline-offset: 2px;
+}
+
+/* Dark mode transitions */
+[data-theme="dark"] * {
+  transition: var(--soladia-transition);
+}
+
+/* Dark mode specific component overrides */
+[data-theme="dark"] .soladia-card {
+  background: var(--soladia-bg-secondary);
+  border: 1px solid var(--soladia-border);
+  box-shadow: var(--soladia-shadow-card);
+}
+
+[data-theme="dark"] .soladia-card:hover {
+  box-shadow: var(--soladia-shadow-card-hover);
+  transform: translateY(-2px);
+}
+
+[data-theme="dark"] .soladia-button {
+  background: var(--soladia-gradient-primary);
+  color: white;
+  border: none;
+  box-shadow: var(--soladia-shadow-primary);
+}
+
+[data-theme="dark"] .soladia-button:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--soladia-shadow-primary-hover);
+}
+
+[data-theme="dark"] .soladia-input {
+  background: var(--soladia-bg-tertiary);
+  border: 1px solid var(--soladia-border);
+  color: var(--soladia-text-primary);
+}
+
+[data-theme="dark"] .soladia-input:focus {
+  border-color: var(--soladia-primary);
+  box-shadow: 0 0 0 3px rgba(255, 23, 68, 0.1);
+}
+
+/* Dark mode utility classes */
+[data-theme="dark"] .text-muted {
+  color: var(--soladia-text-muted) !important;
+}
+
+[data-theme="dark"] .bg-light {
+  background-color: var(--soladia-bg-secondary) !important;
+}
+
+[data-theme="dark"] .bg-white {
+  background-color: var(--soladia-bg-primary) !important;
+}
+
+[data-theme="dark"] .border {
+  border-color: var(--soladia-border) !important;
+}
+
+[data-theme="dark"] .border-light {
+  border-color: var(--soladia-border-light) !important;
+}
+
+/* Dark mode animations */
+[data-theme="dark"] .fade-in {
+  animation: fadeInDark 0.3s ease-in-out;
+}
+
+@keyframes fadeInDark {
+  from {
+    opacity: 0;
+    background-color: var(--soladia-bg-primary);
+  }
+  to {
+    opacity: 1;
+    background-color: var(--soladia-bg-secondary);
+  }
+}
+
+[data-theme="dark"] .slide-in {
+  animation: slideInDark 0.3s ease-out;
+}
+
+@keyframes slideInDark {
+  from {
+    transform: translateY(-10px);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Dark mode responsive adjustments */
+@media (max-width: 768px) {
+  [data-theme="dark"] .mobile-nav {
+    background-color: var(--soladia-bg-secondary);
+    border-top: 1px solid var(--soladia-border);
+  }
+  
+  [data-theme="dark"] .mobile-nav-item {
+    color: var(--soladia-text-secondary);
+  }
+  
+  [data-theme="dark"] .mobile-nav-item.active {
+    color: var(--soladia-primary);
+    background-color: var(--soladia-bg-tertiary);
+  }
+}
+
+/* Dark mode print styles */
+@media print {
+  [data-theme="dark"] {
+    --soladia-bg-primary: #FFFFFF;
+    --soladia-bg-secondary: #F8F9FA;
+    --soladia-text-primary: #000000;
+    --soladia-text-secondary: #6C757D;
+    --soladia-border: #DEE2E6;
+  }
+}

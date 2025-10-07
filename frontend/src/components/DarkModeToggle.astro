@@ -1,0 +1,379 @@
+---
+// Dark Mode Toggle Component
+// Provides theme switching functionality with smooth transitions
+---
+
+<div class="dark-mode-toggle" data-testid="dark-mode-toggle">
+  <button 
+    class="toggle-button" 
+    id="theme-toggle"
+    aria-label="Toggle dark mode"
+    title="Toggle dark mode"
+  >
+    <div class="toggle-icon">
+      <!-- Sun icon for light mode -->
+      <svg class="sun-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="5"/>
+        <line x1="12" y1="1" x2="12" y2="3"/>
+        <line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/>
+        <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/>
+        <line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/>
+        <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+      
+      <!-- Moon icon for dark mode -->
+      <svg class="moon-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </div>
+    
+    <span class="toggle-text">
+      <span class="light-text">Light</span>
+      <span class="dark-text">Dark</span>
+    </span>
+  </button>
+</div>
+
+<style>
+  .dark-mode-toggle {
+    position: relative;
+    display: inline-block;
+  }
+
+  .toggle-button {
+    display: flex;
+    align-items: center;
+    gap: var(--soladia-space-2);
+    padding: var(--soladia-space-2) var(--soladia-space-3);
+    background: var(--soladia-bg-secondary);
+    border: 2px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    color: var(--soladia-text-primary);
+    cursor: pointer;
+    transition: var(--soladia-transition);
+    font-family: var(--soladia-font-primary);
+    font-size: var(--soladia-text-sm);
+    font-weight: var(--soladia-font-medium);
+    min-width: 80px;
+    justify-content: center;
+  }
+
+  .toggle-button:hover {
+    background: var(--soladia-bg-tertiary);
+    border-color: var(--soladia-primary);
+    transform: translateY(-1px);
+    box-shadow: var(--soladia-shadow-card);
+  }
+
+  .toggle-button:focus {
+    outline: none;
+    border-color: var(--soladia-primary);
+    box-shadow: 0 0 0 3px rgba(230, 0, 18, 0.1);
+  }
+
+  .toggle-button:active {
+    transform: translateY(0);
+  }
+
+  .toggle-icon {
+    position: relative;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .sun-icon,
+  .moon-icon {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: var(--soladia-transition);
+  }
+
+  .sun-icon {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  .moon-icon {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(180deg);
+  }
+
+  .toggle-text {
+    position: relative;
+    display: flex;
+    align-items: center;
+    min-width: 40px;
+    justify-content: center;
+  }
+
+  .light-text,
+  .dark-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: var(--soladia-transition);
+    white-space: nowrap;
+  }
+
+  .light-text {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateX(0);
+  }
+
+  .dark-text {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateX(20px);
+  }
+
+  /* Dark mode state */
+  [data-theme="dark"] .toggle-button {
+    background: var(--soladia-bg-tertiary);
+    border-color: var(--soladia-border-dark);
+    color: var(--soladia-text-primary);
+  }
+
+  [data-theme="dark"] .toggle-button:hover {
+    background: var(--soladia-bg-quaternary);
+    border-color: var(--soladia-primary);
+  }
+
+  [data-theme="dark"] .sun-icon {
+    opacity: 0;
+    transform: translate(-50%, -50%) rotate(-180deg);
+  }
+
+  [data-theme="dark"] .moon-icon {
+    opacity: 1;
+    transform: translate(-50%, -50%) rotate(0deg);
+  }
+
+  [data-theme="dark"] .light-text {
+    opacity: 0;
+    transform: translate(-50%, -50%) translateX(-20px);
+  }
+
+  [data-theme="dark"] .dark-text {
+    opacity: 1;
+    transform: translate(-50%, -50%) translateX(0);
+  }
+
+  /* Animation for theme transition */
+  .theme-transitioning * {
+    transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  /* Compact version */
+  .dark-mode-toggle.compact .toggle-button {
+    padding: var(--soladia-space-1) var(--soladia-space-2);
+    min-width: 60px;
+    font-size: var(--soladia-text-xs);
+  }
+
+  .dark-mode-toggle.compact .toggle-text {
+    display: none;
+  }
+
+  .dark-mode-toggle.compact .toggle-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  .dark-mode-toggle.compact .sun-icon,
+  .dark-mode-toggle.compact .moon-icon {
+    width: 18px;
+    height: 18px;
+  }
+
+  /* Icon-only version */
+  .dark-mode-toggle.icon-only .toggle-button {
+    padding: var(--soladia-space-2);
+    min-width: 44px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+  }
+
+  .dark-mode-toggle.icon-only .toggle-text {
+    display: none;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 768px) {
+    .toggle-button {
+      padding: var(--soladia-space-1) var(--soladia-space-2);
+      font-size: var(--soladia-text-xs);
+      min-width: 70px;
+    }
+
+    .toggle-text {
+      min-width: 35px;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .dark-mode-toggle:not(.icon-only) .toggle-text {
+      display: none;
+    }
+
+    .dark-mode-toggle:not(.icon-only) .toggle-button {
+      min-width: 44px;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      padding: var(--soladia-space-2);
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .toggle-button {
+      border-width: 3px;
+    }
+
+    .toggle-button:focus {
+      box-shadow: 0 0 0 4px rgba(230, 0, 18, 0.3);
+    }
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    .toggle-button,
+    .sun-icon,
+    .moon-icon,
+    .light-text,
+    .dark-text {
+      transition: none;
+    }
+
+    .theme-transitioning * {
+      transition: none;
+    }
+  }
+
+  /* Print styles */
+  @media print {
+    .dark-mode-toggle {
+      display: none;
+    }
+  }
+</style>
+
+<script>
+  class DarkModeToggle {
+    private toggleButton: HTMLButtonElement;
+    private currentTheme: string;
+    private isTransitioning: boolean = false;
+
+    constructor() {
+      this.toggleButton = document.getElementById('theme-toggle') as HTMLButtonElement;
+      this.currentTheme = this.getStoredTheme() || this.getSystemTheme();
+      
+      this.init();
+    }
+
+    private init(): void {
+      this.setTheme(this.currentTheme);
+      this.setupEventListeners();
+      this.updateButtonState();
+    }
+
+    private setupEventListeners(): void {
+      this.toggleButton.addEventListener('click', () => {
+        this.toggleTheme();
+      });
+
+      // Listen for system theme changes
+      window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+        if (!this.getStoredTheme()) {
+          this.setTheme(e.matches ? 'dark' : 'light');
+        }
+      });
+
+      // Listen for storage changes (sync across tabs)
+      window.addEventListener('storage', (e) => {
+        if (e.key === 'soladia-theme') {
+          this.setTheme(e.newValue || 'light');
+        }
+      });
+    }
+
+    private toggleTheme(): void {
+      const newTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+      this.setTheme(newTheme);
+    }
+
+    private setTheme(theme: string): void {
+      if (this.isTransitioning) return;
+
+      this.isTransitioning = true;
+      this.currentTheme = theme;
+
+      // Add transition class to body
+      document.body.classList.add('theme-transitioning');
+
+      // Set theme attribute
+      document.documentElement.setAttribute('data-theme', theme);
+
+      // Store theme preference
+      localStorage.setItem('soladia-theme', theme);
+
+      // Update button state
+      this.updateButtonState();
+
+      // Dispatch custom event
+      window.dispatchEvent(new CustomEvent('themechange', {
+        detail: { theme }
+      }));
+
+      // Remove transition class after animation
+      setTimeout(() => {
+        document.body.classList.remove('theme-transitioning');
+        this.isTransitioning = false;
+      }, 300);
+    }
+
+    private updateButtonState(): void {
+      const isDark = this.currentTheme === 'dark';
+      
+      // Update ARIA attributes
+      this.toggleButton.setAttribute('aria-pressed', isDark.toString());
+      this.toggleButton.setAttribute('title', `Switch to ${isDark ? 'light' : 'dark'} mode`);
+      
+      // Update button text for screen readers
+      this.toggleButton.setAttribute('aria-label', `Switch to ${isDark ? 'light' : 'dark'} mode`);
+    }
+
+    private getStoredTheme(): string | null {
+      try {
+        return localStorage.getItem('soladia-theme');
+      } catch {
+        return null;
+      }
+    }
+
+    private getSystemTheme(): string {
+      return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+
+    public getCurrentTheme(): string {
+      return this.currentTheme;
+    }
+  }
+
+  // Initialize dark mode toggle when DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    new DarkModeToggle();
+  });
+
+  // Export for external use
+  (window as any).DarkModeToggle = DarkModeToggle;
+</script>

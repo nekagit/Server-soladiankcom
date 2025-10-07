@@ -1,71 +1,64 @@
-// API service for Soladia marketplace
-import type { 
-  ApiResponse, 
-  PaginatedResponse, 
-  Product, 
-  Category, 
-  User, 
-  Order, 
-  Review, 
-  Watchlist,
-  SearchResults,
-  SearchFilters,
-  LoginRequest,
-  RegisterRequest,
-  AuthResponse,
-  CartItem
-} from '../types';
+/**
+ * Comprehensive API service for Soladia Marketplace
+ */
 
-const API_BASE_URL = import.meta.env.PUBLIC_API_BASE_URL || 'http://localhost:8000';
-
-class ApiError extends Error {
-  constructor(
-    message: string,
-    public status: number,
-    public code?: string,
-    public details?: any
-  ) {
-    super(message);
-    this.name = 'ApiError';
-  }
+export interface ApiResponse<T = any> {
+  success: boolean;
+  data?: T;
+  error?: string;
+  message?: string;
+  status: number;
 }
 
-class ApiService {
-  private baseURL: string;
+export interface PaginatedResponse<T> extends ApiResponse<T[]> {
+  pagination: {
+    page: number;
+    limit: number;
+    total: number;
+    totalPages: number;
+  };
+}
+
+export interface ApiError {
+  message: string;
+  code?: string;
+  details?: any;
+}
+
+export class ApiService {
+  private baseUrl: string;
   private token: string | null = null;
 
-  constructor(baseURL: string = API_BASE_URL) {
-    this.baseURL = baseURL;
-    this.token = this.getStoredToken();
+  constructor(baseUrl: string = '/api') {
+    this.baseUrl = baseUrl;
+    this.loadToken();
   }
 
-  private getStoredToken(): string | null {
+  private loadToken(): void {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem('access_token');
+      this.token = localStorage.getItem('auth_token');
     }
-    return null;
   }
 
-  private setToken(token: string): void {
+  public setToken(token: string): void {
     this.token = token;
     if (typeof window !== 'undefined') {
-      localStorage.setItem('access_token', token);
+      localStorage.setItem('auth_token', token);
     }
   }
 
-  private clearToken(): void {
+  public clearToken(): void {
     this.token = null;
     if (typeof window !== 'undefined') {
-      localStorage.removeItem('access_token');
-      localStorage.removeItem('refresh_token');
+      localStorage.removeItem('auth_token');
     }
   }
 
   private async request<T>(
     endpoint: string,
     options: RequestInit = {}
-  ): Promise<T> {
-    const url = `${this.baseURL}${endpoint}`;
+  ): Promise<ApiResponse<T>> {
+    const url = `${this.baseUrl}${endpoint}`;
     
     const headers: HeadersInit = {
       'Content-Type': 'application/json',
@@ -76,286 +69,154 @@ class ApiService {
       headers.Authorization = `Bearer ${this.token}`;
     }
 
-    const config: RequestInit = {
-      ...options,
-      headers,
-    };
-
     try {
-      const response = await fetch(url, config);
-      
+      const response = await fetch(url, {
+        ...options,
+        headers,
+      });
+
+      const data = await response.json();
+
       if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new ApiError(
-          errorData.message || `HTTP ${response.status}`,
-          response.status,
-          errorData.code,
-          errorData.details
-        );
+        return {
+          success: false,
+          error: data.message || data.error || 'An error occurred',
+          status: response.status,
+        };
       }
 
-      return await response.json();
+      return {
+        success: true,
+        data: data.data || data,
+        message: data.message,
+        status: response.status,
+      };
     } catch (error) {
-      if (error instanceof ApiError) {
-        throw error;
-      }
-      throw new ApiError(
-        error instanceof Error ? error.message : 'Network error',
-        0
-      );
+      console.error('API request failed:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Network error',
+        status: 0,
+      };
     }
   }
 
-  // Authentication methods
-  async login(credentials: LoginRequest): Promise<AuthResponse> {
-    const response = await this.request<ApiResponse<AuthResponse>>('/api/auth/login', {
+  // Generic CRUD operations
+  public async get<T>(endpoint: string): Promise<ApiResponse<T>> {
+    return this.request<T>(endpoint, { method: 'GET' });
+  }
+
+  public async post<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+    return this.request<T>(endpoint, {
       method: 'POST',
-      body: JSON.stringify(credentials),
+      body: data ? JSON.stringify(data) : undefined,
     });
-    
-    if (response.success && response.data) {
-      this.setToken(response.data.access_token);
-      return response.data;
-    }
-    
-    throw new ApiError('Login failed', 401);
   }
 
-  async register(userData: RegisterRequest): Promise<AuthResponse> {
-    const response = await this.request<ApiResponse<AuthResponse>>('/api/auth/register', {
-      method: 'POST',
-      body: JSON.stringify(userData),
+  public async put<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+    return this.request<T>(endpoint, {
+      method: 'PUT',
+      body: data ? JSON.stringify(data) : undefined,
     });
-    
-    if (response.success && response.data) {
-      this.setToken(response.data.access_token);
-      return response.data;
-    }
-    
-    throw new ApiError('Registration failed', 400);
   }
 
-  async logout(): Promise<void> {
+  public async patch<T>(endpoint: string, data?: any): Promise<ApiResponse<T>> {
+    return this.request<T>(endpoint, {
+      method: 'PATCH',
+      body: data ? JSON.stringify(data) : undefined,
+    });
+  }
+
+  public async delete<T>(endpoint: string): Promise<ApiResponse<T>> {
+    return this.request<T>(endpoint, { method: 'DELETE' });
+  }
+
+  // File upload
+  public async upload<T>(endpoint: string, file: File, additionalData?: any): Promise<ApiResponse<T>> {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    if (additionalData) {
+      Object.keys(additionalData).forEach(key => {
+        formData.append(key, additionalData[key]);
+      });
+    }
+
+    const headers: HeadersInit = {};
+    if (this.token) {
+      headers.Authorization = `Bearer ${this.token}`;
+    }
+
     try {
-      await this.request('/api/auth/logout', { method: 'POST' });
-    } finally {
-      this.clearToken();
-    }
-  }
+      const response = await fetch(`${this.baseUrl}${endpoint}`, {
+        method: 'POST',
+        headers,
+        body: formData,
+      });
 
-  async refreshToken(): Promise<AuthResponse> {
-    const refreshToken = typeof window !== 'undefined' 
-      ? localStorage.getItem('refresh_token') 
-      : null;
-    
-    if (!refreshToken) {
-      throw new ApiError('No refresh token available', 401);
-    }
+      const data = await response.json();
 
-    const response = await this.request<ApiResponse<AuthResponse>>('/api/auth/refresh', {
-      method: 'POST',
-      body: JSON.stringify({ refresh_token: refreshToken }),
-    });
-    
-    if (response.success && response.data) {
-      this.setToken(response.data.access_token);
-      return response.data;
-    }
-    
-    throw new ApiError('Token refresh failed', 401);
-  }
-
-  // Product methods
-  async getProducts(filters: SearchFilters = {}): Promise<SearchResults> {
-    const params = new URLSearchParams();
-    
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        params.append(key, value.toString());
+      if (!response.ok) {
+        return {
+          success: false,
+          error: data.message || data.error || 'Upload failed',
+          status: response.status,
+        };
       }
+
+      return {
+        success: true,
+        data: data.data || data,
+        message: data.message,
+        status: response.status,
+      };
+    } catch (error) {
+      console.error('File upload failed:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Upload failed',
+        status: 0,
+      };
+    }
+  }
+
+  // Paginated requests
+  public async getPaginated<T>(
+    endpoint: string,
+    page: number = 1,
+    limit: number = 10,
+    params?: Record<string, any>
+  ): Promise<ApiResponse<PaginatedResponse<T>>> {
+    const searchParams = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+      ...params,
     });
 
-    const response = await this.request<ApiResponse<SearchResults>>(
-      `/api/products?${params.toString()}`
-    );
-    
-    return response.data;
+    return this.get<PaginatedResponse<T>>(`${endpoint}?${searchParams}`);
   }
 
-  async getProduct(id: number): Promise<Product> {
-    const response = await this.request<ApiResponse<Product>>(`/api/products/${id}`);
-    return response.data;
-  }
-
-  async getFeaturedProducts(): Promise<Product[]> {
-    const response = await this.request<ApiResponse<Product[]>>('/api/products/featured');
-    return response.data;
-  }
-
-  async getTrendingProducts(): Promise<Product[]> {
-    const response = await this.request<ApiResponse<Product[]>>('/api/products/trending');
-    return response.data;
-  }
-
-  async createProduct(product: Partial<Product>): Promise<Product> {
-    const response = await this.request<ApiResponse<Product>>('/api/products', {
-      method: 'POST',
-      body: JSON.stringify(product),
-    });
-    return response.data;
-  }
-
-  async updateProduct(id: number, product: Partial<Product>): Promise<Product> {
-    const response = await this.request<ApiResponse<Product>>(`/api/products/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(product),
-    });
-    return response.data;
-  }
-
-  async deleteProduct(id: number): Promise<void> {
-    await this.request(`/api/products/${id}`, { method: 'DELETE' });
-  }
-
-  // Category methods
-  async getCategories(): Promise<Category[]> {
-    const response = await this.request<ApiResponse<Category[]>>('/api/categories');
-    return response.data;
-  }
-
-  async getCategory(id: number): Promise<Category> {
-    const response = await this.request<ApiResponse<Category>>(`/api/categories/${id}`);
-    return response.data;
-  }
-
-  // User methods
-  async getCurrentUser(): Promise<User> {
-    const response = await this.request<ApiResponse<User>>('/api/users/me');
-    return response.data;
-  }
-
-  async updateUser(id: number, user: Partial<User>): Promise<User> {
-    const response = await this.request<ApiResponse<User>>(`/api/users/${id}`, {
-      method: 'PUT',
-      body: JSON.stringify(user),
-    });
-    return response.data;
-  }
-
-  // Order methods
-  async getOrders(filters: { user_id?: number; seller_id?: number; status?: string } = {}): Promise<Order[]> {
-    const params = new URLSearchParams();
-    
-    Object.entries(filters).forEach(([key, value]) => {
-      if (value !== undefined && value !== null) {
-        params.append(key, value.toString());
-      }
+  // Search with filters
+  public async search<T>(
+    endpoint: string,
+    query: string,
+    filters?: Record<string, any>
+  ): Promise<ApiResponse<T[]>> {
+    const searchParams = new URLSearchParams({
+      q: query,
+      ...filters,
     });
 
-    const response = await this.request<ApiResponse<Order[]>>(
-      `/api/orders?${params.toString()}`
-    );
-    return response.data;
-  }
-
-  async getOrder(id: number): Promise<Order> {
-    const response = await this.request<ApiResponse<Order>>(`/api/orders/${id}`);
-    return response.data;
-  }
-
-  async createOrder(order: Partial<Order>): Promise<Order> {
-    const response = await this.request<ApiResponse<Order>>('/api/orders', {
-      method: 'POST',
-      body: JSON.stringify(order),
-    });
-    return response.data;
-  }
-
-  async updateOrderStatus(id: number, status: string): Promise<Order> {
-    const response = await this.request<ApiResponse<Order>>(`/api/orders/${id}/status`, {
-      method: 'PUT',
-      body: JSON.stringify({ status }),
-    });
-    return response.data;
-  }
-
-  // Review methods
-  async getProductReviews(productId: number): Promise<Review[]> {
-    const response = await this.request<ApiResponse<Review[]>>(`/api/reviews/product/${productId}`);
-    return response.data;
-  }
-
-  async createReview(review: Partial<Review>): Promise<Review> {
-    const response = await this.request<ApiResponse<Review>>('/api/reviews', {
-      method: 'POST',
-      body: JSON.stringify(review),
-    });
-    return response.data;
-  }
-
-  // Watchlist methods
-  async getWatchlist(userId: number): Promise<Watchlist[]> {
-    const response = await this.request<ApiResponse<Watchlist[]>>(`/api/watchlist/user/${userId}`);
-    return response.data;
-  }
-
-  async addToWatchlist(productId: number): Promise<Watchlist> {
-    const response = await this.request<ApiResponse<Watchlist>>('/api/watchlist', {
-      method: 'POST',
-      body: JSON.stringify({ product_id: productId }),
-    });
-    return response.data;
-  }
-
-  async removeFromWatchlist(watchlistId: number): Promise<void> {
-    await this.request(`/api/watchlist/${watchlistId}`, { method: 'DELETE' });
-  }
-
-  // Cart methods
-  async getCart(): Promise<CartItem[]> {
-    const response = await this.request<ApiResponse<CartItem[]>>('/api/cart');
-    return response.data;
-  }
-
-  async addToCart(productId: number, quantity: number = 1): Promise<CartItem> {
-    const response = await this.request<ApiResponse<CartItem>>('/api/cart', {
-      method: 'POST',
-      body: JSON.stringify({ product_id: productId, quantity }),
-    });
-    return response.data;
-  }
-
-  async updateCartItem(itemId: number, quantity: number): Promise<CartItem> {
-    const response = await this.request<ApiResponse<CartItem>>(`/api/cart/${itemId}`, {
-      method: 'PUT',
-      body: JSON.stringify({ quantity }),
-    });
-    return response.data;
-  }
-
-  async removeFromCart(itemId: number): Promise<void> {
-    await this.request(`/api/cart/${itemId}`, { method: 'DELETE' });
-  }
-
-  async clearCart(): Promise<void> {
-    await this.request('/api/cart', { method: 'DELETE' });
-  }
-
-  // Search methods
-  async searchProducts(query: string, filters: Omit<SearchFilters, 'query'> = {}): Promise<SearchResults> {
-    return this.getProducts({ ...filters, query });
-  }
-
-  // Utility methods
-  isAuthenticated(): boolean {
-    return !!this.token;
-  }
-
-  getToken(): string | null {
-    return this.token;
+    return this.get<T[]>(`${endpoint}?${searchParams}`);
   }
 }
 
-// Create and export a singleton instance
+// Create singleton instance
 export const apiService = new ApiService();
-export { ApiError };
+
+// Export specific API modules
+export * from './auth';
+export * from './products';
+export * from './orders';
+export * from './users';
+export * from './solana';

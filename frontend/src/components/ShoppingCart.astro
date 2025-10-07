@@ -1,0 +1,421 @@
+---
+export interface CartItem {
+  id: number;
+  name: string;
+  price: number;
+  currency: string;
+  quantity: number;
+  image: string;
+  seller: string;
+  is_nft: boolean;
+  solana_supported: boolean;
+}
+
+export interface Props {
+  items?: CartItem[];
+  className?: string;
+  onUpdateQuantity?: (itemId: number, quantity: number) => void;
+  onRemoveItem?: (itemId: number) => void;
+  onCheckout?: () => void;
+  onClearCart?: () => void;
+}
+
+const {
+  items = [],
+  className = "",
+  onUpdateQuantity,
+  onRemoveItem,
+  onCheckout,
+  onClearCart
+} = Astro.props;
+
+const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+const shipping = 0; // Free shipping for digital items
+const tax = subtotal * 0.08; // 8% tax
+const total = subtotal + shipping + tax;
+---
+
+<div class={`shopping-cart ${className}`} data-testid="shopping-cart">
+  <div class="cart-header">
+    <h2 class="cart-title">Shopping Cart</h2>
+    <span class="cart-count" data-testid="cart-count">{items.length} items</span>
+  </div>
+
+  {items.length === 0 ? (
+    <div class="empty-cart" data-testid="empty-cart">
+      <div class="empty-cart-icon">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="21" r="1"></circle>
+          <circle cx="20" cy="21" r="1"></circle>
+          <path d="m1 1 4 4 13 1 4 4-4 4-13-1-4-4 4-4z"></path>
+        </svg>
+      </div>
+      <h3 class="empty-cart-title">Your cart is empty</h3>
+      <p class="empty-cart-description">Add some items to get started</p>
+      <a href="/products" class="btn btn-primary">Browse Products</a>
+    </div>
+  ) : (
+    <div class="cart-content">
+      <div class="cart-items" data-testid="cart-items">
+        {items.map((item) => (
+          <div class="cart-item" key={item.id} data-testid={`cart-item-${item.id}`}>
+            <div class="item-image">
+              <img src={item.image} alt={item.name} class="item-img" />
+              {item.is_nft && (
+                <div class="nft-badge" data-testid="nft-badge">NFT</div>
+              )}
+            </div>
+            
+            <div class="item-details">
+              <h3 class="item-name">{item.name}</h3>
+              <p class="item-seller">by {item.seller}</p>
+              <div class="item-badges">
+                {item.solana_supported && (
+                  <span class="badge solana-badge" data-testid="solana-badge">Solana</span>
+                )}
+              </div>
+            </div>
+            
+            <div class="item-price">
+              <span class="price-amount">{item.price} {item.currency}</span>
+              <span class="price-total">{(item.price * item.quantity).toFixed(2)} {item.currency}</span>
+            </div>
+            
+            <div class="item-quantity">
+              <button 
+                class="quantity-btn" 
+                data-testid={`decrease-${item.id}`}
+                onclick={`updateQuantity(${item.id}, ${item.quantity - 1})`}
+                disabled={item.quantity <= 1}
+              >
+                −
+              </button>
+              <span class="quantity-value" data-testid={`quantity-${item.id}`}>{item.quantity}</span>
+              <button 
+                class="quantity-btn" 
+                data-testid={`increase-${item.id}`}
+                onclick={`updateQuantity(${item.id}, ${item.quantity + 1})`}
+              >
+                +
+              </button>
+            </div>
+            
+            <button 
+              class="remove-btn" 
+              data-testid={`remove-${item.id}`}
+              onclick={`removeItem(${item.id})`}
+              aria-label="Remove item"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="18" y1="6" x2="6" y2="18"></line>
+                <line x1="6" y1="6" x2="18" y2="18"></line>
+              </svg>
+            </button>
+          </div>
+        ))}
+      </div>
+      
+      <div class="cart-summary">
+        <div class="summary-row">
+          <span class="summary-label">Subtotal</span>
+          <span class="summary-value" data-testid="subtotal">{subtotal.toFixed(2)} SOL</span>
+        </div>
+        
+        <div class="summary-row">
+          <span class="summary-label">Shipping</span>
+          <span class="summary-value" data-testid="shipping">
+            {shipping === 0 ? 'Free' : `${shipping.toFixed(2)} SOL`}
+          </span>
+        </div>
+        
+        <div class="summary-row">
+          <span class="summary-label">Tax</span>
+          <span class="summary-value" data-testid="tax">{tax.toFixed(2)} SOL</span>
+        </div>
+        
+        <div class="summary-row total-row">
+          <span class="summary-label">Total</span>
+          <span class="summary-value" data-testid="total">{total.toFixed(2)} SOL</span>
+        </div>
+        
+        <div class="cart-actions">
+          <button 
+            class="btn btn-secondary" 
+            data-testid="clear-cart"
+            onclick="clearCart()"
+          >
+            Clear Cart
+          </button>
+          
+          <button 
+            class="btn btn-primary" 
+            data-testid="checkout-btn"
+            onclick="checkout()"
+          >
+            Proceed to Checkout
+          </button>
+        </div>
+      </div>
+    </div>
+  )}
+</div>
+
+<style>
+  .shopping-cart {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700;
+  }
+
+  .cart-header {
+    @apply flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700;
+  }
+
+  .cart-title {
+    @apply text-2xl font-bold text-gray-900 dark:text-white;
+  }
+
+  .cart-count {
+    @apply text-sm text-gray-500 dark:text-gray-400 bg-gray-100 dark:bg-gray-700 px-3 py-1 rounded-full;
+  }
+
+  .empty-cart {
+    @apply text-center py-12 px-6;
+  }
+
+  .empty-cart-icon {
+    @apply mx-auto mb-4 text-gray-400 dark:text-gray-500;
+  }
+
+  .empty-cart-title {
+    @apply text-xl font-semibold text-gray-900 dark:text-white mb-2;
+  }
+
+  .empty-cart-description {
+    @apply text-gray-600 dark:text-gray-400 mb-6;
+  }
+
+  .cart-content {
+    @apply p-6;
+  }
+
+  .cart-items {
+    @apply space-y-4 mb-6;
+  }
+
+  .cart-item {
+    @apply flex items-center space-x-4 p-4 bg-gray-50 dark:bg-gray-700 rounded-lg border border-gray-200 dark:border-gray-600;
+  }
+
+  .item-image {
+    @apply relative flex-shrink-0;
+  }
+
+  .item-img {
+    @apply w-16 h-16 object-cover rounded-md;
+  }
+
+  .nft-badge {
+    @apply absolute -top-1 -right-1 bg-soladia-primary text-white text-xs px-2 py-1 rounded-full font-medium;
+  }
+
+  .item-details {
+    @apply flex-1 min-w-0;
+  }
+
+  .item-name {
+    @apply text-lg font-semibold text-gray-900 dark:text-white truncate;
+  }
+
+  .item-seller {
+    @apply text-sm text-gray-600 dark:text-gray-400;
+  }
+
+  .item-badges {
+    @apply mt-1 space-x-2;
+  }
+
+  .badge {
+    @apply inline-block px-2 py-1 text-xs font-medium rounded-full;
+  }
+
+  .solana-badge {
+    @apply bg-soladia-secondary text-white;
+  }
+
+  .item-price {
+    @apply text-right;
+  }
+
+  .price-amount {
+    @apply block text-sm text-gray-600 dark:text-gray-400;
+  }
+
+  .price-total {
+    @apply block text-lg font-semibold text-gray-900 dark:text-white;
+  }
+
+  .item-quantity {
+    @apply flex items-center space-x-2;
+  }
+
+  .quantity-btn {
+    @apply w-8 h-8 flex items-center justify-center bg-white dark:bg-gray-600 border border-gray-300 dark:border-gray-500 rounded-md hover:bg-gray-50 dark:hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-soladia-primary disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200;
+  }
+
+  .quantity-value {
+    @apply w-8 text-center font-medium text-gray-900 dark:text-white;
+  }
+
+  .remove-btn {
+    @apply p-2 text-gray-400 hover:text-red-500 focus:outline-none focus:ring-2 focus:ring-red-500 rounded-md transition-colors duration-200;
+  }
+
+  .cart-summary {
+    @apply bg-gray-50 dark:bg-gray-700 p-6 rounded-lg border border-gray-200 dark:border-gray-600;
+  }
+
+  .summary-row {
+    @apply flex justify-between items-center py-2;
+  }
+
+  .summary-label {
+    @apply text-gray-600 dark:text-gray-400;
+  }
+
+  .summary-value {
+    @apply font-medium text-gray-900 dark:text-white;
+  }
+
+  .total-row {
+    @apply border-t border-gray-300 dark:border-gray-600 pt-4 mt-4;
+  }
+
+  .total-row .summary-label {
+    @apply text-lg font-semibold;
+  }
+
+  .total-row .summary-value {
+    @apply text-lg font-bold text-soladia-primary;
+  }
+
+  .cart-actions {
+    @apply flex space-x-3 mt-6;
+  }
+
+  .btn {
+    @apply px-6 py-3 rounded-md font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+
+  .btn-primary {
+    @apply bg-soladia-primary text-white hover:bg-soladia-primary/90 focus:ring-soladia-primary flex-1;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-200 dark:bg-gray-600 text-gray-900 dark:text-white hover:bg-gray-300 dark:hover:bg-gray-500 focus:ring-gray-500;
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .cart-item {
+      @apply flex-col space-x-0 space-y-4;
+    }
+
+    .item-details {
+      @apply text-center;
+    }
+
+    .item-price {
+      @apply text-center;
+    }
+
+    .cart-actions {
+      @apply flex-col space-x-0 space-y-3;
+    }
+  }
+
+  /* Dark mode transitions */
+  .shopping-cart,
+  .cart-item,
+  .cart-summary,
+  .btn {
+    @apply theme-transitioning;
+  }
+</style>
+
+<script>
+  // Global functions for cart operations
+  window.updateQuantity = (itemId: number, newQuantity: number) => {
+    if (newQuantity < 1) return;
+    
+    // Dispatch custom event
+    const event = new CustomEvent('updateQuantity', {
+      detail: { itemId, quantity: newQuantity }
+    });
+    document.dispatchEvent(event);
+    
+    // Call prop function if provided
+    if (window.handleUpdateQuantity) {
+      window.handleUpdateQuantity(itemId, newQuantity);
+    }
+  };
+
+  window.removeItem = (itemId: number) => {
+    // Dispatch custom event
+    const event = new CustomEvent('removeItem', {
+      detail: { itemId }
+    });
+    document.dispatchEvent(event);
+    
+    // Call prop function if provided
+    if (window.handleRemoveItem) {
+      window.handleRemoveItem(itemId);
+    }
+  };
+
+  window.clearCart = () => {
+    // Dispatch custom event
+    const event = new CustomEvent('clearCart');
+    document.dispatchEvent(event);
+    
+    // Call prop function if provided
+    if (window.handleClearCart) {
+      window.handleClearCart();
+    }
+  };
+
+  window.checkout = () => {
+    // Dispatch custom event
+    const event = new CustomEvent('checkout');
+    document.dispatchEvent(event);
+    
+    // Call prop function if provided
+    if (window.handleCheckout) {
+      window.handleCheckout();
+    } else {
+      // Default behavior - navigate to checkout page
+      window.location.href = '/checkout';
+    }
+  };
+
+  // Set up event listeners for cart operations
+  document.addEventListener('DOMContentLoaded', () => {
+    // Listen for cart update events
+    document.addEventListener('updateQuantity', (e: CustomEvent) => {
+      const { itemId, quantity } = e.detail;
+      console.log(`Updating item ${itemId} quantity to ${quantity}`);
+    });
+
+    document.addEventListener('removeItem', (e: CustomEvent) => {
+      const { itemId } = e.detail;
+      console.log(`Removing item ${itemId}`);
+    });
+
+    document.addEventListener('clearCart', () => {
+      console.log('Clearing cart');
+    });
+
+    document.addEventListener('checkout', () => {
+      console.log('Proceeding to checkout');
+    });
+  });
+</script>
+

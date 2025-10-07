@@ -1,0 +1,1235 @@
+---
+// UX Enhancements Component
+// Comprehensive user experience improvements including form validation, loading states, error messages, and accessibility
+---
+
+<div class="ux-enhancements" data-testid="ux-enhancements">
+  <!-- Loading Spinner Component -->
+  <div class="loading-spinner" data-testid="loading-spinner" style="display: none;">
+    <div class="spinner-container">
+      <div class="spinner"></div>
+      <div class="spinner-text">Loading...</div>
+    </div>
+  </div>
+
+  <!-- Toast Notifications -->
+  <div class="toast-container" data-testid="toast-container"></div>
+
+  <!-- Modal Component -->
+  <div class="modal-overlay" data-testid="modal-overlay" style="display: none;">
+    <div class="modal" data-testid="modal">
+      <div class="modal-header">
+        <h3 class="modal-title" data-testid="modal-title">Modal Title</h3>
+        <button class="modal-close" data-testid="modal-close" aria-label="Close modal">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" data-testid="modal-body">
+        <p>Modal content goes here</p>
+      </div>
+      <div class="modal-footer" data-testid="modal-footer">
+        <button class="btn btn-secondary" data-testid="modal-cancel">Cancel</button>
+        <button class="btn btn-primary" data-testid="modal-confirm">Confirm</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Validation Messages -->
+  <div class="form-validation-messages" data-testid="form-validation-messages"></div>
+
+  <!-- Accessibility Announcements -->
+  <div class="sr-only" aria-live="polite" aria-atomic="true" data-testid="accessibility-announcements"></div>
+
+  <!-- Keyboard Navigation Indicator -->
+  <div class="keyboard-navigation-indicator" data-testid="keyboard-navigation-indicator" style="display: none;">
+    <div class="keyboard-focus-ring"></div>
+  </div>
+
+  <!-- Progress Indicator -->
+  <div class="progress-indicator" data-testid="progress-indicator" style="display: none;">
+    <div class="progress-bar">
+      <div class="progress-fill" data-testid="progress-fill"></div>
+    </div>
+    <div class="progress-text" data-testid="progress-text">0%</div>
+  </div>
+
+  <!-- Error Boundary -->
+  <div class="error-boundary" data-testid="error-boundary" style="display: none;">
+    <div class="error-content">
+      <div class="error-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="15" y1="9" x2="9" y2="15"/>
+          <line x1="9" y1="9" x2="15" y2="15"/>
+        </svg>
+      </div>
+      <h3 class="error-title">Something went wrong</h3>
+      <p class="error-message">We're sorry, but something unexpected happened. Please try again.</p>
+      <div class="error-actions">
+        <button class="btn btn-primary" data-testid="error-retry">Try Again</button>
+        <button class="btn btn-secondary" data-testid="error-report">Report Issue</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Animation -->
+  <div class="success-animation" data-testid="success-animation" style="display: none;">
+    <div class="success-checkmark">
+      <div class="check-icon">
+        <span class="icon-line line-tip"></span>
+        <span class="icon-line line-long"></span>
+        <div class="icon-circle"></div>
+        <div class="icon-fix"></div>
+      </div>
+    </div>
+    <div class="success-text">Success!</div>
+  </div>
+
+  <!-- Tooltip Container -->
+  <div class="tooltip-container" data-testid="tooltip-container"></div>
+
+  <!-- Confirmation Dialog -->
+  <div class="confirmation-dialog" data-testid="confirmation-dialog" style="display: none;">
+    <div class="confirmation-content">
+      <div class="confirmation-icon">
+        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 12l2 2 4-4"/>
+          <circle cx="12" cy="12" r="10"/>
+        </svg>
+      </div>
+      <h3 class="confirmation-title">Confirm Action</h3>
+      <p class="confirmation-message">Are you sure you want to proceed?</p>
+      <div class="confirmation-actions">
+        <button class="btn btn-secondary" data-testid="confirmation-cancel">Cancel</button>
+        <button class="btn btn-primary" data-testid="confirmation-confirm">Confirm</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .ux-enhancements {
+    position: relative;
+    z-index: 1000;
+  }
+
+  /* Loading Spinner */
+  .loading-spinner {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+
+  .spinner-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--mobile-space-lg);
+    background: var(--soladia-bg-primary);
+    padding: var(--mobile-space-2xl);
+    border-radius: var(--soladia-radius-xl);
+    box-shadow: var(--mobile-shadow-lg);
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--soladia-border);
+    border-top: 4px solid var(--soladia-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  .spinner-text {
+    font-size: var(--mobile-text-base);
+    font-weight: var(--soladia-font-medium);
+    color: var(--soladia-text-primary);
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Toast Notifications */
+  .toast-container {
+    position: fixed;
+    top: var(--mobile-space-lg);
+    right: var(--mobile-space-lg);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: var(--mobile-space-md);
+    max-width: 400px;
+  }
+
+  .toast {
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    padding: var(--mobile-space-lg);
+    box-shadow: var(--mobile-shadow-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--mobile-space-md);
+    animation: slideInRight 0.3s ease-out;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .toast.success {
+    border-left: 4px solid var(--soladia-success);
+  }
+
+  .toast.error {
+    border-left: 4px solid var(--soladia-error);
+  }
+
+  .toast.warning {
+    border-left: 4px solid var(--soladia-warning);
+  }
+
+  .toast.info {
+    border-left: 4px solid var(--soladia-info);
+  }
+
+  .toast-icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  .toast-content {
+    flex: 1;
+  }
+
+  .toast-title {
+    font-size: var(--mobile-text-base);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--mobile-space-xs) 0;
+  }
+
+  .toast-message {
+    font-size: var(--mobile-text-sm);
+    color: var(--soladia-text-secondary);
+    margin: 0;
+  }
+
+  .toast-close {
+    background: none;
+    border: none;
+    color: var(--soladia-text-secondary);
+    cursor: pointer;
+    padding: var(--mobile-space-xs);
+    border-radius: var(--soladia-radius);
+    transition: var(--mobile-transition-fast);
+  }
+
+  .toast-close:hover {
+    background: var(--soladia-bg-secondary);
+    color: var(--soladia-text-primary);
+  }
+
+  .toast-progress {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    height: 3px;
+    background: var(--soladia-primary);
+    animation: toastProgress 5s linear;
+  }
+
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  @keyframes toastProgress {
+    from { width: 100%; }
+    to { width: 0%; }
+  }
+
+  /* Modal */
+  .modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    padding: var(--mobile-space-lg);
+  }
+
+  .modal {
+    background: var(--soladia-bg-primary);
+    border-radius: var(--soladia-radius-xl);
+    box-shadow: var(--mobile-shadow-lg);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow: hidden;
+    animation: modalSlideIn 0.3s ease-out;
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--mobile-space-lg);
+    border-bottom: 1px solid var(--soladia-border);
+  }
+
+  .modal-title {
+    font-size: var(--mobile-text-lg);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--soladia-text-secondary);
+    cursor: pointer;
+    padding: var(--mobile-space-sm);
+    border-radius: var(--soladia-radius);
+    transition: var(--mobile-transition-fast);
+  }
+
+  .modal-close:hover {
+    background: var(--soladia-bg-secondary);
+    color: var(--soladia-text-primary);
+  }
+
+  .modal-body {
+    padding: var(--mobile-space-lg);
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  .modal-footer {
+    display: flex;
+    gap: var(--mobile-space-md);
+    padding: var(--mobile-space-lg);
+    border-top: 1px solid var(--soladia-border);
+    justify-content: flex-end;
+  }
+
+  @keyframes modalSlideIn {
+    from {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Form Validation */
+  .form-validation-messages {
+    position: fixed;
+    top: var(--mobile-space-lg);
+    left: var(--mobile-space-lg);
+    right: var(--mobile-space-lg);
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: var(--mobile-space-sm);
+  }
+
+  .validation-message {
+    background: var(--soladia-error);
+    color: white;
+    padding: var(--mobile-space-md);
+    border-radius: var(--soladia-radius-lg);
+    font-size: var(--mobile-text-sm);
+    font-weight: var(--soladia-font-medium);
+    animation: slideInDown 0.3s ease-out;
+  }
+
+  .validation-message.success {
+    background: var(--soladia-success);
+  }
+
+  .validation-message.warning {
+    background: var(--soladia-warning);
+  }
+
+  .validation-message.info {
+    background: var(--soladia-info);
+  }
+
+  @keyframes slideInDown {
+    from {
+      transform: translateY(-100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+
+  /* Keyboard Navigation */
+  .keyboard-navigation-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    pointer-events: none;
+    z-index: 10000;
+  }
+
+  .keyboard-focus-ring {
+    position: absolute;
+    border: 2px solid var(--soladia-primary);
+    border-radius: var(--soladia-radius);
+    transition: all 0.2s ease-out;
+    box-shadow: 0 0 0 2px rgba(230, 0, 18, 0.2);
+  }
+
+  /* Progress Indicator */
+  .progress-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--soladia-bg-secondary);
+    z-index: 10000;
+  }
+
+  .progress-bar {
+    height: 100%;
+    background: var(--soladia-bg-secondary);
+    position: relative;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--soladia-gradient-primary);
+    transition: width 0.3s ease-out;
+    width: 0%;
+  }
+
+  .progress-text {
+    position: absolute;
+    top: 8px;
+    right: var(--mobile-space-lg);
+    font-size: var(--mobile-text-xs);
+    font-weight: var(--soladia-font-medium);
+    color: var(--soladia-text-primary);
+  }
+
+  /* Error Boundary */
+  .error-boundary {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--soladia-bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    padding: var(--mobile-space-lg);
+  }
+
+  .error-content {
+    text-align: center;
+    max-width: 400px;
+  }
+
+  .error-icon {
+    color: var(--soladia-error);
+    margin-bottom: var(--mobile-space-lg);
+  }
+
+  .error-title {
+    font-size: var(--mobile-text-xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--mobile-space-md) 0;
+  }
+
+  .error-message {
+    font-size: var(--mobile-text-base);
+    color: var(--soladia-text-secondary);
+    margin: 0 0 var(--mobile-space-lg) 0;
+  }
+
+  .error-actions {
+    display: flex;
+    gap: var(--mobile-space-md);
+    justify-content: center;
+  }
+
+  /* Success Animation */
+  .success-animation {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000;
+    text-align: center;
+  }
+
+  .success-checkmark {
+    margin-bottom: var(--mobile-space-lg);
+  }
+
+  .check-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    display: block;
+    stroke-width: 2;
+    stroke: var(--soladia-success);
+    stroke-miterlimit: 10;
+    margin: 0 auto;
+    box-shadow: inset 0px 0px 0px var(--soladia-success);
+    animation: fill 0.4s ease-in-out 0.4s forwards, scale 0.3s ease-in-out 0.9s both;
+  }
+
+  .check-icon .icon-line {
+    stroke: var(--soladia-success);
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: checkmark 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.8s forwards;
+  }
+
+  .check-icon .line-tip {
+    transform-origin: 0 0;
+    stroke-dasharray: 22;
+    stroke-dashoffset: 22;
+  }
+
+  .check-icon .line-long {
+    transform-origin: 0 0;
+    stroke-dasharray: 26;
+    stroke-dashoffset: 26;
+  }
+
+  .check-icon .icon-circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+  }
+
+  .check-icon .icon-fix {
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: checkmark 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94) 0.8s forwards;
+  }
+
+  .success-text {
+    font-size: var(--mobile-text-lg);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-success);
+    animation: fadeIn 0.5s ease-in-out 1.2s both;
+  }
+
+  @keyframes checkmark {
+    100% {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes stroke {
+    100% {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  @keyframes scale {
+    0%, 100% {
+      transform: none;
+    }
+    50% {
+      transform: scale3d(1.1, 1.1, 1);
+    }
+  }
+
+  @keyframes fill {
+    100% {
+      box-shadow: inset 0px 0px 0px 30px var(--soladia-success);
+    }
+  }
+
+  @keyframes fadeIn {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
+  }
+
+  /* Tooltip */
+  .tooltip-container {
+    position: fixed;
+    z-index: 10000;
+  }
+
+  .tooltip {
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius);
+    padding: var(--mobile-space-sm) var(--mobile-space-md);
+    font-size: var(--mobile-text-sm);
+    color: var(--soladia-text-primary);
+    box-shadow: var(--mobile-shadow-md);
+    max-width: 200px;
+    word-wrap: break-word;
+    animation: tooltipFadeIn 0.2s ease-out;
+  }
+
+  .tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: var(--soladia-bg-primary) transparent transparent transparent;
+  }
+
+  @keyframes tooltipFadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(5px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Confirmation Dialog */
+  .confirmation-dialog {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10001;
+    padding: var(--mobile-space-lg);
+  }
+
+  .confirmation-content {
+    background: var(--soladia-bg-primary);
+    border-radius: var(--soladia-radius-xl);
+    padding: var(--mobile-space-2xl);
+    text-align: center;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: var(--mobile-shadow-lg);
+    animation: confirmationSlideIn 0.3s ease-out;
+  }
+
+  .confirmation-icon {
+    color: var(--soladia-warning);
+    margin-bottom: var(--mobile-space-lg);
+  }
+
+  .confirmation-title {
+    font-size: var(--mobile-text-lg);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--mobile-space-md) 0;
+  }
+
+  .confirmation-message {
+    font-size: var(--mobile-text-base);
+    color: var(--soladia-text-secondary);
+    margin: 0 0 var(--mobile-space-lg) 0;
+  }
+
+  .confirmation-actions {
+    display: flex;
+    gap: var(--mobile-space-md);
+    justify-content: center;
+  }
+
+  @keyframes confirmationSlideIn {
+    from {
+      transform: scale(0.9);
+      opacity: 0;
+    }
+    to {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+
+  /* Screen Reader Only */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* Responsive Design */
+  @media (max-width: 767px) {
+    .modal {
+      margin: var(--mobile-space-lg);
+      max-height: calc(100vh - 2 * var(--mobile-space-lg));
+    }
+
+    .toast-container {
+      left: var(--mobile-space-lg);
+      right: var(--mobile-space-lg);
+      top: var(--mobile-space-lg);
+    }
+
+    .form-validation-messages {
+      left: var(--mobile-space-md);
+      right: var(--mobile-space-md);
+    }
+
+    .confirmation-actions {
+      flex-direction: column;
+    }
+
+    .error-actions {
+      flex-direction: column;
+    }
+  }
+
+  /* Dark Mode Adjustments */
+  [data-theme="dark"] .loading-spinner .spinner-container,
+  [data-theme="dark"] .modal,
+  [data-theme="dark"] .toast,
+  [data-theme="dark"] .error-content,
+  [data-theme="dark"] .confirmation-content {
+    background: var(--soladia-bg-primary);
+    border-color: var(--soladia-border);
+  }
+
+  [data-theme="dark"] .tooltip {
+    background: var(--soladia-bg-primary);
+    border-color: var(--soladia-border);
+  }
+
+  /* High Contrast Mode */
+  @media (prefers-contrast: high) {
+    .toast,
+    .modal,
+    .confirmation-content,
+    .error-content {
+      border-width: 2px;
+    }
+  }
+
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .spinner,
+    .toast,
+    .modal,
+    .validation-message,
+    .check-icon,
+    .tooltip,
+    .confirmation-content {
+      animation: none;
+    }
+
+    .spinner {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  class UXEnhancements {
+    private toastContainer: HTMLElement;
+    private modalOverlay: HTMLElement;
+    private modal: HTMLElement;
+    private loadingSpinner: HTMLElement;
+    private progressIndicator: HTMLElement;
+    private errorBoundary: HTMLElement;
+    private successAnimation: HTMLElement;
+    private confirmationDialog: HTMLElement;
+    private tooltipContainer: HTMLElement;
+    private keyboardFocusRing: HTMLElement;
+    private accessibilityAnnouncements: HTMLElement;
+    private formValidationMessages: HTMLElement;
+
+    constructor() {
+      this.toastContainer = document.querySelector('[data-testid="toast-container"]') as HTMLElement;
+      this.modalOverlay = document.querySelector('[data-testid="modal-overlay"]') as HTMLElement;
+      this.modal = document.querySelector('[data-testid="modal"]') as HTMLElement;
+      this.loadingSpinner = document.querySelector('[data-testid="loading-spinner"]') as HTMLElement;
+      this.progressIndicator = document.querySelector('[data-testid="progress-indicator"]') as HTMLElement;
+      this.errorBoundary = document.querySelector('[data-testid="error-boundary"]') as HTMLElement;
+      this.successAnimation = document.querySelector('[data-testid="success-animation"]') as HTMLElement;
+      this.confirmationDialog = document.querySelector('[data-testid="confirmation-dialog"]') as HTMLElement;
+      this.tooltipContainer = document.querySelector('[data-testid="tooltip-container"]') as HTMLElement;
+      this.keyboardFocusRing = document.querySelector('[data-testid="keyboard-navigation-indicator"]') as HTMLElement;
+      this.accessibilityAnnouncements = document.querySelector('[data-testid="accessibility-announcements"]') as HTMLElement;
+      this.formValidationMessages = document.querySelector('[data-testid="form-validation-messages"]') as HTMLElement;
+
+      this.init();
+    }
+
+    init() {
+      this.setupEventListeners();
+      this.setupKeyboardNavigation();
+      this.setupFormValidation();
+      this.setupAccessibility();
+    }
+
+    setupEventListeners() {
+      // Modal events
+      document.querySelector('[data-testid="modal-close"]')?.addEventListener('click', () => {
+        this.hideModal();
+      });
+
+      document.querySelector('[data-testid="modal-cancel"]')?.addEventListener('click', () => {
+        this.hideModal();
+      });
+
+      // Confirmation dialog events
+      document.querySelector('[data-testid="confirmation-cancel"]')?.addEventListener('click', () => {
+        this.hideConfirmationDialog();
+      });
+
+      // Error boundary events
+      document.querySelector('[data-testid="error-retry"]')?.addEventListener('click', () => {
+        this.hideErrorBoundary();
+        window.location.reload();
+      });
+
+      document.querySelector('[data-testid="error-report"]')?.addEventListener('click', () => {
+        this.reportError();
+      });
+
+      // Keyboard events
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          this.handleEscapeKey();
+        }
+      });
+
+      // Focus events
+      document.addEventListener('focusin', (e) => {
+        this.handleFocusIn(e);
+      });
+
+      document.addEventListener('focusout', (e) => {
+        this.handleFocusOut(e);
+      });
+    }
+
+    setupKeyboardNavigation() {
+      // Show keyboard navigation indicator
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+          this.keyboardFocusRing.style.display = 'block';
+        }
+      });
+
+      // Hide on mouse interaction
+      document.addEventListener('mousedown', () => {
+        this.keyboardFocusRing.style.display = 'none';
+      });
+    }
+
+    setupFormValidation() {
+      // Setup real-time form validation
+      document.querySelectorAll('input, textarea, select').forEach(field => {
+        field.addEventListener('blur', (e) => {
+          this.validateField(e.target as HTMLInputElement);
+        });
+
+        field.addEventListener('input', (e) => {
+          this.clearFieldValidation(e.target as HTMLInputElement);
+        });
+      });
+    }
+
+    setupAccessibility() {
+      // Setup ARIA live regions
+      this.accessibilityAnnouncements.setAttribute('aria-live', 'polite');
+      this.accessibilityAnnouncements.setAttribute('aria-atomic', 'true');
+    }
+
+    // Toast Notifications
+    showToast(message: string, type: 'success' | 'error' | 'warning' | 'info' = 'info', duration: number = 5000) {
+      const toast = document.createElement('div');
+      toast.className = `toast ${type}`;
+      toast.innerHTML = `
+        <svg class="toast-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          ${this.getToastIcon(type)}
+        </svg>
+        <div class="toast-content">
+          <div class="toast-title">${this.getToastTitle(type)}</div>
+          <div class="toast-message">${message}</div>
+        </div>
+        <button class="toast-close" aria-label="Close notification">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+        <div class="toast-progress"></div>
+      `;
+
+      // Add close functionality
+      toast.querySelector('.toast-close')?.addEventListener('click', () => {
+        this.hideToast(toast);
+      });
+
+      this.toastContainer.appendChild(toast);
+
+      // Auto-hide after duration
+      setTimeout(() => {
+        this.hideToast(toast);
+      }, duration);
+
+      // Announce to screen readers
+      this.announceToScreenReader(message);
+    }
+
+    hideToast(toast: HTMLElement) {
+      toast.style.animation = 'slideInRight 0.3s ease-out reverse';
+      setTimeout(() => {
+        toast.remove();
+      }, 300);
+    }
+
+    getToastIcon(type: string): string {
+      const icons = {
+        success: '<path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="10"/>',
+        error: '<circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/>',
+        warning: '<path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/>',
+        info: '<circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>'
+      };
+      return icons[type as keyof typeof icons] || icons.info;
+    }
+
+    getToastTitle(type: string): string {
+      const titles = {
+        success: 'Success',
+        error: 'Error',
+        warning: 'Warning',
+        info: 'Information'
+      };
+      return titles[type as keyof typeof titles] || 'Information';
+    }
+
+    // Modal
+    showModal(title: string, content: string, onConfirm?: () => void, onCancel?: () => void) {
+      const modalTitle = this.modal.querySelector('[data-testid="modal-title"]') as HTMLElement;
+      const modalBody = this.modal.querySelector('[data-testid="modal-body"]') as HTMLElement;
+      const confirmBtn = this.modal.querySelector('[data-testid="modal-confirm"]') as HTMLElement;
+
+      modalTitle.textContent = title;
+      modalBody.innerHTML = content;
+
+      // Update confirm button handler
+      confirmBtn.onclick = () => {
+        onConfirm?.();
+        this.hideModal();
+      };
+
+      this.modalOverlay.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+
+      // Focus management
+      const firstFocusable = this.modal.querySelector('button, input, textarea, select') as HTMLElement;
+      firstFocusable?.focus();
+    }
+
+    hideModal() {
+      this.modalOverlay.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    // Loading Spinner
+    showLoading(text: string = 'Loading...') {
+      const spinnerText = this.loadingSpinner.querySelector('.spinner-text') as HTMLElement;
+      spinnerText.textContent = text;
+      this.loadingSpinner.style.display = 'flex';
+    }
+
+    hideLoading() {
+      this.loadingSpinner.style.display = 'none';
+    }
+
+    // Progress Indicator
+    showProgress(progress: number, text?: string) {
+      const progressFill = this.progressIndicator.querySelector('[data-testid="progress-fill"]') as HTMLElement;
+      const progressText = this.progressIndicator.querySelector('[data-testid="progress-text"]') as HTMLElement;
+
+      progressFill.style.width = `${progress}%`;
+      if (text) {
+        progressText.textContent = text;
+      } else {
+        progressText.textContent = `${Math.round(progress)}%`;
+      }
+
+      this.progressIndicator.style.display = 'block';
+    }
+
+    hideProgress() {
+      this.progressIndicator.style.display = 'none';
+    }
+
+    // Error Boundary
+    showErrorBoundary(error: Error) {
+      console.error('Error boundary triggered:', error);
+      this.errorBoundary.style.display = 'flex';
+    }
+
+    hideErrorBoundary() {
+      this.errorBoundary.style.display = 'none';
+    }
+
+    reportError() {
+      // This would integrate with error reporting service
+      console.log('Error reported');
+      this.showToast('Error reported successfully', 'success');
+    }
+
+    // Success Animation
+    showSuccessAnimation(text: string = 'Success!') {
+      const successText = this.successAnimation.querySelector('.success-text') as HTMLElement;
+      successText.textContent = text;
+      this.successAnimation.style.display = 'block';
+
+      // Hide after animation
+      setTimeout(() => {
+        this.hideSuccessAnimation();
+      }, 3000);
+    }
+
+    hideSuccessAnimation() {
+      this.successAnimation.style.display = 'none';
+    }
+
+    // Confirmation Dialog
+    showConfirmationDialog(title: string, message: string, onConfirm?: () => void, onCancel?: () => void) {
+      const confirmationTitle = this.confirmationDialog.querySelector('.confirmation-title') as HTMLElement;
+      const confirmationMessage = this.confirmationDialog.querySelector('.confirmation-message') as HTMLElement;
+      const confirmBtn = this.confirmationDialog.querySelector('[data-testid="confirmation-confirm"]') as HTMLElement;
+
+      confirmationTitle.textContent = title;
+      confirmationMessage.textContent = message;
+
+      // Update confirm button handler
+      confirmBtn.onclick = () => {
+        onConfirm?.();
+        this.hideConfirmationDialog();
+      };
+
+      this.confirmationDialog.style.display = 'flex';
+      document.body.style.overflow = 'hidden';
+
+      // Focus management
+      const firstFocusable = this.confirmationDialog.querySelector('button') as HTMLElement;
+      firstFocusable?.focus();
+    }
+
+    hideConfirmationDialog() {
+      this.confirmationDialog.style.display = 'none';
+      document.body.style.overflow = '';
+    }
+
+    // Tooltip
+    showTooltip(element: HTMLElement, text: string, position: 'top' | 'bottom' | 'left' | 'right' = 'top') {
+      const tooltip = document.createElement('div');
+      tooltip.className = 'tooltip';
+      tooltip.textContent = text;
+      tooltip.style.position = 'absolute';
+
+      // Position tooltip
+      const rect = element.getBoundingClientRect();
+      const tooltipRect = tooltip.getBoundingClientRect();
+
+      switch (position) {
+        case 'top':
+          tooltip.style.top = `${rect.top - tooltipRect.height - 8}px`;
+          tooltip.style.left = `${rect.left + rect.width / 2 - tooltipRect.width / 2}px`;
+          break;
+        case 'bottom':
+          tooltip.style.top = `${rect.bottom + 8}px`;
+          tooltip.style.left = `${rect.left + rect.width / 2 - tooltipRect.width / 2}px`;
+          break;
+        case 'left':
+          tooltip.style.top = `${rect.top + rect.height / 2 - tooltipRect.height / 2}px`;
+          tooltip.style.left = `${rect.left - tooltipRect.width - 8}px`;
+          break;
+        case 'right':
+          tooltip.style.top = `${rect.top + rect.height / 2 - tooltipRect.height / 2}px`;
+          tooltip.style.left = `${rect.right + 8}px`;
+          break;
+      }
+
+      this.tooltipContainer.appendChild(tooltip);
+
+      // Hide tooltip after delay
+      setTimeout(() => {
+        tooltip.remove();
+      }, 3000);
+    }
+
+    // Form Validation
+    validateField(field: HTMLInputElement) {
+      const value = field.value.trim();
+      const fieldName = field.name || field.id || 'field';
+      let isValid = true;
+      let errorMessage = '';
+
+      // Required validation
+      if (field.hasAttribute('required') && !value) {
+        isValid = false;
+        errorMessage = `${fieldName} is required`;
+      }
+
+      // Email validation
+      if (field.type === 'email' && value) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(value)) {
+          isValid = false;
+          errorMessage = 'Please enter a valid email address';
+        }
+      }
+
+      // Password validation
+      if (field.type === 'password' && value) {
+        if (value.length < 8) {
+          isValid = false;
+          errorMessage = 'Password must be at least 8 characters long';
+        }
+      }
+
+      // Number validation
+      if (field.type === 'number' && value) {
+        const num = parseFloat(value);
+        if (isNaN(num)) {
+          isValid = false;
+          errorMessage = 'Please enter a valid number';
+        }
+      }
+
+      if (!isValid) {
+        this.showFieldError(field, errorMessage);
+      } else {
+        this.clearFieldValidation(field);
+      }
+
+      return isValid;
+    }
+
+    showFieldError(field: HTMLInputElement, message: string) {
+      field.classList.add('error');
+      field.setAttribute('aria-invalid', 'true');
+
+      // Show validation message
+      const validationMessage = document.createElement('div');
+      validationMessage.className = 'validation-message error';
+      validationMessage.textContent = message;
+      validationMessage.setAttribute('data-field', field.name || field.id);
+
+      // Remove existing validation message for this field
+      const existingMessage = this.formValidationMessages.querySelector(`[data-field="${field.name || field.id}"]`);
+      if (existingMessage) {
+        existingMessage.remove();
+      }
+
+      this.formValidationMessages.appendChild(validationMessage);
+    }
+
+    clearFieldValidation(field: HTMLInputElement) {
+      field.classList.remove('error');
+      field.setAttribute('aria-invalid', 'false');
+
+      // Remove validation message
+      const existingMessage = this.formValidationMessages.querySelector(`[data-field="${field.name || field.id}"]`);
+      if (existingMessage) {
+        existingMessage.remove();
+      }
+    }
+
+    // Accessibility
+    announceToScreenReader(message: string) {
+      this.accessibilityAnnouncements.textContent = message;
+    }
+
+    // Event Handlers
+    handleEscapeKey() {
+      if (this.modalOverlay.style.display === 'flex') {
+        this.hideModal();
+      } else if (this.confirmationDialog.style.display === 'flex') {
+        this.hideConfirmationDialog();
+      }
+    }
+
+    handleFocusIn(e: FocusEvent) {
+      const target = e.target as HTMLElement;
+      if (target.matches('button, input, textarea, select, a[href], [tabindex]')) {
+        this.updateKeyboardFocusRing(target);
+      }
+    }
+
+    handleFocusOut(e: FocusEvent) {
+      // Focus ring will be updated by next focus event
+    }
+
+    updateKeyboardFocusRing(element: HTMLElement) {
+      const rect = element.getBoundingClientRect();
+      const focusRing = this.keyboardFocusRing.querySelector('.keyboard-focus-ring') as HTMLElement;
+
+      focusRing.style.top = `${rect.top - 2}px`;
+      focusRing.style.left = `${rect.left - 2}px`;
+      focusRing.style.width = `${rect.width + 4}px`;
+      focusRing.style.height = `${rect.height + 4}px`;
+    }
+
+    // Public API methods are already defined above as private methods
+    // They are accessible through the class instance
+  }
+
+  // Initialize UX enhancements when DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    new UXEnhancements();
+  });
+
+  // Export for external use
+  (window as any).UXEnhancements = UXEnhancements;
+</script>

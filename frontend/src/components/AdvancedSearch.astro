@@ -1,985 +1,1994 @@
 ---
-// AdvancedSearch.astro - Advanced search with AI recommendations and filters
-export interface Props {
-  placeholder?: string;
-  showFilters?: boolean;
-  showRecommendations?: boolean;
-  searchTypes?: string[];
-  onSearch?: (query: string, filters: any) => void;
-  onRecommendationClick?: (recommendation: any) => void;
-}
-
-const {
-  placeholder = "Search products, NFTs, collections...",
-  showFilters = true,
-  showRecommendations = true,
-  searchTypes = ['products', 'nfts', 'collections', 'users'],
-  onSearch,
-  onRecommendationClick
-} = Astro.props;
-
-// Mock search suggestions and recommendations
-const searchSuggestions = [
-  "Solana NFTs",
-  "Digital Art",
-  "Gaming Items",
-  "Collectibles",
-  "Rare Tokens",
-  "Crypto Art",
-  "Virtual Real Estate",
-  "Music NFTs"
-];
-
-const aiRecommendations = [
-  {
-    id: 1,
-    type: "trending",
-    title: "Trending This Week",
-    items: [
-      { name: "Bored Ape #1234", price: 15.5, image: "https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=100&h=100&fit=crop&crop=center" },
-      { name: "CryptoPunk #5678", price: 25.0, image: "https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=100&h=100&fit=crop&crop=center" }
-    ]
-  },
-  {
-    id: 2,
-    type: "personalized",
-    title: "Recommended for You",
-    items: [
-      { name: "Digital Art Collection", price: 8.5, image: "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=100&h=100&fit=crop&crop=center" },
-      { name: "Gaming NFT Pack", price: 12.0, image: "https://images.unsplash.com/photo-1558618047-3c8c76ca7d13?w=100&h=100&fit=crop&crop=center" }
-    ]
-  },
-  {
-    id: 3,
-    type: "new",
-    title: "Newly Listed",
-    items: [
-      { name: "Fresh NFT Drop", price: 5.0, image: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?w=100&h=100&fit=crop&crop=center" },
-      { name: "Limited Edition", price: 18.0, image: "https://images.unsplash.com/photo-1518709268805-4e9042af2176?w=100&h=100&fit=crop&crop=center" }
-    ]
-  }
-];
+// Advanced Search Component
+// AI-powered search with filters, recommendations, and smart suggestions for the Soladia marketplace
 ---
 
-<div class="advanced-search" id="advanced-search">
+<div class="advanced-search" data-testid="advanced-search">
+  <!-- Search Header -->
+  <div class="search-header">
   <div class="search-container">
     <div class="search-input-container">
       <div class="search-icon">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <circle cx="11" cy="11" r="8"></circle>
-          <path d="m21 21-4.35-4.35"></path>
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
         </svg>
       </div>
       <input 
         type="text" 
         class="search-input" 
-        id="search-input"
-        placeholder={placeholder}
+          placeholder="Search NFTs, collections, creators..."
+          data-testid="search-input"
         autocomplete="off"
-      />
-      <button class="search-button" id="search-button">
-        Search
+          spellcheck="false"
+        />
+        <button class="search-clear" data-testid="search-clear" style="display: none;">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
       </button>
-      <button class="filter-toggle" id="filter-toggle">
+        <button class="search-voice" data-testid="search-voice" title="Voice Search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/>
+            <line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+        </button>
+      </div>
+      <button class="search-filters-toggle" data-testid="search-filters-toggle">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-          <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46"></polygon>
+          <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3"/>
         </svg>
-        Filters
+        <span class="filter-count" data-testid="filter-count">0</span>
       </button>
     </div>
+    </div>
 
-    {showRecommendations && (
-      <div class="ai-recommendations" id="ai-recommendations">
-        <h3 class="recommendations-title">AI Recommendations</h3>
-        <div class="recommendations-grid">
-          {aiRecommendations.map((recommendation) => (
-            <div class="recommendation-card" data-type={recommendation.type}>
-              <h4 class="recommendation-title">{recommendation.title}</h4>
-              <div class="recommendation-items">
-                {recommendation.items.map((item, index) => (
-                  <div class="recommendation-item" data-item-id={item.name}>
-                    <img src={item.image} alt={item.name} class="item-image" />
-                    <div class="item-info">
-                      <span class="item-name">{item.name}</span>
-                      <span class="item-price">{item.price} SOL</span>
+  <!-- Search Suggestions -->
+  <div class="search-suggestions" data-testid="search-suggestions" style="display: none;">
+    <div class="suggestions-header">
+      <h3 class="suggestions-title">Suggestions</h3>
+      <button class="suggestions-close" data-testid="suggestions-close">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
                     </div>
+    <div class="suggestions-content">
+      <div class="suggestion-categories">
+        <div class="suggestion-category" data-testid="suggestion-trending">
+          <h4 class="category-title">Trending</h4>
+          <div class="suggestion-items" data-testid="trending-items"></div>
                   </div>
-                ))}
+        <div class="suggestion-category" data-testid="suggestion-collections">
+          <h4 class="category-title">Collections</h4>
+          <div class="suggestion-items" data-testid="collection-items"></div>
               </div>
+        <div class="suggestion-category" data-testid="suggestion-creators">
+          <h4 class="category-title">Creators</h4>
+          <div class="suggestion-items" data-testid="creator-items"></div>
             </div>
-          ))}
-        </div>
-      </div>
-    )}
-
-    <div class="search-suggestions" id="search-suggestions">
-      <div class="suggestions-header">
-        <span class="suggestions-title">Popular Searches</span>
-        <button class="clear-suggestions" id="clear-suggestions">Clear</button>
-      </div>
-      <div class="suggestions-list">
-        {searchSuggestions.map((suggestion) => (
-          <button class="suggestion-item" data-suggestion={suggestion}>
-            {suggestion}
-          </button>
-        ))}
       </div>
     </div>
   </div>
 
-  {showFilters && (
-    <div class="search-filters" id="search-filters">
+  <!-- Advanced Filters Panel -->
+  <div class="filters-panel" data-testid="filters-panel" style="display: none;">
       <div class="filters-header">
-        <h3 class="filters-title">Advanced Filters</h3>
-        <button class="close-filters" id="close-filters">
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
+      <h3 class="filters-title">Filters</h3>
+      <div class="filters-actions">
+        <button class="filters-clear" data-testid="filters-clear">Clear All</button>
+        <button class="filters-close" data-testid="filters-close">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
           </svg>
         </button>
       </div>
-
+    </div>
       <div class="filters-content">
-        <div class="filter-section">
-          <h4 class="filter-section-title">Search Type</h4>
-          <div class="filter-options">
-            {searchTypes.map((type) => (
-              <label class="filter-option">
-                <input type="checkbox" value={type} class="filter-checkbox" />
-                <span class="filter-label">{type.charAt(0).toUpperCase() + type.slice(1)}</span>
-              </label>
-            ))}
+      <!-- Price Range Filter -->
+      <div class="filter-group" data-testid="price-filter">
+        <h4 class="filter-title">Price Range (SOL)</h4>
+        <div class="price-range">
+          <div class="price-inputs">
+            <input type="number" class="price-min" placeholder="Min" data-testid="price-min" />
+            <span class="price-separator">to</span>
+            <input type="number" class="price-max" placeholder="Max" data-testid="price-max" />
           </div>
-        </div>
-
-        <div class="filter-section">
-          <h4 class="filter-section-title">Price Range</h4>
-          <div class="price-range">
-            <input type="range" min="0" max="100" value="50" class="price-slider" id="price-min" />
-            <input type="range" min="0" max="100" value="100" class="price-slider" id="price-max" />
-            <div class="price-labels">
-              <span class="price-label">0 SOL</span>
-              <span class="price-label">100+ SOL</span>
+          <div class="price-slider">
+            <input type="range" class="range-slider" min="0" max="100" value="0" data-testid="price-range" />
+            <div class="range-labels">
+              <span class="range-min">0 SOL</span>
+              <span class="range-max">100+ SOL</span>
             </div>
           </div>
         </div>
+      </div>
 
-        <div class="filter-section">
-          <h4 class="filter-section-title">Categories</h4>
+      <!-- Category Filter -->
+      <div class="filter-group" data-testid="category-filter">
+        <h4 class="filter-title">Category</h4>
+          <div class="filter-options">
+              <label class="filter-option">
+            <input type="checkbox" value="art" data-testid="category-art" />
+            <span class="option-label">Art</span>
+            <span class="option-count">(1,234)</span>
+              </label>
+          <label class="filter-option">
+            <input type="checkbox" value="music" data-testid="category-music" />
+            <span class="option-label">Music</span>
+            <span class="option-count">(567)</span>
+          </label>
+          <label class="filter-option">
+            <input type="checkbox" value="gaming" data-testid="category-gaming" />
+            <span class="option-label">Gaming</span>
+            <span class="option-count">(890)</span>
+          </label>
+          <label class="filter-option">
+            <input type="checkbox" value="sports" data-testid="category-sports" />
+            <span class="option-label">Sports</span>
+            <span class="option-count">(345)</span>
+          </label>
+          <label class="filter-option">
+            <input type="checkbox" value="collectibles" data-testid="category-collectibles" />
+            <span class="option-label">Collectibles</span>
+            <span class="option-count">(2,156)</span>
+          </label>
+          </div>
+        </div>
+
+      <!-- Status Filter -->
+      <div class="filter-group" data-testid="status-filter">
+        <h4 class="filter-title">Status</h4>
+        <div class="filter-options">
+          <label class="filter-option">
+            <input type="checkbox" value="buy-now" data-testid="status-buy-now" />
+            <span class="option-label">Buy Now</span>
+            <span class="option-count">(3,456)</span>
+          </label>
+          <label class="filter-option">
+            <input type="checkbox" value="auction" data-testid="status-auction" />
+            <span class="option-label">On Auction</span>
+            <span class="option-count">(234)</span>
+          </label>
+          <label class="filter-option">
+            <input type="checkbox" value="offers" data-testid="status-offers" />
+            <span class="option-label">Has Offers</span>
+            <span class="option-count">(1,567)</span>
+          </label>
+          <label class="filter-option">
+            <input type="checkbox" value="new" data-testid="status-new" />
+            <span class="option-label">New</span>
+            <span class="option-count">(789)</span>
+          </label>
+          </div>
+        </div>
+
+      <!-- Rarity Filter -->
+      <div class="filter-group" data-testid="rarity-filter">
+        <h4 class="filter-title">Rarity</h4>
           <div class="filter-options">
             <label class="filter-option">
-              <input type="checkbox" value="art" class="filter-checkbox" />
-              <span class="filter-label">Digital Art</span>
+            <input type="checkbox" value="common" data-testid="rarity-common" />
+            <span class="option-label">Common</span>
+            <span class="option-count">(4,567)</span>
             </label>
             <label class="filter-option">
-              <input type="checkbox" value="gaming" class="filter-checkbox" />
-              <span class="filter-label">Gaming</span>
+            <input type="checkbox" value="rare" data-testid="rarity-rare" />
+            <span class="option-label">Rare</span>
+            <span class="option-count">(1,234)</span>
             </label>
             <label class="filter-option">
-              <input type="checkbox" value="music" class="filter-checkbox" />
-              <span class="filter-label">Music</span>
+            <input type="checkbox" value="epic" data-testid="rarity-epic" />
+            <span class="option-label">Epic</span>
+            <span class="option-count">(456)</span>
             </label>
             <label class="filter-option">
-              <input type="checkbox" value="collectibles" class="filter-checkbox" />
-              <span class="filter-label">Collectibles</span>
+            <input type="checkbox" value="legendary" data-testid="rarity-legendary" />
+            <span class="option-label">Legendary</span>
+            <span class="option-count">(89)</span>
             </label>
           </div>
         </div>
 
-        <div class="filter-section">
-          <h4 class="filter-section-title">Sort By</h4>
-          <select class="sort-select" id="sort-select">
+      <!-- Collection Filter -->
+      <div class="filter-group" data-testid="collection-filter">
+        <h4 class="filter-title">Collection</h4>
+        <div class="collection-search">
+          <input type="text" class="collection-input" placeholder="Search collections..." data-testid="collection-search" />
+        </div>
+        <div class="collection-list" data-testid="collection-list">
+          <!-- Collections will be populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Creator Filter -->
+      <div class="filter-group" data-testid="creator-filter">
+        <h4 class="filter-title">Creator</h4>
+        <div class="creator-search">
+          <input type="text" class="creator-input" placeholder="Search creators..." data-testid="creator-search" />
+        </div>
+        <div class="creator-list" data-testid="creator-list">
+          <!-- Creators will be populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Sort Options -->
+      <div class="filter-group" data-testid="sort-filter">
+        <h4 class="filter-title">Sort By</h4>
+        <select class="sort-select" data-testid="sort-select">
             <option value="relevance">Relevance</option>
             <option value="price-low">Price: Low to High</option>
             <option value="price-high">Price: High to Low</option>
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>
-            <option value="popularity">Most Popular</option>
+          <option value="most-liked">Most Liked</option>
+          <option value="most-viewed">Most Viewed</option>
           </select>
         </div>
-
-        <div class="filter-actions">
-          <button class="apply-filters" id="apply-filters">Apply Filters</button>
-          <button class="reset-filters" id="reset-filters">Reset</button>
         </div>
+    <div class="filters-footer">
+      <button class="filters-apply" data-testid="filters-apply">Apply Filters</button>
       </div>
     </div>
-  )}
 
-  <div class="search-results" id="search-results">
+  <!-- Search Results -->
+  <div class="search-results" data-testid="search-results">
     <div class="results-header">
-      <span class="results-count">0 results found</span>
+      <div class="results-info">
+        <h2 class="results-title" data-testid="results-title">Search Results</h2>
+        <span class="results-count" data-testid="results-count">0 results</span>
+      </div>
       <div class="results-actions">
-        <button class="view-toggle active" data-view="grid" id="grid-view">
+        <div class="view-toggle" data-testid="view-toggle">
+          <button class="view-btn active" data-view="grid" data-testid="view-grid">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <rect x="3" y="3" width="7" height="7"></rect>
-            <rect x="14" y="3" width="7" height="7"></rect>
-            <rect x="14" y="14" width="7" height="7"></rect>
-            <rect x="3" y="14" width="7" height="7"></rect>
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
           </svg>
         </button>
-        <button class="view-toggle" data-view="list" id="list-view">
+          <button class="view-btn" data-view="list" data-testid="view-list">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="8" y1="6" x2="21" y2="6"></line>
-            <line x1="8" y1="12" x2="21" y2="12"></line>
-            <line x1="8" y1="18" x2="21" y2="18"></line>
-            <line x1="3" y1="6" x2="3.01" y2="6"></line>
-            <line x1="3" y1="12" x2="3.01" y2="12"></line>
-            <line x1="3" y1="18" x2="3.01" y2="18"></line>
+              <line x1="8" y1="6" x2="21" y2="6"/>
+              <line x1="8" y1="12" x2="21" y2="12"/>
+              <line x1="8" y1="18" x2="21" y2="18"/>
+              <line x1="3" y1="6" x2="3.01" y2="6"/>
+              <line x1="3" y1="12" x2="3.01" y2="12"/>
+              <line x1="3" y1="18" x2="3.01" y2="18"/>
           </svg>
         </button>
       </div>
     </div>
-    <div class="results-grid" id="results-grid">
-      <div class="no-results">
-        <div class="no-results-icon">🔍</div>
-        <h3>No results found</h3>
-        <p>Try adjusting your search terms or filters</p>
       </div>
+
+    <!-- Active Filters -->
+    <div class="active-filters" data-testid="active-filters" style="display: none;">
+      <div class="active-filters-content">
+        <!-- Active filters will be populated dynamically -->
+    </div>
+      <button class="clear-filters" data-testid="clear-filters">Clear All</button>
+    </div>
+
+    <!-- Results Grid/List -->
+    <div class="results-container">
+      <div class="results-grid" data-testid="results-grid">
+        <!-- Search results will be populated dynamically -->
+      </div>
+      <div class="results-list" data-testid="results-list" style="display: none;">
+        <!-- List view results will be populated dynamically -->
+  </div>
+</div>
+
+    <!-- Pagination -->
+    <div class="pagination" data-testid="pagination" style="display: none;">
+      <button class="pagination-btn prev" data-testid="pagination-prev" disabled>
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="15,18 9,12 15,6"/>
+        </svg>
+        Previous
+      </button>
+      <div class="pagination-pages" data-testid="pagination-pages">
+        <!-- Pagination pages will be populated dynamically -->
+      </div>
+      <button class="pagination-btn next" data-testid="pagination-next">
+        Next
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="9,18 15,12 9,6"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div class="search-loading" data-testid="search-loading" style="display: none;">
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+        <div class="loading-text">Searching...</div>
+      </div>
+    </div>
+
+    <!-- No Results State -->
+    <div class="no-results" data-testid="no-results" style="display: none;">
+      <div class="no-results-icon">
+        <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="M21 21l-4.35-4.35"/>
+        </svg>
+      </div>
+      <h3 class="no-results-title">No results found</h3>
+      <p class="no-results-message">Try adjusting your search terms or filters</p>
+      <button class="no-results-action" data-testid="no-results-action">Clear Filters</button>
     </div>
   </div>
 </div>
 
+<style>
+  .advanced-search {
+    position: relative;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--mobile-space-lg);
+  }
+
+  /* Search Header */
+  .search-header {
+    margin-bottom: var(--mobile-space-lg);
+  }
+
+  .search-container {
+    display: flex;
+    gap: var(--mobile-space-md);
+    align-items: center;
+  }
+
+  .search-input-container {
+    position: relative;
+    flex: 1;
+    display: flex;
+    align-items: center;
+  }
+
+  .search-icon {
+    position: absolute;
+    left: var(--mobile-space-md);
+    color: var(--soladia-text-secondary);
+    z-index: 1;
+  }
+
+  .search-input {
+    width: 100%;
+    padding: var(--mobile-space-md) var(--mobile-space-md) var(--mobile-space-md) var(--mobile-space-3xl);
+    border: 2px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-xl);
+    background: var(--soladia-bg-primary);
+    color: var(--soladia-text-primary);
+    font-size: var(--mobile-text-base);
+    font-family: var(--soladia-font-primary);
+    transition: var(--mobile-transition-fast);
+  }
+
+  .search-input:focus {
+    outline: none;
+    border-color: var(--soladia-primary);
+    box-shadow: 0 0 0 3px rgba(230, 0, 18, 0.1);
+  }
+
+  .search-clear,
+  .search-voice {
+    position: absolute;
+    right: var(--mobile-space-md);
+    background: none;
+    border: none;
+    color: var(--soladia-text-secondary);
+    cursor: pointer;
+    padding: var(--mobile-space-xs);
+    border-radius: var(--soladia-radius);
+    transition: var(--mobile-transition-fast);
+    z-index: 1;
+  }
+
+  .search-voice {
+    right: var(--mobile-space-3xl);
+  }
+
+  .search-clear:hover,
+  .search-voice:hover {
+    background: var(--soladia-bg-secondary);
+    color: var(--soladia-text-primary);
+  }
+
+  .search-filters-toggle {
+    display: flex;
+    align-items: center;
+    gap: var(--mobile-space-sm);
+    padding: var(--mobile-space-md) var(--mobile-space-lg);
+    background: var(--soladia-bg-secondary);
+    border: 2px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-xl);
+    color: var(--soladia-text-primary);
+    cursor: pointer;
+    transition: var(--mobile-transition-fast);
+    font-weight: var(--soladia-font-medium);
+  }
+
+  .search-filters-toggle:hover {
+    background: var(--soladia-bg-tertiary);
+    border-color: var(--soladia-primary);
+  }
+
+  .filter-count {
+    background: var(--soladia-primary);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--mobile-text-xs);
+    font-weight: var(--soladia-font-bold);
+  }
+
+  /* Search Suggestions */
+  .search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    box-shadow: var(--mobile-shadow-lg);
+    z-index: 1000;
+    margin-top: var(--mobile-space-sm);
+  }
+
+  .suggestions-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--mobile-space-md) var(--mobile-space-lg);
+    border-bottom: 1px solid var(--soladia-border);
+  }
+
+  .suggestions-title {
+    font-size: var(--mobile-text-base);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin: 0;
+  }
+
+  .suggestions-close {
+    background: none;
+    border: none;
+    color: var(--soladia-text-secondary);
+    cursor: pointer;
+    padding: var(--mobile-space-xs);
+    border-radius: var(--soladia-radius);
+  }
+
+  .suggestions-content {
+    padding: var(--mobile-space-lg);
+  }
+
+  .suggestion-categories {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mobile-space-lg);
+  }
+
+  .suggestion-category {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mobile-space-md);
+  }
+
+  .category-title {
+    font-size: var(--mobile-text-sm);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-secondary);
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .suggestion-items {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mobile-space-sm);
+  }
+
+  .suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: var(--mobile-space-md);
+    padding: var(--mobile-space-sm) var(--mobile-space-md);
+    border-radius: var(--soladia-radius);
+    cursor: pointer;
+    transition: var(--mobile-transition-fast);
+  }
+
+  .suggestion-item:hover {
+    background: var(--soladia-bg-secondary);
+  }
+
+  .suggestion-item-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: var(--soladia-radius);
+    background: var(--soladia-bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--soladia-text-secondary);
+  }
+
+  .suggestion-item-content {
+    flex: 1;
+  }
+
+  .suggestion-item-title {
+    font-size: var(--mobile-text-base);
+    font-weight: var(--soladia-font-medium);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--mobile-space-xs) 0;
+  }
+
+  .suggestion-item-subtitle {
+    font-size: var(--mobile-text-sm);
+    color: var(--soladia-text-secondary);
+    margin: 0;
+  }
+
+  /* Filters Panel */
+  .filters-panel {
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 400px;
+    height: 100vh;
+    background: var(--soladia-bg-primary);
+    border-left: 1px solid var(--soladia-border);
+    z-index: 1001;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    transform: translateX(100%);
+    transition: transform var(--mobile-transition-normal);
+  }
+
+  .filters-panel.open {
+    transform: translateX(0);
+  }
+
+  .filters-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--mobile-space-lg);
+    border-bottom: 1px solid var(--soladia-border);
+    position: sticky;
+    top: 0;
+    background: var(--soladia-bg-primary);
+    z-index: 1;
+  }
+
+  .filters-title {
+    font-size: var(--mobile-text-lg);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0;
+  }
+
+  .filters-actions {
+    display: flex;
+    gap: var(--mobile-space-md);
+    align-items: center;
+  }
+
+  .filters-clear {
+    background: none;
+    border: none;
+    color: var(--soladia-text-secondary);
+    cursor: pointer;
+    padding: var(--mobile-space-sm);
+    border-radius: var(--soladia-radius);
+    font-size: var(--mobile-text-sm);
+    font-weight: var(--soladia-font-medium);
+  }
+
+  .filters-close {
+    background: none;
+    border: none;
+    color: var(--soladia-text-secondary);
+    cursor: pointer;
+    padding: var(--mobile-space-sm);
+    border-radius: var(--soladia-radius);
+  }
+
+  .filters-content {
+    padding: var(--mobile-space-lg);
+  }
+
+  .filter-group {
+    margin-bottom: var(--mobile-space-xl);
+  }
+
+  .filter-title {
+    font-size: var(--mobile-text-base);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--mobile-space-md) 0;
+  }
+
+  .filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mobile-space-sm);
+  }
+
+  .filter-option {
+    display: flex;
+    align-items: center;
+    gap: var(--mobile-space-md);
+    padding: var(--mobile-space-sm);
+    border-radius: var(--soladia-radius);
+    cursor: pointer;
+    transition: var(--mobile-transition-fast);
+  }
+
+  .filter-option:hover {
+    background: var(--soladia-bg-secondary);
+  }
+
+  .filter-option input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--soladia-primary);
+  }
+
+  .option-label {
+    flex: 1;
+    font-size: var(--mobile-text-base);
+    color: var(--soladia-text-primary);
+  }
+
+  .option-count {
+    font-size: var(--mobile-text-sm);
+    color: var(--soladia-text-secondary);
+  }
+
+  /* Price Range Filter */
+  .price-range {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mobile-space-md);
+  }
+
+  .price-inputs {
+    display: flex;
+    align-items: center;
+    gap: var(--mobile-space-md);
+  }
+
+  .price-min,
+  .price-max {
+    flex: 1;
+    padding: var(--mobile-space-sm) var(--mobile-space-md);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius);
+    background: var(--soladia-bg-primary);
+    color: var(--soladia-text-primary);
+    font-size: var(--mobile-text-base);
+  }
+
+  .price-separator {
+    color: var(--soladia-text-secondary);
+    font-size: var(--mobile-text-sm);
+  }
+
+  .price-slider {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mobile-space-sm);
+  }
+
+  .range-slider {
+    width: 100%;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--soladia-bg-secondary);
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  .range-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--soladia-primary);
+    cursor: pointer;
+  }
+
+  .range-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--mobile-text-xs);
+    color: var(--soladia-text-secondary);
+  }
+
+  /* Collection and Creator Search */
+  .collection-search,
+  .creator-search {
+    margin-bottom: var(--mobile-space-md);
+  }
+
+  .collection-input,
+  .creator-input {
+    width: 100%;
+    padding: var(--mobile-space-sm) var(--mobile-space-md);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius);
+    background: var(--soladia-bg-primary);
+    color: var(--soladia-text-primary);
+    font-size: var(--mobile-text-base);
+  }
+
+  .collection-list,
+  .creator-list {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius);
+    background: var(--soladia-bg-primary);
+  }
+
+  .collection-item,
+  .creator-item {
+    display: flex;
+    align-items: center;
+    gap: var(--mobile-space-md);
+    padding: var(--mobile-space-sm) var(--mobile-space-md);
+    cursor: pointer;
+    transition: var(--mobile-transition-fast);
+  }
+
+  .collection-item:hover,
+  .creator-item:hover {
+    background: var(--soladia-bg-secondary);
+  }
+
+  .collection-item-avatar,
+  .creator-item-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--soladia-bg-secondary);
+  }
+
+  .collection-item-content,
+  .creator-item-content {
+    flex: 1;
+  }
+
+  .collection-item-name,
+  .creator-item-name {
+    font-size: var(--mobile-text-base);
+    font-weight: var(--soladia-font-medium);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--mobile-space-xs) 0;
+  }
+
+  .collection-item-count,
+  .creator-item-count {
+    font-size: var(--mobile-text-sm);
+    color: var(--soladia-text-secondary);
+    margin: 0;
+  }
+
+  /* Sort Select */
+  .sort-select {
+    width: 100%;
+    padding: var(--mobile-space-sm) var(--mobile-space-md);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius);
+    background: var(--soladia-bg-primary);
+    color: var(--soladia-text-primary);
+    font-size: var(--mobile-text-base);
+    cursor: pointer;
+  }
+
+  .filters-footer {
+    padding: var(--mobile-space-lg);
+    border-top: 1px solid var(--soladia-border);
+    position: sticky;
+    bottom: 0;
+    background: var(--soladia-bg-primary);
+  }
+
+  .filters-apply {
+    width: 100%;
+    padding: var(--mobile-space-md) var(--mobile-space-lg);
+    background: var(--soladia-gradient-primary);
+    color: white;
+    border: none;
+    border-radius: var(--soladia-radius-lg);
+    font-size: var(--mobile-text-base);
+    font-weight: var(--soladia-font-semibold);
+    cursor: pointer;
+    transition: var(--mobile-transition-fast);
+  }
+
+  .filters-apply:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--mobile-shadow-md);
+  }
+
+  /* Search Results */
+  .search-results {
+    margin-top: var(--mobile-space-lg);
+  }
+
+  .results-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--mobile-space-lg);
+  }
+
+  .results-info {
+    display: flex;
+    align-items: center;
+    gap: var(--mobile-space-md);
+  }
+
+  .results-title {
+    font-size: var(--mobile-text-xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0;
+  }
+
+  .results-count {
+    font-size: var(--mobile-text-base);
+    color: var(--soladia-text-secondary);
+  }
+
+  .results-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--mobile-space-md);
+  }
+
+  .view-toggle {
+    display: flex;
+    background: var(--soladia-bg-secondary);
+    border-radius: var(--soladia-radius);
+    padding: var(--mobile-space-xs);
+  }
+
+  .view-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--mobile-space-sm);
+    padding: var(--mobile-space-sm) var(--mobile-space-md);
+    background: none;
+    border: none;
+    color: var(--soladia-text-secondary);
+    cursor: pointer;
+    border-radius: var(--soladia-radius);
+    transition: var(--mobile-transition-fast);
+    font-size: var(--mobile-text-sm);
+    font-weight: var(--soladia-font-medium);
+  }
+
+  .view-btn.active {
+    background: var(--soladia-primary);
+    color: white;
+  }
+
+  .view-btn:hover:not(.active) {
+    background: var(--soladia-bg-tertiary);
+    color: var(--soladia-text-primary);
+  }
+
+  /* Active Filters */
+  .active-filters {
+    margin-bottom: var(--mobile-space-lg);
+    padding: var(--mobile-space-md);
+    background: var(--soladia-bg-secondary);
+    border-radius: var(--soladia-radius-lg);
+  }
+
+  .active-filters-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--mobile-space-sm);
+    margin-bottom: var(--mobile-space-md);
+  }
+
+  .active-filter {
+    display: flex;
+    align-items: center;
+    gap: var(--mobile-space-sm);
+    padding: var(--mobile-space-sm) var(--mobile-space-md);
+    background: var(--soladia-primary);
+    color: white;
+    border-radius: var(--soladia-radius);
+    font-size: var(--mobile-text-sm);
+    font-weight: var(--soladia-font-medium);
+  }
+
+  .active-filter-remove {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    padding: var(--mobile-space-xs);
+    border-radius: var(--soladia-radius);
+  }
+
+  .clear-filters {
+    background: none;
+    border: none;
+    color: var(--soladia-text-secondary);
+    cursor: pointer;
+    padding: var(--mobile-space-sm);
+    border-radius: var(--soladia-radius);
+    font-size: var(--mobile-text-sm);
+    font-weight: var(--soladia-font-medium);
+  }
+
+  /* Results Container */
+  .results-container {
+    margin-bottom: var(--mobile-space-xl);
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--mobile-space-lg);
+  }
+
+  .results-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mobile-space-md);
+  }
+
+  .result-item {
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    overflow: hidden;
+    transition: var(--mobile-transition-fast);
+    cursor: pointer;
+  }
+
+  .result-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--mobile-shadow-lg);
+  }
+
+  .result-item-image {
+    width: 100%;
+    height: 200px;
+    background: var(--soladia-bg-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--soladia-text-secondary);
+  }
+
+  .result-item-content {
+    padding: var(--mobile-space-lg);
+  }
+
+  .result-item-title {
+    font-size: var(--mobile-text-base);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--mobile-space-sm) 0;
+  }
+
+  .result-item-collection {
+    font-size: var(--mobile-text-sm);
+    color: var(--soladia-text-secondary);
+    margin: 0 0 var(--mobile-space-sm) 0;
+  }
+
+  .result-item-price {
+    font-size: var(--mobile-text-lg);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-primary);
+    margin: 0;
+  }
+
+  /* Pagination */
+  .pagination {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--mobile-space-md);
+    margin-top: var(--mobile-space-xl);
+  }
+
+  .pagination-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--mobile-space-sm);
+    padding: var(--mobile-space-sm) var(--mobile-space-md);
+    background: var(--soladia-bg-secondary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius);
+    color: var(--soladia-text-primary);
+    cursor: pointer;
+    transition: var(--mobile-transition-fast);
+    font-size: var(--mobile-text-sm);
+    font-weight: var(--soladia-font-medium);
+  }
+
+  .pagination-btn:hover:not(:disabled) {
+    background: var(--soladia-bg-tertiary);
+    border-color: var(--soladia-primary);
+  }
+
+  .pagination-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .pagination-pages {
+    display: flex;
+    gap: var(--mobile-space-sm);
+  }
+
+  .pagination-page {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--soladia-bg-secondary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius);
+    color: var(--soladia-text-primary);
+    cursor: pointer;
+    transition: var(--mobile-transition-fast);
+    font-size: var(--mobile-text-sm);
+    font-weight: var(--soladia-font-medium);
+  }
+
+  .pagination-page:hover {
+    background: var(--soladia-bg-tertiary);
+    border-color: var(--soladia-primary);
+  }
+
+  .pagination-page.active {
+    background: var(--soladia-primary);
+    color: white;
+    border-color: var(--soladia-primary);
+  }
+
+  /* Loading State */
+  .search-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--mobile-space-3xl);
+  }
+
+  .loading-spinner {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--mobile-space-lg);
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--soladia-border);
+    border-top: 4px solid var(--soladia-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  .loading-text {
+    font-size: var(--mobile-text-base);
+    color: var(--soladia-text-secondary);
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* No Results State */
+  .no-results {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--mobile-space-3xl);
+    text-align: center;
+  }
+
+  .no-results-icon {
+    color: var(--soladia-text-secondary);
+    margin-bottom: var(--mobile-space-lg);
+  }
+
+  .no-results-title {
+    font-size: var(--mobile-text-xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--mobile-space-md) 0;
+  }
+
+  .no-results-message {
+    font-size: var(--mobile-text-base);
+    color: var(--soladia-text-secondary);
+    margin: 0 0 var(--mobile-space-lg) 0;
+  }
+
+  .no-results-action {
+    padding: var(--mobile-space-md) var(--mobile-space-lg);
+    background: var(--soladia-gradient-primary);
+    color: white;
+    border: none;
+    border-radius: var(--soladia-radius-lg);
+    font-size: var(--mobile-text-base);
+    font-weight: var(--soladia-font-semibold);
+    cursor: pointer;
+    transition: var(--mobile-transition-fast);
+  }
+
+  .no-results-action:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--mobile-shadow-md);
+  }
+
+  /* Responsive Design */
+  @media (max-width: 767px) {
+  .advanced-search {
+      padding: var(--mobile-space-md);
+  }
+
+  .search-container {
+      flex-direction: column;
+      gap: var(--mobile-space-md);
+    }
+
+    .search-filters-toggle {
+      width: 100%;
+      justify-content: center;
+    }
+
+    .filters-panel {
+      width: 100%;
+      right: 0;
+    }
+
+    .results-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: var(--mobile-space-md);
+    }
+
+    .results-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: var(--mobile-space-md);
+    }
+
+    .pagination {
+      flex-wrap: wrap;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .results-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .price-inputs {
+      flex-direction: column;
+    }
+
+    .price-separator {
+      display: none;
+    }
+  }
+
+  /* Dark Mode Adjustments */
+  [data-theme="dark"] .search-suggestions,
+  [data-theme="dark"] .filters-panel,
+  [data-theme="dark"] .result-item,
+  [data-theme="dark"] .active-filters {
+    background: var(--soladia-bg-primary);
+    border-color: var(--soladia-border);
+  }
+
+  [data-theme="dark"] .search-input,
+  [data-theme="dark"] .price-min,
+  [data-theme="dark"] .price-max,
+  [data-theme="dark"] .collection-input,
+  [data-theme="dark"] .creator-input,
+  [data-theme="dark"] .sort-select {
+    background: var(--soladia-bg-primary);
+    border-color: var(--soladia-border);
+    color: var(--soladia-text-primary);
+  }
+
+  /* High Contrast Mode */
+  @media (prefers-contrast: high) {
+    .search-input,
+    .filter-option,
+    .result-item,
+    .pagination-btn,
+    .pagination-page {
+      border-width: 2px;
+    }
+  }
+
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .result-item,
+    .pagination-btn,
+    .pagination-page,
+    .view-btn,
+    .filter-option,
+    .suggestion-item {
+      transition: none;
+    }
+
+    .spinner {
+      animation: none;
+    }
+  }
+</style>
+
 <script>
   class AdvancedSearch {
-    private searchInput: HTMLInputElement | null = null;
-    private searchButton: HTMLButtonElement | null = null;
-    private filterToggle: HTMLButtonElement | null = null;
-    private searchFilters: HTMLElement | null = null;
-    private searchResults: HTMLElement | null = null;
-    private resultsGrid: HTMLElement | null = null;
-    private searchSuggestions: HTMLElement | null = null;
-    private aiRecommendations: HTMLElement | null = null;
-    
+    private searchInput: HTMLInputElement;
+    private searchClear: HTMLElement;
+    private searchVoice: HTMLElement;
+    private searchSuggestions: HTMLElement;
+    private filtersPanel: HTMLElement;
+    private filtersToggle: HTMLElement;
+    private resultsGrid: HTMLElement;
+    private resultsList: HTMLElement;
+    private viewToggle: HTMLElement;
+    private searchLoading: HTMLElement;
+    private noResults: HTMLElement;
+    private activeFilters: HTMLElement;
+    private pagination: HTMLElement;
+
     private currentQuery: string = '';
-    private currentFilters: any = {};
-    private searchTimeout: number | null = null;
+    private currentFilters: Record<string, any> = {};
+    private currentPage: number = 1;
+    private totalPages: number = 1;
+    private currentView: 'grid' | 'list' = 'grid';
+    private searchTimeout: ReturnType<typeof setTimeout> | null = null;
     private isSearching: boolean = false;
 
     constructor() {
-      this.initializeElements();
+      this.searchInput = document.querySelector('[data-testid="search-input"]') as HTMLInputElement;
+      this.searchClear = document.querySelector('[data-testid="search-clear"]') as HTMLElement;
+      this.searchVoice = document.querySelector('[data-testid="search-voice"]') as HTMLElement;
+      this.searchSuggestions = document.querySelector('[data-testid="search-suggestions"]') as HTMLElement;
+      this.filtersPanel = document.querySelector('[data-testid="filters-panel"]') as HTMLElement;
+      this.filtersToggle = document.querySelector('[data-testid="search-filters-toggle"]') as HTMLElement;
+      this.resultsGrid = document.querySelector('[data-testid="results-grid"]') as HTMLElement;
+      this.resultsList = document.querySelector('[data-testid="results-list"]') as HTMLElement;
+      this.viewToggle = document.querySelector('[data-testid="view-toggle"]') as HTMLElement;
+      this.searchLoading = document.querySelector('[data-testid="search-loading"]') as HTMLElement;
+      this.noResults = document.querySelector('[data-testid="no-results"]') as HTMLElement;
+      this.activeFilters = document.querySelector('[data-testid="active-filters"]') as HTMLElement;
+      this.pagination = document.querySelector('[data-testid="pagination"]') as HTMLElement;
+
+      this.init();
+    }
+
+    init() {
       this.setupEventListeners();
-      this.loadSearchHistory();
+      this.loadInitialData();
     }
 
-    private initializeElements() {
-      // This will be called when the component is mounted
-    }
+    setupEventListeners() {
+      // Search input events
+      this.searchInput.addEventListener('input', (e) => {
+        this.handleSearchInput(e);
+      });
 
-    private setupEventListeners() {
-      document.addEventListener('DOMContentLoaded', () => {
-        this.searchInput = document.getElementById('search-input') as HTMLInputElement;
-        this.searchButton = document.getElementById('search-button') as HTMLButtonElement;
-        this.filterToggle = document.getElementById('filter-toggle') as HTMLButtonElement;
-        this.searchFilters = document.getElementById('search-filters');
-        this.searchResults = document.getElementById('search-results');
-        this.resultsGrid = document.getElementById('results-grid');
-        this.searchSuggestions = document.getElementById('search-suggestions');
-        this.aiRecommendations = document.getElementById('ai-recommendations');
+      this.searchInput.addEventListener('focus', () => {
+        this.showSuggestions();
+      });
 
-        // Search input events
-        this.searchInput?.addEventListener('input', (e) => this.handleSearchInput(e));
-        this.searchInput?.addEventListener('focus', () => this.showSuggestions());
-        this.searchInput?.addEventListener('blur', () => this.hideSuggestions());
+      this.searchInput.addEventListener('blur', () => {
+        // Delay hiding suggestions to allow clicking on them
+        setTimeout(() => {
+          this.hideSuggestions();
+        }, 200);
+      });
 
-        // Search button
-        this.searchButton?.addEventListener('click', () => this.performSearch());
+      // Search clear button
+      this.searchClear.addEventListener('click', () => {
+        this.clearSearch();
+      });
 
-        // Filter toggle
-        this.filterToggle?.addEventListener('click', () => this.toggleFilters());
+      // Search voice button
+      this.searchVoice.addEventListener('click', () => {
+        this.startVoiceSearch();
+      });
 
-        // Suggestion clicks
-        const suggestionItems = document.querySelectorAll('.suggestion-item');
-        suggestionItems.forEach(item => {
-          item.addEventListener('click', (e) => {
-            const suggestion = (e.target as HTMLElement).getAttribute('data-suggestion');
-            if (suggestion && this.searchInput) {
-              this.searchInput.value = suggestion;
-              this.performSearch();
-            }
-          });
-        });
+      // Filters toggle
+      this.filtersToggle.addEventListener('click', () => {
+        this.toggleFiltersPanel();
+      });
 
-        // Recommendation clicks
-        const recommendationItems = document.querySelectorAll('.recommendation-item');
-        recommendationItems.forEach(item => {
-          item.addEventListener('click', (e) => {
-            const itemId = (e.target as HTMLElement).closest('.recommendation-item')?.getAttribute('data-item-id');
-            if (itemId) {
-              this.handleRecommendationClick(itemId);
-            }
-          });
-        });
+      // View toggle
+      this.viewToggle.addEventListener('click', (e) => {
+        const target = e.target as HTMLElement;
+        const viewBtn = target.closest('.view-btn') as HTMLElement;
+        if (viewBtn) {
+          this.switchView(viewBtn.dataset.view as 'grid' | 'list');
+        }
+      });
 
-        // Filter events
-        this.setupFilterEvents();
+      // Filter events
+      this.setupFilterEvents();
 
-        // View toggle
-        const viewToggles = document.querySelectorAll('.view-toggle');
-        viewToggles.forEach(toggle => {
-          toggle.addEventListener('click', (e) => {
-            const view = (e.target as HTMLElement).getAttribute('data-view');
-            if (view) {
-              this.setViewMode(view);
-            }
-          });
-        });
+      // Pagination events
+      this.setupPaginationEvents();
 
-        // Keyboard shortcuts
-        document.addEventListener('keydown', (e) => this.handleKeyboardShortcuts(e));
+      // Keyboard events
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape') {
+          this.hideSuggestions();
+          this.hideFiltersPanel();
+        }
       });
     }
 
-    private setupFilterEvents() {
-      // Close filters
-      const closeFilters = document.getElementById('close-filters');
-      closeFilters?.addEventListener('click', () => this.hideFilters());
+    setupFilterEvents() {
+      // Price range filter
+      const priceMin = document.querySelector('[data-testid="price-min"]') as HTMLInputElement;
+      const priceMax = document.querySelector('[data-testid="price-max"]') as HTMLInputElement;
+      const priceRange = document.querySelector('[data-testid="price-range"]') as HTMLInputElement;
 
-      // Apply filters
-      const applyFilters = document.getElementById('apply-filters');
-      applyFilters?.addEventListener('click', () => this.applyFilters());
+      priceMin?.addEventListener('input', () => {
+        this.updatePriceRange();
+      });
 
-      // Reset filters
-      const resetFilters = document.getElementById('reset-filters');
-      resetFilters?.addEventListener('click', () => this.resetFilters());
+      priceMax?.addEventListener('input', () => {
+        this.updatePriceRange();
+      });
 
-      // Price range sliders
-      const priceMin = document.getElementById('price-min') as HTMLInputElement;
-      const priceMax = document.getElementById('price-max') as HTMLInputElement;
-      
-      if (priceMin && priceMax) {
-        priceMin.addEventListener('input', () => this.updatePriceRange());
-        priceMax.addEventListener('input', () => this.updatePriceRange());
-      }
+      priceRange?.addEventListener('input', () => {
+        this.updatePriceRangeFromSlider();
+      });
 
-      // Clear suggestions
-      const clearSuggestions = document.getElementById('clear-suggestions');
-      clearSuggestions?.addEventListener('click', () => this.clearSuggestions());
+      // Category filters
+      document.querySelectorAll('[data-testid^="category-"]').forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+          this.updateFilters();
+        });
+      });
+
+      // Status filters
+      document.querySelectorAll('[data-testid^="status-"]').forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+          this.updateFilters();
+        });
+      });
+
+      // Rarity filters
+      document.querySelectorAll('[data-testid^="rarity-"]').forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+          this.updateFilters();
+        });
+      });
+
+      // Sort select
+      const sortSelect = document.querySelector('[data-testid="sort-select"]') as HTMLSelectElement;
+      sortSelect?.addEventListener('change', () => {
+        this.updateFilters();
+      });
+
+      // Apply filters button
+      const applyFilters = document.querySelector('[data-testid="filters-apply"]') as HTMLElement;
+      applyFilters?.addEventListener('click', () => {
+        this.applyFilters();
+      });
+
+      // Clear filters button
+      const clearFilters = document.querySelector('[data-testid="filters-clear"]') as HTMLElement;
+      clearFilters?.addEventListener('click', () => {
+        this.clearFilters();
+      });
     }
 
-    private handleSearchInput(event: Event) {
-      const target = event.target as HTMLInputElement;
-      this.currentQuery = target.value;
+    setupPaginationEvents() {
+      const prevBtn = document.querySelector('[data-testid="pagination-prev"]') as HTMLElement;
+      const nextBtn = document.querySelector('[data-testid="pagination-next"]') as HTMLElement;
+
+      prevBtn?.addEventListener('click', () => {
+        this.goToPage(this.currentPage - 1);
+      });
+
+      nextBtn?.addEventListener('click', () => {
+        this.goToPage(this.currentPage + 1);
+      });
+
+      // Page number clicks will be handled dynamically
+    }
+
+    handleSearchInput(e: Event) {
+      const target = e.target as HTMLInputElement;
+      const query = target.value.trim();
+
+      // Show/hide clear button
+      if (query.length > 0) {
+        this.searchClear.style.display = 'block';
+      } else {
+        this.searchClear.style.display = 'none';
+      }
 
       // Clear previous timeout
       if (this.searchTimeout) {
         clearTimeout(this.searchTimeout);
       }
 
-      // Show suggestions if there's input
-      if (this.currentQuery.length > 0) {
-        this.showSuggestions();
-        this.filterSuggestions(this.currentQuery);
-      } else {
-        this.hideSuggestions();
-      }
-
-      // Auto-search after delay
+      // Set new timeout for search
       this.searchTimeout = setTimeout(() => {
-        if (this.currentQuery.length >= 2) {
-          this.performSearch();
-        }
-      }, 500) as any;
+        this.performSearch(query);
+      }, 300);
+
+      // Update suggestions
+      this.updateSuggestions(query);
     }
 
-    private filterSuggestions(query: string) {
-      const suggestions = document.querySelectorAll('.suggestion-item');
-      suggestions.forEach(item => {
-        const text = item.textContent?.toLowerCase() || '';
-        const matches = text.includes(query.toLowerCase());
-        (item as HTMLElement).style.display = matches ? 'block' : 'none';
-      });
-    }
-
-    private showSuggestions() {
-      if (this.searchSuggestions) {
-        this.searchSuggestions.style.display = 'block';
-      }
-    }
-
-    private hideSuggestions() {
-      // Delay hiding to allow clicks on suggestions
-      setTimeout(() => {
-        if (this.searchSuggestions) {
-          this.searchSuggestions.style.display = 'none';
-        }
-      }, 200);
-    }
-
-    private async performSearch() {
+    performSearch(query: string) {
       if (this.isSearching) return;
 
-      this.isSearching = true;
-      this.currentQuery = this.searchInput?.value || '';
+      this.currentQuery = query;
+      this.currentPage = 1;
 
-      try {
-        this.showLoadingState();
-        
-        // In a real implementation, this would call the search API
-        const results = await this.searchAPI(this.currentQuery, this.currentFilters);
-        
-        this.displayResults(results);
-        this.saveSearchHistory(this.currentQuery);
-        this.hideSuggestions();
-      } catch (error) {
-        this.showErrorState('Search failed. Please try again.');
-        console.error('Search error:', error);
-      } finally {
-        this.isSearching = false;
-        this.hideLoadingState();
-      }
-    }
-
-    private async searchAPI(query: string, filters: any): Promise<any[]> {
-      // Mock API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      // Mock results
-      return [
-        {
-          id: 1,
-          name: 'Solana NFT #1234',
-          price: 15.5,
-          image: 'https://images.unsplash.com/photo-1634017839464-5c339ebe3cb4?w=100&h=100&fit=crop&crop=center',
-          type: 'nft',
-          category: 'art'
-        },
-        {
-          id: 2,
-          name: 'Digital Art Collection',
-          price: 8.5,
-          image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=100&h=100&fit=crop&crop=center',
-          type: 'collection',
-          category: 'art'
-        }
-      ];
-    }
-
-    private displayResults(results: any[]) {
-      if (!this.resultsGrid) return;
-
-      if (results.length === 0) {
-        this.resultsGrid.innerHTML = `
-          <div class="no-results">
-            <div class="no-results-icon">🔍</div>
-            <h3>No results found</h3>
-            <p>Try adjusting your search terms or filters</p>
-          </div>
-        `;
+      if (query.length === 0) {
+        this.hideResults();
         return;
       }
 
-      this.resultsGrid.innerHTML = results.map(result => `
-        <div class="result-item" data-id="${result.id}">
-          <img src="${result.image}" alt="${result.name}" class="result-image" />
-          <div class="result-info">
-            <h4 class="result-name">${result.name}</h4>
-            <p class="result-price">${result.price} SOL</p>
-            <span class="result-type">${result.type}</span>
-          </div>
-        </div>
-      `).join('');
+      this.showLoading();
+      this.isSearching = true;
 
-      // Add click handlers to results
-      const resultItems = this.resultsGrid.querySelectorAll('.result-item');
-      resultItems.forEach(item => {
+      // Simulate API call
+      setTimeout(() => {
+        this.searchNFTs(query, this.currentFilters, this.currentPage);
+        this.isSearching = false;
+      }, 1000);
+    }
+
+    async searchNFTs(query: string, filters: Record<string, any>, page: number) {
+      try {
+        // This would be a real API call
+        const results = await this.mockSearchAPI(query, filters, page);
+        this.displayResults(results);
+        this.hideLoading();
+      } catch (error) {
+        console.error('Search failed:', error);
+        this.showError('Search failed. Please try again.');
+        this.hideLoading();
+      }
+    }
+
+    async mockSearchAPI(query: string, filters: Record<string, any>, page: number) {
+      // Mock search results
+      const mockResults = [
+        {
+          id: '1',
+          title: 'Digital Art #1',
+          collection: 'Crypto Artists',
+          creator: 'Artist One',
+          price: '2.5 SOL',
+          image: '/placeholder-nft.jpg',
+          category: 'art',
+          rarity: 'rare',
+          status: 'buy-now'
+        },
+        {
+          id: '2',
+          title: 'Music NFT #1',
+          collection: 'Sound Waves',
+          creator: 'Musician Two',
+          price: '1.8 SOL',
+          image: '/placeholder-nft.jpg',
+          category: 'music',
+          rarity: 'common',
+          status: 'auction'
+        },
+        {
+          id: '3',
+          title: 'Gaming Item #1',
+          collection: 'Game World',
+          creator: 'Gamer Three',
+          price: '5.2 SOL',
+          image: '/placeholder-nft.jpg',
+          category: 'gaming',
+          rarity: 'epic',
+          status: 'buy-now'
+        }
+      ];
+
+      // Filter results based on query and filters
+      let filteredResults = mockResults.filter(item => 
+        item.title.toLowerCase().includes(query.toLowerCase()) ||
+        item.collection.toLowerCase().includes(query.toLowerCase()) ||
+        item.creator.toLowerCase().includes(query.toLowerCase())
+      );
+
+      // Apply filters
+      if (filters.categories && filters.categories.length > 0) {
+        filteredResults = filteredResults.filter(item => 
+          filters.categories.includes(item.category)
+        );
+      }
+
+      if (filters.status && filters.status.length > 0) {
+        filteredResults = filteredResults.filter(item => 
+          filters.status.includes(item.status)
+        );
+      }
+
+      if (filters.rarity && filters.rarity.length > 0) {
+        filteredResults = filteredResults.filter(item => 
+          filters.rarity.includes(item.rarity)
+        );
+      }
+
+      // Apply pagination
+      const itemsPerPage = 12;
+      const startIndex = (page - 1) * itemsPerPage;
+      const endIndex = startIndex + itemsPerPage;
+      const paginatedResults = filteredResults.slice(startIndex, endIndex);
+
+      this.totalPages = Math.ceil(filteredResults.length / itemsPerPage);
+
+      return {
+        results: paginatedResults,
+        total: filteredResults.length,
+        page: page,
+        totalPages: this.totalPages
+      };
+    }
+
+    displayResults(data: any) {
+      if (data.results.length === 0) {
+        this.showNoResults();
+        return;
+      }
+
+      this.hideNoResults();
+      this.updateResultsCount(data.total);
+      this.renderResults(data.results);
+      this.updatePagination(data.page, data.totalPages);
+    }
+
+    renderResults(results: any[]) {
+      if (this.currentView === 'grid') {
+        this.renderGridView(results);
+      } else {
+        this.renderListView(results);
+      }
+    }
+
+    renderGridView(results: any[]) {
+      this.resultsGrid.innerHTML = '';
+      this.resultsList.style.display = 'none';
+      this.resultsGrid.style.display = 'grid';
+
+      results.forEach(item => {
+        const resultItem = document.createElement('div');
+        resultItem.className = 'result-item';
+        resultItem.innerHTML = `
+          <div class="result-item-image">
+            <img src="${item.image}" alt="${item.title}" />
+          </div>
+          <div class="result-item-content">
+            <h3 class="result-item-title">${item.title}</h3>
+            <p class="result-item-collection">${item.collection}</p>
+            <p class="result-item-price">${item.price}</p>
+          </div>
+        `;
+        resultItem.addEventListener('click', () => {
+          this.viewNFT(item.id);
+        });
+        this.resultsGrid.appendChild(resultItem);
+      });
+    }
+
+    renderListView(results: any[]) {
+      this.resultsList.innerHTML = '';
+      this.resultsGrid.style.display = 'none';
+      this.resultsList.style.display = 'flex';
+
+      results.forEach(item => {
+        const resultItem = document.createElement('div');
+        resultItem.className = 'result-item list-item';
+        resultItem.innerHTML = `
+          <div class="result-item-image">
+            <img src="${item.image}" alt="${item.title}" />
+          </div>
+          <div class="result-item-content">
+            <h3 class="result-item-title">${item.title}</h3>
+            <p class="result-item-collection">${item.collection} • ${item.creator}</p>
+            <p class="result-item-price">${item.price}</p>
+          </div>
+        `;
+        resultItem.addEventListener('click', () => {
+          this.viewNFT(item.id);
+        });
+        this.resultsList.appendChild(resultItem);
+      });
+    }
+
+    updateResultsCount(count: number) {
+      const resultsCount = document.querySelector('[data-testid="results-count"]') as HTMLElement;
+      if (resultsCount) {
+        resultsCount.textContent = `${count} result${count !== 1 ? 's' : ''}`;
+      }
+    }
+
+    updatePagination(page: number, totalPages: number) {
+      this.currentPage = page;
+      this.totalPages = totalPages;
+
+      const paginationPages = document.querySelector('[data-testid="pagination-pages"]') as HTMLElement;
+      const prevBtn = document.querySelector('[data-testid="pagination-prev"]') as HTMLElement;
+      const nextBtn = document.querySelector('[data-testid="pagination-next"]') as HTMLElement;
+
+      if (totalPages <= 1) {
+        this.pagination.style.display = 'none';
+        return;
+      }
+
+      this.pagination.style.display = 'flex';
+
+      // Update prev/next buttons
+      if (prevBtn) {
+        (prevBtn as HTMLButtonElement).disabled = page <= 1;
+      }
+      if (nextBtn) {
+        (nextBtn as HTMLButtonElement).disabled = page >= totalPages;
+      }
+
+      // Generate page numbers
+      if (paginationPages) {
+        paginationPages.innerHTML = '';
+        const startPage = Math.max(1, page - 2);
+        const endPage = Math.min(totalPages, page + 2);
+
+        for (let i = startPage; i <= endPage; i++) {
+          const pageBtn = document.createElement('button');
+          pageBtn.className = `pagination-page ${i === page ? 'active' : ''}`;
+          pageBtn.textContent = i.toString();
+          pageBtn.addEventListener('click', () => {
+            this.goToPage(i);
+          });
+          paginationPages.appendChild(pageBtn);
+        }
+      }
+    }
+
+    goToPage(page: number) {
+      if (page < 1 || page > this.totalPages || page === this.currentPage) return;
+
+      this.currentPage = page;
+      this.performSearch(this.currentQuery);
+    }
+
+    switchView(view: 'grid' | 'list') {
+      this.currentView = view;
+
+      // Update view buttons
+      document.querySelectorAll('.view-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      document.querySelector(`[data-view="${view}"]`)?.classList.add('active');
+
+      // Re-render results with new view
+      if (this.currentQuery) {
+        this.renderResults(this.getCurrentResults());
+      }
+    }
+
+    getCurrentResults() {
+      // This would return the current results from the last search
+      return [];
+    }
+
+    updateSuggestions(query: string) {
+      if (query.length < 2) {
+        this.hideSuggestions();
+        return;
+      }
+
+      // Mock suggestions
+      const suggestions = {
+        trending: [
+          { title: 'Crypto Punks', subtitle: 'Collection', type: 'collection' },
+          { title: 'Bored Apes', subtitle: 'Collection', type: 'collection' },
+          { title: 'Art Blocks', subtitle: 'Collection', type: 'collection' }
+        ],
+        collections: [
+          { title: 'Digital Art Collection', subtitle: '1,234 items', type: 'collection' },
+          { title: 'Music NFTs', subtitle: '567 items', type: 'collection' }
+        ],
+        creators: [
+          { title: 'Artist One', subtitle: '2,345 items', type: 'creator' },
+          { title: 'Musician Two', subtitle: '890 items', type: 'creator' }
+        ]
+      };
+
+      this.renderSuggestions(suggestions);
+    }
+
+    renderSuggestions(suggestions: any) {
+      const trendingItems = document.querySelector('[data-testid="trending-items"]') as HTMLElement;
+      const collectionItems = document.querySelector('[data-testid="collection-items"]') as HTMLElement;
+      const creatorItems = document.querySelector('[data-testid="creator-items"]') as HTMLElement;
+
+      if (trendingItems) {
+        trendingItems.innerHTML = suggestions.trending.map((item: any) => `
+          <div class="suggestion-item" data-type="${item.type}">
+            <div class="suggestion-item-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="M21 21l-4.35-4.35"/>
+              </svg>
+            </div>
+            <div class="suggestion-item-content">
+              <div class="suggestion-item-title">${item.title}</div>
+              <div class="suggestion-item-subtitle">${item.subtitle}</div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      if (collectionItems) {
+        collectionItems.innerHTML = suggestions.collections.map((item: any) => `
+          <div class="suggestion-item" data-type="${item.type}">
+            <div class="suggestion-item-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21,15 16,10 5,21"/>
+              </svg>
+            </div>
+            <div class="suggestion-item-content">
+              <div class="suggestion-item-title">${item.title}</div>
+              <div class="suggestion-item-subtitle">${item.subtitle}</div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      if (creatorItems) {
+        creatorItems.innerHTML = suggestions.creators.map((item: any) => `
+          <div class="suggestion-item" data-type="${item.type}">
+            <div class="suggestion-item-icon">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <div class="suggestion-item-content">
+              <div class="suggestion-item-title">${item.title}</div>
+              <div class="suggestion-item-subtitle">${item.subtitle}</div>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // Add click handlers
+      document.querySelectorAll('.suggestion-item').forEach(item => {
         item.addEventListener('click', () => {
-          const id = item.getAttribute('data-id');
-          if (id) {
-            this.handleResultClick(id);
-          }
+          const title = item.querySelector('.suggestion-item-title')?.textContent || '';
+          this.searchInput.value = title;
+          this.performSearch(title);
+          this.hideSuggestions();
         });
       });
-
-      // Update results count
-      const resultsCount = document.querySelector('.results-count');
-      if (resultsCount) {
-        resultsCount.textContent = `${results.length} result${results.length !== 1 ? 's' : ''} found`;
-      }
     }
 
-    private handleResultClick(id: string) {
-      this.showNotification(`Opening item ${id}...`, 'info');
-      // In a real implementation, this would navigate to the item details
+    showSuggestions() {
+      this.searchSuggestions.style.display = 'block';
     }
 
-    private handleRecommendationClick(itemId: string) {
-      this.showNotification(`Opening ${itemId}...`, 'info');
-      // In a real implementation, this would navigate to the recommended item
+    hideSuggestions() {
+      this.searchSuggestions.style.display = 'none';
     }
 
-    private toggleFilters() {
-      if (this.searchFilters) {
-        const isVisible = this.searchFilters.style.display === 'block';
-        this.searchFilters.style.display = isVisible ? 'none' : 'block';
-      }
+    toggleFiltersPanel() {
+      this.filtersPanel.classList.toggle('open');
     }
 
-    private hideFilters() {
-      if (this.searchFilters) {
-        this.searchFilters.style.display = 'none';
-      }
+    hideFiltersPanel() {
+      this.filtersPanel.classList.remove('open');
     }
 
-    private applyFilters() {
-      const filters: any = {};
+    updateFilters() {
+      const filters: Record<string, any> = {};
 
-      // Get search type filters
-      const typeCheckboxes = document.querySelectorAll('.filter-checkbox[value]');
-      const selectedTypes: string[] = [];
-      typeCheckboxes.forEach(checkbox => {
-        if ((checkbox as HTMLInputElement).checked) {
-          selectedTypes.push((checkbox as HTMLInputElement).value);
-        }
-      });
-      if (selectedTypes.length > 0) {
-        filters.types = selectedTypes;
-      }
+      // Get category filters
+      const categoryCheckboxes = document.querySelectorAll('[data-testid^="category-"]:checked') as NodeListOf<HTMLInputElement>;
+      filters.categories = Array.from(categoryCheckboxes).map(cb => cb.value);
 
-      // Get price range
-      const priceMin = document.getElementById('price-min') as HTMLInputElement;
-      const priceMax = document.getElementById('price-max') as HTMLInputElement;
-      if (priceMin && priceMax) {
-        filters.priceMin = parseFloat(priceMin.value);
-        filters.priceMax = parseFloat(priceMax.value);
-      }
+      // Get status filters
+      const statusCheckboxes = document.querySelectorAll('[data-testid^="status-"]:checked') as NodeListOf<HTMLInputElement>;
+      filters.status = Array.from(statusCheckboxes).map(cb => cb.value);
+
+      // Get rarity filters
+      const rarityCheckboxes = document.querySelectorAll('[data-testid^="rarity-"]:checked') as NodeListOf<HTMLInputElement>;
+      filters.rarity = Array.from(rarityCheckboxes).map(cb => cb.value);
 
       // Get sort option
-      const sortSelect = document.getElementById('sort-select') as HTMLSelectElement;
+      const sortSelect = document.querySelector('[data-testid="sort-select"]') as HTMLSelectElement;
       if (sortSelect) {
         filters.sort = sortSelect.value;
       }
 
       this.currentFilters = filters;
-      this.performSearch();
-      this.hideFilters();
+      this.updateFilterCount();
     }
 
-    private resetFilters() {
-      // Reset all checkboxes
-      const checkboxes = document.querySelectorAll('.filter-checkbox');
-      checkboxes.forEach(checkbox => {
+    updateFilterCount() {
+      const totalFilters = Object.values(this.currentFilters).reduce((count, filter) => {
+        return count + (Array.isArray(filter) ? filter.length : 0);
+      }, 0);
+
+      const filterCount = document.querySelector('[data-testid="filter-count"]') as HTMLElement;
+      if (filterCount) {
+        filterCount.textContent = totalFilters.toString();
+        filterCount.style.display = totalFilters > 0 ? 'flex' : 'none';
+      }
+    }
+
+    applyFilters() {
+      this.updateFilters();
+      this.hideFiltersPanel();
+      this.performSearch(this.currentQuery);
+    }
+
+    clearFilters() {
+      // Clear all checkboxes
+      document.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
         (checkbox as HTMLInputElement).checked = false;
       });
 
-      // Reset price sliders
-      const priceMin = document.getElementById('price-min') as HTMLInputElement;
-      const priceMax = document.getElementById('price-max') as HTMLInputElement;
-      if (priceMin && priceMax) {
-        priceMin.value = '0';
-        priceMax.value = '100';
-      }
-
-      // Reset sort
-      const sortSelect = document.getElementById('sort-select') as HTMLSelectElement;
+      // Reset sort select
+      const sortSelect = document.querySelector('[data-testid="sort-select"]') as HTMLSelectElement;
       if (sortSelect) {
         sortSelect.value = 'relevance';
       }
 
       this.currentFilters = {};
+      this.updateFilterCount();
     }
 
-    private updatePriceRange() {
-      const priceMin = document.getElementById('price-min') as HTMLInputElement;
-      const priceMax = document.getElementById('price-max') as HTMLInputElement;
-      
-      if (priceMin && priceMax) {
-        const min = parseFloat(priceMin.value);
-        const max = parseFloat(priceMax.value);
-        
-        // Ensure min doesn't exceed max
-        if (min > max) {
-          priceMin.value = max.toString();
-        }
+    updatePriceRange() {
+      const priceMin = document.querySelector('[data-testid="price-min"]') as HTMLInputElement;
+      const priceMax = document.querySelector('[data-testid="price-max"]') as HTMLInputElement;
+      const priceRange = document.querySelector('[data-testid="price-range"]') as HTMLInputElement;
+
+      if (priceMin && priceMax && priceRange) {
+        const min = parseFloat(priceMin.value) || 0;
+        const max = parseFloat(priceMax.value) || 100;
+        priceRange.min = min.toString();
+        priceRange.max = max.toString();
+        priceRange.value = min.toString();
       }
     }
 
-    private setViewMode(view: string) {
-      const viewToggles = document.querySelectorAll('.view-toggle');
-      viewToggles.forEach(toggle => {
-        toggle.classList.remove('active');
-      });
+    updatePriceRangeFromSlider() {
+      const priceRange = document.querySelector('[data-testid="price-range"]') as HTMLInputElement;
+      const priceMin = document.querySelector('[data-testid="price-min"]') as HTMLInputElement;
 
-      const activeToggle = document.querySelector(`[data-view="${view}"]`);
-      if (activeToggle) {
-        activeToggle.classList.add('active');
-      }
-
-      if (this.resultsGrid) {
-        this.resultsGrid.className = `results-${view}`;
+      if (priceRange && priceMin) {
+        priceMin.value = priceRange.value;
       }
     }
 
-    private handleKeyboardShortcuts(event: KeyboardEvent) {
-      // Ctrl/Cmd + K to focus search
-      if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
-        event.preventDefault();
-        this.searchInput?.focus();
-      }
-
-      // Escape to close filters
-      if (event.key === 'Escape') {
-        this.hideFilters();
-        this.hideSuggestions();
-      }
-
-      // Enter to search
-      if (event.key === 'Enter' && document.activeElement === this.searchInput) {
-        this.performSearch();
-      }
+    clearSearch() {
+      this.searchInput.value = '';
+      this.searchClear.style.display = 'none';
+      this.hideSuggestions();
+      this.hideResults();
     }
 
-    private showLoadingState() {
-      if (this.resultsGrid) {
-        this.resultsGrid.innerHTML = `
-          <div class="loading-state">
-            <div class="loading-spinner"></div>
-            <p>Searching...</p>
-          </div>
-        `;
-      }
-    }
+    startVoiceSearch() {
+      if ('webkitSpeechRecognition' in window) {
+        const recognition = new (window as any).webkitSpeechRecognition();
+        recognition.continuous = false;
+        recognition.interimResults = false;
 
-    private hideLoadingState() {
-      // Loading state will be replaced by results
-    }
+        recognition.onstart = () => {
+          this.searchInput.placeholder = 'Listening...';
+        };
 
-    private showErrorState(message: string) {
-      if (this.resultsGrid) {
-        this.resultsGrid.innerHTML = `
-          <div class="error-state">
-            <div class="error-icon">⚠️</div>
-            <h3>Search Error</h3>
-            <p>${message}</p>
-            <button class="retry-button" onclick="window.location.reload()">Try Again</button>
-          </div>
-        `;
+        recognition.onresult = (event: any) => {
+          const transcript = event.results[0][0].transcript;
+          this.searchInput.value = transcript;
+          this.performSearch(transcript);
+        };
+
+        recognition.onerror = () => {
+          this.searchInput.placeholder = 'Search NFTs, collections, creators...';
+        };
+
+        recognition.onend = () => {
+          this.searchInput.placeholder = 'Search NFTs, collections, creators...';
+        };
+
+        recognition.start();
+      } else {
+        this.showError('Voice search not supported in this browser');
       }
     }
 
-    private saveSearchHistory(query: string) {
-      const history = this.getSearchHistory();
-      if (!history.includes(query)) {
-        history.unshift(query);
-        history.splice(10); // Keep only last 10 searches
-        localStorage.setItem('soladia_search_history', JSON.stringify(history));
-      }
+    showLoading() {
+      this.searchLoading.style.display = 'flex';
+      this.hideNoResults();
     }
 
-    private loadSearchHistory() {
-      const history = this.getSearchHistory();
-      // In a real implementation, this would populate recent searches
+    hideLoading() {
+      this.searchLoading.style.display = 'none';
     }
 
-    private getSearchHistory(): string[] {
-      try {
-        return JSON.parse(localStorage.getItem('soladia_search_history') || '[]');
-      } catch {
-        return [];
-      }
+    showNoResults() {
+      this.noResults.style.display = 'flex';
+      this.hideLoading();
     }
 
-    private clearSuggestions() {
-      if (this.searchSuggestions) {
-        this.searchSuggestions.style.display = 'none';
-      }
+    hideNoResults() {
+      this.noResults.style.display = 'none';
     }
 
-    private showNotification(message: string, type: 'success' | 'error' | 'info') {
-      const notification = document.createElement('div');
-      notification.className = `notification notification-${type}`;
-      notification.textContent = message;
-      
-      document.body.appendChild(notification);
-      
-      setTimeout(() => {
-        notification.remove();
-      }, 3000);
+    hideResults() {
+      this.resultsGrid.innerHTML = '';
+      this.resultsList.innerHTML = '';
+      this.pagination.style.display = 'none';
+    }
+
+    showError(message: string) {
+      // This would integrate with the UX enhancements system
+      console.error(message);
+    }
+
+    viewNFT(id: string) {
+      // Navigate to NFT detail page
+      window.location.href = `/nft/${id}`;
+    }
+
+    loadInitialData() {
+      // Load trending data, popular collections, etc.
+      this.updateSuggestions('');
     }
   }
 
-  // Initialize search when DOM is loaded
-  let advancedSearch: AdvancedSearch;
-  
+  // Initialize advanced search when DOM is ready
   document.addEventListener('DOMContentLoaded', () => {
-    advancedSearch = new AdvancedSearch();
+    new AdvancedSearch();
   });
 
   // Export for external use
-  window.getAdvancedSearch = () => advancedSearch;
-</script>
-
-<style>
-  .advanced-search {
-    @apply w-full;
-  }
-
-  .search-container {
-    @apply relative;
-  }
-
-  .search-input-container {
-    @apply flex items-center bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden;
-  }
-
-  .search-icon {
-    @apply p-2 text-gray-400;
-  }
-
-  .search-input {
-    @apply flex-1 px-3 py-2 text-sm text-gray-900 placeholder-gray-500 focus:outline-none;
-  }
-
-  .search-button {
-    @apply px-3 py-2 bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors;
-  }
-
-  .filter-toggle {
-    @apply px-3 py-2 bg-gray-100 text-gray-700 text-sm font-medium hover:bg-gray-200 transition-colors flex items-center space-x-1;
-  }
-
-  .ai-recommendations {
-    @apply mt-4 p-4 bg-gradient-to-r from-blue-50 to-purple-50 rounded-lg;
-  }
-
-  .recommendations-title {
-    @apply text-sm font-semibold text-gray-900 mb-3;
-  }
-
-  .recommendations-grid {
-    @apply grid grid-cols-1 gap-3;
-  }
-
-  .recommendation-card {
-    @apply bg-white rounded-lg p-3 shadow-sm;
-  }
-
-  .recommendation-title {
-    @apply text-xs font-medium text-gray-900 mb-2;
-  }
-
-  .recommendation-items {
-    @apply space-y-1;
-  }
-
-  .recommendation-item {
-    @apply flex items-center space-x-2 p-1 rounded hover:bg-gray-50 cursor-pointer;
-  }
-
-  .item-image {
-    @apply w-6 h-6 rounded object-cover;
-  }
-
-  .item-info {
-    @apply flex-1 min-w-0;
-  }
-
-  .item-name {
-    @apply block text-xs font-medium text-gray-900 truncate;
-  }
-
-  .item-price {
-    @apply block text-xs text-gray-600;
-  }
-
-  .search-suggestions {
-    @apply absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border border-gray-200 z-10 hidden;
-  }
-
-  .suggestions-header {
-    @apply flex justify-between items-center p-3 border-b border-gray-200;
-  }
-
-  .suggestions-title {
-    @apply text-sm font-medium text-gray-700;
-  }
-
-  .clear-suggestions {
-    @apply text-xs text-blue-600 hover:text-blue-800;
-  }
-
-  .suggestions-list {
-    @apply p-2;
-  }
-
-  .suggestion-item {
-    @apply w-full text-left px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 rounded;
-  }
-
-  .search-filters {
-    @apply fixed inset-0 bg-black bg-opacity-50 z-50 hidden;
-  }
-
-  .filters-header {
-    @apply flex justify-between items-center p-4 bg-white border-b border-gray-200;
-  }
-
-  .filters-title {
-    @apply text-lg font-semibold text-gray-900;
-  }
-
-  .close-filters {
-    @apply p-2 text-gray-400 hover:text-gray-600;
-  }
-
-  .filters-content {
-    @apply bg-white h-full overflow-y-auto p-4;
-  }
-
-  .filter-section {
-    @apply mb-6;
-  }
-
-  .filter-section-title {
-    @apply text-sm font-medium text-gray-900 mb-3;
-  }
-
-  .filter-options {
-    @apply space-y-2;
-  }
-
-  .filter-option {
-    @apply flex items-center space-x-2 cursor-pointer;
-  }
-
-  .filter-checkbox {
-    @apply rounded border-gray-300 text-blue-600 focus:ring-blue-500;
-  }
-
-  .filter-label {
-    @apply text-sm text-gray-700;
-  }
-
-  .price-range {
-    @apply space-y-4;
-  }
-
-  .price-slider {
-    @apply w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer;
-  }
-
-  .price-labels {
-    @apply flex justify-between text-xs text-gray-600;
-  }
-
-  .sort-select {
-    @apply w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500;
-  }
-
-  .filter-actions {
-    @apply flex space-x-3 pt-4 border-t border-gray-200;
-  }
-
-  .apply-filters {
-    @apply flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700;
-  }
-
-  .reset-filters {
-    @apply flex-1 px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300;
-  }
-
-  .search-results {
-    @apply mt-6;
-  }
-
-  .results-header {
-    @apply flex justify-between items-center mb-4;
-  }
-
-  .results-count {
-    @apply text-sm text-gray-600;
-  }
-
-  .results-actions {
-    @apply flex space-x-2;
-  }
-
-  .view-toggle {
-    @apply p-2 text-gray-400 hover:text-gray-600 rounded;
-  }
-
-  .view-toggle.active {
-    @apply text-blue-600 bg-blue-100;
-  }
-
-  .results-grid {
-    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4;
-  }
-
-  .result-item {
-    @apply bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden cursor-pointer hover:shadow-md transition-shadow;
-  }
-
-  .result-image {
-    @apply w-full h-48 object-cover;
-  }
-
-  .result-info {
-    @apply p-4;
-  }
-
-  .result-name {
-    @apply font-medium text-gray-900 mb-1;
-  }
-
-  .result-price {
-    @apply text-lg font-semibold text-blue-600 mb-1;
-  }
-
-  .result-type {
-    @apply text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded;
-  }
-
-  .no-results {
-    @apply text-center py-12;
-  }
-
-  .no-results-icon {
-    @apply text-4xl mb-4;
-  }
-
-  .loading-state {
-    @apply text-center py-12;
-  }
-
-  .loading-spinner {
-    @apply w-8 h-8 border-4 border-blue-200 border-t-blue-600 rounded-full animate-spin mx-auto mb-4;
-  }
-
-  .error-state {
-    @apply text-center py-12;
-  }
-
-  .error-icon {
-    @apply text-4xl mb-4;
-  }
-
-  .retry-button {
-    @apply mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700;
-  }
-
-  .notification {
-    @apply fixed top-4 right-4 px-4 py-2 rounded-lg text-white font-medium z-50;
-  }
-
-  .notification-success {
-    @apply bg-green-600;
-  }
-
-  .notification-error {
-    @apply bg-red-600;
-  }
-
-  .notification-info {
-    @apply bg-blue-600;
-  }
-</style>
-
-<!-- Global types for TypeScript -->
-<script>
-  declare global {
-    interface Window {
-      getAdvancedSearch: () => any;
-    }
-  }
+  (window as any).AdvancedSearch = AdvancedSearch;
 </script>

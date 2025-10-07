@@ -1,0 +1,1366 @@
+---
+// Enhanced Advanced Search Component
+// AI-powered search with filters and recommendations
+---
+
+<div class="enhanced-advanced-search" data-testid="enhanced-advanced-search">
+  <!-- Search Header -->
+  <div class="search-header">
+    <h1>Advanced Search</h1>
+    <p class="header-subtitle">Find exactly what you're looking for with AI-powered search</p>
+  </div>
+
+  <!-- Search Interface -->
+  <div class="search-interface">
+    <!-- Main Search Bar -->
+    <div class="main-search" data-testid="main-search">
+      <div class="search-input-container">
+        <input 
+          type="text" 
+          class="search-input" 
+          placeholder="Search NFTs, collections, users, or describe what you're looking for..."
+          data-testid="search-input"
+        >
+        <button class="search-btn" data-testid="search-btn">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
+          </svg>
+        </button>
+      </div>
+      <div class="search-suggestions" data-testid="search-suggestions" style="display: none;">
+        <div class="suggestion-item" data-testid="suggestion-1">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
+          </svg>
+          <span>Solana Punks</span>
+        </div>
+        <div class="suggestion-item" data-testid="suggestion-2">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21,15 16,10 5,21"/>
+          </svg>
+          <span>Digital Art</span>
+        </div>
+        <div class="suggestion-item" data-testid="suggestion-3">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="8.5" cy="7" r="4"/>
+            <path d="M20 8v6"/>
+            <path d="M23 11h-6"/>
+          </svg>
+          <span>@nft_collector</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Search Filters -->
+    <div class="search-filters" data-testid="search-filters">
+      <div class="filter-section">
+        <h3>Category</h3>
+        <div class="filter-options">
+          <label class="filter-option">
+            <input type="checkbox" value="art" data-testid="filter-art">
+            <span class="checkmark"></span>
+            <span>Digital Art</span>
+          </label>
+          <label class="filter-option">
+            <input type="checkbox" value="gaming" data-testid="filter-gaming">
+            <span class="checkmark"></span>
+            <span>Gaming</span>
+          </label>
+          <label class="filter-option">
+            <input type="checkbox" value="music" data-testid="filter-music">
+            <span class="checkmark"></span>
+            <span>Music</span>
+          </label>
+          <label class="filter-option">
+            <input type="checkbox" value="sports" data-testid="filter-sports">
+            <span class="checkmark"></span>
+            <span>Sports</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <h3>Price Range</h3>
+        <div class="price-range">
+          <input type="range" min="0" max="100" value="50" class="price-slider" data-testid="price-slider">
+          <div class="price-labels">
+            <span>0 SOL</span>
+            <span>100+ SOL</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <h3>Collection</h3>
+        <select class="collection-select" data-testid="collection-select">
+          <option value="">All Collections</option>
+          <option value="solana-punks">Solana Punks</option>
+          <option value="digital-artists">Digital Artists</option>
+          <option value="crypto-cats">Crypto Cats</option>
+          <option value="space-monkeys">Space Monkeys</option>
+        </select>
+      </div>
+
+      <div class="filter-section">
+        <h3>Attributes</h3>
+        <div class="attribute-filters" data-testid="attribute-filters">
+          <div class="attribute-group">
+            <label>Background</label>
+            <select class="attribute-select" data-testid="attribute-background">
+              <option value="">Any</option>
+              <option value="blue">Blue</option>
+              <option value="red">Red</option>
+              <option value="green">Green</option>
+              <option value="purple">Purple</option>
+            </select>
+          </div>
+          <div class="attribute-group">
+            <label>Eyes</label>
+            <select class="attribute-select" data-testid="attribute-eyes">
+              <option value="">Any</option>
+              <option value="laser">Laser</option>
+              <option value="normal">Normal</option>
+              <option value="glasses">Glasses</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="filter-section">
+        <h3>Sort By</h3>
+        <select class="sort-select" data-testid="sort-select">
+          <option value="relevance">Relevance</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="newest">Newest First</option>
+          <option value="oldest">Oldest First</option>
+          <option value="popular">Most Popular</option>
+        </select>
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn btn-secondary clear-filters" data-testid="clear-filters">Clear All</button>
+        <button class="btn btn-primary apply-filters" data-testid="apply-filters">Apply Filters</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search Results -->
+  <div class="search-results" data-testid="search-results">
+    <div class="results-header">
+      <h2>Search Results</h2>
+      <div class="results-info">
+        <span class="results-count" data-testid="results-count">0 results found</span>
+        <div class="view-toggle">
+          <button class="view-btn active" data-testid="grid-view" data-view="grid">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <rect x="3" y="3" width="7" height="7"/>
+              <rect x="14" y="3" width="7" height="7"/>
+              <rect x="14" y="14" width="7" height="7"/>
+              <rect x="3" y="14" width="7" height="7"/>
+            </svg>
+          </button>
+          <button class="view-btn" data-testid="list-view" data-view="list">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="8" y1="6" x2="21" y2="6"/>
+              <line x1="8" y1="12" x2="21" y2="12"/>
+              <line x1="8" y1="18" x2="21" y2="18"/>
+              <line x1="3" y1="6" x2="3.01" y2="6"/>
+              <line x1="3" y1="12" x2="3.01" y2="12"/>
+              <line x1="3" y1="18" x2="3.01" y2="18"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="results-content">
+      <div class="results-grid" data-testid="results-grid">
+        <!-- Search results will be populated here -->
+      </div>
+
+      <div class="no-results" data-testid="no-results" style="display: none;">
+        <div class="no-results-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
+          </svg>
+        </div>
+        <h3>No results found</h3>
+        <p>Try adjusting your search terms or filters</p>
+        <button class="btn btn-primary" data-testid="clear-search">Clear Search</button>
+      </div>
+    </div>
+
+    <!-- Load More Button -->
+    <div class="load-more-container" data-testid="load-more-container" style="display: none;">
+      <button class="btn btn-secondary load-more-btn" data-testid="load-more-btn">Load More</button>
+    </div>
+  </div>
+
+  <!-- AI Recommendations -->
+  <div class="ai-recommendations" data-testid="ai-recommendations">
+    <h3>AI Recommendations</h3>
+    <div class="recommendations-grid">
+      <div class="recommendation-item" data-testid="recommendation-1">
+        <img src="/images/nfts/nft-1.jpg" alt="Recommended NFT" class="recommendation-image">
+        <div class="recommendation-info">
+          <h4>Solana Punk #001</h4>
+          <p>2.5 SOL • Solana Punks</p>
+          <div class="recommendation-reason">
+            <span class="reason-label">Why recommended:</span>
+            <span class="reason-text">Similar to your recent purchases</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="recommendation-item" data-testid="recommendation-2">
+        <img src="/images/nfts/nft-2.jpg" alt="Recommended NFT" class="recommendation-image">
+        <div class="recommendation-info">
+          <h4>Digital Art #042</h4>
+          <p>1.8 SOL • Digital Artists</p>
+          <div class="recommendation-reason">
+            <span class="reason-label">Why recommended:</span>
+            <span class="reason-text">Trending in your favorite category</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="recommendation-item" data-testid="recommendation-3">
+        <img src="/images/nfts/nft-3.jpg" alt="Recommended NFT" class="recommendation-image">
+        <div class="recommendation-info">
+          <h4>Crypto Cat #1337</h4>
+          <p>5.0 SOL • Crypto Cats</p>
+          <div class="recommendation-reason">
+            <span class="reason-label">Why recommended:</span>
+            <span class="reason-text">Popular among users like you</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Search History -->
+  <div class="search-history" data-testid="search-history">
+    <h3>Recent Searches</h3>
+    <div class="history-list">
+      <div class="history-item" data-testid="history-item-1">
+        <span class="history-query">Solana Punks</span>
+        <button class="history-remove" data-testid="remove-history-1">×</button>
+      </div>
+      <div class="history-item" data-testid="history-item-2">
+        <span class="history-query">Digital Art under 5 SOL</span>
+        <button class="history-remove" data-testid="remove-history-2">×</button>
+      </div>
+      <div class="history-item" data-testid="history-item-3">
+        <span class="history-query">Gaming NFTs</span>
+        <button class="history-remove" data-testid="remove-history-3">×</button>
+      </div>
+    </div>
+    <button class="btn btn-outline clear-history" data-testid="clear-history">Clear History</button>
+  </div>
+</div>
+
+<style>
+  .enhanced-advanced-search {
+    padding: var(--soladia-space-6);
+    max-width: 1400px;
+    margin: 0 auto;
+    background: var(--soladia-bg-primary);
+  }
+
+  .search-header {
+    text-align: center;
+    margin-bottom: var(--soladia-space-8);
+  }
+
+  .search-header h1 {
+    font-size: var(--soladia-text-4xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--soladia-space-4) 0;
+  }
+
+  .header-subtitle {
+    font-size: var(--soladia-text-xl);
+    color: var(--soladia-text-secondary);
+    margin: 0;
+  }
+
+  .search-interface {
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    gap: var(--soladia-space-8);
+    margin-bottom: var(--soladia-space-8);
+  }
+
+  .main-search {
+    position: relative;
+  }
+
+  .search-input-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    background: var(--soladia-bg-primary);
+    border: 2px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-xl);
+    padding: var(--soladia-space-4);
+    box-shadow: var(--soladia-shadow-lg);
+    transition: var(--soladia-transition);
+  }
+
+  .search-input-container:focus-within {
+    border-color: var(--soladia-primary);
+    box-shadow: 0 0 0 3px rgba(230, 0, 18, 0.1);
+  }
+
+  .search-input {
+    flex: 1;
+    border: none;
+    background: none;
+    color: var(--soladia-text-primary);
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-medium);
+    outline: none;
+  }
+
+  .search-input::placeholder {
+    color: var(--soladia-text-tertiary);
+  }
+
+  .search-btn {
+    background: var(--soladia-primary);
+    color: white;
+    border: none;
+    border-radius: var(--soladia-radius-lg);
+    padding: var(--soladia-space-3);
+    cursor: pointer;
+    transition: var(--soladia-transition);
+  }
+
+  .search-btn:hover {
+    background: var(--soladia-primary-600);
+    transform: scale(1.05);
+  }
+
+  .search-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    box-shadow: var(--soladia-shadow-xl);
+    z-index: 10;
+    margin-top: var(--soladia-space-2);
+  }
+
+  .suggestion-item {
+    display: flex;
+    align-items: center;
+    gap: var(--soladia-space-3);
+    padding: var(--soladia-space-3) var(--soladia-space-4);
+    cursor: pointer;
+    transition: var(--soladia-transition);
+  }
+
+  .suggestion-item:hover {
+    background: var(--soladia-bg-secondary);
+  }
+
+  .search-filters {
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-xl);
+    padding: var(--soladia-space-6);
+    box-shadow: var(--soladia-shadow-lg);
+    height: fit-content;
+  }
+
+  .filter-section {
+    margin-bottom: var(--soladia-space-6);
+  }
+
+  .filter-section:last-child {
+    margin-bottom: 0;
+  }
+
+  .filter-section h3 {
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--soladia-space-4) 0;
+  }
+
+  .filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--soladia-space-3);
+  }
+
+  .filter-option {
+    display: flex;
+    align-items: center;
+    gap: var(--soladia-space-3);
+    cursor: pointer;
+  }
+
+  .filter-option input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--soladia-border);
+    border-radius: var(--soladia-radius);
+    background: var(--soladia-bg-primary);
+    position: relative;
+    transition: var(--soladia-transition);
+  }
+
+  .filter-option input[type="checkbox"]:checked + .checkmark {
+    background: var(--soladia-primary);
+    border-color: var(--soladia-primary);
+  }
+
+  .filter-option input[type="checkbox"]:checked + .checkmark::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 6px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  .price-range {
+    display: flex;
+    flex-direction: column;
+    gap: var(--soladia-space-2);
+  }
+
+  .price-slider {
+    width: 100%;
+    height: 6px;
+    border-radius: 3px;
+    background: var(--soladia-bg-secondary);
+    outline: none;
+    -webkit-appearance: none;
+  }
+
+  .price-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--soladia-primary);
+    cursor: pointer;
+  }
+
+  .price-slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--soladia-primary);
+    cursor: pointer;
+    border: none;
+  }
+
+  .price-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: var(--soladia-text-sm);
+    color: var(--soladia-text-secondary);
+  }
+
+  .collection-select,
+  .sort-select {
+    width: 100%;
+    padding: var(--soladia-space-3) var(--soladia-space-4);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    background: var(--soladia-bg-primary);
+    color: var(--soladia-text-primary);
+    font-weight: var(--soladia-font-medium);
+  }
+
+  .attribute-filters {
+    display: flex;
+    flex-direction: column;
+    gap: var(--soladia-space-4);
+  }
+
+  .attribute-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--soladia-space-2);
+  }
+
+  .attribute-group label {
+    font-size: var(--soladia-text-sm);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+  }
+
+  .attribute-select {
+    padding: var(--soladia-space-2) var(--soladia-space-3);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius);
+    background: var(--soladia-bg-primary);
+    color: var(--soladia-text-primary);
+    font-size: var(--soladia-text-sm);
+  }
+
+  .filter-actions {
+    display: flex;
+    gap: var(--soladia-space-3);
+    margin-top: var(--soladia-space-6);
+  }
+
+  .clear-filters {
+    flex: 1;
+  }
+
+  .apply-filters {
+    flex: 1;
+  }
+
+  .search-results {
+    margin-bottom: var(--soladia-space-8);
+  }
+
+  .results-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--soladia-space-6);
+  }
+
+  .results-header h2 {
+    font-size: var(--soladia-text-2xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0;
+  }
+
+  .results-info {
+    display: flex;
+    align-items: center;
+    gap: var(--soladia-space-4);
+  }
+
+  .results-count {
+    font-size: var(--soladia-text-lg);
+    color: var(--soladia-text-secondary);
+  }
+
+  .view-toggle {
+    display: flex;
+    background: var(--soladia-bg-secondary);
+    border-radius: var(--soladia-radius-lg);
+    padding: var(--soladia-space-1);
+  }
+
+  .view-btn {
+    background: none;
+    border: none;
+    padding: var(--soladia-space-2);
+    border-radius: var(--soladia-radius);
+    color: var(--soladia-text-secondary);
+    cursor: pointer;
+    transition: var(--soladia-transition);
+  }
+
+  .view-btn.active {
+    background: var(--soladia-primary);
+    color: white;
+  }
+
+  .view-btn:hover:not(.active) {
+    color: var(--soladia-text-primary);
+    background: var(--soladia-bg-primary);
+  }
+
+  .results-content {
+    min-height: 400px;
+  }
+
+  .results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--soladia-space-6);
+  }
+
+  .no-results {
+    text-align: center;
+    padding: var(--soladia-space-12);
+  }
+
+  .no-results-icon {
+    color: var(--soladia-text-tertiary);
+    margin-bottom: var(--soladia-space-4);
+  }
+
+  .no-results h3 {
+    font-size: var(--soladia-text-xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--soladia-space-2) 0;
+  }
+
+  .no-results p {
+    color: var(--soladia-text-secondary);
+    margin: 0 0 var(--soladia-space-6) 0;
+  }
+
+  .load-more-container {
+    text-align: center;
+    margin-top: var(--soladia-space-8);
+  }
+
+  .load-more-btn {
+    padding: var(--soladia-space-4) var(--soladia-space-8);
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-semibold);
+  }
+
+  .ai-recommendations {
+    margin-bottom: var(--soladia-space-8);
+  }
+
+  .ai-recommendations h3 {
+    font-size: var(--soladia-text-xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--soladia-space-6) 0;
+  }
+
+  .recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: var(--soladia-space-6);
+  }
+
+  .recommendation-item {
+    display: flex;
+    gap: var(--soladia-space-4);
+    padding: var(--soladia-space-4);
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-xl);
+    box-shadow: var(--soladia-shadow-lg);
+    transition: var(--soladia-transition);
+  }
+
+  .recommendation-item:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--soladia-shadow-xl);
+  }
+
+  .recommendation-image {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--soladia-radius-lg);
+    object-fit: cover;
+  }
+
+  .recommendation-info {
+    flex: 1;
+  }
+
+  .recommendation-info h4 {
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--soladia-space-2) 0;
+  }
+
+  .recommendation-info p {
+    color: var(--soladia-text-secondary);
+    margin: 0 0 var(--soladia-space-2) 0;
+  }
+
+  .recommendation-reason {
+    display: flex;
+    flex-direction: column;
+    gap: var(--soladia-space-1);
+  }
+
+  .reason-label {
+    font-size: var(--soladia-text-sm);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+  }
+
+  .reason-text {
+    font-size: var(--soladia-text-sm);
+    color: var(--soladia-text-secondary);
+  }
+
+  .search-history {
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-xl);
+    padding: var(--soladia-space-6);
+    box-shadow: var(--soladia-shadow-lg);
+  }
+
+  .search-history h3 {
+    font-size: var(--soladia-text-xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--soladia-space-4) 0;
+  }
+
+  .history-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--soladia-space-2);
+    margin-bottom: var(--soladia-space-4);
+  }
+
+  .history-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--soladia-space-3);
+    background: var(--soladia-bg-secondary);
+    border-radius: var(--soladia-radius-lg);
+    cursor: pointer;
+    transition: var(--soladia-transition);
+  }
+
+  .history-item:hover {
+    background: var(--soladia-bg-primary);
+  }
+
+  .history-query {
+    color: var(--soladia-text-primary);
+    font-weight: var(--soladia-font-medium);
+  }
+
+  .history-remove {
+    background: none;
+    border: none;
+    color: var(--soladia-text-tertiary);
+    cursor: pointer;
+    padding: var(--soladia-space-1);
+    border-radius: var(--soladia-radius);
+    transition: var(--soladia-transition);
+  }
+
+  .history-remove:hover {
+    color: var(--soladia-error);
+    background: var(--soladia-error-50);
+  }
+
+  .clear-history {
+    width: 100%;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--soladia-space-2);
+    padding: var(--soladia-space-3) var(--soladia-space-6);
+    border-radius: var(--soladia-radius-lg);
+    font-weight: var(--soladia-font-semibold);
+    text-decoration: none;
+    transition: var(--soladia-transition);
+    cursor: pointer;
+    border: none;
+    font-size: var(--soladia-text-base);
+    line-height: 1;
+  }
+
+  .btn:focus {
+    outline: 2px solid var(--soladia-primary);
+    outline-offset: 2px;
+  }
+
+  .btn-primary {
+    background: var(--soladia-gradient-primary);
+    color: white;
+    box-shadow: var(--soladia-shadow-primary);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--soladia-shadow-primary-hover);
+  }
+
+  .btn-secondary {
+    background: var(--soladia-bg-primary);
+    color: var(--soladia-primary);
+    border: 2px solid var(--soladia-primary);
+  }
+
+  .btn-secondary:hover {
+    background: var(--soladia-primary);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--soladia-text-primary);
+    border: 2px solid var(--soladia-border);
+  }
+
+  .btn-outline:hover {
+    background: var(--soladia-bg-secondary);
+    border-color: var(--soladia-text-primary);
+  }
+
+  /* Dark mode styles */
+  [data-theme="dark"] .enhanced-advanced-search {
+    background: var(--soladia-bg-primary);
+  }
+
+  [data-theme="dark"] .search-filters,
+  [data-theme="dark"] .recommendation-item,
+  [data-theme="dark"] .search-history {
+    background: var(--soladia-bg-primary);
+    border-color: var(--soladia-border);
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .enhanced-advanced-search {
+      padding: var(--soladia-space-4);
+    }
+
+    .search-interface {
+      grid-template-columns: 1fr;
+      gap: var(--soladia-space-6);
+    }
+
+    .search-filters {
+      order: -1;
+    }
+
+    .results-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .recommendations-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .recommendation-item {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .recommendation-image {
+      width: 100%;
+      height: 200px;
+    }
+  }
+</style>
+
+<script>
+  import { enhancedSearchService } from '../../services/enhanced-search-service';
+
+  class EnhancedAdvancedSearch {
+    constructor() {
+      this.searchService = enhancedSearchService;
+      this.currentQuery = '';
+      this.currentFilters = {};
+      this.currentView = 'grid';
+      this.searchHistory = [];
+      
+      this.init();
+    }
+
+    init() {
+      this.setupEventListeners();
+      this.loadSearchHistory();
+      this.loadRecommendations();
+    }
+
+    setupEventListeners() {
+      // Search input
+      document.querySelector('[data-testid="search-input"]')?.addEventListener('input', (e) => {
+        this.handleSearchInput(e.target.value);
+      });
+
+      document.querySelector('[data-testid="search-input"]')?.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+          this.performSearch();
+        }
+      });
+
+      // Search button
+      document.querySelector('[data-testid="search-btn"]')?.addEventListener('click', () => {
+        this.performSearch();
+      });
+
+      // Filter checkboxes
+      document.querySelectorAll('[data-testid^="filter-"]').forEach(checkbox => {
+        checkbox.addEventListener('change', () => {
+          this.updateFilters();
+        });
+      });
+
+      // Price slider
+      document.querySelector('[data-testid="price-slider"]')?.addEventListener('input', (e) => {
+        this.updatePriceRange(e.target.value);
+      });
+
+      // Collection and sort selects
+      document.querySelectorAll('select').forEach(select => {
+        select.addEventListener('change', () => {
+          this.updateFilters();
+        });
+      });
+
+      // Filter actions
+      document.querySelector('[data-testid="clear-filters"]')?.addEventListener('click', () => {
+        this.clearFilters();
+      });
+
+      document.querySelector('[data-testid="apply-filters"]')?.addEventListener('click', () => {
+        this.applyFilters();
+      });
+
+      // View toggle
+      document.querySelectorAll('[data-view]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          this.toggleView(e.target.dataset.view);
+        });
+      });
+
+      // Load more
+      document.querySelector('[data-testid="load-more-btn"]')?.addEventListener('click', () => {
+        this.loadMoreResults();
+      });
+
+      // Clear search
+      document.querySelector('[data-testid="clear-search"]')?.addEventListener('click', () => {
+        this.clearSearch();
+      });
+
+      // History management
+      document.querySelectorAll('[data-testid^="remove-history-"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const historyId = e.target.dataset.testid.replace('remove-history-', '');
+          this.removeHistoryItem(historyId);
+        });
+      });
+
+      document.querySelector('[data-testid="clear-history"]')?.addEventListener('click', () => {
+        this.clearHistory();
+      });
+
+      // Suggestion clicks
+      document.querySelectorAll('[data-testid^="suggestion-"]').forEach(suggestion => {
+        suggestion.addEventListener('click', () => {
+          const query = suggestion.textContent.trim();
+          this.selectSuggestion(query);
+        });
+      });
+    }
+
+    handleSearchInput(query) {
+      this.currentQuery = query;
+      
+      if (query.length > 2) {
+        this.showSuggestions(query);
+      } else {
+        this.hideSuggestions();
+      }
+    }
+
+    async showSuggestions(query) {
+      try {
+        const suggestions = await this.searchService.getSuggestions(query);
+        this.renderSuggestions(suggestions);
+        this.showSuggestionsContainer();
+      } catch (error) {
+        console.error('Error getting suggestions:', error);
+      }
+    }
+
+    renderSuggestions(suggestions) {
+      const container = document.querySelector('[data-testid="search-suggestions"]');
+      if (!container) return;
+
+      container.innerHTML = suggestions.map((suggestion, index) => `
+        <div class="suggestion-item" data-testid="suggestion-${index + 1}">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
+          </svg>
+          <span>${suggestion.text}</span>
+        </div>
+      `).join('');
+
+      // Re-attach event listeners
+      container.querySelectorAll('.suggestion-item').forEach((item, index) => {
+        item.addEventListener('click', () => {
+          this.selectSuggestion(suggestions[index].text);
+        });
+      });
+    }
+
+    showSuggestionsContainer() {
+      const container = document.querySelector('[data-testid="search-suggestions"]');
+      if (container) {
+        container.style.display = 'block';
+      }
+    }
+
+    hideSuggestions() {
+      const container = document.querySelector('[data-testid="search-suggestions"]');
+      if (container) {
+        container.style.display = 'none';
+      }
+    }
+
+    selectSuggestion(query) {
+      const input = document.querySelector('[data-testid="search-input"]');
+      if (input) {
+        input.value = query;
+        this.currentQuery = query;
+        this.hideSuggestions();
+        this.performSearch();
+      }
+    }
+
+    async performSearch() {
+      if (!this.currentQuery.trim()) {
+        this.showError('Please enter a search query');
+        return;
+      }
+
+      try {
+        this.showLoading();
+        
+        const results = await this.searchService.search({
+          query: this.currentQuery,
+          filters: this.currentFilters
+        });
+
+        this.renderResults(results);
+        this.addToHistory(this.currentQuery);
+        this.hideSuggestions();
+
+      } catch (error) {
+        console.error('Error performing search:', error);
+        this.showError('Search failed. Please try again.');
+      } finally {
+        this.hideLoading();
+      }
+    }
+
+    renderResults(results) {
+      const container = document.querySelector('[data-testid="results-grid"]');
+      const noResults = document.querySelector('[data-testid="no-results"]');
+      const resultsCount = document.querySelector('[data-testid="results-count"]');
+
+      if (!container) return;
+
+      if (results.length === 0) {
+        container.style.display = 'none';
+        noResults.style.display = 'block';
+        if (resultsCount) resultsCount.textContent = '0 results found';
+        return;
+      }
+
+      container.style.display = 'grid';
+      noResults.style.display = 'none';
+      
+      if (resultsCount) {
+        resultsCount.textContent = `${results.length} result${results.length !== 1 ? 's' : ''} found`;
+      }
+
+      container.innerHTML = results.map(result => this.renderResultItem(result)).join('');
+    }
+
+    renderResultItem(result) {
+      return `
+        <div class="result-item" data-testid="result-item-${result.id}">
+          <img src="${result.image}" alt="${result.name}" class="result-image">
+          <div class="result-info">
+            <h4>${result.name}</h4>
+            <p>${result.price} SOL • ${result.collection}</p>
+            <div class="result-stats">
+              <span class="stat">👀 ${result.views}</span>
+              <span class="stat">❤️ ${result.likes}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    updateFilters() {
+      const filters = {
+        categories: Array.from(document.querySelectorAll('[data-testid^="filter-"]:checked')).map(cb => cb.value),
+        collection: document.querySelector('[data-testid="collection-select"]')?.value || '',
+        sort: document.querySelector('[data-testid="sort-select"]')?.value || 'relevance',
+        attributes: {
+          background: document.querySelector('[data-testid="attribute-background"]')?.value || '',
+          eyes: document.querySelector('[data-testid="attribute-eyes"]')?.value || ''
+        }
+      };
+
+      this.currentFilters = filters;
+    }
+
+    updatePriceRange(value) {
+      const price = parseFloat(value);
+      this.currentFilters.priceMax = price;
+    }
+
+    clearFilters() {
+      // Uncheck all checkboxes
+      document.querySelectorAll('[data-testid^="filter-"]').forEach(checkbox => {
+        checkbox.checked = false;
+      });
+
+      // Reset selects
+      document.querySelectorAll('select').forEach(select => {
+        select.selectedIndex = 0;
+      });
+
+      // Reset price slider
+      const priceSlider = document.querySelector('[data-testid="price-slider"]');
+      if (priceSlider) {
+        priceSlider.value = 50;
+      }
+
+      this.currentFilters = {};
+    }
+
+    applyFilters() {
+      this.updateFilters();
+      if (this.currentQuery) {
+        this.performSearch();
+      }
+    }
+
+    toggleView(view) {
+      this.currentView = view;
+      
+      // Update button states
+      document.querySelectorAll('[data-view]').forEach(btn => {
+        btn.classList.toggle('active', btn.dataset.view === view);
+      });
+
+      // Update grid layout
+      const container = document.querySelector('[data-testid="results-grid"]');
+      if (container) {
+        container.className = view === 'list' ? 'results-grid list-view' : 'results-grid';
+      }
+    }
+
+    async loadMoreResults() {
+      try {
+        this.showLoading();
+        
+        const moreResults = await this.searchService.search({
+          query: this.currentQuery,
+          filters: this.currentFilters,
+          offset: this.getCurrentResultCount()
+        });
+
+        this.appendResults(moreResults);
+
+      } catch (error) {
+        console.error('Error loading more results:', error);
+        this.showError('Failed to load more results');
+      } finally {
+        this.hideLoading();
+      }
+    }
+
+    getCurrentResultCount() {
+      const container = document.querySelector('[data-testid="results-grid"]');
+      return container ? container.children.length : 0;
+    }
+
+    appendResults(results) {
+      const container = document.querySelector('[data-testid="results-grid"]');
+      if (!container) return;
+
+      results.forEach(result => {
+        const resultElement = this.createResultElement(result);
+        container.appendChild(resultElement);
+      });
+    }
+
+    createResultElement(result) {
+      const div = document.createElement('div');
+      div.className = 'result-item';
+      div.setAttribute('data-testid', `result-item-${result.id}`);
+      div.innerHTML = `
+        <img src="${result.image}" alt="${result.name}" class="result-image">
+        <div class="result-info">
+          <h4>${result.name}</h4>
+          <p>${result.price} SOL • ${result.collection}</p>
+          <div class="result-stats">
+            <span class="stat">👀 ${result.views}</span>
+            <span class="stat">❤️ ${result.likes}</span>
+          </div>
+        </div>
+      `;
+      return div;
+    }
+
+    clearSearch() {
+      const input = document.querySelector('[data-testid="search-input"]');
+      if (input) {
+        input.value = '';
+        this.currentQuery = '';
+      }
+      
+      this.clearFilters();
+      this.hideSuggestions();
+      
+      const container = document.querySelector('[data-testid="results-grid"]');
+      const noResults = document.querySelector('[data-testid="no-results"]');
+      
+      if (container) container.style.display = 'none';
+      if (noResults) noResults.style.display = 'none';
+    }
+
+    addToHistory(query) {
+      if (!query.trim()) return;
+      
+      // Remove if already exists
+      this.searchHistory = this.searchHistory.filter(item => item !== query);
+      
+      // Add to beginning
+      this.searchHistory.unshift(query);
+      
+      // Keep only last 10
+      this.searchHistory = this.searchHistory.slice(0, 10);
+      
+      this.saveSearchHistory();
+      this.renderSearchHistory();
+    }
+
+    removeHistoryItem(historyId) {
+      const index = parseInt(historyId) - 1;
+      if (index >= 0 && index < this.searchHistory.length) {
+        this.searchHistory.splice(index, 1);
+        this.saveSearchHistory();
+        this.renderSearchHistory();
+      }
+    }
+
+    clearHistory() {
+      this.searchHistory = [];
+      this.saveSearchHistory();
+      this.renderSearchHistory();
+    }
+
+    loadSearchHistory() {
+      const saved = localStorage.getItem('soladia-search-history');
+      if (saved) {
+        try {
+          this.searchHistory = JSON.parse(saved);
+          this.renderSearchHistory();
+        } catch (error) {
+          console.error('Error loading search history:', error);
+        }
+      }
+    }
+
+    saveSearchHistory() {
+      localStorage.setItem('soladia-search-history', JSON.stringify(this.searchHistory));
+    }
+
+    renderSearchHistory() {
+      const container = document.querySelector('[data-testid="search-history"] .history-list');
+      if (!container) return;
+
+      container.innerHTML = this.searchHistory.map((query, index) => `
+        <div class="history-item" data-testid="history-item-${index + 1}">
+          <span class="history-query">${query}</span>
+          <button class="history-remove" data-testid="remove-history-${index + 1}">×</button>
+        </div>
+      `).join('');
+
+      // Re-attach event listeners
+      container.querySelectorAll('[data-testid^="remove-history-"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const historyId = e.target.dataset.testid.replace('remove-history-', '');
+          this.removeHistoryItem(historyId);
+        });
+      });
+
+      // Add click listeners to history items
+      container.querySelectorAll('.history-item').forEach((item, index) => {
+        item.addEventListener('click', (e) => {
+          if (!e.target.classList.contains('history-remove')) {
+            this.selectSuggestion(this.searchHistory[index]);
+          }
+        });
+      });
+    }
+
+    async loadRecommendations() {
+      try {
+        const recommendations = await this.searchService.getRecommendations();
+        this.renderRecommendations(recommendations);
+      } catch (error) {
+        console.error('Error loading recommendations:', error);
+      }
+    }
+
+    renderRecommendations(recommendations) {
+      const container = document.querySelector('.recommendations-grid');
+      if (!container) return;
+
+      container.innerHTML = recommendations.map(rec => `
+        <div class="recommendation-item" data-testid="recommendation-${rec.id}">
+          <img src="${rec.image}" alt="${rec.name}" class="recommendation-image">
+          <div class="recommendation-info">
+            <h4>${rec.name}</h4>
+            <p>${rec.price} SOL • ${rec.collection}</p>
+            <div class="recommendation-reason">
+              <span class="reason-label">Why recommended:</span>
+              <span class="reason-text">${rec.reason}</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    showLoading() {
+      // Show loading state
+      console.log('Loading...');
+    }
+
+    hideLoading() {
+      // Hide loading state
+      console.log('Loaded');
+    }
+
+    showError(message) {
+      // Show error message
+      console.error('Error:', message);
+    }
+  }
+
+  // Initialize the advanced search when the component loads
+  document.addEventListener('DOMContentLoaded', () => {
+    new EnhancedAdvancedSearch();
+  });
+</script>

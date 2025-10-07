@@ -1,0 +1,104 @@
+version: '3.8'
+
+services:
+  # Test Database
+  postgres-test:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: soladia_test
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_test_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Test Redis
+  redis-test:
+    image: redis:7
+    ports:
+      - "6380:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend Tests
+  backend-test:
+    build:
+      context: ./backend
+      dockerfile: ../docker/backend.Dockerfile
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres-test:5432/soladia_test
+      REDIS_URL: redis://redis-test:6379/0
+      SOLANA_RPC_URL: https://api.devnet.solana.com
+      SOLANA_NETWORK: devnet
+      DEBUG: true
+    depends_on:
+      postgres-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+    command: >
+      sh -c "
+        python -c 'from database import engine, Base; Base.metadata.create_all(bind=engine)' &&
+        pytest --cov=. --cov-report=xml --cov-report=html --junitxml=test-results.xml
+      "
+    volumes:
+      - ./backend:/app
+      - test_results:/app/test-results
+    working_dir: /app
+
+  # Frontend Tests
+  frontend-test:
+    build:
+      context: ./frontend
+      dockerfile: ../docker/frontend.Dockerfile
+    command: >
+      sh -c "
+        npm ci &&
+        npm run lint &&
+        npm run type-check &&
+        npm run test:run &&
+        npm run test:e2e
+      "
+    volumes:
+      - ./frontend:/app
+      - test_results:/app/test-results
+    working_dir: /app
+
+  # Integration Tests
+  integration-test:
+    build:
+      context: .
+      dockerfile: ./docker/integration.Dockerfile
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres-test:5432/soladia_test
+      REDIS_URL: redis://redis-test:6379/0
+      FRONTEND_URL: http://frontend-test:4321
+      BACKEND_URL: http://backend-test:8000
+    depends_on:
+      - postgres-test
+      - redis-test
+      - backend-test
+      - frontend-test
+    command: >
+      sh -c "
+        echo 'Running integration tests...' &&
+        # Add your integration test commands here
+        echo 'Integration tests completed'
+      "
+    volumes:
+      - test_results:/app/test-results
+
+volumes:
+  postgres_test_data:
+  test_results:
+
+

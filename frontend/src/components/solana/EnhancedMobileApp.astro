@@ -1,0 +1,1057 @@
+---
+// Enhanced Mobile App Component
+// React Native mobile app with Solana integration
+---
+
+<div class="enhanced-mobile-app" data-testid="enhanced-mobile-app">
+  <!-- Mobile App Header -->
+  <div class="mobile-header">
+    <div class="header-content">
+      <h1>Soladia Mobile</h1>
+      <p class="header-subtitle">The future of Solana marketplace in your pocket</p>
+      <div class="download-buttons">
+        <a href="#" class="download-btn ios" data-testid="download-ios">
+          <img src="/images/app-store-badge.svg" alt="Download on the App Store">
+        </a>
+        <a href="#" class="download-btn android" data-testid="download-android">
+          <img src="/images/google-play-badge.svg" alt="Get it on Google Play">
+        </a>
+      </div>
+    </div>
+    <div class="header-image">
+      <img src="/images/mobile-app-preview.png" alt="Mobile App Preview" class="app-preview">
+    </div>
+  </div>
+
+  <!-- Features Section -->
+  <div class="features-section" data-testid="features-section">
+    <h2>Powerful Features</h2>
+    <div class="features-grid">
+      <div class="feature-card" data-testid="feature-wallet">
+        <div class="feature-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/>
+            <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>
+            <line x1="10" y1="12" x2="21" y2="12"/>
+          </svg>
+        </div>
+        <h3>Secure Wallet</h3>
+        <p>Connect your Solana wallet securely with biometric authentication and hardware wallet support.</p>
+      </div>
+
+      <div class="feature-card" data-testid="feature-nft">
+        <div class="feature-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+            <circle cx="8.5" cy="8.5" r="1.5"/>
+            <polyline points="21,15 16,10 5,21"/>
+          </svg>
+        </div>
+        <h3>NFT Marketplace</h3>
+        <p>Browse, buy, sell, and create NFTs with an intuitive mobile interface optimized for touch.</p>
+      </div>
+
+      <div class="feature-card" data-testid="feature-trading">
+        <div class="feature-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="22,12 18,12 15,21 9,3 6,12 2,12"/>
+          </svg>
+        </div>
+        <h3>Real-time Trading</h3>
+        <p>Execute trades instantly with real-time price updates and instant notifications.</p>
+      </div>
+
+      <div class="feature-card" data-testid="feature-analytics">
+        <div class="feature-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 20V10"/>
+            <path d="M12 20V4"/>
+            <path d="M6 20v-6"/>
+          </svg>
+        </div>
+        <h3>Portfolio Analytics</h3>
+        <p>Track your portfolio performance with detailed analytics and insights.</p>
+      </div>
+
+      <div class="feature-card" data-testid="feature-notifications">
+        <div class="feature-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </div>
+        <h3>Smart Notifications</h3>
+        <p>Get instant alerts for price changes, bids, offers, and important updates.</p>
+      </div>
+
+      <div class="feature-card" data-testid="feature-social">
+        <div class="feature-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <h3>Social Features</h3>
+        <p>Connect with other collectors, share your NFTs, and discover trending collections.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Screenshots -->
+  <div class="screenshots-section" data-testid="screenshots-section">
+    <h2>See It In Action</h2>
+    <div class="screenshots-carousel">
+      <div class="screenshot-item" data-testid="screenshot-1">
+        <img src="/images/mobile-screenshots/home.png" alt="Home Screen" class="screenshot-image">
+        <div class="screenshot-overlay">
+          <h4>Home Dashboard</h4>
+          <p>Your portfolio at a glance</p>
+        </div>
+      </div>
+      <div class="screenshot-item" data-testid="screenshot-2">
+        <img src="/images/mobile-screenshots/marketplace.png" alt="Marketplace Screen" class="screenshot-image">
+        <div class="screenshot-overlay">
+          <h4>NFT Marketplace</h4>
+          <p>Browse and discover NFTs</p>
+        </div>
+      </div>
+      <div class="screenshot-item" data-testid="screenshot-3">
+        <img src="/images/mobile-screenshots/wallet.png" alt="Wallet Screen" class="screenshot-image">
+        <div class="screenshot-overlay">
+          <h4>Wallet Management</h4>
+          <p>Secure and easy to use</p>
+        </div>
+      </div>
+      <div class="screenshot-item" data-testid="screenshot-4">
+        <img src="/images/mobile-screenshots/trading.png" alt="Trading Screen" class="screenshot-image">
+        <div class="screenshot-overlay">
+          <h4>Live Trading</h4>
+          <p>Real-time market data</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Technical Specifications -->
+  <div class="tech-specs-section" data-testid="tech-specs-section">
+    <h2>Technical Specifications</h2>
+    <div class="specs-grid">
+      <div class="spec-card" data-testid="spec-platform">
+        <h3>Platform Support</h3>
+        <ul>
+          <li>iOS 14.0+</li>
+          <li>Android 8.0+</li>
+          <li>React Native 0.70+</li>
+          <li>TypeScript</li>
+        </ul>
+      </div>
+
+      <div class="spec-card" data-testid="spec-blockchain">
+        <h3>Blockchain Integration</h3>
+        <ul>
+          <li>Solana Web3.js</li>
+          <li>Wallet Adapter</li>
+          <li>SPL Token Support</li>
+          <li>NFT Metadata Standards</li>
+        </ul>
+      </div>
+
+      <div class="spec-card" data-testid="spec-security">
+        <h3>Security Features</h3>
+        <ul>
+          <li>Biometric Authentication</li>
+          <li>Hardware Wallet Support</li>
+          <li>Encrypted Storage</li>
+          <li>Secure Key Management</li>
+        </ul>
+      </div>
+
+      <div class="spec-card" data-testid="spec-performance">
+        <h3>Performance</h3>
+        <ul>
+          <li>60 FPS Animations</li>
+          <li>Offline Support</li>
+          <li>Push Notifications</li>
+          <li>Background Sync</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Development Status -->
+  <div class="development-status" data-testid="development-status">
+    <h2>Development Status</h2>
+    <div class="status-timeline">
+      <div class="timeline-item completed" data-testid="timeline-1">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <h4>Phase 1: Core Infrastructure</h4>
+          <p>Basic app structure, navigation, and Solana integration</p>
+          <span class="timeline-date">Completed</span>
+        </div>
+      </div>
+
+      <div class="timeline-item completed" data-testid="timeline-2">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <h4>Phase 2: Wallet Integration</h4>
+          <p>Secure wallet connection and transaction management</p>
+          <span class="timeline-date">Completed</span>
+        </div>
+      </div>
+
+      <div class="timeline-item in-progress" data-testid="timeline-3">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <h4>Phase 3: NFT Marketplace</h4>
+          <p>Complete NFT browsing, buying, and selling functionality</p>
+          <span class="timeline-date">In Progress (80%)</span>
+        </div>
+      </div>
+
+      <div class="timeline-item pending" data-testid="timeline-4">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <h4>Phase 4: Advanced Features</h4>
+          <p>Analytics, social features, and advanced trading tools</p>
+          <span class="timeline-date">Pending</span>
+        </div>
+      </div>
+
+      <div class="timeline-item pending" data-testid="timeline-5">
+        <div class="timeline-marker"></div>
+        <div class="timeline-content">
+          <h4>Phase 5: App Store Release</h4>
+          <p>Final testing, optimization, and store submission</p>
+          <span class="timeline-date">Q2 2024</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Beta Testing -->
+  <div class="beta-testing" data-testid="beta-testing">
+    <h2>Join Our Beta Program</h2>
+    <p>Be among the first to experience Soladia Mobile and help shape its future.</p>
+    <div class="beta-features">
+      <div class="beta-feature" data-testid="beta-feature-1">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M9 12l2 2 4-4"/>
+          <path d="M21 12c-1 0-3-1-3-3s2-3 3-3 3 1 3 3-2 3-3 3"/>
+          <path d="M3 12c1 0 3-1 3-3s-2-3-3-3-3 1-3 3 2 3 3 3"/>
+          <path d="M12 3c0 1-1 3-3 3s-3-2-3-3 1-3 3-3 3 2 3 3"/>
+          <path d="M12 21c0-1 1-3 3-3s3 2 3 3-1 3-3 3-3-2-3-3"/>
+        </svg>
+        <span>Early access to new features</span>
+      </div>
+      <div class="beta-feature" data-testid="beta-feature-2">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+        <span>Direct feedback channel</span>
+      </div>
+      <div class="beta-feature" data-testid="beta-feature-3">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        <span>Exclusive beta community</span>
+      </div>
+    </div>
+    <div class="beta-signup">
+      <input type="email" placeholder="Enter your email address" class="beta-email-input" data-testid="beta-email-input">
+      <button class="btn btn-primary beta-signup-btn" data-testid="beta-signup-btn">Join Beta</button>
+    </div>
+  </div>
+
+  <!-- FAQ Section -->
+  <div class="faq-section" data-testid="faq-section">
+    <h2>Frequently Asked Questions</h2>
+    <div class="faq-list">
+      <div class="faq-item" data-testid="faq-1">
+        <button class="faq-question" data-testid="faq-question-1">
+          <span>When will the mobile app be available?</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6,9 12,15 18,9"/>
+          </svg>
+        </button>
+        <div class="faq-answer" data-testid="faq-answer-1">
+          <p>We're targeting a Q2 2024 release for both iOS and Android. Beta testing will begin in Q1 2024.</p>
+        </div>
+      </div>
+
+      <div class="faq-item" data-testid="faq-2">
+        <button class="faq-question" data-testid="faq-question-2">
+          <span>Which wallets will be supported?</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6,9 12,15 18,9"/>
+          </svg>
+        </button>
+        <div class="faq-answer" data-testid="faq-answer-2">
+          <p>We'll support Phantom, Solflare, Backpack, and other popular Solana wallets, plus hardware wallet integration.</p>
+        </div>
+      </div>
+
+      <div class="faq-item" data-testid="faq-3">
+        <button class="faq-question" data-testid="faq-question-3">
+          <span>Will the app work offline?</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6,9 12,15 18,9"/>
+          </svg>
+        </button>
+        <div class="faq-answer" data-testid="faq-answer-3">
+          <p>Yes, the app will cache your portfolio data and allow you to view your NFTs offline. Trading requires an internet connection.</p>
+        </div>
+      </div>
+
+      <div class="faq-item" data-testid="faq-4">
+        <button class="faq-question" data-testid="faq-question-4">
+          <span>Is the app free to use?</span>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="6,9 12,15 18,9"/>
+          </svg>
+        </button>
+        <div class="faq-answer" data-testid="faq-answer-4">
+          <p>The app is free to download and use. We only charge transaction fees for trades, similar to the web version.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contact Section -->
+  <div class="contact-section" data-testid="contact-section">
+    <h2>Get In Touch</h2>
+    <p>Have questions about the mobile app? We'd love to hear from you.</p>
+    <div class="contact-methods">
+      <a href="mailto:mobile@soladia.com" class="contact-method" data-testid="contact-email">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+          <polyline points="22,6 12,13 2,6"/>
+        </svg>
+        <span>mobile@soladia.com</span>
+      </a>
+      <a href="https://discord.gg/soladia" class="contact-method" data-testid="contact-discord">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        <span>Discord Community</span>
+      </a>
+      <a href="https://twitter.com/soladia" class="contact-method" data-testid="contact-twitter">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M23 3a10.9 10.9 0 0 1-3.14 1.53 4.48 4.48 0 0 0-7.86 3v1A10.66 10.66 0 0 1 3 4s-4 9 5 13a11.64 11.64 0 0 1-7 2c9 5 20 0 20-11.5a4.5 4.5 0 0 0-.08-.83A7.72 7.72 0 0 0 23 3z"/>
+        </svg>
+        <span>@soladia</span>
+      </a>
+    </div>
+  </div>
+</div>
+
+<style>
+  .enhanced-mobile-app {
+    padding: var(--soladia-space-8) var(--soladia-space-6);
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--soladia-bg-primary);
+  }
+
+  .mobile-header {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--soladia-space-12);
+    align-items: center;
+    margin-bottom: var(--soladia-space-16);
+    padding: var(--soladia-space-8) 0;
+  }
+
+  .header-content h1 {
+    font-size: var(--soladia-text-4xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--soladia-space-4) 0;
+  }
+
+  .header-subtitle {
+    font-size: var(--soladia-text-xl);
+    color: var(--soladia-text-secondary);
+    margin: 0 0 var(--soladia-space-8) 0;
+    line-height: 1.6;
+  }
+
+  .download-buttons {
+    display: flex;
+    gap: var(--soladia-space-4);
+    flex-wrap: wrap;
+  }
+
+  .download-btn {
+    display: inline-block;
+    transition: var(--soladia-transition);
+  }
+
+  .download-btn:hover {
+    transform: translateY(-2px);
+  }
+
+  .download-btn img {
+    height: 60px;
+    width: auto;
+  }
+
+  .app-preview {
+    width: 100%;
+    max-width: 400px;
+    height: auto;
+    border-radius: var(--soladia-radius-xl);
+    box-shadow: var(--soladia-shadow-2xl);
+  }
+
+  .features-section {
+    margin-bottom: var(--soladia-space-16);
+  }
+
+  .features-section h2 {
+    font-size: var(--soladia-text-3xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    text-align: center;
+    margin: 0 0 var(--soladia-space-12) 0;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--soladia-space-8);
+  }
+
+  .feature-card {
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-xl);
+    padding: var(--soladia-space-8);
+    text-align: center;
+    transition: var(--soladia-transition);
+  }
+
+  .feature-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--soladia-shadow-xl);
+    border-color: var(--soladia-primary);
+  }
+
+  .feature-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--soladia-space-6) auto;
+    background: var(--soladia-primary-50);
+    color: var(--soladia-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .feature-card h3 {
+    font-size: var(--soladia-text-xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--soladia-space-4) 0;
+  }
+
+  .feature-card p {
+    color: var(--soladia-text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .screenshots-section {
+    margin-bottom: var(--soladia-space-16);
+  }
+
+  .screenshots-section h2 {
+    font-size: var(--soladia-text-3xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    text-align: center;
+    margin: 0 0 var(--soladia-space-12) 0;
+  }
+
+  .screenshots-carousel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--soladia-space-6);
+  }
+
+  .screenshot-item {
+    position: relative;
+    border-radius: var(--soladia-radius-xl);
+    overflow: hidden;
+    transition: var(--soladia-transition);
+  }
+
+  .screenshot-item:hover {
+    transform: scale(1.05);
+  }
+
+  .screenshot-image {
+    width: 100%;
+    height: 500px;
+    object-fit: cover;
+  }
+
+  .screenshot-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+    color: white;
+    padding: var(--soladia-space-6);
+    transform: translateY(100%);
+    transition: var(--soladia-transition);
+  }
+
+  .screenshot-item:hover .screenshot-overlay {
+    transform: translateY(0);
+  }
+
+  .screenshot-overlay h4 {
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-bold);
+    margin: 0 0 var(--soladia-space-2) 0;
+  }
+
+  .screenshot-overlay p {
+    margin: 0;
+    opacity: 0.9;
+  }
+
+  .tech-specs-section {
+    margin-bottom: var(--soladia-space-16);
+  }
+
+  .tech-specs-section h2 {
+    font-size: var(--soladia-text-3xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    text-align: center;
+    margin: 0 0 var(--soladia-space-12) 0;
+  }
+
+  .specs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: var(--soladia-space-6);
+  }
+
+  .spec-card {
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-xl);
+    padding: var(--soladia-space-6);
+  }
+
+  .spec-card h3 {
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--soladia-space-4) 0;
+  }
+
+  .spec-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .spec-card li {
+    padding: var(--soladia-space-2) 0;
+    color: var(--soladia-text-secondary);
+    border-bottom: 1px solid var(--soladia-border-light);
+  }
+
+  .spec-card li:last-child {
+    border-bottom: none;
+  }
+
+  .development-status {
+    margin-bottom: var(--soladia-space-16);
+  }
+
+  .development-status h2 {
+    font-size: var(--soladia-text-3xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    text-align: center;
+    margin: 0 0 var(--soladia-space-12) 0;
+  }
+
+  .status-timeline {
+    position: relative;
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .status-timeline::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--soladia-border);
+  }
+
+  .timeline-item {
+    position: relative;
+    padding-left: var(--soladia-space-16);
+    margin-bottom: var(--soladia-space-8);
+  }
+
+  .timeline-marker {
+    position: absolute;
+    left: 12px;
+    top: 8px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    border: 3px solid var(--soladia-bg-primary);
+    z-index: 1;
+  }
+
+  .timeline-item.completed .timeline-marker {
+    background: var(--soladia-success);
+  }
+
+  .timeline-item.in-progress .timeline-marker {
+    background: var(--soladia-warning);
+  }
+
+  .timeline-item.pending .timeline-marker {
+    background: var(--soladia-border);
+  }
+
+  .timeline-content h4 {
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--soladia-space-2) 0;
+  }
+
+  .timeline-content p {
+    color: var(--soladia-text-secondary);
+    margin: 0 0 var(--soladia-space-2) 0;
+  }
+
+  .timeline-date {
+    font-size: var(--soladia-text-sm);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-tertiary);
+  }
+
+  .beta-testing {
+    background: var(--soladia-gradient-primary);
+    border-radius: var(--soladia-radius-xl);
+    padding: var(--soladia-space-12);
+    text-align: center;
+    margin-bottom: var(--soladia-space-16);
+    color: white;
+  }
+
+  .beta-testing h2 {
+    font-size: var(--soladia-text-3xl);
+    font-weight: var(--soladia-font-bold);
+    margin: 0 0 var(--soladia-space-4) 0;
+  }
+
+  .beta-testing p {
+    font-size: var(--soladia-text-lg);
+    margin: 0 0 var(--soladia-space-8) 0;
+    opacity: 0.9;
+  }
+
+  .beta-features {
+    display: flex;
+    justify-content: center;
+    gap: var(--soladia-space-8);
+    margin-bottom: var(--soladia-space-8);
+    flex-wrap: wrap;
+  }
+
+  .beta-feature {
+    display: flex;
+    align-items: center;
+    gap: var(--soladia-space-2);
+    font-weight: var(--soladia-font-semibold);
+  }
+
+  .beta-signup {
+    display: flex;
+    gap: var(--soladia-space-4);
+    max-width: 500px;
+    margin: 0 auto;
+  }
+
+  .beta-email-input {
+    flex: 1;
+    padding: var(--soladia-space-3) var(--soladia-space-4);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: var(--soladia-radius-lg);
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: var(--soladia-text-base);
+  }
+
+  .beta-email-input::placeholder {
+    color: rgba(255, 255, 255, 0.7);
+  }
+
+  .beta-email-input:focus {
+    outline: none;
+    border-color: white;
+  }
+
+  .beta-signup-btn {
+    background: white;
+    color: var(--soladia-primary);
+    border: none;
+    padding: var(--soladia-space-3) var(--soladia-space-6);
+    border-radius: var(--soladia-radius-lg);
+    font-weight: var(--soladia-font-bold);
+    cursor: pointer;
+    transition: var(--soladia-transition);
+  }
+
+  .beta-signup-btn:hover {
+    background: var(--soladia-bg-secondary);
+    transform: translateY(-2px);
+  }
+
+  .faq-section {
+    margin-bottom: var(--soladia-space-16);
+  }
+
+  .faq-section h2 {
+    font-size: var(--soladia-text-3xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    text-align: center;
+    margin: 0 0 var(--soladia-space-12) 0;
+  }
+
+  .faq-list {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .faq-item {
+    border-bottom: 1px solid var(--soladia-border);
+  }
+
+  .faq-question {
+    width: 100%;
+    padding: var(--soladia-space-6);
+    background: none;
+    border: none;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    transition: var(--soladia-transition);
+  }
+
+  .faq-question:hover {
+    background: var(--soladia-bg-secondary);
+  }
+
+  .faq-question svg {
+    transition: var(--soladia-transition);
+  }
+
+  .faq-item.active .faq-question svg {
+    transform: rotate(180deg);
+  }
+
+  .faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .faq-item.active .faq-answer {
+    max-height: 200px;
+  }
+
+  .faq-answer p {
+    padding: 0 var(--soladia-space-6) var(--soladia-space-6) var(--soladia-space-6);
+    color: var(--soladia-text-secondary);
+    line-height: 1.6;
+    margin: 0;
+  }
+
+  .contact-section {
+    text-align: center;
+  }
+
+  .contact-section h2 {
+    font-size: var(--soladia-text-3xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--soladia-space-4) 0;
+  }
+
+  .contact-section p {
+    font-size: var(--soladia-text-lg);
+    color: var(--soladia-text-secondary);
+    margin: 0 0 var(--soladia-space-8) 0;
+  }
+
+  .contact-methods {
+    display: flex;
+    justify-content: center;
+    gap: var(--soladia-space-8);
+    flex-wrap: wrap;
+  }
+
+  .contact-method {
+    display: flex;
+    align-items: center;
+    gap: var(--soladia-space-3);
+    padding: var(--soladia-space-4) var(--soladia-space-6);
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    color: var(--soladia-text-primary);
+    text-decoration: none;
+    transition: var(--soladia-transition);
+  }
+
+  .contact-method:hover {
+    background: var(--soladia-primary);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  /* Dark mode styles */
+  [data-theme="dark"] .enhanced-mobile-app {
+    background: var(--soladia-bg-primary);
+  }
+
+  [data-theme="dark"] .feature-card,
+  [data-theme="dark"] .spec-card {
+    background: var(--soladia-bg-primary);
+    border-color: var(--soladia-border);
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .enhanced-mobile-app {
+      padding: var(--soladia-space-6) var(--soladia-space-4);
+    }
+
+    .mobile-header {
+      grid-template-columns: 1fr;
+      gap: var(--soladia-space-8);
+      text-align: center;
+    }
+
+    .header-content h1 {
+      font-size: var(--soladia-text-3xl);
+    }
+
+    .header-subtitle {
+      font-size: var(--soladia-text-lg);
+    }
+
+    .download-buttons {
+      justify-content: center;
+    }
+
+    .features-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .screenshots-carousel {
+      grid-template-columns: 1fr;
+    }
+
+    .specs-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .beta-features {
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .beta-signup {
+      flex-direction: column;
+    }
+
+    .contact-methods {
+      flex-direction: column;
+      align-items: center;
+    }
+  }
+</style>
+
+<script>
+  import { enhancedMobileService } from '../../services/enhanced-mobile-service';
+
+  class EnhancedMobileApp {
+    constructor() {
+      this.mobileService = enhancedMobileService;
+      this.init();
+    }
+
+    init() {
+      this.setupEventListeners();
+      this.initializeAnimations();
+    }
+
+    setupEventListeners() {
+      // FAQ accordion
+      document.querySelectorAll('[data-testid^="faq-question-"]').forEach(question => {
+        question.addEventListener('click', () => {
+          this.toggleFAQ(question);
+        });
+      });
+
+      // Beta signup
+      document.querySelector('[data-testid="beta-signup-btn"]')?.addEventListener('click', () => {
+        this.handleBetaSignup();
+      });
+
+      // Download buttons
+      document.querySelector('[data-testid="download-ios"]')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.handleDownload('ios');
+      });
+
+      document.querySelector('[data-testid="download-android"]')?.addEventListener('click', (e) => {
+        e.preventDefault();
+        this.handleDownload('android');
+      });
+
+      // Contact methods
+      document.querySelectorAll('[data-testid^="contact-"]').forEach(method => {
+        method.addEventListener('click', (e) => {
+          this.handleContact(method.dataset.testid);
+        });
+      });
+    }
+
+    initializeAnimations() {
+      // Intersection Observer for scroll animations
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('animate-in');
+          }
+        });
+      }, {
+        threshold: 0.1
+      });
+
+      // Observe elements for animation
+      document.querySelectorAll('.feature-card, .screenshot-item, .spec-card, .timeline-item').forEach(el => {
+        observer.observe(el);
+      });
+    }
+
+    toggleFAQ(question) {
+      const faqItem = question.closest('.faq-item');
+      const isActive = faqItem.classList.contains('active');
+
+      // Close all FAQ items
+      document.querySelectorAll('.faq-item').forEach(item => {
+        item.classList.remove('active');
+      });
+
+      // Open clicked item if it wasn't active
+      if (!isActive) {
+        faqItem.classList.add('active');
+      }
+    }
+
+    async handleBetaSignup() {
+      const emailInput = document.querySelector('[data-testid="beta-email-input"]');
+      const email = emailInput?.value.trim();
+
+      if (!email) {
+        this.showError('Please enter your email address');
+        return;
+      }
+
+      if (!this.isValidEmail(email)) {
+        this.showError('Please enter a valid email address');
+        return;
+      }
+
+      try {
+        await this.mobileService.signupBeta(email);
+        this.showSuccess('Successfully signed up for beta! We\'ll notify you when it\'s ready.');
+        emailInput.value = '';
+      } catch (error) {
+        console.error('Beta signup error:', error);
+        this.showError('Failed to sign up for beta. Please try again.');
+      }
+    }
+
+    handleDownload(platform) {
+      if (platform === 'ios') {
+        // This would typically redirect to App Store
+        this.showInfo('iOS app will be available on the App Store soon!');
+      } else if (platform === 'android') {
+        // This would typically redirect to Google Play
+        this.showInfo('Android app will be available on Google Play soon!');
+      }
+    }
+
+    handleContact(method) {
+      switch (method) {
+        case 'contact-email':
+          window.location.href = 'mailto:mobile@soladia.com';
+          break;
+        case 'contact-discord':
+          window.open('https://discord.gg/soladia', '_blank');
+          break;
+        case 'contact-twitter':
+          window.open('https://twitter.com/soladia', '_blank');
+          break;
+      }
+    }
+
+    isValidEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+
+    showSuccess(message) {
+      // This would typically show a toast notification
+      console.log('Success:', message);
+    }
+
+    showError(message) {
+      // This would typically show a toast notification
+      console.error('Error:', message);
+    }
+
+    showInfo(message) {
+      // This would typically show a toast notification
+      console.log('Info:', message);
+    }
+  }
+
+  // Initialize the mobile app component when it loads
+  document.addEventListener('DOMContentLoaded', () => {
+    new EnhancedMobileApp();
+  });
+</script>

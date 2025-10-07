@@ -1,0 +1,1891 @@
+---
+// Social Features Component
+// Comprehensive social features including user profiles, social feed, following system, and community features
+---
+
+<div class="social-features" data-testid="social-features">
+  <!-- Social Navigation -->
+  <div class="social-nav" data-testid="social-nav">
+    <div class="social-nav-container">
+      <div class="social-nav-tabs">
+        <button class="social-nav-tab active" data-tab="feed" data-testid="nav-feed">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+            <polyline points="9,22 9,12 15,12 15,22"/>
+          </svg>
+          <span>Feed</span>
+        </button>
+        <button class="social-nav-tab" data-tab="discover" data-testid="nav-discover">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
+          </svg>
+          <span>Discover</span>
+        </button>
+        <button class="social-nav-tab" data-tab="following" data-testid="nav-following">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="8.5" cy="7" r="4"/>
+            <line x1="20" y1="8" x2="20" y2="14"/>
+            <line x1="23" y1="11" x2="17" y2="11"/>
+          </svg>
+          <span>Following</span>
+        </button>
+        <button class="social-nav-tab" data-tab="profile" data-testid="nav-profile">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          <span>Profile</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Social Feed -->
+  <div class="social-content" data-testid="social-content">
+    <!-- Feed Tab -->
+    <div class="social-tab-content active" data-tab="feed" data-testid="feed-content">
+      <div class="feed-container">
+        <!-- Create Post -->
+        <div class="create-post" data-testid="create-post">
+          <div class="create-post-header">
+            <div class="user-avatar">
+              <img src="/placeholder-avatar.jpg" alt="Your Avatar" data-testid="user-avatar">
+            </div>
+            <div class="create-post-input">
+              <textarea 
+                placeholder="What's happening in the NFT world?" 
+                data-testid="post-textarea"
+                rows="3"
+              ></textarea>
+            </div>
+          </div>
+          <div class="create-post-actions">
+            <div class="post-options">
+              <button class="post-option" data-type="image" data-testid="add-image">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21,15 16,10 5,21"/>
+                </svg>
+                <span>Image</span>
+              </button>
+              <button class="post-option" data-type="nft" data-testid="add-nft">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+                </svg>
+                <span>NFT</span>
+              </button>
+              <button class="post-option" data-type="collection" data-testid="add-collection">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                  <circle cx="8.5" cy="8.5" r="1.5"/>
+                  <polyline points="21,15 16,10 5,21"/>
+                </svg>
+                <span>Collection</span>
+              </button>
+            </div>
+            <button class="post-submit" data-testid="post-submit" disabled>
+              <span>Post</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Feed Posts -->
+        <div class="feed-posts" data-testid="feed-posts">
+          <!-- Posts will be populated dynamically -->
+        </div>
+
+        <!-- Load More -->
+        <div class="load-more" data-testid="load-more" style="display: none;">
+          <button class="load-more-btn" data-testid="load-more-btn">
+            <div class="loading-spinner">
+              <div class="spinner"></div>
+            </div>
+            <span>Load More</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Discover Tab -->
+    <div class="social-tab-content" data-tab="discover" data-testid="discover-content">
+      <div class="discover-container">
+        <!-- Trending Section -->
+        <div class="trending-section" data-testid="trending-section">
+          <h2 class="section-title">Trending Now</h2>
+          <div class="trending-items" data-testid="trending-items">
+            <!-- Trending items will be populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Popular Creators -->
+        <div class="popular-creators" data-testid="popular-creators">
+          <h2 class="section-title">Popular Creators</h2>
+          <div class="creators-grid" data-testid="creators-grid">
+            <!-- Creators will be populated dynamically -->
+          </div>
+        </div>
+
+        <!-- Featured Collections -->
+        <div class="featured-collections" data-testid="featured-collections">
+          <h2 class="section-title">Featured Collections</h2>
+          <div class="collections-grid" data-testid="collections-grid">
+            <!-- Collections will be populated dynamically -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Following Tab -->
+    <div class="social-tab-content" data-tab="following" data-testid="following-content">
+      <div class="following-container">
+        <!-- Following Stats -->
+        <div class="following-stats" data-testid="following-stats">
+          <div class="stat-item">
+            <span class="stat-number" data-testid="following-count">0</span>
+            <span class="stat-label">Following</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-number" data-testid="followers-count">0</span>
+            <span class="stat-label">Followers</span>
+          </div>
+        </div>
+
+        <!-- Following List -->
+        <div class="following-list" data-testid="following-list">
+          <!-- Following users will be populated dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Tab -->
+    <div class="social-tab-content" data-tab="profile" data-testid="profile-content">
+      <div class="profile-container">
+        <!-- Profile Header -->
+        <div class="profile-header" data-testid="profile-header">
+          <div class="profile-banner">
+            <img src="/placeholder-banner.jpg" alt="Profile Banner" data-testid="profile-banner">
+            <button class="edit-banner" data-testid="edit-banner">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+            </button>
+          </div>
+          <div class="profile-info">
+            <div class="profile-avatar">
+              <img src="/placeholder-avatar.jpg" alt="Profile Avatar" data-testid="profile-avatar">
+              <button class="edit-avatar" data-testid="edit-avatar">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                  <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                </svg>
+              </button>
+            </div>
+            <div class="profile-details">
+              <h1 class="profile-name" data-testid="profile-name">Your Name</h1>
+              <p class="profile-username" data-testid="profile-username">@yourusername</p>
+              <p class="profile-bio" data-testid="profile-bio">NFT collector and creator</p>
+              <div class="profile-stats">
+                <div class="stat-item">
+                  <span class="stat-number" data-testid="profile-following">0</span>
+                  <span class="stat-label">Following</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-number" data-testid="profile-followers">0</span>
+                  <span class="stat-label">Followers</span>
+                </div>
+                <div class="stat-item">
+                  <span class="stat-number" data-testid="profile-nfts">0</span>
+                  <span class="stat-label">NFTs</span>
+                </div>
+              </div>
+            </div>
+            <button class="edit-profile" data-testid="edit-profile">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+              </svg>
+              <span>Edit Profile</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Profile Tabs -->
+        <div class="profile-tabs" data-testid="profile-tabs">
+          <button class="profile-tab active" data-tab="posts" data-testid="profile-posts-tab">
+            <span>Posts</span>
+          </button>
+          <button class="profile-tab" data-tab="nfts" data-testid="profile-nfts-tab">
+            <span>NFTs</span>
+          </button>
+          <button class="profile-tab" data-tab="collections" data-testid="profile-collections-tab">
+            <span>Collections</span>
+          </button>
+          <button class="profile-tab" data-tab="liked" data-testid="profile-liked-tab">
+            <span>Liked</span>
+          </button>
+        </div>
+
+        <!-- Profile Content -->
+        <div class="profile-content" data-testid="profile-content">
+          <!-- Posts Tab -->
+          <div class="profile-tab-content active" data-tab="posts" data-testid="profile-posts">
+            <!-- User posts will be populated dynamically -->
+          </div>
+
+          <!-- NFTs Tab -->
+          <div class="profile-tab-content" data-tab="nfts" data-testid="profile-nfts">
+            <div class="nfts-grid" data-testid="nfts-grid">
+              <!-- User NFTs will be populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Collections Tab -->
+          <div class="profile-tab-content" data-tab="collections" data-testid="profile-collections">
+            <div class="collections-grid" data-testid="profile-collections-grid">
+              <!-- User collections will be populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Liked Tab -->
+          <div class="profile-tab-content" data-tab="liked" data-testid="profile-liked">
+            <div class="liked-grid" data-testid="liked-grid">
+              <!-- Liked items will be populated dynamically -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- User Profile Modal -->
+  <div class="user-profile-modal" data-testid="user-profile-modal" style="display: none;">
+    <div class="modal-overlay" data-testid="modal-overlay"></div>
+    <div class="modal-content" data-testid="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" data-testid="modal-title">User Profile</h3>
+        <button class="modal-close" data-testid="modal-close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" data-testid="modal-body">
+        <!-- User profile content will be populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Post Modal -->
+  <div class="post-modal" data-testid="post-modal" style="display: none;">
+    <div class="modal-overlay" data-testid="post-modal-overlay"></div>
+    <div class="modal-content" data-testid="post-modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title" data-testid="post-modal-title">Create Post</h3>
+        <button class="modal-close" data-testid="post-modal-close">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18"/>
+            <line x1="6" y1="6" x2="18" y2="18"/>
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body" data-testid="post-modal-body">
+        <!-- Post creation form will be populated dynamically -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .social-features {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: var(--mobile-space-lg);
+  }
+
+  /* Social Navigation */
+  .social-nav {
+    background: var(--soladia-bg-primary);
+    border-bottom: 1px solid var(--soladia-border);
+    margin-bottom: var(--mobile-space-lg);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .social-nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--mobile-space-lg);
+  }
+
+  .social-nav-tabs {
+    display: flex;
+    gap: var(--mobile-space-sm);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .social-nav-tab {
+    display: flex;
+    align-items: center;
+    gap: var(--mobile-space-sm);
+    padding: var(--mobile-space-md) var(--mobile-space-lg);
+    background: none;
+    border: none;
+    color: var(--soladia-text-secondary);
+    cursor: pointer;
+    transition: var(--mobile-transition-fast);
+    font-size: var(--mobile-text-base);
+    font-weight: var(--soladia-font-medium);
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+  }
+
+  .social-nav-tab:hover {
+    color: var(--soladia-text-primary);
+    background: var(--soladia-bg-secondary);
+  }
+
+  .social-nav-tab.active {
+    color: var(--soladia-primary);
+    border-bottom-color: var(--soladia-primary);
+  }
+
+  /* Social Content */
+  .social-content {
+    position: relative;
+  }
+
+  .social-tab-content {
+    display: none;
+  }
+
+  .social-tab-content.active {
+    display: block;
+  }
+
+  /* Feed Styles */
+  .feed-container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .create-post {
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    padding: var(--mobile-space-lg);
+    margin-bottom: var(--mobile-space-lg);
+  }
+
+  .create-post-header {
+    display: flex;
+    gap: var(--mobile-space-md);
+    margin-bottom: var(--mobile-space-md);
+  }
+
+  .user-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+
+  .user-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .create-post-input {
+    flex: 1;
+  }
+
+  .create-post-input textarea {
+    width: 100%;
+    border: none;
+    background: none;
+    color: var(--soladia-text-primary);
+    font-size: var(--mobile-text-base);
+    font-family: var(--soladia-font-primary);
+    resize: none;
+    outline: none;
+  }
+
+  .create-post-input textarea::placeholder {
+    color: var(--soladia-text-secondary);
+  }
+
+  .create-post-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .post-options {
+    display: flex;
+    gap: var(--mobile-space-lg);
+  }
+
+  .post-option {
+    display: flex;
+    align-items: center;
+    gap: var(--mobile-space-sm);
+    background: none;
+    border: none;
+    color: var(--soladia-text-secondary);
+    cursor: pointer;
+    transition: var(--mobile-transition-fast);
+    font-size: var(--mobile-text-sm);
+    font-weight: var(--soladia-font-medium);
+  }
+
+  .post-option:hover {
+    color: var(--soladia-primary);
+  }
+
+  .post-submit {
+    padding: var(--mobile-space-sm) var(--mobile-space-lg);
+    background: var(--soladia-gradient-primary);
+    color: white;
+    border: none;
+    border-radius: var(--soladia-radius-lg);
+    cursor: pointer;
+    transition: var(--mobile-transition-fast);
+    font-size: var(--mobile-text-sm);
+    font-weight: var(--soladia-font-semibold);
+  }
+
+  .post-submit:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .post-submit:not(:disabled):hover {
+    transform: translateY(-1px);
+    box-shadow: var(--mobile-shadow-md);
+  }
+
+  /* Feed Posts */
+  .feed-posts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mobile-space-lg);
+  }
+
+  .feed-post {
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    padding: var(--mobile-space-lg);
+    transition: var(--mobile-transition-fast);
+  }
+
+  .feed-post:hover {
+    box-shadow: var(--mobile-shadow-md);
+  }
+
+  .post-header {
+    display: flex;
+    align-items: center;
+    gap: var(--mobile-space-md);
+    margin-bottom: var(--mobile-space-md);
+  }
+
+  .post-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .post-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .post-user-info {
+    flex: 1;
+  }
+
+  .post-username {
+    font-size: var(--mobile-text-base);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--mobile-space-xs) 0;
+    cursor: pointer;
+  }
+
+  .post-user-handle {
+    font-size: var(--mobile-text-sm);
+    color: var(--soladia-text-secondary);
+    margin: 0;
+  }
+
+  .post-time {
+    font-size: var(--mobile-text-sm);
+    color: var(--soladia-text-secondary);
+  }
+
+  .post-content {
+    margin-bottom: var(--mobile-space-md);
+  }
+
+  .post-text {
+    font-size: var(--mobile-text-base);
+    color: var(--soladia-text-primary);
+    line-height: 1.5;
+    margin: 0 0 var(--mobile-space-md) 0;
+  }
+
+  .post-media {
+    border-radius: var(--soladia-radius);
+    overflow: hidden;
+    margin-bottom: var(--mobile-space-md);
+  }
+
+  .post-media img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
+  .post-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: var(--mobile-space-md);
+    border-top: 1px solid var(--soladia-border);
+  }
+
+  .post-action {
+    display: flex;
+    align-items: center;
+    gap: var(--mobile-space-sm);
+    background: none;
+    border: none;
+    color: var(--soladia-text-secondary);
+    cursor: pointer;
+    transition: var(--mobile-transition-fast);
+    font-size: var(--mobile-text-sm);
+    font-weight: var(--soladia-font-medium);
+  }
+
+  .post-action:hover {
+    color: var(--soladia-primary);
+  }
+
+  .post-action.liked {
+    color: var(--soladia-error);
+  }
+
+  .post-action.retweeted {
+    color: var(--soladia-success);
+  }
+
+  /* Discover Styles */
+  .discover-container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .section-title {
+    font-size: var(--mobile-text-xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--mobile-space-lg) 0;
+  }
+
+  .trending-items,
+  .creators-grid,
+  .collections-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--mobile-space-lg);
+    margin-bottom: var(--mobile-space-xl);
+  }
+
+  .trending-item,
+  .creator-card,
+  .collection-card {
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    padding: var(--mobile-space-lg);
+    transition: var(--mobile-transition-fast);
+    cursor: pointer;
+  }
+
+  .trending-item:hover,
+  .creator-card:hover,
+  .collection-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--mobile-shadow-lg);
+  }
+
+  .trending-item-image,
+  .creator-avatar,
+  .collection-image {
+    width: 100%;
+    height: 200px;
+    border-radius: var(--soladia-radius);
+    overflow: hidden;
+    margin-bottom: var(--mobile-space-md);
+  }
+
+  .trending-item-image img,
+  .creator-avatar img,
+  .collection-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .trending-item-title,
+  .creator-name,
+  .collection-name {
+    font-size: var(--mobile-text-lg);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--mobile-space-sm) 0;
+  }
+
+  .trending-item-description,
+  .creator-bio,
+  .collection-description {
+    font-size: var(--mobile-text-sm);
+    color: var(--soladia-text-secondary);
+    margin: 0 0 var(--mobile-space-md) 0;
+  }
+
+  .creator-stats,
+  .collection-stats {
+    display: flex;
+    gap: var(--mobile-space-lg);
+    font-size: var(--mobile-text-sm);
+    color: var(--soladia-text-secondary);
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--mobile-space-xs);
+  }
+
+  .stat-number {
+    font-size: var(--mobile-text-lg);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+  }
+
+  .stat-label {
+    font-size: var(--mobile-text-sm);
+    color: var(--soladia-text-secondary);
+  }
+
+  /* Following Styles */
+  .following-container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .following-stats {
+    display: flex;
+    gap: var(--mobile-space-xl);
+    margin-bottom: var(--mobile-space-xl);
+    padding: var(--mobile-space-lg);
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+  }
+
+  .following-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mobile-space-md);
+  }
+
+  .following-item {
+    display: flex;
+    align-items: center;
+    gap: var(--mobile-space-md);
+    padding: var(--mobile-space-lg);
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    transition: var(--mobile-transition-fast);
+  }
+
+  .following-item:hover {
+    box-shadow: var(--mobile-shadow-md);
+  }
+
+  .following-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    overflow: hidden;
+    cursor: pointer;
+  }
+
+  .following-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .following-info {
+    flex: 1;
+  }
+
+  .following-name {
+    font-size: var(--mobile-text-base);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--mobile-space-xs) 0;
+    cursor: pointer;
+  }
+
+  .following-handle {
+    font-size: var(--mobile-text-sm);
+    color: var(--soladia-text-secondary);
+    margin: 0 0 var(--mobile-space-sm) 0;
+  }
+
+  .following-bio {
+    font-size: var(--mobile-text-sm);
+    color: var(--soladia-text-secondary);
+    margin: 0;
+  }
+
+  .follow-button {
+    padding: var(--mobile-space-sm) var(--mobile-space-lg);
+    background: var(--soladia-gradient-primary);
+    color: white;
+    border: none;
+    border-radius: var(--soladia-radius-lg);
+    cursor: pointer;
+    transition: var(--mobile-transition-fast);
+    font-size: var(--mobile-text-sm);
+    font-weight: var(--soladia-font-semibold);
+  }
+
+  .follow-button:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--mobile-shadow-md);
+  }
+
+  .follow-button.following {
+    background: var(--soladia-bg-secondary);
+    color: var(--soladia-text-primary);
+    border: 1px solid var(--soladia-border);
+  }
+
+  /* Profile Styles */
+  .profile-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .profile-header {
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    margin-bottom: var(--mobile-space-lg);
+    overflow: hidden;
+  }
+
+  .profile-banner {
+    position: relative;
+    height: 200px;
+    background: var(--soladia-bg-secondary);
+    overflow: hidden;
+  }
+
+  .profile-banner img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .edit-banner {
+    position: absolute;
+    top: var(--mobile-space-md);
+    right: var(--mobile-space-md);
+    background: rgba(0, 0, 0, 0.5);
+    color: white;
+    border: none;
+    border-radius: var(--soladia-radius);
+    padding: var(--mobile-space-sm);
+    cursor: pointer;
+    transition: var(--mobile-transition-fast);
+  }
+
+  .edit-banner:hover {
+    background: rgba(0, 0, 0, 0.7);
+  }
+
+  .profile-info {
+    position: relative;
+    padding: var(--mobile-space-lg);
+  }
+
+  .profile-avatar {
+    position: absolute;
+    top: -40px;
+    left: var(--mobile-space-lg);
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 4px solid var(--soladia-bg-primary);
+  }
+
+  .profile-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .edit-avatar {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: var(--soladia-primary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    transition: var(--mobile-transition-fast);
+  }
+
+  .edit-avatar:hover {
+    background: var(--soladia-primary-dark);
+  }
+
+  .profile-details {
+    margin-left: 100px;
+    margin-bottom: var(--mobile-space-lg);
+  }
+
+  .profile-name {
+    font-size: var(--mobile-text-xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--mobile-space-xs) 0;
+  }
+
+  .profile-username {
+    font-size: var(--mobile-text-base);
+    color: var(--soladia-text-secondary);
+    margin: 0 0 var(--mobile-space-sm) 0;
+  }
+
+  .profile-bio {
+    font-size: var(--mobile-text-base);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--mobile-space-md) 0;
+  }
+
+  .profile-stats {
+    display: flex;
+    gap: var(--mobile-space-xl);
+  }
+
+  .edit-profile {
+    position: absolute;
+    top: var(--mobile-space-lg);
+    right: var(--mobile-space-lg);
+    display: flex;
+    align-items: center;
+    gap: var(--mobile-space-sm);
+    padding: var(--mobile-space-sm) var(--mobile-space-md);
+    background: var(--soladia-bg-secondary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    color: var(--soladia-text-primary);
+    cursor: pointer;
+    transition: var(--mobile-transition-fast);
+    font-size: var(--mobile-text-sm);
+    font-weight: var(--soladia-font-medium);
+  }
+
+  .edit-profile:hover {
+    background: var(--soladia-bg-tertiary);
+  }
+
+  .profile-tabs {
+    display: flex;
+    gap: var(--mobile-space-sm);
+    margin-bottom: var(--mobile-space-lg);
+    border-bottom: 1px solid var(--soladia-border);
+  }
+
+  .profile-tab {
+    padding: var(--mobile-space-md) var(--mobile-space-lg);
+    background: none;
+    border: none;
+    color: var(--soladia-text-secondary);
+    cursor: pointer;
+    transition: var(--mobile-transition-fast);
+    font-size: var(--mobile-text-base);
+    font-weight: var(--soladia-font-medium);
+    border-bottom: 2px solid transparent;
+  }
+
+  .profile-tab:hover {
+    color: var(--soladia-text-primary);
+  }
+
+  .profile-tab.active {
+    color: var(--soladia-primary);
+    border-bottom-color: var(--soladia-primary);
+  }
+
+  .profile-content {
+    position: relative;
+  }
+
+  .profile-tab-content {
+    display: none;
+  }
+
+  .profile-tab-content.active {
+    display: block;
+  }
+
+  .nfts-grid,
+  .collections-grid,
+  .liked-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: var(--mobile-space-lg);
+  }
+
+  /* Modal Styles */
+  .user-profile-modal,
+  .post-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1000;
+  }
+
+  .modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  .modal-content {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: var(--soladia-bg-primary);
+    border-radius: var(--soladia-radius-xl);
+    box-shadow: var(--mobile-shadow-lg);
+    max-width: 500px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--mobile-space-lg);
+    border-bottom: 1px solid var(--soladia-border);
+  }
+
+  .modal-title {
+    font-size: var(--mobile-text-lg);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--soladia-text-secondary);
+    cursor: pointer;
+    padding: var(--mobile-space-sm);
+    border-radius: var(--soladia-radius);
+  }
+
+  .modal-close:hover {
+    background: var(--soladia-bg-secondary);
+    color: var(--soladia-text-primary);
+  }
+
+  .modal-body {
+    padding: var(--mobile-space-lg);
+    max-height: 60vh;
+    overflow-y: auto;
+  }
+
+  /* Loading States */
+  .loading-spinner {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--mobile-space-md);
+  }
+
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--soladia-border);
+    border-top: 2px solid var(--soladia-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Responsive Design */
+  @media (max-width: 767px) {
+    .social-features {
+      padding: var(--mobile-space-md);
+    }
+
+    .social-nav-container {
+      padding: 0 var(--mobile-space-md);
+    }
+
+    .social-nav-tabs {
+      gap: var(--mobile-space-xs);
+    }
+
+    .social-nav-tab {
+      padding: var(--mobile-space-sm) var(--mobile-space-md);
+      font-size: var(--mobile-text-sm);
+    }
+
+    .trending-items,
+    .creators-grid,
+    .collections-grid {
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: var(--mobile-space-md);
+    }
+
+    .profile-details {
+      margin-left: 0;
+      margin-top: var(--mobile-space-lg);
+    }
+
+    .profile-avatar {
+      position: static;
+      margin: 0 auto var(--mobile-space-md) auto;
+    }
+
+    .profile-stats {
+      justify-content: center;
+    }
+
+    .edit-profile {
+      position: static;
+      margin-top: var(--mobile-space-md);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .trending-items,
+    .creators-grid,
+    .collections-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .nfts-grid,
+    .collections-grid,
+    .liked-grid {
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    }
+
+    .post-options {
+      flex-wrap: wrap;
+      gap: var(--mobile-space-md);
+    }
+
+    .create-post-actions {
+      flex-direction: column;
+      gap: var(--mobile-space-md);
+      align-items: stretch;
+    }
+  }
+
+  /* Dark Mode Adjustments */
+  [data-theme="dark"] .social-nav,
+  [data-theme="dark"] .create-post,
+  [data-theme="dark"] .feed-post,
+  [data-theme="dark"] .trending-item,
+  [data-theme="dark"] .creator-card,
+  [data-theme="dark"] .collection-card,
+  [data-theme="dark"] .following-item,
+  [data-theme="dark"] .profile-header,
+  [data-theme="dark"] .modal-content {
+    background: var(--soladia-bg-primary);
+    border-color: var(--soladia-border);
+  }
+
+  [data-theme="dark"] .create-post-input textarea {
+    color: var(--soladia-text-primary);
+  }
+
+  [data-theme="dark"] .create-post-input textarea::placeholder {
+    color: var(--soladia-text-secondary);
+  }
+
+  /* High Contrast Mode */
+  @media (prefers-contrast: high) {
+    .create-post,
+    .feed-post,
+    .trending-item,
+    .creator-card,
+    .collection-card,
+    .following-item,
+    .profile-header {
+      border-width: 2px;
+    }
+  }
+
+  /* Reduced Motion */
+  @media (prefers-reduced-motion: reduce) {
+    .social-nav-tab,
+    .post-option,
+    .post-submit,
+    .feed-post,
+    .trending-item,
+    .creator-card,
+    .collection-card,
+    .following-item,
+    .profile-tab,
+    .follow-button,
+    .edit-profile {
+      transition: none;
+    }
+
+    .spinner {
+      animation: none;
+    }
+  }
+</style>
+
+<script>
+  class SocialFeatures {
+    private currentTab: string = 'feed';
+    private currentUser: any = null;
+    private posts: any[] = [];
+    private following: any[] = [];
+    private followers: any[] = [];
+    private trending: any[] = [];
+    private creators: any[] = [];
+    private collections: any[] = [];
+
+    constructor() {
+      this.init();
+    }
+
+    init() {
+      this.setupEventListeners();
+      this.loadInitialData();
+    }
+
+    setupEventListeners() {
+      // Tab navigation
+      document.querySelectorAll('.social-nav-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+          const target = e.target as HTMLElement;
+          const tabElement = target.closest('.social-nav-tab') as HTMLElement;
+          if (tabElement) {
+            this.switchTab(tabElement.dataset.tab as string);
+          }
+        });
+      });
+
+      // Profile tabs
+      document.querySelectorAll('.profile-tab').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+          const target = e.target as HTMLElement;
+          const tabElement = target.closest('.profile-tab') as HTMLElement;
+          if (tabElement) {
+            this.switchProfileTab(tabElement.dataset.tab as string);
+          }
+        });
+      });
+
+      // Create post
+      const postTextarea = document.querySelector('[data-testid="post-textarea"]') as HTMLTextAreaElement;
+      if (postTextarea) {
+        postTextarea.addEventListener('input', () => {
+          this.updatePostSubmitButton();
+        });
+      }
+
+      const postSubmit = document.querySelector('[data-testid="post-submit"]') as HTMLElement;
+      if (postSubmit) {
+        postSubmit.addEventListener('click', () => {
+          this.createPost();
+        });
+      }
+
+      // Post options
+      document.querySelectorAll('.post-option').forEach(option => {
+        option.addEventListener('click', (e) => {
+          const target = e.target as HTMLElement;
+          const optionElement = target.closest('.post-option') as HTMLElement;
+          if (optionElement) {
+            this.handlePostOption(optionElement.dataset.type as string);
+          }
+        });
+      });
+
+      // Modal events
+      document.querySelectorAll('.modal-close').forEach(closeBtn => {
+        closeBtn.addEventListener('click', (e) => {
+          const target = e.target as HTMLElement;
+          const modal = target.closest('.user-profile-modal, .post-modal') as HTMLElement;
+          if (modal) {
+            this.hideModal(modal);
+          }
+        });
+      });
+
+      // Load more
+      const loadMoreBtn = document.querySelector('[data-testid="load-more-btn"]') as HTMLElement;
+      if (loadMoreBtn) {
+        loadMoreBtn.addEventListener('click', () => {
+          this.loadMorePosts();
+        });
+      }
+    }
+
+    switchTab(tab: string) {
+      this.currentTab = tab;
+
+      // Update nav tabs
+      document.querySelectorAll('.social-nav-tab').forEach(navTab => {
+        navTab.classList.remove('active');
+      });
+      document.querySelector(`[data-tab="${tab}"]`)?.classList.add('active');
+
+      // Update content tabs
+      document.querySelectorAll('.social-tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.querySelector(`[data-tab="${tab}"]`)?.classList.add('active');
+
+      // Load tab data
+      this.loadTabData(tab);
+    }
+
+    switchProfileTab(tab: string) {
+      // Update profile tabs
+      document.querySelectorAll('.profile-tab').forEach(profileTab => {
+        profileTab.classList.remove('active');
+      });
+      document.querySelector(`[data-tab="${tab}"]`)?.classList.add('active');
+
+      // Update profile content
+      document.querySelectorAll('.profile-tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.querySelector(`[data-tab="${tab}"]`)?.classList.add('active');
+
+      // Load profile tab data
+      this.loadProfileTabData(tab);
+    }
+
+    loadTabData(tab: string) {
+      switch (tab) {
+        case 'feed':
+          this.loadFeedPosts();
+          break;
+        case 'discover':
+          this.loadDiscoverContent();
+          break;
+        case 'following':
+          this.loadFollowingData();
+          break;
+        case 'profile':
+          this.loadProfileData();
+          break;
+      }
+    }
+
+    loadProfileTabData(tab: string) {
+      switch (tab) {
+        case 'posts':
+          this.loadUserPosts();
+          break;
+        case 'nfts':
+          this.loadUserNFTs();
+          break;
+        case 'collections':
+          this.loadUserCollections();
+          break;
+        case 'liked':
+          this.loadLikedItems();
+          break;
+      }
+    }
+
+    async loadInitialData() {
+      // Load current user data
+      this.currentUser = await this.getCurrentUser();
+      this.updateProfileInfo();
+
+      // Load initial tab data
+      this.loadTabData(this.currentTab);
+    }
+
+    async getCurrentUser() {
+      // Mock user data - in real app, this would come from API
+      return {
+        id: '1',
+        name: 'Your Name',
+        username: 'yourusername',
+        bio: 'NFT collector and creator',
+        avatar: '/placeholder-avatar.jpg',
+        banner: '/placeholder-banner.jpg',
+        following: 0,
+        followers: 0,
+        nfts: 0
+      };
+    }
+
+    updateProfileInfo() {
+      if (!this.currentUser) return;
+
+      // Update profile header
+      const profileName = document.querySelector('[data-testid="profile-name"]') as HTMLElement;
+      const profileUsername = document.querySelector('[data-testid="profile-username"]') as HTMLElement;
+      const profileBio = document.querySelector('[data-testid="profile-bio"]') as HTMLElement;
+      const profileFollowing = document.querySelector('[data-testid="profile-following"]') as HTMLElement;
+      const profileFollowers = document.querySelector('[data-testid="profile-followers"]') as HTMLElement;
+      const profileNFTs = document.querySelector('[data-testid="profile-nfts"]') as HTMLElement;
+
+      if (profileName) profileName.textContent = this.currentUser.name;
+      if (profileUsername) profileUsername.textContent = `@${this.currentUser.username}`;
+      if (profileBio) profileBio.textContent = this.currentUser.bio;
+      if (profileFollowing) profileFollowing.textContent = this.currentUser.following.toString();
+      if (profileFollowers) profileFollowers.textContent = this.currentUser.followers.toString();
+      if (profileNFTs) profileNFTs.textContent = this.currentUser.nfts.toString();
+    }
+
+    async loadFeedPosts() {
+      // Mock feed posts
+      this.posts = [
+        {
+          id: '1',
+          user: {
+            name: 'Crypto Artist',
+            username: 'cryptoartist',
+            avatar: '/placeholder-avatar.jpg'
+          },
+          content: 'Just minted my latest collection! Check it out on Soladia 🚀',
+          media: '/placeholder-nft.jpg',
+          timestamp: '2h ago',
+          likes: 42,
+          retweets: 12,
+          comments: 8,
+          liked: false,
+          retweeted: false
+        },
+        {
+          id: '2',
+          user: {
+            name: 'NFT Collector',
+            username: 'nftcollector',
+            avatar: '/placeholder-avatar.jpg'
+          },
+          content: 'The NFT market is heating up! What are you all buying?',
+          media: null,
+          timestamp: '4h ago',
+          likes: 28,
+          retweets: 5,
+          comments: 15,
+          liked: true,
+          retweeted: false
+        }
+      ];
+
+      this.renderFeedPosts();
+    }
+
+    renderFeedPosts() {
+      const feedPosts = document.querySelector('[data-testid="feed-posts"]') as HTMLElement;
+      if (!feedPosts) return;
+
+      feedPosts.innerHTML = this.posts.map(post => `
+        <div class="feed-post" data-post-id="${post.id}">
+          <div class="post-header">
+            <div class="post-avatar" data-user-id="${post.user.username}">
+              <img src="${post.user.avatar}" alt="${post.user.name}">
+            </div>
+            <div class="post-user-info">
+              <h3 class="post-username" data-user-id="${post.user.username}">${post.user.name}</h3>
+              <p class="post-user-handle">@${post.user.username}</p>
+            </div>
+            <span class="post-time">${post.timestamp}</span>
+          </div>
+          <div class="post-content">
+            <p class="post-text">${post.content}</p>
+            ${post.media ? `<div class="post-media"><img src="${post.media}" alt="Post media"></div>` : ''}
+          </div>
+          <div class="post-actions">
+            <button class="post-action ${post.liked ? 'liked' : ''}" data-action="like" data-post-id="${post.id}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+              <span>${post.likes}</span>
+            </button>
+            <button class="post-action ${post.retweeted ? 'retweeted' : ''}" data-action="retweet" data-post-id="${post.id}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17 1l4 4-4 4"/>
+                <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                <path d="M7 23l-4-4 4-4"/>
+                <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+              </svg>
+              <span>${post.retweets}</span>
+            </button>
+            <button class="post-action" data-action="comment" data-post-id="${post.id}">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              <span>${post.comments}</span>
+            </button>
+          </div>
+        </div>
+      `).join('');
+
+      // Add event listeners to post actions
+      this.setupPostActionListeners();
+    }
+
+    setupPostActionListeners() {
+      document.querySelectorAll('.post-action').forEach(action => {
+        action.addEventListener('click', (e) => {
+          const target = e.target as HTMLElement;
+          const actionElement = target.closest('.post-action') as HTMLElement;
+          if (actionElement) {
+            const actionType = actionElement.dataset.action;
+            const postId = actionElement.dataset.postId;
+            this.handlePostAction(actionType as string, postId as string);
+          }
+        });
+      });
+
+      // Add click listeners to user avatars and names
+      document.querySelectorAll('.post-avatar, .post-username').forEach(element => {
+        element.addEventListener('click', (e) => {
+          const target = e.target as HTMLElement;
+          const userId = target.closest('[data-user-id]')?.getAttribute('data-user-id');
+          if (userId) {
+            this.showUserProfile(userId);
+          }
+        });
+      });
+    }
+
+    handlePostAction(action: string, postId: string) {
+      const post = this.posts.find(p => p.id === postId);
+      if (!post) return;
+
+      switch (action) {
+        case 'like':
+          post.liked = !post.liked;
+          post.likes += post.liked ? 1 : -1;
+          this.updatePostLikes(postId);
+          break;
+        case 'retweet':
+          post.retweeted = !post.retweeted;
+          post.retweets += post.retweeted ? 1 : -1;
+          this.updatePostRetweets(postId);
+          break;
+        case 'comment':
+          this.showComments(postId);
+          break;
+      }
+    }
+
+    updatePostLikes(postId: string) {
+      const postElement = document.querySelector(`[data-post-id="${postId}"]`) as HTMLElement;
+      if (!postElement) return;
+
+      const likeButton = postElement.querySelector('[data-action="like"]') as HTMLElement;
+      const likeCount = likeButton.querySelector('span') as HTMLElement;
+      const post = this.posts.find(p => p.id === postId);
+
+      if (likeButton && likeCount && post) {
+        likeButton.classList.toggle('liked', post.liked);
+        likeCount.textContent = post.likes.toString();
+      }
+    }
+
+    updatePostRetweets(postId: string) {
+      const postElement = document.querySelector(`[data-post-id="${postId}"]`) as HTMLElement;
+      if (!postElement) return;
+
+      const retweetButton = postElement.querySelector('[data-action="retweet"]') as HTMLElement;
+      const retweetCount = retweetButton.querySelector('span') as HTMLElement;
+      const post = this.posts.find(p => p.id === postId);
+
+      if (retweetButton && retweetCount && post) {
+        retweetButton.classList.toggle('retweeted', post.retweeted);
+        retweetCount.textContent = post.retweets.toString();
+      }
+    }
+
+    showComments(postId: string) {
+      // This would show a comments modal
+      console.log('Show comments for post:', postId);
+    }
+
+    showUserProfile(userId: string) {
+      // This would show user profile modal
+      console.log('Show profile for user:', userId);
+    }
+
+    updatePostSubmitButton() {
+      const textarea = document.querySelector('[data-testid="post-textarea"]') as HTMLTextAreaElement;
+      const submitBtn = document.querySelector('[data-testid="post-submit"]') as HTMLButtonElement;
+
+      if (textarea && submitBtn) {
+        const hasContent = textarea.value.trim().length > 0;
+        submitBtn.disabled = !hasContent;
+      }
+    }
+
+    createPost() {
+      const textarea = document.querySelector('[data-testid="post-textarea"]') as HTMLTextAreaElement;
+      if (!textarea) return;
+
+      const content = textarea.value.trim();
+      if (!content) return;
+
+      // Create new post
+      const newPost = {
+        id: Date.now().toString(),
+        user: this.currentUser,
+        content: content,
+        media: null,
+        timestamp: 'now',
+        likes: 0,
+        retweets: 0,
+        comments: 0,
+        liked: false,
+        retweeted: false
+      };
+
+      this.posts.unshift(newPost);
+      this.renderFeedPosts();
+
+      // Clear textarea
+      textarea.value = '';
+      this.updatePostSubmitButton();
+    }
+
+    handlePostOption(type: string) {
+      switch (type) {
+        case 'image':
+          this.addImageToPost();
+          break;
+        case 'nft':
+          this.addNFTToPost();
+          break;
+        case 'collection':
+          this.addCollectionToPost();
+          break;
+      }
+    }
+
+    addImageToPost() {
+      // This would open image picker
+      console.log('Add image to post');
+    }
+
+    addNFTToPost() {
+      // This would open NFT picker
+      console.log('Add NFT to post');
+    }
+
+    addCollectionToPost() {
+      // This would open collection picker
+      console.log('Add collection to post');
+    }
+
+    async loadDiscoverContent() {
+      // Load trending items
+      this.trending = [
+        {
+          id: '1',
+          title: 'Crypto Punks',
+          description: 'The original NFT collection',
+          image: '/placeholder-nft.jpg',
+          price: '50 SOL',
+          change: '+15%'
+        }
+      ];
+
+      // Load popular creators
+      this.creators = [
+        {
+          id: '1',
+          name: 'Digital Artist',
+          username: 'digitalartist',
+          avatar: '/placeholder-avatar.jpg',
+          bio: 'Creating digital art for the metaverse',
+          followers: 12500,
+          nfts: 150
+        }
+      ];
+
+      // Load featured collections
+      this.collections = [
+        {
+          id: '1',
+          name: 'Art Blocks',
+          description: 'Generative art collection',
+          image: '/placeholder-collection.jpg',
+          floorPrice: '2.5 SOL',
+          volume: '1,234 SOL'
+        }
+      ];
+
+      this.renderDiscoverContent();
+    }
+
+    renderDiscoverContent() {
+      this.renderTrendingItems();
+      this.renderCreators();
+      this.renderCollections();
+    }
+
+    renderTrendingItems() {
+      const trendingItems = document.querySelector('[data-testid="trending-items"]') as HTMLElement;
+      if (!trendingItems) return;
+
+      trendingItems.innerHTML = this.trending.map(item => `
+        <div class="trending-item" data-item-id="${item.id}">
+          <div class="trending-item-image">
+            <img src="${item.image}" alt="${item.title}">
+          </div>
+          <h3 class="trending-item-title">${item.title}</h3>
+          <p class="trending-item-description">${item.description}</p>
+          <div class="trending-item-price">${item.price} <span class="price-change">${item.change}</span></div>
+        </div>
+      `).join('');
+    }
+
+    renderCreators() {
+      const creatorsGrid = document.querySelector('[data-testid="creators-grid"]') as HTMLElement;
+      if (!creatorsGrid) return;
+
+      creatorsGrid.innerHTML = this.creators.map(creator => `
+        <div class="creator-card" data-creator-id="${creator.id}">
+          <div class="creator-avatar">
+            <img src="${creator.avatar}" alt="${creator.name}">
+          </div>
+          <h3 class="creator-name">${creator.name}</h3>
+          <p class="creator-bio">${creator.bio}</p>
+          <div class="creator-stats">
+            <div class="stat-item">
+              <span class="stat-number">${creator.followers.toLocaleString()}</span>
+              <span class="stat-label">Followers</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">${creator.nfts}</span>
+              <span class="stat-label">NFTs</span>
+            </div>
+          </div>
+          <button class="follow-button" data-creator-id="${creator.id}">Follow</button>
+        </div>
+      `).join('');
+
+      // Add follow button listeners
+      document.querySelectorAll('.follow-button').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const target = e.target as HTMLElement;
+          const creatorId = target.dataset.creatorId;
+          if (creatorId) {
+            this.followCreator(creatorId);
+          }
+        });
+      });
+    }
+
+    renderCollections() {
+      const collectionsGrid = document.querySelector('[data-testid="collections-grid"]') as HTMLElement;
+      if (!collectionsGrid) return;
+
+      collectionsGrid.innerHTML = this.collections.map(collection => `
+        <div class="collection-card" data-collection-id="${collection.id}">
+          <div class="collection-image">
+            <img src="${collection.image}" alt="${collection.name}">
+          </div>
+          <h3 class="collection-name">${collection.name}</h3>
+          <p class="collection-description">${collection.description}</p>
+          <div class="collection-stats">
+            <div class="stat-item">
+              <span class="stat-number">${collection.floorPrice}</span>
+              <span class="stat-label">Floor Price</span>
+            </div>
+            <div class="stat-item">
+              <span class="stat-number">${collection.volume}</span>
+              <span class="stat-label">Volume</span>
+            </div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    async loadFollowingData() {
+      // Load following and followers data
+      this.following = [
+        {
+          id: '1',
+          name: 'NFT Creator',
+          username: 'nftcreator',
+          avatar: '/placeholder-avatar.jpg',
+          bio: 'Creating amazing NFTs'
+        }
+      ];
+
+      this.followers = [
+        {
+          id: '2',
+          name: 'Art Collector',
+          username: 'artcollector',
+          avatar: '/placeholder-avatar.jpg',
+          bio: 'Collecting digital art'
+        }
+      ];
+
+      this.renderFollowingData();
+    }
+
+    renderFollowingData() {
+      // Update stats
+      const followingCount = document.querySelector('[data-testid="following-count"]') as HTMLElement;
+      const followersCount = document.querySelector('[data-testid="followers-count"]') as HTMLElement;
+
+      if (followingCount) followingCount.textContent = this.following.length.toString();
+      if (followersCount) followersCount.textContent = this.followers.length.toString();
+
+      // Render following list
+      const followingList = document.querySelector('[data-testid="following-list"]') as HTMLElement;
+      if (!followingList) return;
+
+      followingList.innerHTML = this.following.map(user => `
+        <div class="following-item" data-user-id="${user.id}">
+          <div class="following-avatar" data-user-id="${user.id}">
+            <img src="${user.avatar}" alt="${user.name}">
+          </div>
+          <div class="following-info">
+            <h3 class="following-name" data-user-id="${user.id}">${user.name}</h3>
+            <p class="following-handle">@${user.username}</p>
+            <p class="following-bio">${user.bio}</p>
+          </div>
+          <button class="follow-button following" data-user-id="${user.id}">Following</button>
+        </div>
+      `).join('');
+
+      // Add click listeners
+      document.querySelectorAll('.following-avatar, .following-name').forEach(element => {
+        element.addEventListener('click', (e) => {
+          const target = e.target as HTMLElement;
+          const userId = target.closest('[data-user-id]')?.getAttribute('data-user-id');
+          if (userId) {
+            this.showUserProfile(userId);
+          }
+        });
+      });
+    }
+
+    async loadProfileData() {
+      // Profile data is already loaded in loadInitialData
+      this.loadProfileTabData('posts');
+    }
+
+    async loadUserPosts() {
+      // Load user's posts
+      console.log('Load user posts');
+    }
+
+    async loadUserNFTs() {
+      // Load user's NFTs
+      console.log('Load user NFTs');
+    }
+
+    async loadUserCollections() {
+      // Load user's collections
+      console.log('Load user collections');
+    }
+
+    async loadLikedItems() {
+      // Load liked items
+      console.log('Load liked items');
+    }
+
+    followCreator(creatorId: string) {
+      const followBtn = document.querySelector(`[data-creator-id="${creatorId}"]`) as HTMLElement;
+      if (!followBtn) return;
+
+      const isFollowing = followBtn.classList.contains('following');
+      
+      if (isFollowing) {
+        followBtn.classList.remove('following');
+        followBtn.textContent = 'Follow';
+        // Remove from following
+      } else {
+        followBtn.classList.add('following');
+        followBtn.textContent = 'Following';
+        // Add to following
+      }
+    }
+
+    loadMorePosts() {
+      // Load more posts
+      console.log('Load more posts');
+    }
+
+    hideModal(modal: HTMLElement) {
+      modal.style.display = 'none';
+    }
+
+    showModal(modal: HTMLElement) {
+      modal.style.display = 'block';
+    }
+  }
+
+  // Initialize social features when DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    new SocialFeatures();
+  });
+
+  // Export for external use
+  (window as any).SocialFeatures = SocialFeatures;
+</script>

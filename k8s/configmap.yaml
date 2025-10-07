@@ -1,0 +1,36 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: soladia-config
+  namespace: soladia
+data:
+  # Database configuration
+  DATABASE_URL: "postgresql://postgres:password@postgres-service:5432/soladia"
+  
+  # Redis configuration
+  REDIS_URL: "redis://redis-service:6379/0"
+  
+  # Solana configuration
+  SOLANA_RPC_URL: "https://api.mainnet-beta.solana.com"
+  SOLANA_NETWORK: "mainnet-beta"
+  
+  # API configuration
+  API_HOST: "0.0.0.0"
+  API_PORT: "8000"
+  DEBUG: "false"
+  LOG_LEVEL: "INFO"
+  
+  # CORS configuration
+  ALLOWED_ORIGINS: "https://soladia.com,https://www.soladia.com"
+  
+  # Rate limiting
+  RATE_LIMIT_ENABLED: "true"
+  RATE_LIMIT_GENERAL: "100/minute"
+  RATE_LIMIT_PAYMENT: "10/minute"
+  RATE_LIMIT_AUTH: "5/minute"
+  
+  # Monitoring
+  ENABLE_METRICS: "true"
+  ENABLE_HEALTH_CHECK: "true"
+
+

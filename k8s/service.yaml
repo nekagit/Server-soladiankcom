@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: soladia-backend-service
+  namespace: soladia
+  labels:
+    app: soladia-backend
+spec:
+  selector:
+    app: soladia-backend
+  ports:
+  - name: http
+    port: 8000
+    targetPort: 8000
+  type: ClusterIP
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: soladia-frontend-service
+  namespace: soladia
+  labels:
+    app: soladia-frontend
+spec:
+  selector:
+    app: soladia-frontend
+  ports:
+  - name: http
+    port: 4321
+    targetPort: 4321
+  type: ClusterIP
+
+

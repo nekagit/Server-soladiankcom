@@ -1,0 +1,533 @@
+---
+// Advanced Marketplace Component
+// Implements sophisticated marketplace features with real-time updates
+
+import { useState, useEffect } from 'react';
+import { useClient } from 'astro/client';
+
+interface Props {
+  showAdvancedFilters?: boolean;
+  showRealTimeUpdates?: boolean;
+  showAIRecommendations?: boolean;
+  showSocialFeatures?: boolean;
+  showAnalytics?: boolean;
+}
+
+const { 
+  showAdvancedFilters = true, 
+  showRealTimeUpdates = true, 
+  showAIRecommendations = true,
+  showSocialFeatures = true,
+  showAnalytics = true 
+} = Astro.props;
+
+// Client-side state management
+let filters = {
+  priceRange: [0, 1000],
+  categories: [],
+  rarity: [],
+  collections: [],
+  sortBy: 'recent',
+  showOnlyAvailable: true
+};
+
+let nftListings = [];
+let userPreferences = {};
+let realTimeData = {};
+let socialFeed = [];
+let analyticsData = {};
+
+// Advanced filtering system
+const applyAdvancedFilters = (listings: any[]) => {
+  return listings.filter(nft => {
+    // Price range filter
+    if (nft.price < filters.priceRange[0] || nft.price > filters.priceRange[1]) {
+      return false;
+    }
+    
+    // Category filter
+    if (filters.categories.length > 0 && !filters.categories.includes(nft.category)) {
+      return false;
+    }
+    
+    // Rarity filter
+    if (filters.rarity.length > 0 && !filters.rarity.includes(nft.rarity)) {
+      return false;
+    }
+    
+    // Collection filter
+    if (filters.collections.length > 0 && !filters.collections.includes(nft.collection)) {
+      return false;
+    }
+    
+    // Availability filter
+    if (filters.showOnlyAvailable && !nft.available) {
+      return false;
+    }
+    
+    return true;
+  });
+};
+
+// AI-powered recommendations
+const getAIRecommendations = async (userId: string) => {
+  try {
+    const response = await fetch('/api/ai/recommendations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: userId })
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      return data.recommendations || [];
+    }
+  } catch (error) {
+    console.error('Failed to get AI recommendations:', error);
+  }
+  return [];
+};
+
+// Real-time updates
+const setupRealTimeUpdates = () => {
+  if (typeof window !== 'undefined') {
+    const eventSource = new EventSource('/api/events/stream');
+    
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      
+      switch (data.type) {
+        case 'nft_listed':
+          nftListings.unshift(data.nft);
+          break;
+        case 'nft_sold':
+          const index = nftListings.findIndex(nft => nft.id === data.nft_id);
+          if (index !== -1) {
+            nftListings[index].available = false;
+            nftListings[index].sold_at = data.sold_at;
+          }
+          break;
+        case 'price_updated':
+          const nftIndex = nftListings.findIndex(nft => nft.id === data.nft_id);
+          if (nftIndex !== -1) {
+            nftListings[nftIndex].price = data.new_price;
+          }
+          break;
+        case 'social_activity':
+          socialFeed.unshift(data.activity);
+          break;
+      }
+      
+      // Trigger re-render
+      updateDisplay();
+    };
+    
+    eventSource.onerror = (error) => {
+      console.error('Real-time connection error:', error);
+    };
+  }
+};
+
+// Social features
+const getSocialFeed = async () => {
+  try {
+    const response = await fetch('/api/social/feed');
+    if (response.ok) {
+      const data = await response.json();
+      socialFeed = data.activities || [];
+    }
+  } catch (error) {
+    console.error('Failed to get social feed:', error);
+  }
+};
+
+// Analytics data
+const getAnalyticsData = async () => {
+  try {
+    const response = await fetch('/api/analytics/marketplace');
+    if (response.ok) {
+      const data = await response.json();
+      analyticsData = data;
+    }
+  } catch (error) {
+    console.error('Failed to get analytics data:', error);
+  }
+};
+
+// Update display function
+const updateDisplay = () => {
+  // This would trigger a re-render in a real React component
+  console.log('Display updated with new data');
+};
+
+// Initialize component
+const initializeComponent = async () => {
+  if (typeof window !== 'undefined') {
+    // Load initial data
+    await Promise.all([
+      getSocialFeed(),
+      getAnalyticsData()
+    ]);
+    
+    // Setup real-time updates
+    if (showRealTimeUpdates) {
+      setupRealTimeUpdates();
+    }
+    
+    // Load AI recommendations
+    if (showAIRecommendations) {
+      const recommendations = await getAIRecommendations('current_user');
+      // Process recommendations...
+    }
+  }
+};
+
+// Initialize on mount
+if (typeof window !== 'undefined') {
+  initializeComponent();
+}
+---
+
+<div class="advanced-marketplace">
+  <!-- Header with Analytics -->
+  {showAnalytics && (
+    <div class="marketplace-header bg-soladia-primary text-white p-6 rounded-lg mb-6">
+      <h1 class="text-3xl font-bold mb-4">Advanced Soladia Marketplace</h1>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div class="stat-card bg-white bg-opacity-20 p-4 rounded-lg">
+          <h3 class="text-sm font-medium opacity-80">Total NFTs</h3>
+          <p class="text-2xl font-bold" id="total-nfts">0</p>
+        </div>
+        <div class="stat-card bg-white bg-opacity-20 p-4 rounded-lg">
+          <h3 class="text-sm font-medium opacity-80">Active Listings</h3>
+          <p class="text-2xl font-bold" id="active-listings">0</p>
+        </div>
+        <div class="stat-card bg-white bg-opacity-20 p-4 rounded-lg">
+          <h3 class="text-sm font-medium opacity-80">24h Volume</h3>
+          <p class="text-2xl font-bold" id="volume-24h">0 SOL</p>
+        </div>
+        <div class="stat-card bg-white bg-opacity-20 p-4 rounded-lg">
+          <h3 class="text-sm font-medium opacity-80">Floor Price</h3>
+          <p class="text-2xl font-bold" id="floor-price">0 SOL</p>
+        </div>
+      </div>
+    </div>
+  )}
+
+  <div class="marketplace-content grid grid-cols-1 lg:grid-cols-4 gap-6">
+    <!-- Advanced Filters Sidebar -->
+    {showAdvancedFilters && (
+      <div class="filters-sidebar lg:col-span-1">
+        <div class="card-soladia p-6">
+          <h2 class="text-xl font-semibold mb-4">Advanced Filters</h2>
+          
+          <!-- Price Range -->
+          <div class="filter-section mb-6">
+            <label class="block text-sm font-medium mb-2">Price Range (SOL)</label>
+            <div class="price-range-slider">
+              <input 
+                type="range" 
+                min="0" 
+                max="1000" 
+                value="0" 
+                class="w-full"
+                id="price-min"
+              />
+              <input 
+                type="range" 
+                min="0" 
+                max="1000" 
+                value="1000" 
+                class="w-full"
+                id="price-max"
+              />
+              <div class="flex justify-between text-sm text-soladia-dark">
+                <span id="price-min-value">0 SOL</span>
+                <span id="price-max-value">1000 SOL</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Categories -->
+          <div class="filter-section mb-6">
+            <label class="block text-sm font-medium mb-2">Categories</label>
+            <div class="space-y-2">
+              <label class="flex items-center">
+                <input type="checkbox" class="mr-2" value="art" />
+                <span>Art</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" class="mr-2" value="gaming" />
+                <span>Gaming</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" class="mr-2" value="collectibles" />
+                <span>Collectibles</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" class="mr-2" value="utility" />
+                <span>Utility</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Rarity -->
+          <div class="filter-section mb-6">
+            <label class="block text-sm font-medium mb-2">Rarity</label>
+            <div class="space-y-2">
+              <label class="flex items-center">
+                <input type="checkbox" class="mr-2" value="common" />
+                <span>Common</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" class="mr-2" value="rare" />
+                <span>Rare</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" class="mr-2" value="epic" />
+                <span>Epic</span>
+              </label>
+              <label class="flex items-center">
+                <input type="checkbox" class="mr-2" value="legendary" />
+                <span>Legendary</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Sort Options -->
+          <div class="filter-section mb-6">
+            <label class="block text-sm font-medium mb-2">Sort By</label>
+            <select class="w-full p-2 border border-soladia-border rounded-lg">
+              <option value="recent">Recently Listed</option>
+              <option value="price-low">Price: Low to High</option>
+              <option value="price-high">Price: High to Low</option>
+              <option value="rarity">Rarity</option>
+              <option value="popularity">Popularity</option>
+            </select>
+          </div>
+
+          <!-- AI Recommendations Toggle -->
+          {showAIRecommendations && (
+            <div class="filter-section mb-6">
+              <label class="flex items-center">
+                <input type="checkbox" class="mr-2" id="ai-recommendations" />
+                <span>AI Recommendations</span>
+              </label>
+            </div>
+          )}
+
+          <button class="btn-soladia w-full" onclick="applyFilters()">
+            Apply Filters
+          </button>
+        </div>
+      </div>
+    )}
+
+    <!-- Main Content Area -->
+    <div class="main-content lg:col-span-3">
+      <!-- Social Feed (if enabled) -->
+      {showSocialFeatures && (
+        <div class="social-feed mb-6">
+          <div class="card-soladia p-6">
+            <h2 class="text-xl font-semibold mb-4">Social Activity</h2>
+            <div class="space-y-4" id="social-feed-content">
+              <!-- Social feed items will be populated here -->
+            </div>
+          </div>
+        </div>
+      )}
+
+      <!-- NFT Grid -->
+      <div class="nft-grid">
+        <div class="flex justify-between items-center mb-6">
+          <h2 class="text-2xl font-semibold">NFT Listings</h2>
+          <div class="flex items-center space-x-4">
+            <span class="text-sm text-soladia-dark" id="results-count">0 results</span>
+            <div class="view-toggle">
+              <button class="p-2 border border-soladia-border rounded-l-lg" onclick="setGridView()">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
+                </svg>
+              </button>
+              <button class="p-2 border border-soladia-border rounded-r-lg" onclick="setListView()">
+                <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M3 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm0 4a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- NFT Grid -->
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6" id="nft-grid">
+          <!-- NFT cards will be populated here -->
+        </div>
+
+        <!-- Load More Button -->
+        <div class="text-center mt-8">
+          <button class="btn-soladia" onclick="loadMoreNFTs()">
+            Load More NFTs
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // Client-side JavaScript for interactivity
+  document.addEventListener('DOMContentLoaded', () => {
+    // Initialize price range sliders
+    const priceMin = document.getElementById('price-min');
+    const priceMax = document.getElementById('price-max');
+    const priceMinValue = document.getElementById('price-min-value');
+    const priceMaxValue = document.getElementById('price-max-value');
+
+    if (priceMin && priceMax) {
+      priceMin.addEventListener('input', () => {
+        priceMinValue.textContent = priceMin.value + ' SOL';
+        if (parseInt(priceMin.value) >= parseInt(priceMax.value)) {
+          priceMax.value = priceMin.value;
+          priceMaxValue.textContent = priceMax.value + ' SOL';
+        }
+      });
+
+      priceMax.addEventListener('input', () => {
+        priceMaxValue.textContent = priceMax.value + ' SOL';
+        if (parseInt(priceMax.value) <= parseInt(priceMin.value)) {
+          priceMin.value = priceMax.value;
+          priceMinValue.textContent = priceMin.value + ' SOL';
+        }
+      });
+    }
+
+    // Load initial NFT data
+    loadNFTs();
+  });
+
+  // Global functions for interactivity
+  window.applyFilters = () => {
+    console.log('Applying filters...');
+    // Filter logic would be implemented here
+    loadNFTs();
+  };
+
+  window.setGridView = () => {
+    const grid = document.getElementById('nft-grid');
+    if (grid) {
+      grid.className = 'grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6';
+    }
+  };
+
+  window.setListView = () => {
+    const grid = document.getElementById('nft-grid');
+    if (grid) {
+      grid.className = 'grid grid-cols-1 gap-6';
+    }
+  };
+
+  window.loadMoreNFTs = () => {
+    console.log('Loading more NFTs...');
+    // Load more logic would be implemented here
+  };
+
+  window.loadNFTs = async () => {
+    try {
+      const response = await fetch('/api/nft/listings');
+      if (response.ok) {
+        const data = await response.json();
+        displayNFTs(data.nfts || []);
+      }
+    } catch (error) {
+      console.error('Failed to load NFTs:', error);
+    }
+  };
+
+  window.displayNFTs = (nfts) => {
+    const grid = document.getElementById('nft-grid');
+    if (!grid) return;
+
+    grid.innerHTML = nfts.map(nft => `
+      <div class="nft-card card-soladia p-4 hover:shadow-lg transition-shadow">
+        <div class="nft-image mb-4">
+          <img src="${nft.image || '/images/placeholder.svg'}" alt="${nft.name}" class="w-full h-48 object-cover rounded-lg">
+        </div>
+        <div class="nft-info">
+          <h3 class="font-semibold text-lg mb-2">${nft.name}</h3>
+          <p class="text-soladia-dark mb-2">${nft.collection}</p>
+          <div class="flex justify-between items-center">
+            <span class="text-2xl font-bold text-soladia-primary">${nft.price} SOL</span>
+            <span class="text-sm text-soladia-dark">${nft.rarity}</span>
+          </div>
+          <button class="btn-soladia w-full mt-4" onclick="viewNFT('${nft.id}')">
+            View Details
+          </button>
+        </div>
+      </div>
+    `).join('');
+
+    // Update results count
+    const resultsCount = document.getElementById('results-count');
+    if (resultsCount) {
+      resultsCount.textContent = `${nfts.length} results`;
+    }
+  };
+
+  window.viewNFT = (nftId) => {
+    console.log('Viewing NFT:', nftId);
+    // Navigate to NFT detail page
+    window.location.href = `/nft/${nftId}`;
+  };
+</script>
+
+<style>
+  .advanced-marketplace {
+    @apply min-h-screen bg-soladia-bg;
+  }
+
+  .price-range-slider {
+    @apply space-y-2;
+  }
+
+  .price-range-slider input[type="range"] {
+    @apply appearance-none h-2 bg-soladia-border rounded-lg outline-none;
+  }
+
+  .price-range-slider input[type="range"]::-webkit-slider-thumb {
+    @apply appearance-none w-4 h-4 bg-soladia-primary rounded-full cursor-pointer;
+  }
+
+  .price-range-slider input[type="range"]::-moz-range-thumb {
+    @apply w-4 h-4 bg-soladia-primary rounded-full cursor-pointer border-0;
+  }
+
+  .filter-section {
+    @apply border-b border-soladia-border pb-4;
+  }
+
+  .filter-section:last-child {
+    @apply border-b-0 pb-0;
+  }
+
+  .nft-card {
+    @apply transition-all duration-200 hover:transform hover:scale-105;
+  }
+
+  .stat-card {
+    @apply backdrop-blur-sm;
+  }
+
+  .view-toggle button {
+    @apply transition-colors duration-200;
+  }
+
+  .view-toggle button.active {
+    @apply bg-soladia-primary text-white;
+  }
+
+  .view-toggle button:hover {
+    @apply bg-soladia-border;
+  }
+</style>
+
+

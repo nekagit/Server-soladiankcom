@@ -1,0 +1,175 @@
+---
+export interface Props {
+  id?: string;
+  title?: string;
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
+  closable?: boolean;
+  backdrop?: boolean;
+  className?: string;
+  onClose?: () => void;
+}
+
+const {
+  id = `modal-${Math.random().toString(36).substr(2, 9)}`,
+  title = '',
+  size = 'md',
+  closable = true,
+  backdrop = true,
+  className = '',
+  onClose
+} = Astro.props;
+
+const sizeClasses = {
+  sm: 'max-w-md',
+  md: 'max-w-lg',
+  lg: 'max-w-2xl',
+  xl: 'max-w-4xl',
+  full: 'max-w-full mx-4'
+};
+---
+
+<div 
+  class={`modal-overlay ${backdrop ? 'backdrop' : ''}`}
+  id={id}
+  data-testid="modal-overlay"
+  onclick={backdrop ? `closeModal('${id}')` : ''}
+>
+  <div 
+    class={`modal ${sizeClasses[size]} ${className}`}
+    data-testid="modal"
+    onclick="event.stopPropagation()"
+  >
+    {title && (
+      <div class="modal-header" data-testid="modal-header">
+        <h3 class="modal-title">{title}</h3>
+        {closable && (
+          <button 
+            class="modal-close" 
+            data-testid="modal-close"
+            onclick={`closeModal('${id}')`}
+            aria-label="Close modal"
+          >
+            <svg class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <line x1="18" y1="6" x2="6" y2="18"></line>
+              <line x1="6" y1="6" x2="18" y2="18"></line>
+            </svg>
+          </button>
+        )}
+      </div>
+    )}
+    
+    <div class="modal-body" data-testid="modal-body">
+      <slot />
+    </div>
+  </div>
+</div>
+
+<style>
+  .modal-overlay {
+    @apply fixed inset-0 z-50 flex items-center justify-center p-4;
+  }
+
+  .modal-overlay.backdrop {
+    @apply bg-black bg-opacity-50;
+  }
+
+  .modal {
+    @apply w-full bg-white dark:bg-gray-800 rounded-lg shadow-xl border border-gray-200 dark:border-gray-700 transform transition-all duration-300 ease-in-out;
+  }
+
+  .modal-header {
+    @apply flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700;
+  }
+
+  .modal-title {
+    @apply text-xl font-semibold text-gray-900 dark:text-white;
+  }
+
+  .modal-close {
+    @apply p-2 text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500;
+  }
+
+  .modal-body {
+    @apply p-6;
+  }
+
+  /* Animation classes */
+  .modal-enter {
+    @apply transform scale-95 opacity-0;
+  }
+
+  .modal-enter-active {
+    @apply transform scale-100 opacity-100;
+  }
+
+  .modal-exit {
+    @apply transform scale-100 opacity-100;
+  }
+
+  .modal-exit-active {
+    @apply transform scale-95 opacity-0;
+  }
+
+  /* Responsive design */
+  @media (max-width: 640px) {
+    .modal {
+      @apply mx-2;
+    }
+    
+    .modal-header {
+      @apply p-4;
+    }
+    
+    .modal-body {
+      @apply p-4;
+    }
+  }
+
+  /* Dark mode transitions */
+  .modal {
+    @apply theme-transitioning;
+  }
+</style>
+
+<script>
+  // Global function to close modal
+  window.closeModal = (modalId: string) => {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.classList.add('modal-exit-active');
+      setTimeout(() => {
+        modal.remove();
+      }, 300);
+    }
+  };
+
+  // Global function to open modal
+  window.openModal = (modalId: string) => {
+    const modal = document.getElementById(modalId);
+    if (modal) {
+      modal.classList.add('modal-enter-active');
+    }
+  };
+
+  // Handle escape key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const modals = document.querySelectorAll('.modal-overlay');
+      modals.forEach(modal => {
+        if (modal.classList.contains('modal-enter-active')) {
+          window.closeModal(modal.id);
+        }
+      });
+    }
+  });
+
+  // Initialize modal on load
+  document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('{id}');
+    if (modal) {
+      modal.classList.add('modal-enter-active');
+    }
+  });
+</script>
+
+

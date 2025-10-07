@@ -1,0 +1,1580 @@
+---
+// Enhanced Payment Processor Component
+// Comprehensive payment processing with Solana integration
+---
+
+<div class="enhanced-payment-processor" data-testid="enhanced-payment-processor">
+  <!-- Payment Modal -->
+  <div class="payment-modal" data-testid="payment-modal" style="display: none;">
+    <div class="modal-overlay" data-testid="modal-overlay">
+      <div class="modal-content" data-testid="modal-content">
+        <div class="modal-header">
+          <h2 data-testid="modal-title">Complete Payment</h2>
+          <button class="modal-close" data-testid="modal-close">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <!-- Payment Summary -->
+          <div class="payment-summary" data-testid="payment-summary">
+            <h3>Payment Summary</h3>
+            <div class="summary-item">
+              <span class="label">Item:</span>
+              <span class="value" data-testid="item-name">Test Product</span>
+            </div>
+            <div class="summary-item">
+              <span class="label">Price:</span>
+              <span class="value" data-testid="item-price">2.5 SOL</span>
+            </div>
+            <div class="summary-item">
+              <span class="label">Network Fee:</span>
+              <span class="value" data-testid="network-fee">0.000005 SOL</span>
+            </div>
+            <div class="summary-item total">
+              <span class="label">Total:</span>
+              <span class="value" data-testid="total-amount">2.500005 SOL</span>
+            </div>
+          </div>
+
+          <!-- Payment Method Selection -->
+          <div class="payment-method" data-testid="payment-method">
+            <h3>Payment Method</h3>
+            <div class="method-options">
+              <div class="method-option" data-testid="sol-payment">
+                <input type="radio" id="sol-payment" name="payment-method" value="SOL" checked>
+                <label for="sol-payment">
+                  <div class="method-icon">
+                    <img src="/images/tokens/sol.svg" alt="SOL" />
+                  </div>
+                  <div class="method-info">
+                    <span class="method-name">SOL</span>
+                    <span class="method-balance" data-testid="sol-balance">Balance: 10.0 SOL</span>
+                  </div>
+                </label>
+              </div>
+
+              <div class="method-option" data-testid="usdc-payment">
+                <input type="radio" id="usdc-payment" name="payment-method" value="USDC">
+                <label for="usdc-payment">
+                  <div class="method-icon">
+                    <img src="/images/tokens/usdc.svg" alt="USDC" />
+                  </div>
+                  <div class="method-info">
+                    <span class="method-name">USDC</span>
+                    <span class="method-balance" data-testid="usdc-balance">Balance: 1000 USDC</span>
+                  </div>
+                </label>
+              </div>
+
+              <div class="method-option" data-testid="usdt-payment">
+                <input type="radio" id="usdt-payment" name="payment-method" value="USDT">
+                <label for="usdt-payment">
+                  <div class="method-icon">
+                    <img src="/images/tokens/usdt.svg" alt="USDT" />
+                  </div>
+                  <div class="method-info">
+                    <span class="method-name">USDT</span>
+                    <span class="method-balance" data-testid="usdt-balance">Balance: 500 USDT</span>
+                  </div>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Payment Amount -->
+          <div class="payment-amount" data-testid="payment-amount-section">
+            <h3>Payment Amount</h3>
+            <div class="amount-input-group">
+              <input 
+                type="number" 
+                id="payment-amount" 
+                data-testid="payment-amount"
+                class="amount-input"
+                placeholder="0.00"
+                step="0.000001"
+                min="0"
+              >
+              <select id="currency-selector" data-testid="currency-selector" class="currency-selector">
+                <option value="SOL">SOL</option>
+                <option value="USDC">USDC</option>
+                <option value="USDT">USDT</option>
+              </select>
+            </div>
+            <div class="amount-helper">
+              <span class="usd-equivalent" data-testid="usd-equivalent">≈ $0.00 USD</span>
+              <button class="max-btn" data-testid="max-btn">Max</button>
+            </div>
+          </div>
+
+          <!-- Payment Memo -->
+          <div class="payment-memo" data-testid="payment-memo-section">
+            <h3>Payment Memo (Optional)</h3>
+            <textarea 
+              id="payment-memo" 
+              data-testid="payment-memo"
+              class="memo-input"
+              placeholder="Add a note for this payment..."
+              rows="3"
+            ></textarea>
+          </div>
+
+          <!-- Escrow Option -->
+          <div class="escrow-option" data-testid="escrow-option">
+            <label class="escrow-checkbox">
+              <input type="checkbox" id="use-escrow" data-testid="use-escrow">
+              <span class="checkmark"></span>
+              <div class="escrow-info">
+                <span class="escrow-title">Use Escrow Protection</span>
+                <span class="escrow-description">Funds will be held in escrow until delivery is confirmed</span>
+              </div>
+            </label>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-testid="cancel-payment">Cancel</button>
+          <button class="btn btn-primary" data-testid="confirm-payment">
+            <span class="btn-text">Confirm Payment</span>
+            <div class="btn-loading" data-testid="btn-loading" style="display: none;">
+              <div class="spinner"></div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Success Modal -->
+  <div class="payment-success-modal" data-testid="payment-success-modal" style="display: none;">
+    <div class="modal-overlay">
+      <div class="modal-content success-content">
+        <div class="success-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="20,6 9,17 4,12"/>
+          </svg>
+        </div>
+        <h2>Payment Successful!</h2>
+        <p class="success-message" data-testid="success-message">Your payment has been processed successfully.</p>
+        <div class="transaction-details" data-testid="transaction-details">
+          <div class="detail-item">
+            <span class="label">Transaction ID:</span>
+            <span class="value" data-testid="transaction-id">Loading...</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Amount:</span>
+            <span class="value" data-testid="transaction-amount">Loading...</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Network:</span>
+            <span class="value" data-testid="transaction-network">Loading...</span>
+          </div>
+        </div>
+        <div class="success-actions">
+          <button class="btn btn-secondary" data-testid="view-transaction">View Transaction</button>
+          <button class="btn btn-primary" data-testid="close-success">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Error Modal -->
+  <div class="payment-error-modal" data-testid="payment-error-modal" style="display: none;">
+    <div class="modal-overlay">
+      <div class="modal-content error-content">
+        <div class="error-icon">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="15" y1="9" x2="9" y2="15"/>
+            <line x1="9" y1="9" x2="15" y2="15"/>
+          </svg>
+        </div>
+        <h2>Payment Failed</h2>
+        <p class="error-message" data-testid="error-message">An error occurred while processing your payment.</p>
+        <div class="error-details" data-testid="error-details">
+          <div class="detail-item">
+            <span class="label">Error Code:</span>
+            <span class="value" data-testid="error-code">Loading...</span>
+          </div>
+          <div class="detail-item">
+            <span class="label">Error Message:</span>
+            <span class="value" data-testid="error-message-detail">Loading...</span>
+          </div>
+        </div>
+        <div class="error-actions">
+          <button class="btn btn-secondary" data-testid="retry-payment">Retry Payment</button>
+          <button class="btn btn-primary" data-testid="close-error">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auction Bid Modal -->
+  <div class="auction-bid-modal" data-testid="auction-bid-modal" style="display: none;">
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Place Auction Bid</h2>
+          <button class="modal-close" data-testid="bid-modal-close">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="auction-info" data-testid="auction-info">
+            <h3>Auction Details</h3>
+            <div class="auction-item">
+              <span class="label">Item:</span>
+              <span class="value" data-testid="auction-item-name">Test NFT</span>
+            </div>
+            <div class="auction-item">
+              <span class="label">Current Highest Bid:</span>
+              <span class="value" data-testid="current-highest-bid">2.5 SOL</span>
+            </div>
+            <div class="auction-item">
+              <span class="label">Bid Count:</span>
+              <span class="value" data-testid="bid-count">5 bids</span>
+            </div>
+            <div class="auction-item">
+              <span class="label">Time Remaining:</span>
+              <span class="value" data-testid="time-remaining">2h 30m</span>
+            </div>
+          </div>
+
+          <div class="bid-amount" data-testid="bid-amount-section">
+            <h3>Your Bid</h3>
+            <div class="amount-input-group">
+              <input 
+                type="number" 
+                id="bid-amount" 
+                data-testid="bid-amount"
+                class="amount-input"
+                placeholder="0.00"
+                step="0.000001"
+                min="0"
+              >
+              <select id="bid-currency" data-testid="bid-currency" class="currency-selector">
+                <option value="SOL">SOL</option>
+                <option value="USDC">USDC</option>
+                <option value="USDT">USDT</option>
+              </select>
+            </div>
+            <div class="bid-helper">
+              <span class="minimum-bid" data-testid="minimum-bid">Minimum bid: 2.6 SOL</span>
+              <button class="suggest-bid-btn" data-testid="suggest-bid-btn">Suggest Bid</button>
+            </div>
+          </div>
+
+          <div class="bid-terms" data-testid="bid-terms">
+            <label class="terms-checkbox">
+              <input type="checkbox" id="agree-terms" data-testid="agree-terms">
+              <span class="checkmark"></span>
+              <span class="terms-text">I agree to the auction terms and conditions</span>
+            </label>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-testid="cancel-bid">Cancel</button>
+          <button class="btn btn-primary" data-testid="submit-bid">
+            <span class="btn-text">Place Bid</span>
+            <div class="btn-loading" data-testid="bid-loading" style="display: none;">
+              <div class="spinner"></div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Make Offer Modal -->
+  <div class="make-offer-modal" data-testid="make-offer-modal" style="display: none;">
+    <div class="modal-overlay">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2>Make an Offer</h2>
+          <button class="modal-close" data-testid="offer-modal-close">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/>
+              <line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+
+        <div class="modal-body">
+          <div class="offer-info" data-testid="offer-info">
+            <h3>Offer Details</h3>
+            <div class="offer-item">
+              <span class="label">Item:</span>
+              <span class="value" data-testid="offer-item-name">Test Product</span>
+            </div>
+            <div class="offer-item">
+              <span class="label">Listed Price:</span>
+              <span class="value" data-testid="listed-price">5.0 SOL</span>
+            </div>
+            <div class="offer-item">
+              <span class="label">Your Offer:</span>
+              <span class="value" data-testid="your-offer">0.00 SOL</span>
+            </div>
+          </div>
+
+          <div class="offer-amount" data-testid="offer-amount-section">
+            <h3>Offer Amount</h3>
+            <div class="amount-input-group">
+              <input 
+                type="number" 
+                id="offer-amount" 
+                data-testid="offer-amount"
+                class="amount-input"
+                placeholder="0.00"
+                step="0.000001"
+                min="0"
+              >
+              <select id="offer-currency" data-testid="offer-currency" class="currency-selector">
+                <option value="SOL">SOL</option>
+                <option value="USDC">USDC</option>
+                <option value="USDT">USDT</option>
+              </select>
+            </div>
+            <div class="offer-helper">
+              <span class="offer-percentage" data-testid="offer-percentage">0% of listed price</span>
+              <button class="suggest-offer-btn" data-testid="suggest-offer-btn">Suggest Offer</button>
+            </div>
+          </div>
+
+          <div class="offer-message" data-testid="offer-message-section">
+            <h3>Message to Seller (Optional)</h3>
+            <textarea 
+              id="offer-message" 
+              data-testid="offer-message"
+              class="message-input"
+              placeholder="Add a message to the seller..."
+              rows="3"
+            ></textarea>
+          </div>
+
+          <div class="offer-expiry" data-testid="offer-expiry-section">
+            <h3>Offer Expiry</h3>
+            <select id="offer-expiry" data-testid="offer-expiry" class="expiry-selector">
+              <option value="24">24 hours</option>
+              <option value="48">48 hours</option>
+              <option value="72">72 hours</option>
+              <option value="168">1 week</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button class="btn btn-secondary" data-testid="cancel-offer">Cancel</button>
+          <button class="btn btn-primary" data-testid="submit-offer">
+            <span class="btn-text">Submit Offer</span>
+            <div class="btn-loading" data-testid="offer-loading" style="display: none;">
+              <div class="spinner"></div>
+            </div>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .enhanced-payment-processor {
+    position: relative;
+  }
+
+  .payment-modal,
+  .payment-success-modal,
+  .payment-error-modal,
+  .auction-bid-modal,
+  .make-offer-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--soladia-z-modal);
+  }
+
+  .modal-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: var(--soladia-overlay);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: var(--soladia-space-4);
+  }
+
+  .modal-content {
+    background: var(--soladia-bg-primary);
+    border-radius: var(--soladia-radius-xl);
+    box-shadow: var(--soladia-shadow-2xl);
+    max-width: 500px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: slideInUp 0.3s ease-out;
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--soladia-space-6);
+    border-bottom: 1px solid var(--soladia-border);
+  }
+
+  .modal-header h2 {
+    font-size: var(--soladia-text-xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0;
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--soladia-text-tertiary);
+    cursor: pointer;
+    padding: var(--soladia-space-2);
+    border-radius: var(--soladia-radius);
+    transition: var(--soladia-transition);
+  }
+
+  .modal-close:hover {
+    color: var(--soladia-text-primary);
+    background: var(--soladia-bg-secondary);
+  }
+
+  .modal-body {
+    padding: var(--soladia-space-6);
+  }
+
+  .modal-footer {
+    display: flex;
+    gap: var(--soladia-space-3);
+    justify-content: flex-end;
+    padding: var(--soladia-space-6);
+    border-top: 1px solid var(--soladia-border);
+  }
+
+  .payment-summary {
+    margin-bottom: var(--soladia-space-6);
+  }
+
+  .payment-summary h3 {
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin-bottom: var(--soladia-space-4);
+  }
+
+  .summary-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--soladia-space-2) 0;
+    border-bottom: 1px solid var(--soladia-border-light);
+  }
+
+  .summary-item.total {
+    border-top: 2px solid var(--soladia-border);
+    border-bottom: none;
+    font-weight: var(--soladia-font-bold);
+    font-size: var(--soladia-text-lg);
+    color: var(--soladia-text-primary);
+    margin-top: var(--soladia-space-2);
+  }
+
+  .summary-item .label {
+    color: var(--soladia-text-secondary);
+  }
+
+  .summary-item .value {
+    color: var(--soladia-text-primary);
+    font-weight: var(--soladia-font-medium);
+  }
+
+  .payment-method {
+    margin-bottom: var(--soladia-space-6);
+  }
+
+  .payment-method h3 {
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin-bottom: var(--soladia-space-4);
+  }
+
+  .method-options {
+    display: flex;
+    flex-direction: column;
+    gap: var(--soladia-space-3);
+  }
+
+  .method-option {
+    position: relative;
+  }
+
+  .method-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .method-option label {
+    display: flex;
+    align-items: center;
+    gap: var(--soladia-space-3);
+    padding: var(--soladia-space-4);
+    background: var(--soladia-bg-secondary);
+    border: 2px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    cursor: pointer;
+    transition: var(--soladia-transition);
+  }
+
+  .method-option input[type="radio"]:checked + label {
+    border-color: var(--soladia-primary);
+    background: var(--soladia-primary-50);
+  }
+
+  .method-option label:hover {
+    border-color: var(--soladia-primary);
+  }
+
+  .method-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--soladia-bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .method-icon img {
+    width: 24px;
+    height: 24px;
+    object-fit: contain;
+  }
+
+  .method-info {
+    flex: 1;
+  }
+
+  .method-name {
+    display: block;
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin-bottom: var(--soladia-space-1);
+  }
+
+  .method-balance {
+    font-size: var(--soladia-text-sm);
+    color: var(--soladia-text-secondary);
+  }
+
+  .payment-amount {
+    margin-bottom: var(--soladia-space-6);
+  }
+
+  .payment-amount h3 {
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin-bottom: var(--soladia-space-4);
+  }
+
+  .amount-input-group {
+    display: flex;
+    gap: var(--soladia-space-3);
+    margin-bottom: var(--soladia-space-3);
+  }
+
+  .amount-input {
+    flex: 1;
+    padding: var(--soladia-space-3) var(--soladia-space-4);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    background: var(--soladia-bg-primary);
+    color: var(--soladia-text-primary);
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-semibold);
+  }
+
+  .amount-input:focus {
+    outline: none;
+    border-color: var(--soladia-primary);
+    box-shadow: 0 0 0 3px rgba(230, 0, 18, 0.1);
+  }
+
+  .currency-selector {
+    padding: var(--soladia-space-3) var(--soladia-space-4);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    background: var(--soladia-bg-primary);
+    color: var(--soladia-text-primary);
+    font-weight: var(--soladia-font-semibold);
+    min-width: 100px;
+  }
+
+  .amount-helper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .usd-equivalent {
+    font-size: var(--soladia-text-sm);
+    color: var(--soladia-text-secondary);
+  }
+
+  .max-btn {
+    padding: var(--soladia-space-1) var(--soladia-space-3);
+    background: var(--soladia-primary);
+    color: white;
+    border: none;
+    border-radius: var(--soladia-radius);
+    font-size: var(--soladia-text-sm);
+    font-weight: var(--soladia-font-semibold);
+    cursor: pointer;
+    transition: var(--soladia-transition);
+  }
+
+  .max-btn:hover {
+    background: var(--soladia-primary-600);
+  }
+
+  .payment-memo {
+    margin-bottom: var(--soladia-space-6);
+  }
+
+  .payment-memo h3 {
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin-bottom: var(--soladia-space-4);
+  }
+
+  .memo-input {
+    width: 100%;
+    padding: var(--soladia-space-3) var(--soladia-space-4);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    background: var(--soladia-bg-primary);
+    color: var(--soladia-text-primary);
+    font-family: var(--soladia-font-primary);
+    resize: vertical;
+  }
+
+  .memo-input:focus {
+    outline: none;
+    border-color: var(--soladia-primary);
+    box-shadow: 0 0 0 3px rgba(230, 0, 18, 0.1);
+  }
+
+  .escrow-option {
+    margin-bottom: var(--soladia-space-6);
+  }
+
+  .escrow-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--soladia-space-3);
+    cursor: pointer;
+  }
+
+  .escrow-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .checkmark {
+    width: 20px;
+    height: 20px;
+    border: 2px solid var(--soladia-border);
+    border-radius: var(--soladia-radius);
+    background: var(--soladia-bg-primary);
+    position: relative;
+    transition: var(--soladia-transition);
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .escrow-checkbox input[type="checkbox"]:checked + .checkmark {
+    background: var(--soladia-primary);
+    border-color: var(--soladia-primary);
+  }
+
+  .escrow-checkbox input[type="checkbox"]:checked + .checkmark::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 6px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  .escrow-info {
+    flex: 1;
+  }
+
+  .escrow-title {
+    display: block;
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin-bottom: var(--soladia-space-1);
+  }
+
+  .escrow-description {
+    font-size: var(--soladia-text-sm);
+    color: var(--soladia-text-secondary);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--soladia-space-2);
+    padding: var(--soladia-space-3) var(--soladia-space-6);
+    border-radius: var(--soladia-radius-lg);
+    font-weight: var(--soladia-font-semibold);
+    text-decoration: none;
+    transition: var(--soladia-transition);
+    cursor: pointer;
+    border: none;
+    font-size: var(--soladia-text-base);
+    line-height: 1;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .btn:focus {
+    outline: 2px solid var(--soladia-primary);
+    outline-offset: 2px;
+  }
+
+  .btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none !important;
+  }
+
+  .btn-primary {
+    background: var(--soladia-gradient-primary);
+    color: white;
+    box-shadow: var(--soladia-shadow-primary);
+  }
+
+  .btn-primary:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--soladia-shadow-primary-hover);
+  }
+
+  .btn-secondary {
+    background: var(--soladia-bg-primary);
+    color: var(--soladia-primary);
+    border: 2px solid var(--soladia-primary);
+  }
+
+  .btn-secondary:hover:not(:disabled) {
+    background: var(--soladia-primary);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  .btn-loading {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid transparent;
+    border-top: 2px solid currentColor;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  .success-content,
+  .error-content {
+    text-align: center;
+    max-width: 400px;
+  }
+
+  .success-icon {
+    color: var(--soladia-success);
+    margin-bottom: var(--soladia-space-4);
+  }
+
+  .error-icon {
+    color: var(--soladia-error);
+    margin-bottom: var(--soladia-space-4);
+  }
+
+  .success-content h2,
+  .error-content h2 {
+    font-size: var(--soladia-text-2xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin-bottom: var(--soladia-space-4);
+  }
+
+  .success-message,
+  .error-message {
+    color: var(--soladia-text-secondary);
+    margin-bottom: var(--soladia-space-6);
+  }
+
+  .transaction-details,
+  .error-details {
+    background: var(--soladia-bg-secondary);
+    border-radius: var(--soladia-radius-lg);
+    padding: var(--soladia-space-4);
+    margin-bottom: var(--soladia-space-6);
+  }
+
+  .detail-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--soladia-space-2) 0;
+    border-bottom: 1px solid var(--soladia-border-light);
+  }
+
+  .detail-item:last-child {
+    border-bottom: none;
+  }
+
+  .detail-item .label {
+    color: var(--soladia-text-secondary);
+    font-weight: var(--soladia-font-medium);
+  }
+
+  .detail-item .value {
+    color: var(--soladia-text-primary);
+    font-weight: var(--soladia-font-semibold);
+    font-family: var(--soladia-font-mono);
+  }
+
+  .success-actions,
+  .error-actions {
+    display: flex;
+    gap: var(--soladia-space-3);
+    justify-content: center;
+  }
+
+  .auction-info,
+  .offer-info {
+    margin-bottom: var(--soladia-space-6);
+  }
+
+  .auction-info h3,
+  .offer-info h3 {
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin-bottom: var(--soladia-space-4);
+  }
+
+  .auction-item,
+  .offer-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: var(--soladia-space-2) 0;
+    border-bottom: 1px solid var(--soladia-border-light);
+  }
+
+  .auction-item:last-child,
+  .offer-item:last-child {
+    border-bottom: none;
+  }
+
+  .auction-item .label,
+  .offer-item .label {
+    color: var(--soladia-text-secondary);
+  }
+
+  .auction-item .value,
+  .offer-item .value {
+    color: var(--soladia-text-primary);
+    font-weight: var(--soladia-font-semibold);
+  }
+
+  .bid-amount,
+  .offer-amount {
+    margin-bottom: var(--soladia-space-6);
+  }
+
+  .bid-amount h3,
+  .offer-amount h3 {
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin-bottom: var(--soladia-space-4);
+  }
+
+  .bid-helper,
+  .offer-helper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .minimum-bid,
+  .offer-percentage {
+    font-size: var(--soladia-text-sm);
+    color: var(--soladia-text-secondary);
+  }
+
+  .suggest-bid-btn,
+  .suggest-offer-btn {
+    padding: var(--soladia-space-1) var(--soladia-space-3);
+    background: var(--soladia-secondary);
+    color: white;
+    border: none;
+    border-radius: var(--soladia-radius);
+    font-size: var(--soladia-text-sm);
+    font-weight: var(--soladia-font-semibold);
+    cursor: pointer;
+    transition: var(--soladia-transition);
+  }
+
+  .suggest-bid-btn:hover,
+  .suggest-offer-btn:hover {
+    background: var(--soladia-secondary-600);
+  }
+
+  .bid-terms,
+  .offer-expiry {
+    margin-bottom: var(--soladia-space-6);
+  }
+
+  .terms-checkbox {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--soladia-space-3);
+    cursor: pointer;
+  }
+
+  .terms-checkbox input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .terms-text {
+    font-size: var(--soladia-text-sm);
+    color: var(--soladia-text-secondary);
+  }
+
+  .offer-expiry h3 {
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin-bottom: var(--soladia-space-4);
+  }
+
+  .expiry-selector {
+    width: 100%;
+    padding: var(--soladia-space-3) var(--soladia-space-4);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    background: var(--soladia-bg-primary);
+    color: var(--soladia-text-primary);
+  }
+
+  .offer-message h3 {
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin-bottom: var(--soladia-space-4);
+  }
+
+  .message-input {
+    width: 100%;
+    padding: var(--soladia-space-3) var(--soladia-space-4);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    background: var(--soladia-bg-primary);
+    color: var(--soladia-text-primary);
+    font-family: var(--soladia-font-primary);
+    resize: vertical;
+  }
+
+  .message-input:focus {
+    outline: none;
+    border-color: var(--soladia-primary);
+    box-shadow: 0 0 0 3px rgba(230, 0, 18, 0.1);
+  }
+
+  @keyframes slideInUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  /* Dark mode styles */
+  [data-theme="dark"] .modal-content {
+    background: var(--soladia-bg-primary);
+    border-color: var(--soladia-border);
+  }
+
+  [data-theme="dark"] .method-option label {
+    background: var(--soladia-bg-secondary);
+    border-color: var(--soladia-border);
+  }
+
+  [data-theme="dark"] .method-option input[type="radio"]:checked + label {
+    background: var(--soladia-primary-50);
+  }
+
+  /* Responsive design */
+  @media (max-width: 640px) {
+    .modal-content {
+      margin: var(--soladia-space-4);
+      max-width: none;
+    }
+
+    .modal-header,
+    .modal-body,
+    .modal-footer {
+      padding: var(--soladia-space-4);
+    }
+
+    .amount-input-group {
+      flex-direction: column;
+    }
+
+    .success-actions,
+    .error-actions {
+      flex-direction: column;
+    }
+  }
+</style>
+
+<script>
+  import { enhancedPaymentProcessor } from '../../services/enhanced-payment-processor';
+  import { enhancedWalletService } from '../../services/enhanced-wallet-service';
+
+  class EnhancedPaymentProcessor {
+    constructor() {
+      this.paymentProcessor = enhancedPaymentProcessor;
+      this.walletService = enhancedWalletService;
+      this.currentPayment = null;
+      this.currentAuction = null;
+      this.currentOffer = null;
+      
+      this.init();
+    }
+
+    init() {
+      this.setupEventListeners();
+      this.setupWalletListeners();
+    }
+
+    setupEventListeners() {
+      // Modal close buttons
+      document.querySelectorAll('[data-testid="modal-close"], [data-testid="bid-modal-close"], [data-testid="offer-modal-close"]').forEach(btn => {
+        btn.addEventListener('click', () => {
+          this.closeAllModals();
+        });
+      });
+
+      // Payment method selection
+      document.querySelectorAll('input[name="payment-method"]').forEach(input => {
+        input.addEventListener('change', (e) => {
+          this.updatePaymentMethod(e.target.value);
+        });
+      });
+
+      // Amount input
+      document.querySelector('[data-testid="payment-amount"]')?.addEventListener('input', (e) => {
+        this.updatePaymentAmount(e.target.value);
+      });
+
+      // Currency selector
+      document.querySelector('[data-testid="currency-selector"]')?.addEventListener('change', (e) => {
+        this.updatePaymentCurrency(e.target.value);
+      });
+
+      // Max button
+      document.querySelector('[data-testid="max-btn"]')?.addEventListener('click', () => {
+        this.setMaxAmount();
+      });
+
+      // Confirm payment
+      document.querySelector('[data-testid="confirm-payment"]')?.addEventListener('click', () => {
+        this.processPayment();
+      });
+
+      // Cancel payment
+      document.querySelector('[data-testid="cancel-payment"]')?.addEventListener('click', () => {
+        this.closeAllModals();
+      });
+
+      // Bid amount input
+      document.querySelector('[data-testid="bid-amount"]')?.addEventListener('input', (e) => {
+        this.updateBidAmount(e.target.value);
+      });
+
+      // Submit bid
+      document.querySelector('[data-testid="submit-bid"]')?.addEventListener('click', () => {
+        this.submitBid();
+      });
+
+      // Cancel bid
+      document.querySelector('[data-testid="cancel-bid"]')?.addEventListener('click', () => {
+        this.closeAllModals();
+      });
+
+      // Offer amount input
+      document.querySelector('[data-testid="offer-amount"]')?.addEventListener('input', (e) => {
+        this.updateOfferAmount(e.target.value);
+      });
+
+      // Submit offer
+      document.querySelector('[data-testid="submit-offer"]')?.addEventListener('click', () => {
+        this.submitOffer();
+      });
+
+      // Cancel offer
+      document.querySelector('[data-testid="cancel-offer"]')?.addEventListener('click', () => {
+        this.closeAllModals();
+      });
+
+      // Success modal actions
+      document.querySelector('[data-testid="view-transaction"]')?.addEventListener('click', () => {
+        this.viewTransaction();
+      });
+
+      document.querySelector('[data-testid="close-success"]')?.addEventListener('click', () => {
+        this.closeAllModals();
+      });
+
+      // Error modal actions
+      document.querySelector('[data-testid="retry-payment"]')?.addEventListener('click', () => {
+        this.retryPayment();
+      });
+
+      document.querySelector('[data-testid="close-error"]')?.addEventListener('click', () => {
+        this.closeAllModals();
+      });
+    }
+
+    setupWalletListeners() {
+      this.walletService.addListener((state) => {
+        this.updateWalletInfo(state);
+      });
+    }
+
+    showPaymentModal(paymentData) {
+      this.currentPayment = paymentData;
+      this.updatePaymentSummary(paymentData);
+      this.showModal('payment-modal');
+    }
+
+    showAuctionBidModal(auctionData) {
+      this.currentAuction = auctionData;
+      this.updateAuctionInfo(auctionData);
+      this.showModal('auction-bid-modal');
+    }
+
+    showMakeOfferModal(offerData) {
+      this.currentOffer = offerData;
+      this.updateOfferInfo(offerData);
+      this.showModal('make-offer-modal');
+    }
+
+    showModal(modalId) {
+      const modal = document.querySelector(`[data-testid="${modalId}"]`);
+      if (modal) {
+        modal.style.display = 'block';
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    closeAllModals() {
+      document.querySelectorAll('[data-testid$="-modal"]').forEach(modal => {
+        modal.style.display = 'none';
+      });
+      document.body.style.overflow = '';
+    }
+
+    updatePaymentSummary(paymentData) {
+      const itemName = document.querySelector('[data-testid="item-name"]');
+      const itemPrice = document.querySelector('[data-testid="item-price"]');
+      const totalAmount = document.querySelector('[data-testid="total-amount"]');
+
+      if (itemName) itemName.textContent = paymentData.name || 'Item';
+      if (itemPrice) itemPrice.textContent = `${paymentData.amount} ${paymentData.currency}`;
+      if (totalAmount) totalAmount.textContent = `${paymentData.amount} ${paymentData.currency}`;
+    }
+
+    updateAuctionInfo(auctionData) {
+      const itemName = document.querySelector('[data-testid="auction-item-name"]');
+      const highestBid = document.querySelector('[data-testid="current-highest-bid"]');
+      const bidCount = document.querySelector('[data-testid="bid-count"]');
+      const timeRemaining = document.querySelector('[data-testid="time-remaining"]');
+
+      if (itemName) itemName.textContent = auctionData.name || 'Auction Item';
+      if (highestBid) highestBid.textContent = `${auctionData.highestBid || 0} ${auctionData.currency || 'SOL'}`;
+      if (bidCount) bidCount.textContent = `${auctionData.bidCount || 0} bids`;
+      if (timeRemaining) timeRemaining.textContent = auctionData.timeRemaining || 'Unknown';
+    }
+
+    updateOfferInfo(offerData) {
+      const itemName = document.querySelector('[data-testid="offer-item-name"]');
+      const listedPrice = document.querySelector('[data-testid="listed-price"]');
+
+      if (itemName) itemName.textContent = offerData.name || 'Item';
+      if (listedPrice) listedPrice.textContent = `${offerData.listedPrice || 0} ${offerData.currency || 'SOL'}`;
+    }
+
+    updatePaymentMethod(method) {
+      const currencySelector = document.querySelector('[data-testid="currency-selector"]');
+      if (currencySelector) {
+        currencySelector.value = method;
+      }
+      this.updatePaymentCurrency(method);
+    }
+
+    updatePaymentAmount(amount) {
+      const currency = document.querySelector('[data-testid="currency-selector"]')?.value || 'SOL';
+      const totalAmount = document.querySelector('[data-testid="total-amount"]');
+      
+      if (totalAmount) {
+        totalAmount.textContent = `${amount} ${currency}`;
+      }
+      
+      this.updateUSDEquivalent(amount, currency);
+    }
+
+    updatePaymentCurrency(currency) {
+      const amount = document.querySelector('[data-testid="payment-amount"]')?.value || '0';
+      this.updateUSDEquivalent(amount, currency);
+    }
+
+    updateUSDEquivalent(amount, currency) {
+      const usdEquivalent = document.querySelector('[data-testid="usd-equivalent"]');
+      if (usdEquivalent) {
+        // This would typically call an API to get current exchange rates
+        const usdRate = this.getUSDRate(currency);
+        const usdAmount = parseFloat(amount) * usdRate;
+        usdEquivalent.textContent = `≈ $${usdAmount.toFixed(2)} USD`;
+      }
+    }
+
+    getUSDRate(currency) {
+      // Mock exchange rates - in production, these would come from an API
+      const rates = {
+        'SOL': 100,
+        'USDC': 1,
+        'USDT': 1
+      };
+      return rates[currency] || 1;
+    }
+
+    setMaxAmount() {
+      const currency = document.querySelector('[data-testid="currency-selector"]')?.value || 'SOL';
+      const amountInput = document.querySelector('[data-testid="payment-amount"]');
+      
+      if (amountInput) {
+        const balance = this.getWalletBalance(currency);
+        amountInput.value = balance.toFixed(6);
+        this.updatePaymentAmount(balance.toFixed(6));
+      }
+    }
+
+    getWalletBalance(currency) {
+      if (currency === 'SOL') {
+        return this.walletService.getBalance();
+      }
+      // For SPL tokens, this would typically call an API
+      const tokenBalances = {
+        'USDC': 1000,
+        'USDT': 500
+      };
+      return tokenBalances[currency] || 0;
+    }
+
+    async processPayment() {
+      try {
+        this.showLoading('confirm-payment');
+        
+        const amount = document.querySelector('[data-testid="payment-amount"]')?.value;
+        const currency = document.querySelector('[data-testid="currency-selector"]')?.value || 'SOL';
+        const memo = document.querySelector('[data-testid="payment-memo"]')?.value;
+        const useEscrow = document.querySelector('[data-testid="use-escrow"]')?.checked;
+
+        if (!amount || parseFloat(amount) <= 0) {
+          throw new Error('Please enter a valid amount');
+        }
+
+        const paymentRequest = {
+          amount: parseFloat(amount),
+          currency: currency,
+          recipient: this.currentPayment?.recipient || 'seller-address',
+          memo: memo
+        };
+
+        let response;
+        if (useEscrow) {
+          // Create escrow payment
+          const escrow = await this.paymentProcessor.createEscrowPayment(
+            paymentRequest.amount,
+            paymentRequest.currency,
+            paymentRequest.recipient
+          );
+          
+          response = await this.paymentProcessor.fundEscrow(escrow.escrowAddress);
+        } else {
+          // Direct payment
+          response = await this.paymentProcessor.processPayment(paymentRequest);
+        }
+
+        if (response.success) {
+          this.showPaymentSuccess(response);
+        } else {
+          this.showPaymentError(response.error);
+        }
+
+      } catch (error) {
+        this.showPaymentError(error.message);
+      } finally {
+        this.hideLoading('confirm-payment');
+      }
+    }
+
+    async submitBid() {
+      try {
+        this.showLoading('submit-bid');
+        
+        const amount = document.querySelector('[data-testid="bid-amount"]')?.value;
+        const currency = document.querySelector('[data-testid="bid-currency"]')?.value || 'SOL';
+        const agreeTerms = document.querySelector('[data-testid="agree-terms"]')?.checked;
+
+        if (!amount || parseFloat(amount) <= 0) {
+          throw new Error('Please enter a valid bid amount');
+        }
+
+        if (!agreeTerms) {
+          throw new Error('Please agree to the auction terms');
+        }
+
+        const bid = await this.paymentProcessor.placeAuctionBid(
+          this.currentAuction?.id || 'auction-id',
+          parseFloat(amount),
+          currency
+        );
+
+        this.showBidSuccess(bid);
+
+      } catch (error) {
+        this.showBidError(error.message);
+      } finally {
+        this.hideLoading('submit-bid');
+      }
+    }
+
+    async submitOffer() {
+      try {
+        this.showLoading('submit-offer');
+        
+        const amount = document.querySelector('[data-testid="offer-amount"]')?.value;
+        const currency = document.querySelector('[data-testid="offer-currency"]')?.value || 'SOL';
+        const message = document.querySelector('[data-testid="offer-message"]')?.value;
+        const expiry = document.querySelector('[data-testid="offer-expiry"]')?.value;
+
+        if (!amount || parseFloat(amount) <= 0) {
+          throw new Error('Please enter a valid offer amount');
+        }
+
+        // This would typically call an API to submit the offer
+        const offer = {
+          amount: parseFloat(amount),
+          currency: currency,
+          message: message,
+          expiry: parseInt(expiry),
+          itemId: this.currentOffer?.id
+        };
+
+        this.showOfferSuccess(offer);
+
+      } catch (error) {
+        this.showOfferError(error.message);
+      } finally {
+        this.hideLoading('submit-offer');
+      }
+    }
+
+    showPaymentSuccess(response) {
+      this.closeAllModals();
+      this.showModal('payment-success-modal');
+      
+      const transactionId = document.querySelector('[data-testid="transaction-id"]');
+      const transactionAmount = document.querySelector('[data-testid="transaction-amount"]');
+      const transactionNetwork = document.querySelector('[data-testid="transaction-network"]');
+
+      if (transactionId) transactionId.textContent = response.signature || 'N/A';
+      if (transactionAmount) transactionAmount.textContent = `${response.details?.amount || 0} ${response.details?.currency || 'SOL'}`;
+      if (transactionNetwork) transactionNetwork.textContent = response.details?.network || 'mainnet';
+    }
+
+    showPaymentError(error) {
+      this.closeAllModals();
+      this.showModal('payment-error-modal');
+      
+      const errorMessage = document.querySelector('[data-testid="error-message"]');
+      const errorCode = document.querySelector('[data-testid="error-code"]');
+      const errorMessageDetail = document.querySelector('[data-testid="error-message-detail"]');
+
+      if (errorMessage) errorMessage.textContent = error;
+      if (errorCode) errorCode.textContent = 'PAYMENT_ERROR';
+      if (errorMessageDetail) errorMessageDetail.textContent = error;
+    }
+
+    showBidSuccess(bid) {
+      this.closeAllModals();
+      // Show bid success notification
+      console.log('Bid placed successfully:', bid);
+    }
+
+    showBidError(error) {
+      this.closeAllModals();
+      // Show bid error notification
+      console.error('Bid failed:', error);
+    }
+
+    showOfferSuccess(offer) {
+      this.closeAllModals();
+      // Show offer success notification
+      console.log('Offer submitted successfully:', offer);
+    }
+
+    showOfferError(error) {
+      this.closeAllModals();
+      // Show offer error notification
+      console.error('Offer failed:', error);
+    }
+
+    showLoading(buttonId) {
+      const button = document.querySelector(`[data-testid="${buttonId}"]`);
+      if (button) {
+        const btnText = button.querySelector('.btn-text');
+        const btnLoading = button.querySelector('.btn-loading');
+        
+        if (btnText) btnText.style.display = 'none';
+        if (btnLoading) btnLoading.style.display = 'block';
+        
+        button.disabled = true;
+      }
+    }
+
+    hideLoading(buttonId) {
+      const button = document.querySelector(`[data-testid="${buttonId}"]`);
+      if (button) {
+        const btnText = button.querySelector('.btn-text');
+        const btnLoading = button.querySelector('.btn-loading');
+        
+        if (btnText) btnText.style.display = 'block';
+        if (btnLoading) btnLoading.style.display = 'none';
+        
+        button.disabled = false;
+      }
+    }
+
+    updateWalletInfo(state) {
+      // Update wallet balance displays
+      const solBalance = document.querySelector('[data-testid="sol-balance"]');
+      if (solBalance) {
+        solBalance.textContent = `Balance: ${state.balance.toFixed(2)} SOL`;
+      }
+    }
+
+    updateBidAmount(amount) {
+      const minimumBid = document.querySelector('[data-testid="minimum-bid"]');
+      if (minimumBid) {
+        const minBid = (this.currentAuction?.highestBid || 0) + 0.1;
+        minimumBid.textContent = `Minimum bid: ${minBid} SOL`;
+      }
+    }
+
+    updateOfferAmount(amount) {
+      const offerPercentage = document.querySelector('[data-testid="offer-percentage"]');
+      const yourOffer = document.querySelector('[data-testid="your-offer"]');
+      
+      if (offerPercentage && this.currentOffer?.listedPrice) {
+        const percentage = (parseFloat(amount) / this.currentOffer.listedPrice) * 100;
+        offerPercentage.textContent = `${percentage.toFixed(1)}% of listed price`;
+      }
+      
+      if (yourOffer) {
+        yourOffer.textContent = `${amount} SOL`;
+      }
+    }
+
+    viewTransaction() {
+      const transactionId = document.querySelector('[data-testid="transaction-id"]')?.textContent;
+      if (transactionId) {
+        window.open(`https://explorer.solana.com/tx/${transactionId}`, '_blank');
+      }
+    }
+
+    retryPayment() {
+      this.closeAllModals();
+      this.showPaymentModal(this.currentPayment);
+    }
+  }
+
+  // Export functions for external use
+  window.showPaymentModal = (paymentData) => {
+    const processor = new EnhancedPaymentProcessor();
+    processor.showPaymentModal(paymentData);
+  };
+
+  window.showAuctionBidModal = (auctionData) => {
+    const processor = new EnhancedPaymentProcessor();
+    processor.showAuctionBidModal(auctionData);
+  };
+
+  window.showMakeOfferModal = (offerData) => {
+    const processor = new EnhancedPaymentProcessor();
+    processor.showMakeOfferModal(offerData);
+  };
+
+  // Initialize the payment processor when the component loads
+  document.addEventListener('DOMContentLoaded', () => {
+    new EnhancedPaymentProcessor();
+  });
+</script>

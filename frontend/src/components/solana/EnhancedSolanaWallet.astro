@@ -1,0 +1,1063 @@
+---
+// Enhanced Solana Wallet Component
+// Comprehensive wallet integration with advanced features
+---
+
+<div class="enhanced-solana-wallet" data-testid="enhanced-solana-wallet">
+  <!-- Wallet Connection Status -->
+  <div class="wallet-status" data-testid="wallet-status">
+    <div class="status-indicator" data-testid="status-indicator">
+      <div class="status-dot" data-testid="status-dot"></div>
+      <span class="status-text" data-testid="status-text">Disconnected</span>
+    </div>
+  </div>
+
+  <!-- Wallet Connection Section -->
+  <div class="wallet-connect-section" data-testid="wallet-connect-section">
+    <div class="connect-header">
+      <h2>Connect Your Solana Wallet</h2>
+      <p>Connect to start trading on Soladia</p>
+    </div>
+
+    <!-- Supported Wallets -->
+    <div class="supported-wallets" data-testid="supported-wallets">
+      <div class="wallet-option" data-testid="phantom-option">
+        <div class="wallet-icon">
+          <img src="/images/wallets/phantom.svg" alt="Phantom" />
+        </div>
+        <div class="wallet-info">
+          <h3>Phantom</h3>
+          <p>Most popular Solana wallet</p>
+          <span class="wallet-status-badge" data-testid="phantom-status">Available</span>
+        </div>
+        <button 
+          class="wallet-connect-btn" 
+          data-testid="phantom-connect"
+          data-wallet="phantom"
+        >
+          Connect
+        </button>
+      </div>
+
+      <div class="wallet-option" data-testid="solflare-option">
+        <div class="wallet-icon">
+          <img src="/images/wallets/solflare.svg" alt="Solflare" />
+        </div>
+        <div class="wallet-info">
+          <h3>Solflare</h3>
+          <p>Secure and user-friendly</p>
+          <span class="wallet-status-badge" data-testid="solflare-status">Available</span>
+        </div>
+        <button 
+          class="wallet-connect-btn" 
+          data-testid="solflare-connect"
+          data-wallet="solflare"
+        >
+          Connect
+        </button>
+      </div>
+
+      <div class="wallet-option" data-testid="backpack-option">
+        <div class="wallet-icon">
+          <img src="/images/wallets/backpack.svg" alt="Backpack" />
+        </div>
+        <div class="wallet-info">
+          <h3>Backpack</h3>
+          <p>All-in-one crypto platform</p>
+          <span class="wallet-status-badge" data-testid="backpack-status">Available</span>
+        </div>
+        <button 
+          class="wallet-connect-btn" 
+          data-testid="backpack-connect"
+          data-wallet="backpack"
+        >
+          Connect
+        </button>
+      </div>
+    </div>
+
+    <!-- Wallet Not Found Message -->
+    <div class="wallet-not-found" data-testid="wallet-not-found" style="display: none;">
+      <div class="not-found-icon">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="12" cy="12" r="10"/>
+          <line x1="15" y1="9" x2="9" y2="15"/>
+          <line x1="9" y1="9" x2="15" y2="15"/>
+        </svg>
+      </div>
+      <h3>No Solana Wallet Found</h3>
+      <p>Please install a Solana wallet to continue</p>
+      <div class="wallet-install-links">
+        <a href="https://phantom.app" target="_blank" rel="noopener noreferrer">
+          Install Phantom
+        </a>
+        <a href="https://solflare.com" target="_blank" rel="noopener noreferrer">
+          Install Solflare
+        </a>
+        <a href="https://backpack.app" target="_blank" rel="noopener noreferrer">
+          Install Backpack
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Connected Wallet Section -->
+  <div class="wallet-connected-section" data-testid="wallet-connected-section" style="display: none;">
+    <div class="wallet-header">
+      <div class="wallet-info">
+        <div class="wallet-icon">
+          <img data-testid="connected-wallet-icon" src="" alt="" />
+        </div>
+        <div class="wallet-details">
+          <h3 data-testid="connected-wallet-name">Wallet</h3>
+          <p class="wallet-address" data-testid="wallet-address">0x0000...0000</p>
+        </div>
+      </div>
+      <button class="wallet-disconnect-btn" data-testid="disconnect-wallet">
+        Disconnect
+      </button>
+    </div>
+
+    <!-- Wallet Balance -->
+    <div class="wallet-balance" data-testid="wallet-balance">
+      <div class="balance-main">
+        <span class="balance-amount" data-testid="balance-amount">0.00</span>
+        <span class="balance-currency" data-testid="balance-currency">SOL</span>
+      </div>
+      <div class="balance-usd" data-testid="balance-usd">$0.00</div>
+    </div>
+
+    <!-- Network Information -->
+    <div class="network-info" data-testid="network-info">
+      <div class="network-status">
+        <div class="network-dot" data-testid="network-dot"></div>
+        <span class="network-name" data-testid="network-name">Mainnet</span>
+      </div>
+      <div class="network-switch">
+        <select data-testid="network-selector">
+          <option value="mainnet">Mainnet</option>
+          <option value="devnet">Devnet</option>
+          <option value="testnet">Testnet</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Wallet Actions -->
+    <div class="wallet-actions" data-testid="wallet-actions">
+      <button class="action-btn" data-testid="send-funds-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22,2 15,22 11,13 2,9 22,2"/>
+        </svg>
+        Send
+      </button>
+      <button class="action-btn" data-testid="receive-funds-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="22" y1="2" x2="11" y2="13"/>
+          <polygon points="22,2 15,22 11,13 2,9 22,2"/>
+        </svg>
+        Receive
+      </button>
+      <button class="action-btn" data-testid="view-transactions-btn">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="4" y1="19" x2="4" y2="5"/>
+          <line x1="8" y1="19" x2="8" y2="11"/>
+          <line x1="12" y1="19" x2="12" y2="9"/>
+          <line x1="16" y1="19" x2="16" y2="13"/>
+          <line x1="20" y1="19" x2="20" y2="7"/>
+        </svg>
+        History
+      </button>
+    </div>
+
+    <!-- Token List -->
+    <div class="token-list" data-testid="token-list">
+      <h4>Your Tokens</h4>
+      <div class="tokens" data-testid="tokens">
+        <!-- Tokens will be populated dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading States -->
+  <div class="loading-overlay" data-testid="loading-overlay" style="display: none;">
+    <div class="loading-spinner" data-testid="loading-spinner">
+      <div class="spinner"></div>
+    </div>
+    <p data-testid="loading-text">Connecting wallet...</p>
+  </div>
+
+  <!-- Error Messages -->
+  <div class="error-message" data-testid="error-message" style="display: none;">
+    <div class="error-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="15" y1="9" x2="9" y2="15"/>
+        <line x1="9" y1="9" x2="15" y2="15"/>
+      </svg>
+    </div>
+    <p data-testid="error-text">An error occurred</p>
+    <button class="retry-btn" data-testid="retry-btn">Retry</button>
+  </div>
+
+  <!-- Success Messages -->
+  <div class="success-message" data-testid="success-message" style="display: none;">
+    <div class="success-icon">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <polyline points="20,6 9,17 4,12"/>
+      </svg>
+    </div>
+    <p data-testid="success-text">Wallet connected successfully!</p>
+  </div>
+</div>
+
+<style>
+  .enhanced-solana-wallet {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: var(--soladia-space-6);
+    background: var(--soladia-bg-primary);
+    border-radius: var(--soladia-radius-xl);
+    box-shadow: var(--soladia-shadow-lg);
+    border: 1px solid var(--soladia-border);
+  }
+
+  .wallet-status {
+    margin-bottom: var(--soladia-space-6);
+  }
+
+  .status-indicator {
+    display: flex;
+    align-items: center;
+    gap: var(--soladia-space-2);
+    padding: var(--soladia-space-3) var(--soladia-space-4);
+    background: var(--soladia-bg-secondary);
+    border-radius: var(--soladia-radius-lg);
+    border: 1px solid var(--soladia-border);
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--soladia-error);
+    animation: pulse 2s infinite;
+  }
+
+  .status-dot.connected {
+    background: var(--soladia-success);
+  }
+
+  .status-text {
+    font-size: var(--soladia-text-sm);
+    font-weight: var(--soladia-font-medium);
+    color: var(--soladia-text-secondary);
+  }
+
+  .wallet-connect-section {
+    text-align: center;
+  }
+
+  .connect-header h2 {
+    font-size: var(--soladia-text-2xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin-bottom: var(--soladia-space-2);
+  }
+
+  .connect-header p {
+    color: var(--soladia-text-secondary);
+    margin-bottom: var(--soladia-space-6);
+  }
+
+  .supported-wallets {
+    display: flex;
+    flex-direction: column;
+    gap: var(--soladia-space-4);
+  }
+
+  .wallet-option {
+    display: flex;
+    align-items: center;
+    gap: var(--soladia-space-4);
+    padding: var(--soladia-space-4);
+    background: var(--soladia-bg-secondary);
+    border-radius: var(--soladia-radius-lg);
+    border: 1px solid var(--soladia-border);
+    transition: var(--soladia-transition);
+  }
+
+  .wallet-option:hover {
+    border-color: var(--soladia-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--soladia-shadow-md);
+  }
+
+  .wallet-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: var(--soladia-radius-lg);
+    overflow: hidden;
+    background: var(--soladia-bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .wallet-icon img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+  }
+
+  .wallet-info {
+    flex: 1;
+    text-align: left;
+  }
+
+  .wallet-info h3 {
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin-bottom: var(--soladia-space-1);
+  }
+
+  .wallet-info p {
+    font-size: var(--soladia-text-sm);
+    color: var(--soladia-text-secondary);
+    margin-bottom: var(--soladia-space-2);
+  }
+
+  .wallet-status-badge {
+    display: inline-block;
+    padding: var(--soladia-space-1) var(--soladia-space-2);
+    background: var(--soladia-success);
+    color: white;
+    font-size: var(--soladia-text-xs);
+    font-weight: var(--soladia-font-semibold);
+    border-radius: var(--soladia-radius);
+    text-transform: uppercase;
+  }
+
+  .wallet-status-badge.unavailable {
+    background: var(--soladia-error);
+  }
+
+  .wallet-connect-btn {
+    padding: var(--soladia-space-2) var(--soladia-space-4);
+    background: var(--soladia-gradient-primary);
+    color: white;
+    border: none;
+    border-radius: var(--soladia-radius-lg);
+    font-weight: var(--soladia-font-semibold);
+    cursor: pointer;
+    transition: var(--soladia-transition);
+  }
+
+  .wallet-connect-btn:hover {
+    transform: translateY(-1px);
+    box-shadow: var(--soladia-shadow-primary);
+  }
+
+  .wallet-connect-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .wallet-not-found {
+    text-align: center;
+    padding: var(--soladia-space-8);
+  }
+
+  .not-found-icon {
+    color: var(--soladia-error);
+    margin-bottom: var(--soladia-space-4);
+  }
+
+  .wallet-not-found h3 {
+    font-size: var(--soladia-text-xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin-bottom: var(--soladia-space-2);
+  }
+
+  .wallet-not-found p {
+    color: var(--soladia-text-secondary);
+    margin-bottom: var(--soladia-space-6);
+  }
+
+  .wallet-install-links {
+    display: flex;
+    gap: var(--soladia-space-3);
+    justify-content: center;
+  }
+
+  .wallet-install-links a {
+    padding: var(--soladia-space-2) var(--soladia-space-4);
+    background: var(--soladia-primary);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--soladia-radius-lg);
+    font-weight: var(--soladia-font-semibold);
+    transition: var(--soladia-transition);
+  }
+
+  .wallet-install-links a:hover {
+    background: var(--soladia-primary-600);
+    transform: translateY(-1px);
+  }
+
+  .wallet-connected-section {
+    display: none;
+  }
+
+  .wallet-connected-section.show {
+    display: block;
+  }
+
+  .wallet-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--soladia-space-6);
+  }
+
+  .wallet-info {
+    display: flex;
+    align-items: center;
+    gap: var(--soladia-space-3);
+  }
+
+  .wallet-details h3 {
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin-bottom: var(--soladia-space-1);
+  }
+
+  .wallet-address {
+    font-size: var(--soladia-text-sm);
+    color: var(--soladia-text-secondary);
+    font-family: var(--soladia-font-mono);
+  }
+
+  .wallet-disconnect-btn {
+    padding: var(--soladia-space-2) var(--soladia-space-4);
+    background: var(--soladia-error);
+    color: white;
+    border: none;
+    border-radius: var(--soladia-radius-lg);
+    font-weight: var(--soladia-font-semibold);
+    cursor: pointer;
+    transition: var(--soladia-transition);
+  }
+
+  .wallet-disconnect-btn:hover {
+    background: var(--soladia-error-600);
+    transform: translateY(-1px);
+  }
+
+  .wallet-balance {
+    text-align: center;
+    margin-bottom: var(--soladia-space-6);
+    padding: var(--soladia-space-4);
+    background: var(--soladia-bg-secondary);
+    border-radius: var(--soladia-radius-lg);
+    border: 1px solid var(--soladia-border);
+  }
+
+  .balance-main {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: var(--soladia-space-2);
+    margin-bottom: var(--soladia-space-2);
+  }
+
+  .balance-amount {
+    font-size: var(--soladia-text-3xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+  }
+
+  .balance-currency {
+    font-size: var(--soladia-text-lg);
+    color: var(--soladia-text-secondary);
+  }
+
+  .balance-usd {
+    font-size: var(--soladia-text-sm);
+    color: var(--soladia-text-tertiary);
+  }
+
+  .network-info {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--soladia-space-6);
+    padding: var(--soladia-space-3) var(--soladia-space-4);
+    background: var(--soladia-bg-secondary);
+    border-radius: var(--soladia-radius-lg);
+    border: 1px solid var(--soladia-border);
+  }
+
+  .network-status {
+    display: flex;
+    align-items: center;
+    gap: var(--soladia-space-2);
+  }
+
+  .network-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--soladia-success);
+    animation: pulse 2s infinite;
+  }
+
+  .network-name {
+    font-size: var(--soladia-text-sm);
+    font-weight: var(--soladia-font-medium);
+    color: var(--soladia-text-primary);
+  }
+
+  .network-switch select {
+    padding: var(--soladia-space-2) var(--soladia-space-3);
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius);
+    font-size: var(--soladia-text-sm);
+    color: var(--soladia-text-primary);
+  }
+
+  .wallet-actions {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--soladia-space-3);
+    margin-bottom: var(--soladia-space-6);
+  }
+
+  .action-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--soladia-space-2);
+    padding: var(--soladia-space-3);
+    background: var(--soladia-bg-secondary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    color: var(--soladia-text-primary);
+    cursor: pointer;
+    transition: var(--soladia-transition);
+  }
+
+  .action-btn:hover {
+    border-color: var(--soladia-primary);
+    transform: translateY(-2px);
+    box-shadow: var(--soladia-shadow-md);
+  }
+
+  .token-list h4 {
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin-bottom: var(--soladia-space-4);
+  }
+
+  .tokens {
+    display: flex;
+    flex-direction: column;
+    gap: var(--soladia-space-2);
+  }
+
+  .token-item {
+    display: flex;
+    align-items: center;
+    gap: var(--soladia-space-3);
+    padding: var(--soladia-space-3);
+    background: var(--soladia-bg-secondary);
+    border-radius: var(--soladia-radius-lg);
+    border: 1px solid var(--soladia-border);
+  }
+
+  .token-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: var(--soladia-bg-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .token-info {
+    flex: 1;
+  }
+
+  .token-symbol {
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+  }
+
+  .token-balance {
+    font-size: var(--soladia-text-sm);
+    color: var(--soladia-text-secondary);
+  }
+
+  .loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--soladia-radius-xl);
+  }
+
+  .loading-spinner {
+    margin-bottom: var(--soladia-space-4);
+  }
+
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid var(--soladia-border);
+    border-top: 4px solid var(--soladia-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
+
+  .error-message,
+  .success-message {
+    display: flex;
+    align-items: center;
+    gap: var(--soladia-space-3);
+    padding: var(--soladia-space-4);
+    border-radius: var(--soladia-radius-lg);
+    margin-bottom: var(--soladia-space-4);
+  }
+
+  .error-message {
+    background: var(--soladia-error-50);
+    border: 1px solid var(--soladia-error-200);
+    color: var(--soladia-error-700);
+  }
+
+  .success-message {
+    background: var(--soladia-success-50);
+    border: 1px solid var(--soladia-success-200);
+    color: var(--soladia-success-700);
+  }
+
+  .retry-btn {
+    padding: var(--soladia-space-2) var(--soladia-space-4);
+    background: var(--soladia-primary);
+    color: white;
+    border: none;
+    border-radius: var(--soladia-radius);
+    font-weight: var(--soladia-font-semibold);
+    cursor: pointer;
+    transition: var(--soladia-transition);
+  }
+
+  .retry-btn:hover {
+    background: var(--soladia-primary-600);
+  }
+
+  @keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+  }
+
+  /* Dark mode styles */
+  [data-theme="dark"] .enhanced-solana-wallet {
+    background: var(--soladia-bg-primary);
+    border-color: var(--soladia-border);
+  }
+
+  [data-theme="dark"] .wallet-option {
+    background: var(--soladia-bg-secondary);
+    border-color: var(--soladia-border);
+  }
+
+  [data-theme="dark"] .wallet-option:hover {
+    border-color: var(--soladia-primary);
+  }
+
+  [data-theme="dark"] .loading-overlay {
+    background: rgba(0, 0, 0, 0.9);
+  }
+
+  /* Responsive design */
+  @media (max-width: 640px) {
+    .enhanced-solana-wallet {
+      margin: var(--soladia-space-4);
+      padding: var(--soladia-space-4);
+    }
+
+    .wallet-actions {
+      grid-template-columns: 1fr;
+    }
+
+    .wallet-install-links {
+      flex-direction: column;
+    }
+  }
+</style>
+
+<script>
+  import { enhancedWalletService } from '../../services/enhanced-wallet-service';
+  import { enhancedPaymentProcessor } from '../../services/enhanced-payment-processor';
+
+  class EnhancedSolanaWallet {
+    constructor() {
+      this.walletService = enhancedWalletService;
+      this.paymentProcessor = enhancedPaymentProcessor;
+      this.isConnected = false;
+      this.currentWallet = null;
+      this.tokens = [];
+      
+      this.init();
+    }
+
+    init() {
+      this.setupEventListeners();
+      this.checkWalletStatus();
+      this.setupWalletDetection();
+    }
+
+    setupEventListeners() {
+      // Wallet connection buttons
+      document.querySelectorAll('[data-wallet]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const walletType = e.target.dataset.wallet;
+          this.connectWallet(walletType);
+        });
+      });
+
+      // Disconnect button
+      document.querySelector('[data-testid="disconnect-wallet"]')?.addEventListener('click', () => {
+        this.disconnectWallet();
+      });
+
+      // Network selector
+      document.querySelector('[data-testid="network-selector"]')?.addEventListener('change', (e) => {
+        this.switchNetwork(e.target.value);
+      });
+
+      // Action buttons
+      document.querySelector('[data-testid="send-funds-btn"]')?.addEventListener('click', () => {
+        this.showSendModal();
+      });
+
+      document.querySelector('[data-testid="receive-funds-btn"]')?.addEventListener('click', () => {
+        this.showReceiveModal();
+      });
+
+      document.querySelector('[data-testid="view-transactions-btn"]')?.addEventListener('click', () => {
+        this.showTransactionHistory();
+      });
+
+      // Retry button
+      document.querySelector('[data-testid="retry-btn"]')?.addEventListener('click', () => {
+        this.retryConnection();
+      });
+
+      // Listen to wallet service state changes
+      this.walletService.addListener((state) => {
+        this.updateWalletState(state);
+      });
+    }
+
+    setupWalletDetection() {
+      // Check for wallet availability
+      const wallets = [
+        { name: 'phantom', object: window.solana },
+        { name: 'solflare', object: window.solflare },
+        { name: 'backpack', object: window.backpack }
+      ];
+
+      wallets.forEach(wallet => {
+        const option = document.querySelector(`[data-testid="${wallet.name}-option"]`);
+        const status = document.querySelector(`[data-testid="${wallet.name}-status"]`);
+        
+        if (wallet.object) {
+          status.textContent = 'Available';
+          status.classList.remove('unavailable');
+        } else {
+          status.textContent = 'Not Installed';
+          status.classList.add('unavailable');
+          option.querySelector('button').disabled = true;
+        }
+      });
+
+      // Show wallet not found message if no wallets available
+      const hasWallets = wallets.some(wallet => wallet.object);
+      if (!hasWallets) {
+        this.showWalletNotFound();
+      }
+    }
+
+    async connectWallet(walletType) {
+      try {
+        this.showLoading('Connecting wallet...');
+        
+        const connection = await this.walletService.connectWallet(walletType);
+        
+        this.currentWallet = walletType;
+        this.isConnected = true;
+        
+        this.updateUI();
+        this.loadWalletData();
+        this.showSuccess('Wallet connected successfully!');
+        
+      } catch (error) {
+        this.showError(error.message);
+      } finally {
+        this.hideLoading();
+      }
+    }
+
+    async disconnectWallet() {
+      try {
+        this.showLoading('Disconnecting wallet...');
+        
+        await this.walletService.disconnectWallet();
+        
+        this.currentWallet = null;
+        this.isConnected = false;
+        
+        this.updateUI();
+        this.showSuccess('Wallet disconnected successfully!');
+        
+      } catch (error) {
+        this.showError(error.message);
+      } finally {
+        this.hideLoading();
+      }
+    }
+
+    async switchNetwork(network) {
+      try {
+        this.showLoading('Switching network...');
+        
+        await this.walletService.switchNetwork(network);
+        
+        this.updateUI();
+        this.showSuccess(`Switched to ${network}`);
+        
+      } catch (error) {
+        this.showError(error.message);
+      } finally {
+        this.hideLoading();
+      }
+    }
+
+    async loadWalletData() {
+      try {
+        // Load wallet balance
+        await this.walletService.refreshWalletState();
+        
+        // Load tokens
+        await this.loadTokens();
+        
+      } catch (error) {
+        console.warn('Failed to load wallet data:', error);
+      }
+    }
+
+    async loadTokens() {
+      try {
+        // This would typically call an API to get user tokens
+        // For now, we'll use mock data
+        const mockTokens = [
+          { symbol: 'SOL', balance: 2.5, icon: '/images/tokens/sol.svg' },
+          { symbol: 'USDC', balance: 1000, icon: '/images/tokens/usdc.svg' },
+          { symbol: 'USDT', balance: 500, icon: '/images/tokens/usdt.svg' }
+        ];
+        
+        this.tokens = mockTokens;
+        this.renderTokens();
+        
+      } catch (error) {
+        console.warn('Failed to load tokens:', error);
+      }
+    }
+
+    renderTokens() {
+      const tokensContainer = document.querySelector('[data-testid="tokens"]');
+      if (!tokensContainer) return;
+      
+      tokensContainer.innerHTML = this.tokens.map(token => `
+        <div class="token-item">
+          <div class="token-icon">
+            <img src="${token.icon}" alt="${token.symbol}" />
+          </div>
+          <div class="token-info">
+            <div class="token-symbol">${token.symbol}</div>
+            <div class="token-balance">${token.balance}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    updateWalletState(state) {
+      this.isConnected = state.connected;
+      this.currentWallet = state.walletType;
+      
+      this.updateUI();
+    }
+
+    updateUI() {
+      const connectSection = document.querySelector('[data-testid="wallet-connect-section"]');
+      const connectedSection = document.querySelector('[data-testid="wallet-connected-section"]');
+      const statusDot = document.querySelector('[data-testid="status-dot"]');
+      const statusText = document.querySelector('[data-testid="status-text"]');
+      
+      if (this.isConnected) {
+        connectSection.style.display = 'none';
+        connectedSection.style.display = 'block';
+        connectedSection.classList.add('show');
+        
+        statusDot.classList.add('connected');
+        statusText.textContent = 'Connected';
+        
+        // Update wallet info
+        const walletName = document.querySelector('[data-testid="connected-wallet-name"]');
+        const walletAddress = document.querySelector('[data-testid="wallet-address"]');
+        const walletIcon = document.querySelector('[data-testid="connected-wallet-icon"]');
+        const balanceAmount = document.querySelector('[data-testid="balance-amount"]');
+        const networkName = document.querySelector('[data-testid="network-name"]');
+        
+        if (walletName) walletName.textContent = this.currentWallet?.charAt(0).toUpperCase() + this.currentWallet?.slice(1);
+        if (walletAddress) walletAddress.textContent = this.walletService.getAddress()?.slice(0, 8) + '...' + this.walletService.getAddress()?.slice(-8);
+        if (walletIcon) walletIcon.src = `/images/wallets/${this.currentWallet}.svg`;
+        if (balanceAmount) balanceAmount.textContent = this.walletService.getBalance().toFixed(2);
+        if (networkName) networkName.textContent = this.walletService.getNetwork();
+        
+      } else {
+        connectSection.style.display = 'block';
+        connectedSection.style.display = 'none';
+        connectedSection.classList.remove('show');
+        
+        statusDot.classList.remove('connected');
+        statusText.textContent = 'Disconnected';
+      }
+    }
+
+    checkWalletStatus() {
+      if (this.walletService.isConnected()) {
+        this.isConnected = true;
+        this.currentWallet = this.walletService.getWalletType();
+        this.updateUI();
+        this.loadWalletData();
+      }
+    }
+
+    showWalletNotFound() {
+      const walletNotFound = document.querySelector('[data-testid="wallet-not-found"]');
+      const supportedWallets = document.querySelector('[data-testid="supported-wallets"]');
+      
+      if (walletNotFound && supportedWallets) {
+        supportedWallets.style.display = 'none';
+        walletNotFound.style.display = 'block';
+      }
+    }
+
+    showLoading(text) {
+      const loadingOverlay = document.querySelector('[data-testid="loading-overlay"]');
+      const loadingText = document.querySelector('[data-testid="loading-text"]');
+      
+      if (loadingOverlay) {
+        loadingOverlay.style.display = 'flex';
+        if (loadingText) loadingText.textContent = text;
+      }
+    }
+
+    hideLoading() {
+      const loadingOverlay = document.querySelector('[data-testid="loading-overlay"]');
+      if (loadingOverlay) {
+        loadingOverlay.style.display = 'none';
+      }
+    }
+
+    showError(message) {
+      const errorMessage = document.querySelector('[data-testid="error-message"]');
+      const errorText = document.querySelector('[data-testid="error-text"]');
+      
+      if (errorMessage) {
+        errorMessage.style.display = 'flex';
+        if (errorText) errorText.textContent = message;
+      }
+      
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        this.hideError();
+      }, 5000);
+    }
+
+    hideError() {
+      const errorMessage = document.querySelector('[data-testid="error-message"]');
+      if (errorMessage) {
+        errorMessage.style.display = 'none';
+      }
+    }
+
+    showSuccess(message) {
+      const successMessage = document.querySelector('[data-testid="success-message"]');
+      const successText = document.querySelector('[data-testid="success-text"]');
+      
+      if (successMessage) {
+        successMessage.style.display = 'flex';
+        if (successText) successText.textContent = message;
+      }
+      
+      // Auto-hide after 3 seconds
+      setTimeout(() => {
+        this.hideSuccess();
+      }, 3000);
+    }
+
+    hideSuccess() {
+      const successMessage = document.querySelector('[data-testid="success-message"]');
+      if (successMessage) {
+        successMessage.style.display = 'none';
+      }
+    }
+
+    retryConnection() {
+      this.hideError();
+      this.checkWalletStatus();
+    }
+
+    showSendModal() {
+      // This would open a send funds modal
+      console.log('Show send modal');
+    }
+
+    showReceiveModal() {
+      // This would open a receive funds modal
+      console.log('Show receive modal');
+    }
+
+    showTransactionHistory() {
+      // This would open transaction history
+      console.log('Show transaction history');
+    }
+  }
+
+  // Initialize the enhanced wallet when the component loads
+  document.addEventListener('DOMContentLoaded', () => {
+    new EnhancedSolanaWallet();
+  });
+</script>

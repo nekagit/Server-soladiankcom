@@ -1,0 +1,1451 @@
+---
+// Enhanced Social Features Component
+// Comprehensive social marketplace with community features
+---
+
+<div class="enhanced-social-features" data-testid="enhanced-social-features">
+  <!-- Social Header -->
+  <div class="social-header">
+    <h1>Soladia Community</h1>
+    <p class="header-subtitle">Connect, share, and discover with fellow Solana enthusiasts</p>
+    <div class="header-stats">
+      <div class="stat-item" data-testid="community-members">
+        <span class="stat-number">12,847</span>
+        <span class="stat-label">Community Members</span>
+      </div>
+      <div class="stat-item" data-testid="active-users">
+        <span class="stat-number">3,429</span>
+        <span class="stat-label">Active Today</span>
+      </div>
+      <div class="stat-item" data-testid="nfts-shared">
+        <span class="stat-number">45,231</span>
+        <span class="stat-label">NFTs Shared</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Social Navigation -->
+  <div class="social-nav" data-testid="social-nav">
+    <div class="nav-tabs">
+      <button class="nav-tab active" data-testid="nav-feed" data-tab="feed">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 3h18v18H3z"/>
+          <path d="M9 9h6v6H9z"/>
+        </svg>
+        Feed
+      </button>
+      <button class="nav-tab" data-testid="nav-discover" data-tab="discover">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="M21 21l-4.35-4.35"/>
+        </svg>
+        Discover
+      </button>
+      <button class="nav-tab" data-testid="nav-following" data-tab="following">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="8.5" cy="7" r="4"/>
+          <path d="M20 8v6"/>
+          <path d="M23 11h-6"/>
+        </svg>
+        Following
+      </button>
+      <button class="nav-tab" data-testid="nav-profile" data-tab="profile">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        Profile
+      </button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="social-content">
+    <!-- Feed Tab -->
+    <div class="tab-content active" data-testid="feed-content" data-tab="feed">
+      <div class="feed-container">
+        <!-- Create Post -->
+        <div class="create-post" data-testid="create-post">
+          <div class="post-header">
+            <img src="/images/avatars/user-avatar.jpg" alt="User Avatar" class="user-avatar">
+            <div class="post-input-container">
+              <textarea 
+                class="post-input" 
+                placeholder="What's happening in the Solana ecosystem?"
+                data-testid="post-input"
+              ></textarea>
+              <div class="post-actions">
+                <div class="post-options">
+                  <button class="post-option" data-testid="add-image" title="Add Image">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                      <circle cx="8.5" cy="8.5" r="1.5"/>
+                      <polyline points="21,15 16,10 5,21"/>
+                    </svg>
+                  </button>
+                  <button class="post-option" data-testid="add-nft" title="Add NFT">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                      <circle cx="8.5" cy="8.5" r="1.5"/>
+                      <polyline points="21,15 16,10 5,21"/>
+                    </svg>
+                  </button>
+                  <button class="post-option" data-testid="add-poll" title="Add Poll">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M9 19c-5 0-6-3-6-3s1-3 6-3 6 3 6 3-1 3-6 3z"/>
+                      <path d="M15 13v6"/>
+                      <path d="M21 13v6"/>
+                    </svg>
+                  </button>
+                </div>
+                <button class="btn btn-primary post-submit" data-testid="post-submit">Post</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Feed Posts -->
+        <div class="feed-posts" data-testid="feed-posts">
+          <!-- Post 1 -->
+          <div class="post-item" data-testid="post-1">
+            <div class="post-header">
+              <img src="/images/avatars/user1.jpg" alt="User 1" class="user-avatar">
+              <div class="user-info">
+                <span class="username">@solana_enthusiast</span>
+                <span class="post-time">2 hours ago</span>
+              </div>
+              <button class="post-menu" data-testid="post-menu-1">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="1"/>
+                  <circle cx="19" cy="12" r="1"/>
+                  <circle cx="5" cy="12" r="1"/>
+                </svg>
+              </button>
+            </div>
+            <div class="post-content">
+              <p>Just discovered this amazing NFT collection! The art is incredible and the community is so welcoming. What do you think? 🚀</p>
+              <div class="post-nft">
+                <img src="/images/nfts/nft-1.jpg" alt="NFT" class="nft-image">
+                <div class="nft-info">
+                  <h4>Solana Punk #001</h4>
+                  <p>2.5 SOL • Solana Punks</p>
+                </div>
+              </div>
+            </div>
+            <div class="post-actions">
+              <button class="action-btn like" data-testid="like-post-1">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+                <span>24</span>
+              </button>
+              <button class="action-btn comment" data-testid="comment-post-1">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                <span>8</span>
+              </button>
+              <button class="action-btn share" data-testid="share-post-1">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                  <polyline points="16,6 12,2 8,6"/>
+                  <line x1="12" y1="2" x2="12" y2="15"/>
+                </svg>
+                <span>Share</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Post 2 -->
+          <div class="post-item" data-testid="post-2">
+            <div class="post-header">
+              <img src="/images/avatars/user2.jpg" alt="User 2" class="user-avatar">
+              <div class="user-info">
+                <span class="username">@nft_collector</span>
+                <span class="post-time">4 hours ago</span>
+              </div>
+              <button class="post-menu" data-testid="post-menu-2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="1"/>
+                  <circle cx="19" cy="12" r="1"/>
+                  <circle cx="5" cy="12" r="1"/>
+                </svg>
+              </button>
+            </div>
+            <div class="post-content">
+              <p>Excited to announce my new NFT collection launch! 🎨✨</p>
+              <div class="post-images">
+                <img src="/images/nfts/nft-2.jpg" alt="NFT 1" class="post-image">
+                <img src="/images/nfts/nft-3.jpg" alt="NFT 2" class="post-image">
+                <img src="/images/nfts/nft-4.jpg" alt="NFT 3" class="post-image">
+              </div>
+            </div>
+            <div class="post-actions">
+              <button class="action-btn like" data-testid="like-post-2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+                <span>156</span>
+              </button>
+              <button class="action-btn comment" data-testid="comment-post-2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                <span>23</span>
+              </button>
+              <button class="action-btn share" data-testid="share-post-2">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                  <polyline points="16,6 12,2 8,6"/>
+                  <line x1="12" y1="2" x2="12" y2="15"/>
+                </svg>
+                <span>Share</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Post 3 -->
+          <div class="post-item" data-testid="post-3">
+            <div class="post-header">
+              <img src="/images/avatars/user3.jpg" alt="User 3" class="user-avatar">
+              <div class="user-info">
+                <span class="username">@defi_trader</span>
+                <span class="post-time">6 hours ago</span>
+              </div>
+              <button class="post-menu" data-testid="post-menu-3">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="1"/>
+                  <circle cx="19" cy="12" r="1"/>
+                  <circle cx="5" cy="12" r="1"/>
+                </svg>
+              </button>
+            </div>
+            <div class="post-content">
+              <p>Market analysis: Solana NFT volume is up 40% this week! 📈</p>
+              <div class="post-chart">
+                <canvas id="market-chart" width="400" height="200"></canvas>
+              </div>
+            </div>
+            <div class="post-actions">
+              <button class="action-btn like" data-testid="like-post-3">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                </svg>
+                <span>89</span>
+              </button>
+              <button class="action-btn comment" data-testid="comment-post-3">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                </svg>
+                <span>15</span>
+              </button>
+              <button class="action-btn share" data-testid="share-post-3">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                  <polyline points="16,6 12,2 8,6"/>
+                  <line x1="12" y1="2" x2="12" y2="15"/>
+                </svg>
+                <span>Share</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Discover Tab -->
+    <div class="tab-content" data-testid="discover-content" data-tab="discover">
+      <div class="discover-container">
+        <div class="discover-filters">
+          <div class="filter-group">
+            <label>Category</label>
+            <select class="filter-select" data-testid="category-filter">
+              <option value="all">All Categories</option>
+              <option value="art">Digital Art</option>
+              <option value="gaming">Gaming</option>
+              <option value="music">Music</option>
+              <option value="sports">Sports</option>
+            </select>
+          </div>
+          <div class="filter-group">
+            <label>Sort By</label>
+            <select class="filter-select" data-testid="sort-filter">
+              <option value="trending">Trending</option>
+              <option value="recent">Recent</option>
+              <option value="popular">Most Popular</option>
+              <option value="price">Price</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="discover-grid" data-testid="discover-grid">
+          <div class="discover-item" data-testid="discover-item-1">
+            <img src="/images/nfts/nft-1.jpg" alt="NFT" class="discover-image">
+            <div class="discover-info">
+              <h4>Solana Punk #001</h4>
+              <p>2.5 SOL • Solana Punks</p>
+              <div class="discover-stats">
+                <span class="stat">👀 1.2k</span>
+                <span class="stat">❤️ 89</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="discover-item" data-testid="discover-item-2">
+            <img src="/images/nfts/nft-2.jpg" alt="NFT" class="discover-image">
+            <div class="discover-info">
+              <h4>Digital Art #042</h4>
+              <p>1.8 SOL • Digital Artists</p>
+              <div class="discover-stats">
+                <span class="stat">👀 856</span>
+                <span class="stat">❤️ 45</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="discover-item" data-testid="discover-item-3">
+            <img src="/images/nfts/nft-3.jpg" alt="NFT" class="discover-image">
+            <div class="discover-info">
+              <h4>Crypto Cat #1337</h4>
+              <p>5.0 SOL • Crypto Cats</p>
+              <div class="discover-stats">
+                <span class="stat">👀 2.1k</span>
+                <span class="stat">❤️ 156</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Following Tab -->
+    <div class="tab-content" data-testid="following-content" data-tab="following">
+      <div class="following-container">
+        <div class="following-header">
+          <h3>People You Follow</h3>
+          <button class="btn btn-outline" data-testid="manage-following">Manage</button>
+        </div>
+
+        <div class="following-list" data-testid="following-list">
+          <div class="following-item" data-testid="following-item-1">
+            <img src="/images/avatars/user1.jpg" alt="User" class="user-avatar">
+            <div class="user-info">
+              <span class="username">@solana_enthusiast</span>
+              <span class="user-bio">NFT collector and Solana enthusiast</span>
+            </div>
+            <button class="btn btn-secondary unfollow-btn" data-testid="unfollow-1">Unfollow</button>
+          </div>
+
+          <div class="following-item" data-testid="following-item-2">
+            <img src="/images/avatars/user2.jpg" alt="User" class="user-avatar">
+            <div class="user-info">
+              <span class="username">@nft_collector</span>
+              <span class="user-bio">Digital artist and NFT creator</span>
+            </div>
+            <button class="btn btn-secondary unfollow-btn" data-testid="unfollow-2">Unfollow</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profile Tab -->
+    <div class="tab-content" data-testid="profile-content" data-tab="profile">
+      <div class="profile-container">
+        <div class="profile-header">
+          <img src="/images/avatars/user-avatar.jpg" alt="Profile" class="profile-avatar">
+          <div class="profile-info">
+            <h2>@your_username</h2>
+            <p class="profile-bio">Solana enthusiast and NFT collector</p>
+            <div class="profile-stats">
+              <div class="stat">
+                <span class="stat-number">156</span>
+                <span class="stat-label">Following</span>
+              </div>
+              <div class="stat">
+                <span class="stat-number">2.3k</span>
+                <span class="stat-label">Followers</span>
+              </div>
+              <div class="stat">
+                <span class="stat-number">89</span>
+                <span class="stat-label">Posts</span>
+              </div>
+            </div>
+          </div>
+          <button class="btn btn-primary edit-profile" data-testid="edit-profile">Edit Profile</button>
+        </div>
+
+        <div class="profile-content">
+          <div class="profile-tabs">
+            <button class="profile-tab active" data-testid="profile-posts" data-tab="posts">Posts</button>
+            <button class="profile-tab" data-testid="profile-nfts" data-tab="nfts">NFTs</button>
+            <button class="profile-tab" data-testid="profile-liked" data-tab="liked">Liked</button>
+          </div>
+
+          <div class="profile-posts" data-testid="profile-posts-content">
+            <!-- User's posts would be displayed here -->
+            <p>Your posts will appear here</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .enhanced-social-features {
+    padding: var(--soladia-space-6);
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--soladia-bg-primary);
+  }
+
+  .social-header {
+    text-align: center;
+    margin-bottom: var(--soladia-space-8);
+  }
+
+  .social-header h1 {
+    font-size: var(--soladia-text-4xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--soladia-space-4) 0;
+  }
+
+  .header-subtitle {
+    font-size: var(--soladia-text-xl);
+    color: var(--soladia-text-secondary);
+    margin: 0 0 var(--soladia-space-8) 0;
+  }
+
+  .header-stats {
+    display: flex;
+    justify-content: center;
+    gap: var(--soladia-space-8);
+    flex-wrap: wrap;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-number {
+    display: block;
+    font-size: var(--soladia-text-2xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+  }
+
+  .stat-label {
+    font-size: var(--soladia-text-sm);
+    color: var(--soladia-text-secondary);
+  }
+
+  .social-nav {
+    margin-bottom: var(--soladia-space-8);
+  }
+
+  .nav-tabs {
+    display: flex;
+    background: var(--soladia-bg-secondary);
+    border-radius: var(--soladia-radius-xl);
+    padding: var(--soladia-space-1);
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .nav-tab {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--soladia-space-2);
+    padding: var(--soladia-space-3) var(--soladia-space-4);
+    background: none;
+    border: none;
+    border-radius: var(--soladia-radius-lg);
+    color: var(--soladia-text-secondary);
+    cursor: pointer;
+    transition: var(--soladia-transition);
+    font-weight: var(--soladia-font-semibold);
+  }
+
+  .nav-tab.active {
+    background: var(--soladia-primary);
+    color: white;
+  }
+
+  .nav-tab:hover:not(.active) {
+    color: var(--soladia-text-primary);
+    background: var(--soladia-bg-primary);
+  }
+
+  .social-content {
+    position: relative;
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  .feed-container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .create-post {
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-xl);
+    padding: var(--soladia-space-6);
+    margin-bottom: var(--soladia-space-6);
+    box-shadow: var(--soladia-shadow-lg);
+  }
+
+  .post-header {
+    display: flex;
+    gap: var(--soladia-space-4);
+    margin-bottom: var(--soladia-space-4);
+  }
+
+  .user-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .post-input-container {
+    flex: 1;
+  }
+
+  .post-input {
+    width: 100%;
+    min-height: 100px;
+    padding: var(--soladia-space-4);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    background: var(--soladia-bg-primary);
+    color: var(--soladia-text-primary);
+    font-family: var(--soladia-font-primary);
+    resize: vertical;
+    margin-bottom: var(--soladia-space-4);
+  }
+
+  .post-input:focus {
+    outline: none;
+    border-color: var(--soladia-primary);
+  }
+
+  .post-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .post-options {
+    display: flex;
+    gap: var(--soladia-space-2);
+  }
+
+  .post-option {
+    background: none;
+    border: none;
+    color: var(--soladia-text-secondary);
+    cursor: pointer;
+    padding: var(--soladia-space-2);
+    border-radius: var(--soladia-radius);
+    transition: var(--soladia-transition);
+  }
+
+  .post-option:hover {
+    color: var(--soladia-primary);
+    background: var(--soladia-primary-50);
+  }
+
+  .post-submit {
+    padding: var(--soladia-space-2) var(--soladia-space-6);
+  }
+
+  .feed-posts {
+    display: flex;
+    flex-direction: column;
+    gap: var(--soladia-space-6);
+  }
+
+  .post-item {
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-xl);
+    padding: var(--soladia-space-6);
+    box-shadow: var(--soladia-shadow-lg);
+  }
+
+  .post-item .post-header {
+    margin-bottom: var(--soladia-space-4);
+  }
+
+  .user-info {
+    flex: 1;
+  }
+
+  .username {
+    display: block;
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+  }
+
+  .post-time {
+    font-size: var(--soladia-text-sm);
+    color: var(--soladia-text-tertiary);
+  }
+
+  .post-menu {
+    background: none;
+    border: none;
+    color: var(--soladia-text-tertiary);
+    cursor: pointer;
+    padding: var(--soladia-space-2);
+    border-radius: var(--soladia-radius);
+    transition: var(--soladia-transition);
+  }
+
+  .post-menu:hover {
+    color: var(--soladia-text-primary);
+    background: var(--soladia-bg-secondary);
+  }
+
+  .post-content {
+    margin-bottom: var(--soladia-space-4);
+  }
+
+  .post-content p {
+    color: var(--soladia-text-primary);
+    line-height: 1.6;
+    margin: 0 0 var(--soladia-space-4) 0;
+  }
+
+  .post-nft {
+    display: flex;
+    gap: var(--soladia-space-4);
+    padding: var(--soladia-space-4);
+    background: var(--soladia-bg-secondary);
+    border-radius: var(--soladia-radius-lg);
+    border: 1px solid var(--soladia-border);
+  }
+
+  .post-nft .nft-image {
+    width: 80px;
+    height: 80px;
+    border-radius: var(--soladia-radius-lg);
+    object-fit: cover;
+  }
+
+  .nft-info h4 {
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--soladia-space-1) 0;
+  }
+
+  .nft-info p {
+    color: var(--soladia-text-secondary);
+    margin: 0;
+  }
+
+  .post-images {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: var(--soladia-space-2);
+  }
+
+  .post-image {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: var(--soladia-radius-lg);
+  }
+
+  .post-chart {
+    background: var(--soladia-bg-secondary);
+    border-radius: var(--soladia-radius-lg);
+    padding: var(--soladia-space-4);
+    margin-top: var(--soladia-space-4);
+  }
+
+  .post-actions {
+    display: flex;
+    gap: var(--soladia-space-6);
+  }
+
+  .action-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--soladia-space-2);
+    background: none;
+    border: none;
+    color: var(--soladia-text-secondary);
+    cursor: pointer;
+    padding: var(--soladia-space-2);
+    border-radius: var(--soladia-radius);
+    transition: var(--soladia-transition);
+    font-weight: var(--soladia-font-medium);
+  }
+
+  .action-btn:hover {
+    color: var(--soladia-primary);
+    background: var(--soladia-primary-50);
+  }
+
+  .action-btn.liked {
+    color: var(--soladia-error);
+  }
+
+  .discover-container {
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  .discover-filters {
+    display: flex;
+    gap: var(--soladia-space-4);
+    margin-bottom: var(--soladia-space-8);
+    flex-wrap: wrap;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--soladia-space-2);
+  }
+
+  .filter-group label {
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+  }
+
+  .filter-select {
+    padding: var(--soladia-space-2) var(--soladia-space-4);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    background: var(--soladia-bg-primary);
+    color: var(--soladia-text-primary);
+  }
+
+  .discover-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: var(--soladia-space-6);
+  }
+
+  .discover-item {
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-xl);
+    overflow: hidden;
+    transition: var(--soladia-transition);
+    cursor: pointer;
+  }
+
+  .discover-item:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--soladia-shadow-xl);
+  }
+
+  .discover-image {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+
+  .discover-info {
+    padding: var(--soladia-space-4);
+  }
+
+  .discover-info h4 {
+    font-size: var(--soladia-text-lg);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--soladia-space-2) 0;
+  }
+
+  .discover-info p {
+    color: var(--soladia-text-secondary);
+    margin: 0 0 var(--soladia-space-3) 0;
+  }
+
+  .discover-stats {
+    display: flex;
+    gap: var(--soladia-space-4);
+  }
+
+  .discover-stats .stat {
+    font-size: var(--soladia-text-sm);
+    color: var(--soladia-text-tertiary);
+  }
+
+  .following-container {
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .following-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--soladia-space-6);
+  }
+
+  .following-header h3 {
+    font-size: var(--soladia-text-xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0;
+  }
+
+  .following-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--soladia-space-4);
+  }
+
+  .following-item {
+    display: flex;
+    align-items: center;
+    gap: var(--soladia-space-4);
+    padding: var(--soladia-space-4);
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-xl);
+  }
+
+  .following-item .user-info {
+    flex: 1;
+  }
+
+  .user-bio {
+    display: block;
+    font-size: var(--soladia-text-sm);
+    color: var(--soladia-text-secondary);
+    margin-top: var(--soladia-space-1);
+  }
+
+  .unfollow-btn {
+    padding: var(--soladia-space-2) var(--soladia-space-4);
+  }
+
+  .profile-container {
+    max-width: 800px;
+    margin: 0 auto;
+  }
+
+  .profile-header {
+    display: flex;
+    gap: var(--soladia-space-6);
+    margin-bottom: var(--soladia-space-8);
+    align-items: flex-start;
+  }
+
+  .profile-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .profile-info {
+    flex: 1;
+  }
+
+  .profile-info h2 {
+    font-size: var(--soladia-text-2xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--soladia-space-2) 0;
+  }
+
+  .profile-bio {
+    color: var(--soladia-text-secondary);
+    margin: 0 0 var(--soladia-space-4) 0;
+  }
+
+  .profile-stats {
+    display: flex;
+    gap: var(--soladia-space-6);
+  }
+
+  .profile-stats .stat {
+    text-align: center;
+  }
+
+  .profile-stats .stat-number {
+    display: block;
+    font-size: var(--soladia-text-xl);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+  }
+
+  .profile-stats .stat-label {
+    font-size: var(--soladia-text-sm);
+    color: var(--soladia-text-secondary);
+  }
+
+  .edit-profile {
+    padding: var(--soladia-space-3) var(--soladia-space-6);
+  }
+
+  .profile-content {
+    background: var(--soladia-bg-primary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-xl);
+    overflow: hidden;
+  }
+
+  .profile-tabs {
+    display: flex;
+    background: var(--soladia-bg-secondary);
+  }
+
+  .profile-tab {
+    flex: 1;
+    padding: var(--soladia-space-4);
+    background: none;
+    border: none;
+    color: var(--soladia-text-secondary);
+    cursor: pointer;
+    transition: var(--soladia-transition);
+    font-weight: var(--soladia-font-semibold);
+  }
+
+  .profile-tab.active {
+    color: var(--soladia-primary);
+    background: var(--soladia-bg-primary);
+  }
+
+  .profile-tab:hover:not(.active) {
+    color: var(--soladia-text-primary);
+  }
+
+  .profile-posts {
+    padding: var(--soladia-space-6);
+    text-align: center;
+    color: var(--soladia-text-secondary);
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--soladia-space-2);
+    padding: var(--soladia-space-2) var(--soladia-space-4);
+    border-radius: var(--soladia-radius-lg);
+    font-weight: var(--soladia-font-semibold);
+    text-decoration: none;
+    transition: var(--soladia-transition);
+    cursor: pointer;
+    border: none;
+    font-size: var(--soladia-text-base);
+    line-height: 1;
+  }
+
+  .btn:focus {
+    outline: 2px solid var(--soladia-primary);
+    outline-offset: 2px;
+  }
+
+  .btn-primary {
+    background: var(--soladia-gradient-primary);
+    color: white;
+    box-shadow: var(--soladia-shadow-primary);
+  }
+
+  .btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--soladia-shadow-primary-hover);
+  }
+
+  .btn-secondary {
+    background: var(--soladia-bg-primary);
+    color: var(--soladia-primary);
+    border: 2px solid var(--soladia-primary);
+  }
+
+  .btn-secondary:hover {
+    background: var(--soladia-primary);
+    color: white;
+    transform: translateY(-2px);
+  }
+
+  .btn-outline {
+    background: transparent;
+    color: var(--soladia-text-primary);
+    border: 2px solid var(--soladia-border);
+  }
+
+  .btn-outline:hover {
+    background: var(--soladia-bg-secondary);
+    border-color: var(--soladia-text-primary);
+  }
+
+  /* Dark mode styles */
+  [data-theme="dark"] .enhanced-social-features {
+    background: var(--soladia-bg-primary);
+  }
+
+  [data-theme="dark"] .create-post,
+  [data-theme="dark"] .post-item,
+  [data-theme="dark"] .discover-item,
+  [data-theme="dark"] .following-item,
+  [data-theme="dark"] .profile-content {
+    background: var(--soladia-bg-primary);
+    border-color: var(--soladia-border);
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .enhanced-social-features {
+      padding: var(--soladia-space-4);
+    }
+
+    .header-stats {
+      flex-direction: column;
+      gap: var(--soladia-space-4);
+    }
+
+    .nav-tabs {
+      flex-direction: column;
+    }
+
+    .post-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .post-actions {
+      flex-wrap: wrap;
+    }
+
+    .discover-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .profile-header {
+      flex-direction: column;
+      text-align: center;
+    }
+
+    .profile-stats {
+      justify-content: center;
+    }
+  }
+</style>
+
+<script>
+  import { enhancedSocialService } from '../../services/enhanced-social-service';
+
+  class EnhancedSocialFeatures {
+    constructor() {
+      this.socialService = enhancedSocialService;
+      this.currentTab = 'feed';
+      this.init();
+    }
+
+    init() {
+      this.setupEventListeners();
+      this.loadFeed();
+    }
+
+    setupEventListeners() {
+      // Tab navigation
+      document.querySelectorAll('[data-tab]').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+          this.switchTab(e.target.dataset.tab);
+        });
+      });
+
+      // Post creation
+      document.querySelector('[data-testid="post-submit"]')?.addEventListener('click', () => {
+        this.createPost();
+      });
+
+      // Post actions
+      document.querySelectorAll('[data-testid^="like-post-"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const postId = e.target.dataset.testid.replace('like-post-', '');
+          this.toggleLike(postId);
+        });
+      });
+
+      document.querySelectorAll('[data-testid^="comment-post-"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const postId = e.target.dataset.testid.replace('comment-post-', '');
+          this.showComments(postId);
+        });
+      });
+
+      document.querySelectorAll('[data-testid^="share-post-"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const postId = e.target.dataset.testid.replace('share-post-', '');
+          this.sharePost(postId);
+        });
+      });
+
+      // Discover filters
+      document.querySelector('[data-testid="category-filter"]')?.addEventListener('change', (e) => {
+        this.filterDiscover('category', e.target.value);
+      });
+
+      document.querySelector('[data-testid="sort-filter"]')?.addEventListener('change', (e) => {
+        this.filterDiscover('sort', e.target.value);
+      });
+
+      // Following management
+      document.querySelectorAll('[data-testid^="unfollow-"]').forEach(btn => {
+        btn.addEventListener('click', (e) => {
+          const userId = e.target.dataset.testid.replace('unfollow-', '');
+          this.unfollowUser(userId);
+        });
+      });
+
+      // Profile management
+      document.querySelector('[data-testid="edit-profile"]')?.addEventListener('click', () => {
+        this.editProfile();
+      });
+
+      // Profile tabs
+      document.querySelectorAll('[data-testid^="profile-"]').forEach(tab => {
+        tab.addEventListener('click', (e) => {
+          const tabName = e.target.dataset.testid.replace('profile-', '');
+          this.switchProfileTab(tabName);
+        });
+      });
+    }
+
+    switchTab(tabName) {
+      this.currentTab = tabName;
+
+      // Update tab buttons
+      document.querySelectorAll('[data-tab]').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.tab === tabName);
+      });
+
+      // Update tab content
+      document.querySelectorAll('[data-tab]').forEach(content => {
+        content.classList.toggle('active', content.dataset.tab === tabName);
+      });
+
+      // Load tab data
+      switch (tabName) {
+        case 'feed':
+          this.loadFeed();
+          break;
+        case 'discover':
+          this.loadDiscover();
+          break;
+        case 'following':
+          this.loadFollowing();
+          break;
+        case 'profile':
+          this.loadProfile();
+          break;
+      }
+    }
+
+    async loadFeed() {
+      try {
+        const posts = await this.socialService.getFeed();
+        this.renderFeed(posts);
+      } catch (error) {
+        console.error('Error loading feed:', error);
+      }
+    }
+
+    renderFeed(posts) {
+      const container = document.querySelector('[data-testid="feed-posts"]');
+      if (!container) return;
+
+      container.innerHTML = posts.map(post => this.renderPost(post)).join('');
+    }
+
+    renderPost(post) {
+      return `
+        <div class="post-item" data-testid="post-${post.id}">
+          <div class="post-header">
+            <img src="${post.user.avatar}" alt="${post.user.username}" class="user-avatar">
+            <div class="user-info">
+              <span class="username">@${post.user.username}</span>
+              <span class="post-time">${post.timeAgo}</span>
+            </div>
+            <button class="post-menu" data-testid="post-menu-${post.id}">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="1"/>
+                <circle cx="19" cy="12" r="1"/>
+                <circle cx="5" cy="12" r="1"/>
+              </svg>
+            </button>
+          </div>
+          <div class="post-content">
+            <p>${post.content}</p>
+            ${post.nft ? this.renderPostNFT(post.nft) : ''}
+            ${post.images ? this.renderPostImages(post.images) : ''}
+          </div>
+          <div class="post-actions">
+            <button class="action-btn like ${post.liked ? 'liked' : ''}" data-testid="like-post-${post.id}">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+              <span>${post.likes}</span>
+            </button>
+            <button class="action-btn comment" data-testid="comment-post-${post.id}">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+              </svg>
+              <span>${post.comments}</span>
+            </button>
+            <button class="action-btn share" data-testid="share-post-${post.id}">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                <polyline points="16,6 12,2 8,6"/>
+                <line x1="12" y1="2" x2="12" y2="15"/>
+              </svg>
+              <span>Share</span>
+            </button>
+          </div>
+        </div>
+      `;
+    }
+
+    renderPostNFT(nft) {
+      return `
+        <div class="post-nft">
+          <img src="${nft.image}" alt="${nft.name}" class="nft-image">
+          <div class="nft-info">
+            <h4>${nft.name}</h4>
+            <p>${nft.price} SOL • ${nft.collection}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    renderPostImages(images) {
+      return `
+        <div class="post-images">
+          ${images.map(img => `<img src="${img}" alt="Post image" class="post-image">`).join('')}
+        </div>
+      `;
+    }
+
+    async createPost() {
+      const input = document.querySelector('[data-testid="post-input"]');
+      const content = input?.value.trim();
+
+      if (!content) {
+        this.showError('Please enter some content');
+        return;
+      }
+
+      try {
+        await this.socialService.createPost({ content });
+        input.value = '';
+        this.loadFeed();
+        this.showSuccess('Post created successfully!');
+      } catch (error) {
+        console.error('Error creating post:', error);
+        this.showError('Failed to create post');
+      }
+    }
+
+    async toggleLike(postId) {
+      try {
+        const liked = await this.socialService.toggleLike(postId);
+        this.updatePostLikes(postId, liked);
+      } catch (error) {
+        console.error('Error toggling like:', error);
+      }
+    }
+
+    updatePostLikes(postId, liked) {
+      const button = document.querySelector(`[data-testid="like-post-${postId}"]`);
+      if (button) {
+        button.classList.toggle('liked', liked);
+        const count = button.querySelector('span');
+        if (count) {
+          const currentCount = parseInt(count.textContent);
+          count.textContent = liked ? currentCount + 1 : currentCount - 1;
+        }
+      }
+    }
+
+    showComments(postId) {
+      // This would typically open a comments modal
+      console.log('Show comments for post:', postId);
+    }
+
+    sharePost(postId) {
+      // This would typically open a share modal
+      console.log('Share post:', postId);
+    }
+
+    async loadDiscover() {
+      try {
+        const items = await this.socialService.getDiscoverItems();
+        this.renderDiscover(items);
+      } catch (error) {
+        console.error('Error loading discover:', error);
+      }
+    }
+
+    renderDiscover(items) {
+      const container = document.querySelector('[data-testid="discover-grid"]');
+      if (!container) return;
+
+      container.innerHTML = items.map(item => this.renderDiscoverItem(item)).join('');
+    }
+
+    renderDiscoverItem(item) {
+      return `
+        <div class="discover-item" data-testid="discover-item-${item.id}">
+          <img src="${item.image}" alt="${item.name}" class="discover-image">
+          <div class="discover-info">
+            <h4>${item.name}</h4>
+            <p>${item.price} SOL • ${item.collection}</p>
+            <div class="discover-stats">
+              <span class="stat">👀 ${item.views}</span>
+              <span class="stat">❤️ ${item.likes}</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    filterDiscover(type, value) {
+      // This would typically filter the discover items
+      console.log('Filter discover by', type, ':', value);
+    }
+
+    async loadFollowing() {
+      try {
+        const following = await this.socialService.getFollowing();
+        this.renderFollowing(following);
+      } catch (error) {
+        console.error('Error loading following:', error);
+      }
+    }
+
+    renderFollowing(following) {
+      const container = document.querySelector('[data-testid="following-list"]');
+      if (!container) return;
+
+      container.innerHTML = following.map(user => this.renderFollowingItem(user)).join('');
+    }
+
+    renderFollowingItem(user) {
+      return `
+        <div class="following-item" data-testid="following-item-${user.id}">
+          <img src="${user.avatar}" alt="${user.username}" class="user-avatar">
+          <div class="user-info">
+            <span class="username">@${user.username}</span>
+            <span class="user-bio">${user.bio}</span>
+          </div>
+          <button class="btn btn-secondary unfollow-btn" data-testid="unfollow-${user.id}">Unfollow</button>
+        </div>
+      `;
+    }
+
+    async unfollowUser(userId) {
+      try {
+        await this.socialService.unfollowUser(userId);
+        this.loadFollowing();
+        this.showSuccess('Unfollowed user');
+      } catch (error) {
+        console.error('Error unfollowing user:', error);
+        this.showError('Failed to unfollow user');
+      }
+    }
+
+    async loadProfile() {
+      try {
+        const profile = await this.socialService.getProfile();
+        this.renderProfile(profile);
+      } catch (error) {
+        console.error('Error loading profile:', error);
+      }
+    }
+
+    renderProfile(profile) {
+      // Update profile header
+      const username = document.querySelector('.profile-info h2');
+      const bio = document.querySelector('.profile-bio');
+      const avatar = document.querySelector('.profile-avatar');
+
+      if (username) username.textContent = `@${profile.username}`;
+      if (bio) bio.textContent = profile.bio;
+      if (avatar) avatar.src = profile.avatar;
+
+      // Update stats
+      const stats = document.querySelectorAll('.profile-stats .stat-number');
+      if (stats[0]) stats[0].textContent = profile.following;
+      if (stats[1]) stats[1].textContent = profile.followers;
+      if (stats[2]) stats[2].textContent = profile.posts;
+    }
+
+    editProfile() {
+      // This would typically open an edit profile modal
+      console.log('Edit profile');
+    }
+
+    switchProfileTab(tabName) {
+      // Update tab buttons
+      document.querySelectorAll('[data-testid^="profile-"]').forEach(tab => {
+        tab.classList.toggle('active', tab.dataset.testid === `profile-${tabName}`);
+      });
+
+      // Load tab content
+      switch (tabName) {
+        case 'posts':
+          this.loadProfilePosts();
+          break;
+        case 'nfts':
+          this.loadProfileNFTs();
+          break;
+        case 'liked':
+          this.loadProfileLiked();
+          break;
+      }
+    }
+
+    loadProfilePosts() {
+      // Load user's posts
+      console.log('Load profile posts');
+    }
+
+    loadProfileNFTs() {
+      // Load user's NFTs
+      console.log('Load profile NFTs');
+    }
+
+    loadProfileLiked() {
+      // Load user's liked posts
+      console.log('Load profile liked');
+    }
+
+    showSuccess(message) {
+      // This would typically show a toast notification
+      console.log('Success:', message);
+    }
+
+    showError(message) {
+      // This would typically show a toast notification
+      console.error('Error:', message);
+    }
+  }
+
+  // Initialize the social features when the component loads
+  document.addEventListener('DOMContentLoaded', () => {
+    new EnhancedSocialFeatures();
+  });
+</script>

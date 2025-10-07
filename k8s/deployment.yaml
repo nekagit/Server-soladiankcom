@@ -1,0 +1,111 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: soladia-backend
+  namespace: soladia
+  labels:
+    app: soladia-backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: soladia-backend
+  template:
+    metadata:
+      labels:
+        app: soladia-backend
+    spec:
+      containers:
+      - name: backend
+        image: your-registry.com/soladia-marketplace-backend:IMAGE_TAG
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: soladia-config
+              key: DATABASE_URL
+        - name: REDIS_URL
+          valueFrom:
+            configMapKeyRef:
+              name: soladia-config
+              key: REDIS_URL
+        - name: SOLANA_RPC_URL
+          valueFrom:
+            configMapKeyRef:
+              name: soladia-config
+              key: SOLANA_RPC_URL
+        - name: SOLANA_NETWORK
+          valueFrom:
+            configMapKeyRef:
+              name: soladia-config
+              key: SOLANA_NETWORK
+        - name: SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: soladia-secrets
+              key: SECRET_KEY
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /ready
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: soladia-frontend
+  namespace: soladia
+  labels:
+    app: soladia-frontend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: soladia-frontend
+  template:
+    metadata:
+      labels:
+        app: soladia-frontend
+    spec:
+      containers:
+      - name: frontend
+        image: your-registry.com/soladia-marketplace-frontend:IMAGE_TAG
+        ports:
+        - containerPort: 4321
+        resources:
+          requests:
+            memory: "128Mi"
+            cpu: "100m"
+          limits:
+            memory: "256Mi"
+            cpu: "200m"
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 4321
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 4321
+          initialDelaySeconds: 5
+          periodSeconds: 5
+
+

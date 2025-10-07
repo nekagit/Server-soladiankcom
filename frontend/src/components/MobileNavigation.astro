@@ -1,0 +1,771 @@
+---
+// Mobile Navigation Component
+// Bottom navigation bar and mobile drawer for optimal mobile experience
+---
+
+<div class="mobile-navigation" data-testid="mobile-navigation">
+  <!-- Mobile Header -->
+  <div class="mobile-header" data-testid="mobile-header">
+    <div class="mobile-header-content">
+      <button class="mobile-menu-toggle" data-testid="mobile-menu-toggle" aria-label="Open menu">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
+        </svg>
+      </button>
+      <h1 class="mobile-header-title" data-testid="mobile-header-title">Soladia</h1>
+      <div class="mobile-header-actions">
+        <button class="mobile-header-action" data-testid="mobile-search" aria-label="Search">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="M21 21l-4.35-4.35"/>
+          </svg>
+        </button>
+        <button class="mobile-header-action" data-testid="mobile-notifications" aria-label="Notifications">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Drawer -->
+  <div class="mobile-drawer-overlay" data-testid="mobile-drawer-overlay"></div>
+  <div class="mobile-drawer" data-testid="mobile-drawer">
+    <div class="mobile-drawer-header">
+      <h2 class="mobile-drawer-title">Menu</h2>
+      <button class="mobile-drawer-close" data-testid="mobile-drawer-close" aria-label="Close menu">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <line x1="18" y1="6" x2="6" y2="18"/>
+          <line x1="6" y1="6" x2="18" y2="18"/>
+        </svg>
+      </button>
+    </div>
+    <div class="mobile-drawer-content">
+      <nav class="mobile-drawer-nav">
+        <ul class="mobile-drawer-nav-list">
+          <li class="mobile-drawer-nav-item">
+            <a href="/" class="mobile-drawer-nav-link" data-testid="nav-home">
+              <svg class="mobile-drawer-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+                <polyline points="9,22 9,12 15,12 15,22"/>
+              </svg>
+              <span>Home</span>
+            </a>
+          </li>
+          <li class="mobile-drawer-nav-item">
+            <a href="/explore" class="mobile-drawer-nav-link" data-testid="nav-explore">
+              <svg class="mobile-drawer-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"/>
+                <path d="M21 21l-4.35-4.35"/>
+              </svg>
+              <span>Explore</span>
+            </a>
+          </li>
+          <li class="mobile-drawer-nav-item">
+            <a href="/create" class="mobile-drawer-nav-link" data-testid="nav-create">
+              <svg class="mobile-drawer-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              </svg>
+              <span>Create</span>
+            </a>
+          </li>
+          <li class="mobile-drawer-nav-item">
+            <a href="/collections" class="mobile-drawer-nav-link" data-testid="nav-collections">
+              <svg class="mobile-drawer-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <polyline points="21,15 16,10 5,21"/>
+              </svg>
+              <span>Collections</span>
+            </a>
+          </li>
+          <li class="mobile-drawer-nav-item">
+            <a href="/profile" class="mobile-drawer-nav-link" data-testid="nav-profile">
+              <svg class="mobile-drawer-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+              <span>Profile</span>
+            </a>
+          </li>
+          <li class="mobile-drawer-nav-item">
+            <a href="/wallet" class="mobile-drawer-nav-link" data-testid="nav-wallet">
+              <svg class="mobile-drawer-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/>
+                <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>
+                <line x1="10" y1="12" x2="14" y2="12"/>
+              </svg>
+              <span>Wallet</span>
+            </a>
+          </li>
+          <li class="mobile-drawer-nav-item">
+            <a href="/settings" class="mobile-drawer-nav-link" data-testid="nav-settings">
+              <svg class="mobile-drawer-nav-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1 1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+              </svg>
+              <span>Settings</span>
+            </a>
+          </li>
+        </ul>
+      </nav>
+      
+      <div class="mobile-drawer-divider"></div>
+      
+      <div class="mobile-drawer-section">
+        <h3 class="mobile-drawer-section-title">Account</h3>
+        <div class="mobile-drawer-account">
+          <div class="mobile-drawer-account-avatar">
+            <img src="/placeholder-avatar.jpg" alt="User Avatar" data-testid="account-avatar">
+          </div>
+          <div class="mobile-drawer-account-info">
+            <div class="mobile-drawer-account-name" data-testid="account-name">John Doe</div>
+            <div class="mobile-drawer-account-balance" data-testid="account-balance">5.2 SOL</div>
+          </div>
+        </div>
+      </div>
+      
+      <div class="mobile-drawer-divider"></div>
+      
+      <div class="mobile-drawer-section">
+        <h3 class="mobile-drawer-section-title">Quick Actions</h3>
+        <div class="mobile-drawer-actions">
+          <button class="mobile-drawer-action-btn" data-testid="action-connect-wallet">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/>
+              <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>
+              <line x1="10" y1="12" x2="14" y2="12"/>
+            </svg>
+            <span>Connect Wallet</span>
+          </button>
+          <button class="mobile-drawer-action-btn" data-testid="action-dark-mode">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+            <span>Dark Mode</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mobile Bottom Navigation -->
+  <nav class="mobile-nav" data-testid="mobile-nav">
+    <div class="mobile-nav-items">
+      <a href="/" class="mobile-nav-item active" data-testid="mobile-nav-home">
+        <svg class="mobile-nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
+          <polyline points="9,22 9,12 15,12 15,22"/>
+        </svg>
+        <span class="mobile-nav-label">Home</span>
+      </a>
+      <a href="/explore" class="mobile-nav-item" data-testid="mobile-nav-explore">
+        <svg class="mobile-nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/>
+          <path d="M21 21l-4.35-4.35"/>
+        </svg>
+        <span class="mobile-nav-label">Explore</span>
+      </a>
+      <a href="/create" class="mobile-nav-item" data-testid="mobile-nav-create">
+        <svg class="mobile-nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+        </svg>
+        <span class="mobile-nav-label">Create</span>
+      </a>
+      <a href="/wallet" class="mobile-nav-item" data-testid="mobile-nav-wallet">
+        <svg class="mobile-nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"/>
+          <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"/>
+          <line x1="10" y1="12" x2="14" y2="12"/>
+        </svg>
+        <span class="mobile-nav-label">Wallet</span>
+      </a>
+      <a href="/profile" class="mobile-nav-item" data-testid="mobile-nav-profile">
+        <svg class="mobile-nav-icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+          <circle cx="12" cy="7" r="4"/>
+        </svg>
+        <span class="mobile-nav-label">Profile</span>
+      </a>
+    </div>
+  </nav>
+</div>
+
+<style>
+  .mobile-navigation {
+    position: relative;
+  }
+
+  .mobile-header {
+    position: sticky;
+    top: 0;
+    background: var(--soladia-bg-primary);
+    border-bottom: 1px solid var(--soladia-border);
+    padding: var(--mobile-space-md) var(--mobile-space-lg);
+    z-index: 999;
+    display: none;
+  }
+
+  .mobile-header-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .mobile-header-title {
+    font-size: var(--mobile-text-lg);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0;
+  }
+
+  .mobile-header-actions {
+    display: flex;
+    gap: var(--mobile-space-md);
+    align-items: center;
+  }
+
+  .mobile-header-action {
+    background: none;
+    border: none;
+    padding: var(--mobile-space-sm);
+    border-radius: var(--soladia-radius);
+    color: var(--soladia-text-primary);
+    cursor: pointer;
+    min-width: var(--mobile-touch-target);
+    min-height: var(--mobile-touch-target);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--mobile-transition-fast);
+  }
+
+  .mobile-header-action:active {
+    background: var(--soladia-bg-secondary);
+    transform: scale(0.95);
+  }
+
+  .mobile-menu-toggle {
+    background: none;
+    border: none;
+    padding: var(--mobile-space-sm);
+    border-radius: var(--soladia-radius);
+    color: var(--soladia-text-primary);
+    cursor: pointer;
+    min-width: var(--mobile-touch-target);
+    min-height: var(--mobile-touch-target);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--mobile-transition-fast);
+  }
+
+  .mobile-menu-toggle:active {
+    background: var(--soladia-bg-secondary);
+    transform: scale(0.95);
+  }
+
+  .mobile-drawer-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity var(--mobile-transition-normal), visibility var(--mobile-transition-normal);
+    z-index: 1000;
+  }
+
+  .mobile-drawer-overlay.open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .mobile-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px;
+    height: 100vh;
+    background: var(--soladia-bg-primary);
+    border-right: 1px solid var(--soladia-border);
+    transform: translateX(-100%);
+    transition: transform var(--mobile-transition-normal);
+    z-index: 1001;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .mobile-drawer.open {
+    transform: translateX(0);
+  }
+
+  .mobile-drawer-header {
+    padding: var(--mobile-space-lg);
+    border-bottom: 1px solid var(--soladia-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    position: sticky;
+    top: 0;
+    background: var(--soladia-bg-primary);
+    z-index: 1;
+  }
+
+  .mobile-drawer-title {
+    font-size: var(--mobile-text-lg);
+    font-weight: var(--soladia-font-bold);
+    color: var(--soladia-text-primary);
+    margin: 0;
+  }
+
+  .mobile-drawer-close {
+    background: none;
+    border: none;
+    padding: var(--mobile-space-sm);
+    border-radius: var(--soladia-radius);
+    color: var(--soladia-text-secondary);
+    cursor: pointer;
+    min-width: var(--mobile-touch-target);
+    min-height: var(--mobile-touch-target);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--mobile-transition-fast);
+  }
+
+  .mobile-drawer-close:active {
+    background: var(--soladia-bg-secondary);
+    transform: scale(0.95);
+  }
+
+  .mobile-drawer-content {
+    padding: var(--mobile-space-lg);
+  }
+
+  .mobile-drawer-nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  .mobile-drawer-nav-item {
+    margin-bottom: var(--mobile-space-sm);
+  }
+
+  .mobile-drawer-nav-link {
+    display: flex;
+    align-items: center;
+    gap: var(--mobile-space-md);
+    padding: var(--mobile-space-md);
+    border-radius: var(--soladia-radius-lg);
+    color: var(--soladia-text-primary);
+    text-decoration: none;
+    transition: var(--mobile-transition-fast);
+    min-height: var(--mobile-touch-target);
+  }
+
+  .mobile-drawer-nav-link:hover,
+  .mobile-drawer-nav-link.active {
+    background: var(--soladia-bg-secondary);
+    color: var(--soladia-primary);
+  }
+
+  .mobile-drawer-nav-link:active {
+    transform: scale(0.98);
+  }
+
+  .mobile-drawer-nav-icon {
+    width: 20px;
+    height: 20px;
+  }
+
+  .mobile-drawer-divider {
+    height: 1px;
+    background: var(--soladia-border);
+    margin: var(--mobile-space-lg) 0;
+  }
+
+  .mobile-drawer-section {
+    margin-bottom: var(--mobile-space-lg);
+  }
+
+  .mobile-drawer-section-title {
+    font-size: var(--mobile-text-sm);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-secondary);
+    margin: 0 0 var(--mobile-space-md) 0;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .mobile-drawer-account {
+    display: flex;
+    align-items: center;
+    gap: var(--mobile-space-md);
+    padding: var(--mobile-space-md);
+    background: var(--soladia-bg-secondary);
+    border-radius: var(--soladia-radius-lg);
+  }
+
+  .mobile-drawer-account-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    overflow: hidden;
+  }
+
+  .mobile-drawer-account-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .mobile-drawer-account-info {
+    flex: 1;
+  }
+
+  .mobile-drawer-account-name {
+    font-size: var(--mobile-text-base);
+    font-weight: var(--soladia-font-semibold);
+    color: var(--soladia-text-primary);
+    margin: 0 0 var(--mobile-space-xs) 0;
+  }
+
+  .mobile-drawer-account-balance {
+    font-size: var(--mobile-text-sm);
+    color: var(--soladia-text-secondary);
+    margin: 0;
+  }
+
+  .mobile-drawer-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--mobile-space-sm);
+  }
+
+  .mobile-drawer-action-btn {
+    display: flex;
+    align-items: center;
+    gap: var(--mobile-space-md);
+    padding: var(--mobile-space-md);
+    background: var(--soladia-bg-secondary);
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-lg);
+    color: var(--soladia-text-primary);
+    cursor: pointer;
+    transition: var(--mobile-transition-fast);
+    min-height: var(--mobile-touch-target);
+    font-size: var(--mobile-text-base);
+    font-weight: var(--soladia-font-medium);
+  }
+
+  .mobile-drawer-action-btn:active {
+    background: var(--soladia-bg-tertiary);
+    transform: scale(0.98);
+  }
+
+  .mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: var(--soladia-bg-primary);
+    border-top: 1px solid var(--soladia-border);
+    padding: var(--mobile-space-md) var(--mobile-space-lg);
+    z-index: 1000;
+    display: none;
+  }
+
+  .mobile-nav-items {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+  }
+
+  .mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--mobile-space-xs);
+    padding: var(--mobile-space-sm);
+    border-radius: var(--soladia-radius-lg);
+    transition: var(--mobile-transition-fast);
+    min-width: var(--mobile-touch-target);
+    min-height: var(--mobile-touch-target);
+    justify-content: center;
+    text-decoration: none;
+    color: var(--soladia-text-secondary);
+  }
+
+  .mobile-nav-item.active {
+    background: var(--soladia-primary-50);
+    color: var(--soladia-primary);
+  }
+
+  .mobile-nav-item:active {
+    transform: scale(0.95);
+    background: var(--soladia-bg-secondary);
+  }
+
+  .mobile-nav-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .mobile-nav-label {
+    font-size: var(--mobile-text-xs);
+    font-weight: var(--soladia-font-medium);
+  }
+
+  /* Responsive breakpoints */
+  @media (max-width: 767px) {
+    .mobile-header {
+      display: block;
+    }
+    
+    .mobile-nav {
+      display: block;
+    }
+  }
+
+  @media (min-width: 768px) {
+    .mobile-header {
+      display: none;
+    }
+    
+    .mobile-nav {
+      display: none;
+    }
+  }
+
+  /* Dark mode adjustments */
+  [data-theme="dark"] .mobile-header {
+    background: var(--soladia-bg-primary);
+    border-color: var(--soladia-border);
+  }
+
+  [data-theme="dark"] .mobile-drawer {
+    background: var(--soladia-bg-primary);
+    border-color: var(--soladia-border);
+  }
+
+  [data-theme="dark"] .mobile-nav {
+    background: var(--soladia-bg-primary);
+    border-color: var(--soladia-border);
+  }
+
+  [data-theme="dark"] .mobile-drawer-account {
+    background: var(--soladia-bg-secondary);
+  }
+
+  [data-theme="dark"] .mobile-drawer-action-btn {
+    background: var(--soladia-bg-secondary);
+    border-color: var(--soladia-border);
+  }
+
+  /* High contrast mode */
+  @media (prefers-contrast: high) {
+    .mobile-drawer-action-btn {
+      border-width: 2px;
+    }
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .mobile-drawer,
+    .mobile-drawer-overlay,
+    .mobile-nav-item,
+    .mobile-drawer-nav-link,
+    .mobile-drawer-action-btn,
+    .mobile-header-action,
+    .mobile-menu-toggle {
+      transition: none;
+    }
+    
+    .mobile-nav-item:active,
+    .mobile-drawer-nav-link:active,
+    .mobile-drawer-action-btn:active,
+    .mobile-header-action:active,
+    .mobile-menu-toggle:active {
+      transform: none;
+    }
+  }
+</style>
+
+<script>
+  class MobileNavigation {
+    private drawer: HTMLElement;
+    private overlay: HTMLElement;
+    private menuToggle: HTMLElement;
+    private drawerClose: HTMLElement;
+    private isDrawerOpen: boolean = false;
+
+    constructor() {
+      this.drawer = document.querySelector('[data-testid="mobile-drawer"]') as HTMLElement;
+      this.overlay = document.querySelector('[data-testid="mobile-drawer-overlay"]') as HTMLElement;
+      this.menuToggle = document.querySelector('[data-testid="mobile-menu-toggle"]') as HTMLElement;
+      this.drawerClose = document.querySelector('[data-testid="mobile-drawer-close"]') as HTMLElement;
+      
+      this.init();
+    }
+
+    init() {
+      this.setupEventListeners();
+      this.updateActiveNavItem();
+    }
+
+    setupEventListeners() {
+      // Menu toggle
+      this.menuToggle?.addEventListener('click', () => {
+        this.toggleDrawer();
+      });
+
+      // Drawer close
+      this.drawerClose?.addEventListener('click', () => {
+        this.closeDrawer();
+      });
+
+      // Overlay click
+      this.overlay?.addEventListener('click', () => {
+        this.closeDrawer();
+      });
+
+      // Navigation links
+      document.querySelectorAll('.mobile-drawer-nav-link, .mobile-nav-item').forEach(link => {
+        link.addEventListener('click', (e) => {
+          const target = e.target as HTMLElement;
+          const linkElement = target.closest('a');
+          if (linkElement) {
+            this.setActiveNavItem(linkElement);
+            this.closeDrawer();
+          }
+        });
+      });
+
+      // Quick actions
+      document.querySelector('[data-testid="action-connect-wallet"]')?.addEventListener('click', () => {
+        this.handleConnectWallet();
+      });
+
+      document.querySelector('[data-testid="action-dark-mode"]')?.addEventListener('click', () => {
+        this.handleDarkModeToggle();
+      });
+
+      // Keyboard navigation
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && this.isDrawerOpen) {
+          this.closeDrawer();
+        }
+      });
+
+      // Window resize
+      window.addEventListener('resize', () => {
+        this.handleResize();
+      });
+    }
+
+    toggleDrawer() {
+      if (this.isDrawerOpen) {
+        this.closeDrawer();
+      } else {
+        this.openDrawer();
+      }
+    }
+
+    openDrawer() {
+      this.isDrawerOpen = true;
+      this.drawer?.classList.add('open');
+      this.overlay?.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      
+      // Focus management
+      const firstFocusable = this.drawer?.querySelector('button, a, input, textarea, select') as HTMLElement;
+      firstFocusable?.focus();
+    }
+
+    closeDrawer() {
+      this.isDrawerOpen = false;
+      this.drawer?.classList.remove('open');
+      this.overlay?.classList.remove('open');
+      document.body.style.overflow = '';
+      
+      // Return focus to menu toggle
+      this.menuToggle?.focus();
+    }
+
+    setActiveNavItem(activeLink: HTMLElement) {
+      // Remove active class from all nav items
+      document.querySelectorAll('.mobile-drawer-nav-link, .mobile-nav-item').forEach(link => {
+        link.classList.remove('active');
+      });
+
+      // Add active class to clicked link
+      activeLink.classList.add('active');
+
+      // Also activate corresponding bottom nav item
+      const href = activeLink.getAttribute('href');
+      if (href) {
+        const bottomNavItem = document.querySelector(`.mobile-nav-item[href="${href}"]`);
+        if (bottomNavItem) {
+          bottomNavItem.classList.add('active');
+        }
+      }
+    }
+
+    updateActiveNavItem() {
+      const currentPath = window.location.pathname;
+      const activeLink = document.querySelector(`.mobile-drawer-nav-link[href="${currentPath}"], .mobile-nav-item[href="${currentPath}"]`);
+      if (activeLink) {
+        this.setActiveNavItem(activeLink as HTMLElement);
+      }
+    }
+
+    handleConnectWallet() {
+      // This would integrate with wallet connection logic
+      console.log('Connect wallet clicked');
+      // Dispatch custom event for wallet connection
+      window.dispatchEvent(new CustomEvent('mobile-connect-wallet'));
+    }
+
+    handleDarkModeToggle() {
+      // This would integrate with dark mode toggle logic
+      console.log('Dark mode toggle clicked');
+      // Dispatch custom event for dark mode toggle
+      window.dispatchEvent(new CustomEvent('mobile-dark-mode-toggle'));
+    }
+
+    handleResize() {
+      // Close drawer on desktop
+      if (window.innerWidth >= 768 && this.isDrawerOpen) {
+        this.closeDrawer();
+      }
+    }
+
+    public isDrawerOpenState(): boolean {
+      return this.isDrawerOpen;
+    }
+
+    public openDrawerProgrammatically(): void {
+      this.openDrawer();
+    }
+
+    public closeDrawerProgrammatically(): void {
+      this.closeDrawer();
+    }
+  }
+
+  // Initialize mobile navigation when DOM is ready
+  document.addEventListener('DOMContentLoaded', () => {
+    new MobileNavigation();
+  });
+
+  // Export for external use
+  (window as any).MobileNavigation = MobileNavigation;
+</script>

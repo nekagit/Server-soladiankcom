@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: soladia
+  labels:
+    name: soladia
+    app: soladia-marketplace
+
+

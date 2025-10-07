@@ -1,1050 +1,1161 @@
 ---
 // Advanced NFT Tools Component
-export interface Props {
-  showMinting?: boolean;
-  showMetadata?: boolean;
-  showIPFS?: boolean;
-  showValidation?: boolean;
-}
-
-const { 
-  showMinting = true,
-  showMetadata = true,
-  showIPFS = true,
-  showValidation = true
-} = Astro.props;
-
-// Mock NFT collections data
-const collections = [
-  {
-    id: 'collection_1',
-    name: 'Digital Art Collection',
-    description: 'A curated collection of digital artworks',
-    image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=300&h=200&fit=crop&crop=center',
-    totalSupply: 1000,
-    minted: 456,
-    floorPrice: '2.5 SOL',
-    volume: '1,234 SOL',
-    status: 'active'
-  },
-  {
-    id: 'collection_2',
-    name: 'Gaming Assets',
-    description: 'In-game items and collectibles',
-    image: 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=300&h=200&fit=crop&crop=center',
-    totalSupply: 500,
-    minted: 500,
-    floorPrice: '0.8 SOL',
-    volume: '856 SOL',
-    status: 'completed'
-  }
-];
-
-// Mock IPFS data
-const ipfsData = {
-  gateway: 'https://ipfs.io/ipfs/',
-  pinning: {
-    service: 'Pinata',
-    apiKey: 'pk_...',
-    status: 'active'
-  },
-  files: [
-    {
-      hash: 'QmXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXxXx',
-      name: 'nft-image-1.png',
-      size: '2.3 MB',
-      type: 'image/png',
-      uploaded: '2 hours ago'
-    },
-    {
-      hash: 'QmYyYyYyYyYyYyYyYyYyYyYyYyYyYyYyYyYyYyYyYyYyYyYy',
-      name: 'metadata-1.json',
-      size: '1.2 KB',
-      type: 'application/json',
-      uploaded: '1 day ago'
-    }
-  ]
-};
+// Provides comprehensive NFT management tools including minting, metadata, and IPFS integration
 ---
 
 <div class="advanced-nft-tools">
   <div class="tools-header">
-    <h3 class="tools-title">
-      <span class="tools-icon">🛠️</span>
-      Advanced NFT Tools
-    </h3>
-    <p class="tools-subtitle">Professional NFT creation and management tools</p>
+    <h2 class="tools-title">Advanced NFT Tools</h2>
+    <p class="tools-description">
+      Comprehensive tools for creating, managing, and optimizing your NFTs
+    </p>
   </div>
 
-  {showMinting && (
-    <div class="tools-section">
-      <div class="section-header">
-        <h4 class="section-title">NFT Minting</h4>
-        <button class="create-collection-btn" id="create-collection-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
+  <div class="tools-grid">
+    <!-- NFT Minting Tool -->
+    <div class="tool-card" data-tool="minting">
+      <div class="tool-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L13.09 8.26L20 9L13.09 9.74L12 16L10.91 9.74L4 9L10.91 8.26L12 2Z" fill="currentColor"/>
+          <path d="M19 15L20.09 18.26L24 19L20.09 19.74L19 23L17.91 19.74L14 19L17.91 18.26L19 15Z" fill="currentColor"/>
+          <path d="M5 15L6.09 18.26L10 19L6.09 19.74L5 23L3.91 19.74L0 19L3.91 18.26L5 15Z" fill="currentColor"/>
           </svg>
-          Create Collection
+      </div>
+      <h3 class="tool-title">NFT Minting</h3>
+      <p class="tool-description">
+        Create and mint new NFTs with custom metadata and attributes
+      </p>
+      <button class="tool-button" onclick="openTool('minting')">
+        Start Minting
         </button>
       </div>
 
-      <div class="collections-grid">
-        {collections.map(collection => (
-          <div class="collection-card">
-            <div class="collection-image">
-              <img src={collection.image} alt={collection.name} />
-              <div class="collection-status status-{collection.status}">
-                {collection.status}
+    <!-- Metadata Management -->
+    <div class="tool-card" data-tool="metadata">
+      <div class="tool-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M14 2H6C4.9 2 4 2.9 4 4V20C4 21.1 4.89 22 5.99 22H18C19.1 22 20 21.1 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 13H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M16 17H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M10 9H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
               </div>
+      <h3 class="tool-title">Metadata Management</h3>
+      <p class="tool-description">
+        Create, validate, and manage NFT metadata with schema validation
+      </p>
+      <button class="tool-button" onclick="openTool('metadata')">
+        Manage Metadata
+      </button>
             </div>
             
-            <div class="collection-content">
-              <h5 class="collection-name">{collection.name}</h5>
-              <p class="collection-description">{collection.description}</p>
-              
-              <div class="collection-stats">
-                <div class="stat-item">
-                  <span class="stat-label">Supply:</span>
-                  <span class="stat-value">{collection.minted} / {collection.totalSupply}</span>
+    <!-- IPFS Integration -->
+    <div class="tool-card" data-tool="ipfs">
+      <div class="tool-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 17L12 22L22 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
                 </div>
-                <div class="stat-item">
-                  <span class="stat-label">Floor Price:</span>
-                  <span class="stat-value">{collection.floorPrice}</span>
+      <h3 class="tool-title">IPFS Integration</h3>
+      <p class="tool-description">
+        Upload files to IPFS with automatic pinning and redundancy
+      </p>
+      <button class="tool-button" onclick="openTool('ipfs')">
+        Upload to IPFS
+      </button>
                 </div>
-                <div class="stat-item">
-                  <span class="stat-label">Volume:</span>
-                  <span class="stat-value">{collection.volume}</span>
+
+    <!-- Collection Management -->
+    <div class="tool-card" data-tool="collection">
+      <div class="tool-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M19 3H5C3.9 3 3 3.9 3 5V19C3 20.1 3.9 21 5 21H19C20.1 21 21 20.1 21 19V5C21 3.9 20.1 3 19 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M8 12H16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 8V16" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
                 </div>
+      <h3 class="tool-title">Collection Management</h3>
+      <p class="tool-description">
+        Organize and manage NFT collections with bulk operations
+      </p>
+      <button class="tool-button" onclick="openTool('collection')">
+        Manage Collections
+      </button>
               </div>
               
-              <div class="collection-actions">
-                <button class="action-btn primary" data-action="mint" data-collection-id={collection.id}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="16"></line>
-                    <line x1="8" y1="12" x2="16" y2="12"></line>
+    <!-- Bulk Operations -->
+    <div class="tool-card" data-tool="bulk">
+      <div class="tool-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 11H15M9 15H15M17 21H7C5.89543 21 5 20.1046 5 19V5C5 3.89543 5.89543 3 7 3H12.5858C12.851 3 13.1054 3.10536 13.2929 3.29289L19.7071 9.70711C19.8946 9.89464 20 10.149 20 10.4142V19C20 20.1046 19.1046 21 18 21H17Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
-                  Mint NFT
-                </button>
-                <button class="action-btn secondary" data-action="edit" data-collection-id={collection.id}>
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="m11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
-                    <path d="m18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
-                  </svg>
-                  Edit
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
       </div>
+      <h3 class="tool-title">Bulk Operations</h3>
+      <p class="tool-description">
+        Perform bulk operations on multiple NFTs simultaneously
+      </p>
+      <button class="tool-button" onclick="openTool('bulk')">
+        Bulk Operations
+                </button>
     </div>
-  )}
 
-  {showMetadata && (
-    <div class="tools-section">
-      <div class="section-header">
-        <h4 class="section-title">Metadata Management</h4>
-        <button class="create-metadata-btn" id="create-metadata-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="12" y1="5" x2="12" y2="19"></line>
-            <line x1="5" y1="12" x2="19" y2="12"></line>
-          </svg>
-          Create Metadata
-        </button>
-      </div>
-
-      <div class="metadata-tools">
-        <div class="metadata-form">
-          <div class="form-group">
-            <label class="form-label">NFT Name</label>
-            <input type="text" class="form-input" placeholder="Enter NFT name" />
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">Description</label>
-            <textarea class="form-textarea" placeholder="Enter NFT description" rows="3"></textarea>
-          </div>
-          
-          <div class="form-group">
-            <label class="form-label">Attributes</label>
-            <div class="attributes-container">
-              <div class="attribute-item">
-                <input type="text" placeholder="Trait Type" class="form-input" />
-                <input type="text" placeholder="Value" class="form-input" />
-                <button class="remove-attribute-btn">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="18" y1="6" x2="6" y2="18"></line>
-                    <line x1="6" y1="6" x2="18" y2="18"></line>
+    <!-- Analytics & Insights -->
+    <div class="tool-card" data-tool="analytics">
+      <div class="tool-icon">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M18 20V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M12 20V4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M6 20V14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
+      </div>
+      <h3 class="tool-title">Analytics & Insights</h3>
+      <p class="tool-description">
+        Analyze NFT performance and market trends
+      </p>
+      <button class="tool-button" onclick="openTool('analytics')">
+        View Analytics
                 </button>
               </div>
             </div>
-            <button class="add-attribute-btn" id="add-attribute-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <line x1="12" y1="5" x2="12" y2="19"></line>
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-              </svg>
-              Add Attribute
-            </button>
+
+  <!-- NFT Minting Modal -->
+  <div id="minting-modal" class="tool-modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>NFT Minting Tool</h3>
+        <button class="modal-close" onclick="closeTool('minting')">&times;</button>
+          </div>
+      <div class="modal-body">
+        <form id="minting-form" class="nft-form">
+          <div class="form-group">
+            <label for="nft-name">NFT Name *</label>
+            <input type="text" id="nft-name" name="name" required maxlength="100" placeholder="Enter NFT name">
+      </div>
+          
+          <div class="form-group">
+            <label for="nft-description">Description *</label>
+            <textarea id="nft-description" name="description" required maxlength="1000" placeholder="Enter NFT description"></textarea>
+      </div>
+
+          <div class="form-group">
+            <label for="nft-image">Image *</label>
+            <div class="file-upload">
+              <input type="file" id="nft-image" name="image" accept="image/*" required>
+              <div class="file-upload-area">
+                <svg width="48" height="48" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M17 8L12 3L7 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M12 3V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <p>Click to upload or drag and drop</p>
+                <p class="file-upload-hint">PNG, JPG, GIF up to 10MB</p>
+              </div>
+            </div>
+          </div>
+          
+          <div class="form-group">
+            <label for="nft-collection">Collection</label>
+            <select id="nft-collection" name="collection">
+              <option value="">Select collection (optional)</option>
+              <option value="art">Digital Art</option>
+              <option value="music">Music</option>
+              <option value="gaming">Gaming</option>
+              <option value="sports">Sports</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label>Attributes</label>
+            <div id="attributes-container">
+              <div class="attribute-row">
+                <input type="text" name="trait_type" placeholder="Trait Type" class="attribute-input">
+                <input type="text" name="value" placeholder="Value" class="attribute-input">
+                <button type="button" class="remove-attribute" onclick="removeAttribute(this)">×</button>
+              </div>
+            </div>
+            <button type="button" class="add-attribute" onclick="addAttribute()">+ Add Attribute</button>
+          </div>
+          
+          <div class="form-group">
+            <label for="nft-external-url">External URL</label>
+            <input type="url" id="nft-external-url" name="external_url" placeholder="https://example.com">
           </div>
           
           <div class="form-actions">
-            <button class="generate-metadata-btn" id="generate-metadata-btn">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
-                <path d="M2 17l10 5 10-5"></path>
-                <path d="M2 12l10 5 10-5"></path>
-              </svg>
-              Generate Metadata
-            </button>
+            <button type="button" class="btn-secondary" onclick="closeTool('minting')">Cancel</button>
+            <button type="submit" class="btn-primary">Mint NFT</button>
           </div>
+        </form>
         </div>
       </div>
     </div>
-  )}
 
-  {showIPFS && (
-    <div class="tools-section">
-      <div class="section-header">
-        <h4 class="section-title">IPFS Integration</h4>
-        <div class="ipfs-status">
-          <span class="status-indicator active"></span>
-          <span class="status-text">Connected</span>
+  <!-- Metadata Management Modal -->
+  <div id="metadata-modal" class="tool-modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>Metadata Management</h3>
+        <button class="modal-close" onclick="closeTool('metadata')">&times;</button>
         </div>
+      <div class="modal-body">
+        <div class="metadata-tools">
+          <div class="tool-section">
+            <h4>Create Metadata</h4>
+            <p>Generate NFT metadata from uploaded files</p>
+            <button class="btn-primary" onclick="generateMetadata()">Generate Metadata</button>
       </div>
 
-      <div class="ipfs-tools">
-        <div class="ipfs-info">
-          <div class="info-item">
-            <span class="info-label">Gateway:</span>
-            <span class="info-value">{ipfsData.gateway}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Pinning Service:</span>
-            <span class="info-value">{ipfsData.pinning.service}</span>
-          </div>
-          <div class="info-item">
-            <span class="info-label">Status:</span>
-            <span class="info-value status-{ipfsData.pinning.status}">{ipfsData.pinning.status}</span>
+          <div class="tool-section">
+            <h4>Validate Metadata</h4>
+            <p>Validate existing metadata against standards</p>
+            <div class="validation-area">
+              <textarea id="metadata-input" placeholder="Paste metadata JSON here..."></textarea>
+              <button class="btn-secondary" onclick="validateMetadata()">Validate</button>
           </div>
         </div>
 
-        <div class="ipfs-files">
-          <h5 class="files-title">Uploaded Files</h5>
-          <div class="files-list">
-            {ipfsData.files.map(file => (
-              <div class="file-item">
-                <div class="file-info">
-                  <div class="file-name">{file.name}</div>
-                  <div class="file-meta">
-                    <span class="file-size">{file.size}</span>
-                    <span class="file-type">{file.type}</span>
-                    <span class="file-date">{file.uploaded}</span>
+          <div class="tool-section">
+            <h4>Schema Templates</h4>
+            <p>Use pre-built metadata templates</p>
+            <div class="template-grid">
+              <button class="template-btn" onclick="loadTemplate('art')">Digital Art</button>
+              <button class="template-btn" onclick="loadTemplate('music')">Music</button>
+              <button class="template-btn" onclick="loadTemplate('gaming')">Gaming</button>
+              <button class="template-btn" onclick="loadTemplate('sports')">Sports</button>
                   </div>
                 </div>
-                <div class="file-hash">
-                  <code>{file.hash}</code>
-                  <button class="copy-hash-btn" data-hash={file.hash}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                      <path d="m5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                    </svg>
-                  </button>
                 </div>
               </div>
-            ))}
           </div>
         </div>
 
+  <!-- IPFS Upload Modal -->
+  <div id="ipfs-modal" class="tool-modal" style="display: none;">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>IPFS Upload</h3>
+        <button class="modal-close" onclick="closeTool('ipfs')">&times;</button>
+      </div>
+      <div class="modal-body">
         <div class="ipfs-upload">
-          <button class="upload-btn" id="upload-btn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-              <polyline points="7,10 12,15 17,10"></polyline>
-              <line x1="12" y1="15" x2="12" y2="3"></line>
+          <div class="upload-area">
+            <input type="file" id="ipfs-files" multiple accept="*/*">
+            <div class="upload-zone">
+              <svg width="64" height="64" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M21 15V19C21 19.5304 20.7893 20.0391 20.4142 20.4142C20.0391 20.7893 19.5304 21 19 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M17 8L12 3L7 8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M12 3V15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
             </svg>
-            Upload to IPFS
-          </button>
+              <h4>Upload Files to IPFS</h4>
+              <p>Drag and drop files here or click to browse</p>
+              <p class="upload-hint">Supports all file types, up to 100MB per file</p>
         </div>
       </div>
-    </div>
-  )}
-
-  {showValidation && (
-    <div class="tools-section">
-      <div class="section-header">
-        <h4 class="section-title">Metadata Validation</h4>
-        <button class="validate-all-btn" id="validate-all-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <polyline points="20,6 9,17 4,12"></polyline>
-          </svg>
-          Validate All
-        </button>
+          
+          <div class="upload-options">
+            <label class="checkbox-label">
+              <input type="checkbox" id="pin-files" checked>
+              <span class="checkmark"></span>
+              Pin files to IPFS
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" id="create-backup">
+              <span class="checkmark"></span>
+              Create backup copies
+            </label>
       </div>
 
-      <div class="validation-tools">
-        <div class="validation-form">
-          <div class="form-group">
-            <label class="form-label">Metadata URL</label>
-            <div class="url-input-group">
-              <input type="url" class="form-input" placeholder="https://ipfs.io/ipfs/..." id="metadata-url" />
-              <button class="validate-url-btn" id="validate-url-btn">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <polyline points="20,6 9,17 4,12"></polyline>
-                </svg>
-                Validate
-              </button>
+          <div class="upload-progress" id="upload-progress" style="display: none;">
+            <div class="progress-bar">
+              <div class="progress-fill" id="progress-fill"></div>
             </div>
-          </div>
+            <p class="progress-text" id="progress-text">Uploading...</p>
         </div>
 
-        <div class="validation-results" id="validation-results">
-          <div class="result-item">
-            <div class="result-icon success">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="20,6 9,17 4,12"></polyline>
-              </svg>
-            </div>
-            <div class="result-content">
-              <div class="result-title">Metadata Structure</div>
-              <div class="result-description">Valid JSON structure with required fields</div>
-            </div>
+          <div class="upload-results" id="upload-results" style="display: none;">
+            <h4>Upload Results</h4>
+            <div class="results-list" id="results-list"></div>
           </div>
           
-          <div class="result-item">
-            <div class="result-icon success">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="20,6 9,17 4,12"></polyline>
-              </svg>
+          <div class="upload-actions">
+            <button class="btn-secondary" onclick="closeTool('ipfs')">Cancel</button>
+            <button class="btn-primary" onclick="startUpload()">Upload to IPFS</button>
             </div>
-            <div class="result-content">
-              <div class="result-title">Image URL</div>
-              <div class="result-description">Valid image URL accessible</div>
             </div>
           </div>
-          
-          <div class="result-item">
-            <div class="result-icon warning">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"></path>
-                <line x1="12" y1="9" x2="12" y2="13"></line>
-                <line x1="12" y1="17" x2="12.01" y2="17"></line>
-              </svg>
             </div>
-            <div class="result-content">
-              <div class="result-title">Attributes</div>
-              <div class="result-description">Consider adding more attributes for better discoverability</div>
             </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  )}
 </div>
+
+<script>
+  // Advanced NFT Tools JavaScript
+  class AdvancedNFTTools {
+    constructor() {
+      this.currentTool = null;
+      this.uploadQueue = [];
+      this.init();
+    }
+
+    init() {
+      this.setupEventListeners();
+      this.setupFileUploads();
+    }
+
+    setupEventListeners() {
+      // Form submissions
+      document.getElementById('minting-form')?.addEventListener('submit', this.handleMintingSubmit.bind(this));
+      
+      // File uploads
+      document.getElementById('nft-image')?.addEventListener('change', this.handleImagePreview.bind(this));
+      document.getElementById('ipfs-files')?.addEventListener('change', this.handleIPFSUpload.bind(this));
+    }
+
+    setupFileUploads() {
+      // Drag and drop for IPFS uploads
+      const uploadZone = document.querySelector('.upload-zone');
+      if (uploadZone) {
+        uploadZone.addEventListener('dragover', this.handleDragOver.bind(this));
+        uploadZone.addEventListener('drop', this.handleDrop.bind(this));
+        uploadZone.addEventListener('click', () => {
+          document.getElementById('ipfs-files')?.click();
+        });
+      }
+    }
+
+    openTool(toolName) {
+      this.currentTool = toolName;
+      const modal = document.getElementById(`${toolName}-modal`);
+      if (modal) {
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    closeTool(toolName) {
+      const modal = document.getElementById(`${toolName}-modal`);
+      if (modal) {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+      }
+      this.currentTool = null;
+    }
+
+    async handleMintingSubmit(event) {
+      event.preventDefault();
+      
+      const formData = new FormData(event.target);
+      const nftData = {
+        name: formData.get('name'),
+        description: formData.get('description'),
+        image: formData.get('image'),
+        collection: formData.get('collection'),
+        external_url: formData.get('external_url'),
+        attributes: this.collectAttributes()
+      };
+
+      try {
+        // Validate metadata
+        const validation = await this.validateMetadata(nftData);
+        if (!validation.valid) {
+          this.showError('Validation failed: ' + validation.errors.join(', '));
+          return;
+        }
+
+        // Upload image to IPFS
+        const imageResult = await this.uploadToIPFS(nftData.image);
+        if (!imageResult.success) {
+          this.showError('Failed to upload image: ' + imageResult.error);
+          return;
+        }
+
+        // Create metadata
+        const metadata = {
+          ...nftData,
+          image: imageResult.url,
+          attributes: nftData.attributes
+        };
+
+        // Upload metadata to IPFS
+        const metadataResult = await this.uploadMetadataToIPFS(metadata);
+        if (!metadataResult.success) {
+          this.showError('Failed to upload metadata: ' + metadataResult.error);
+          return;
+        }
+
+        // Mint NFT
+        const mintResult = await this.mintNFT({
+          ...metadata,
+          metadata_uri: metadataResult.url
+        });
+
+        if (mintResult.success) {
+          this.showSuccess('NFT minted successfully!');
+          this.closeTool('minting');
+        } else {
+          this.showError('Failed to mint NFT: ' + mintResult.error);
+        }
+
+      } catch (error) {
+        this.showError('An error occurred: ' + error.message);
+      }
+    }
+
+    collectAttributes() {
+      const attributes = [];
+      const attributeRows = document.querySelectorAll('.attribute-row');
+      
+      attributeRows.forEach(row => {
+        const traitType = row.querySelector('input[name="trait_type"]')?.value;
+        const value = row.querySelector('input[name="value"]')?.value;
+        
+        if (traitType && value) {
+          attributes.push({ trait_type: traitType, value: value });
+        }
+      });
+      
+      return attributes;
+    }
+
+    addAttribute() {
+      const container = document.getElementById('attributes-container');
+      const row = document.createElement('div');
+      row.className = 'attribute-row';
+      row.innerHTML = `
+        <input type="text" name="trait_type" placeholder="Trait Type" class="attribute-input">
+        <input type="text" name="value" placeholder="Value" class="attribute-input">
+        <button type="button" class="remove-attribute" onclick="removeAttribute(this)">×</button>
+      `;
+      container.appendChild(row);
+    }
+
+    removeAttribute(button) {
+      button.parentElement.remove();
+    }
+
+    async validateMetadata(metadata) {
+      try {
+        const response = await fetch('/api/nft/validate-metadata', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(metadata)
+        });
+        
+        const result = await response.json();
+        return result;
+      } catch (error) {
+        return { valid: false, errors: [error.message] };
+      }
+    }
+
+    async uploadToIPFS(file) {
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        
+        const response = await fetch('/api/ipfs/upload', {
+          method: 'POST',
+          body: formData
+        });
+        
+        return await response.json();
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    }
+
+    async uploadMetadataToIPFS(metadata) {
+      try {
+        const response = await fetch('/api/ipfs/upload-metadata', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(metadata)
+        });
+        
+        return await response.json();
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    }
+
+    async mintNFT(nftData) {
+      try {
+        const response = await fetch('/api/nft/mint', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(nftData)
+        });
+        
+        return await response.json();
+      } catch (error) {
+        return { success: false, error: error.message };
+      }
+    }
+
+    handleImagePreview(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          // Show image preview
+          const preview = document.createElement('img');
+          preview.src = e.target.result;
+          preview.style.maxWidth = '200px';
+          preview.style.maxHeight = '200px';
+          preview.style.borderRadius = '8px';
+          
+          const uploadArea = event.target.parentElement.querySelector('.file-upload-area');
+          uploadArea.innerHTML = '';
+          uploadArea.appendChild(preview);
+        };
+        reader.readAsDataURL(file);
+      }
+    }
+
+    handleIPFSUpload(event) {
+      const files = Array.from(event.target.files);
+      this.uploadQueue = files;
+      this.updateUploadQueue();
+    }
+
+    handleDragOver(event) {
+      event.preventDefault();
+      event.currentTarget.classList.add('drag-over');
+    }
+
+    handleDrop(event) {
+      event.preventDefault();
+      event.currentTarget.classList.remove('drag-over');
+      
+      const files = Array.from(event.dataTransfer.files);
+      this.uploadQueue = files;
+      this.updateUploadQueue();
+    }
+
+    updateUploadQueue() {
+      const resultsList = document.getElementById('results-list');
+      if (resultsList) {
+        resultsList.innerHTML = '';
+        this.uploadQueue.forEach((file, index) => {
+          const item = document.createElement('div');
+          item.className = 'result-item';
+          item.innerHTML = `
+            <span class="file-name">${file.name}</span>
+            <span class="file-size">${this.formatFileSize(file.size)}</span>
+            <span class="file-status">Ready</span>
+          `;
+          resultsList.appendChild(item);
+        });
+      }
+    }
+
+    async startUpload() {
+      const progressContainer = document.getElementById('upload-progress');
+      const resultsContainer = document.getElementById('upload-results');
+      const progressFill = document.getElementById('progress-fill');
+      const progressText = document.getElementById('progress-text');
+      
+      progressContainer.style.display = 'block';
+      resultsContainer.style.display = 'none';
+      
+      let completed = 0;
+      const total = this.uploadQueue.length;
+      
+      for (let i = 0; i < this.uploadQueue.length; i++) {
+        const file = this.uploadQueue[i];
+        
+        try {
+          progressText.textContent = `Uploading ${file.name}...`;
+          
+          const result = await this.uploadToIPFS(file);
+          
+          if (result.success) {
+            this.updateUploadResult(i, 'success', result.url);
+          } else {
+            this.updateUploadResult(i, 'error', result.error);
+          }
+          
+        } catch (error) {
+          this.updateUploadResult(i, 'error', error.message);
+        }
+        
+        completed++;
+        const progress = (completed / total) * 100;
+        progressFill.style.width = `${progress}%`;
+      }
+      
+      progressContainer.style.display = 'none';
+      resultsContainer.style.display = 'block';
+    }
+
+    updateUploadResult(index, status, message) {
+      const resultItems = document.querySelectorAll('.result-item');
+      if (resultItems[index]) {
+        const statusElement = resultItems[index].querySelector('.file-status');
+        statusElement.textContent = message;
+        statusElement.className = `file-status ${status}`;
+      }
+    }
+
+    formatFileSize(bytes) {
+      if (bytes === 0) return '0 Bytes';
+      const k = 1024;
+      const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+      const i = Math.floor(Math.log(bytes) / Math.log(k));
+      return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+    }
+
+    showSuccess(message) {
+      // Implementation for success notification
+      console.log('Success:', message);
+    }
+
+    showError(message) {
+      // Implementation for error notification
+      console.error('Error:', message);
+    }
+  }
+
+  // Global functions for HTML onclick handlers
+  function openTool(toolName) {
+    window.nftTools?.openTool(toolName);
+  }
+
+  function closeTool(toolName) {
+    window.nftTools?.closeTool(toolName);
+  }
+
+  function addAttribute() {
+    window.nftTools?.addAttribute();
+  }
+
+  function removeAttribute(button) {
+    window.nftTools?.removeAttribute(button);
+  }
+
+  function startUpload() {
+    window.nftTools?.startUpload();
+  }
+
+  // Initialize when DOM is loaded
+  document.addEventListener('DOMContentLoaded', () => {
+    window.nftTools = new AdvancedNFTTools();
+  });
+</script>
 
 <style>
   .advanced-nft-tools {
-    background: white;
-    border-radius: 12px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
-    border: 1px solid #E5E7EB;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
   }
 
   .tools-header {
-    margin-bottom: 2rem;
+    text-align: center;
+    margin-bottom: 3rem;
   }
 
   .tools-title {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 1.25rem;
+    font-size: 2.5rem;
     font-weight: 700;
-    color: #111827;
-    margin-bottom: 0.25rem;
-  }
-
-  .tools-icon {
-    font-size: 1.5rem;
-  }
-
-  .tools-subtitle {
-    font-size: 0.875rem;
-    color: #6B7280;
-  }
-
-  .tools-section {
-    margin-bottom: 2rem;
-  }
-
-  .tools-section:last-child {
-    margin-bottom: 0;
-  }
-
-  .section-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+    color: var(--soladia-primary);
     margin-bottom: 1rem;
   }
 
-  .section-title {
-    font-size: 1rem;
-    font-weight: 600;
-    color: #111827;
+  .tools-description {
+    font-size: 1.125rem;
+    color: var(--soladia-dark-muted);
+    max-width: 600px;
+    margin: 0 auto;
   }
 
-  .create-collection-btn,
-  .create-metadata-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: #E60012;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .create-collection-btn:hover,
-  .create-metadata-btn:hover {
-    background: #CC0010;
-  }
-
-  .collections-grid {
+  .tools-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 1rem;
+    gap: 2rem;
+    margin-bottom: 3rem;
   }
 
-  .collection-card {
-    background: #F9FAFB;
-    border: 1px solid #E5E7EB;
-    border-radius: 8px;
-    overflow: hidden;
-    transition: all 0.2s ease;
+  .tool-card {
+    background: white;
+    border-radius: var(--soladia-radius-xl);
+    padding: 2rem;
+    box-shadow: var(--soladia-shadow-card);
+    transition: all 0.3s ease;
+    border: 1px solid var(--soladia-border);
   }
 
-  .collection-card:hover {
-    border-color: #D1D5DB;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  .tool-card:hover {
+    transform: translateY(-4px);
+    box-shadow: var(--soladia-shadow-lg);
   }
 
-  .collection-image {
-    position: relative;
-    width: 100%;
-    height: 150px;
-    overflow: hidden;
+  .tool-icon {
+    width: 64px;
+    height: 64px;
+    background: linear-gradient(135deg, var(--soladia-primary), var(--soladia-secondary));
+    border-radius: var(--soladia-radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+    color: white;
   }
 
-  .collection-image img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .collection-status {
-    position: absolute;
-    top: 0.5rem;
-    right: 0.5rem;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    text-transform: uppercase;
-  }
-
-  .status-active {
-    background: #D1FAE5;
-    color: #065F46;
-  }
-
-  .status-completed {
-    background: #FEE2E2;
-    color: #991B1B;
-  }
-
-  .collection-content {
-    padding: 1rem;
-  }
-
-  .collection-name {
-    font-size: 0.875rem;
+  .tool-title {
+    font-size: 1.25rem;
     font-weight: 600;
-    color: #111827;
-    margin-bottom: 0.5rem;
+    color: var(--soladia-dark);
+    margin-bottom: 0.75rem;
   }
 
-  .collection-description {
-    font-size: 0.75rem;
-    color: #6B7280;
-    margin-bottom: 1rem;
-    line-height: 1.4;
+  .tool-description {
+    color: var(--soladia-dark-muted);
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
   }
 
-  .collection-stats {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
-  }
-
-  .stat-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-
-  .stat-label {
-    font-size: 0.75rem;
-    color: #6B7280;
-  }
-
-  .stat-value {
-    font-size: 0.75rem;
-    color: #374151;
-    font-weight: 500;
-  }
-
-  .collection-actions {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .action-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: 4px;
-    font-size: 0.75rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .action-btn.primary {
-    background: #E60012;
+  .tool-button {
+    background: var(--soladia-primary);
     color: white;
     border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--soladia-radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    width: 100%;
   }
 
-  .action-btn.primary:hover {
-    background: #CC0010;
+  .tool-button:hover {
+    background: #c5000f;
+    transform: translateY(-1px);
   }
 
-  .action-btn.secondary {
-    background: #F3F4F6;
-    color: #374151;
-    border: 1px solid #D1D5DB;
+  .tool-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 2rem;
   }
 
-  .action-btn.secondary:hover {
-    background: #E5E7EB;
+  .modal-content {
+    background: white;
+    border-radius: var(--soladia-radius-xl);
+    max-width: 600px;
+    width: 100%;
+    max-height: 90vh;
+    overflow-y: auto;
   }
 
-  .metadata-tools {
-    background: #F9FAFB;
-    border: 1px solid #E5E7EB;
-    border-radius: 8px;
-    padding: 1rem;
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--soladia-border);
   }
 
-  .metadata-form {
+  .modal-header h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--soladia-dark);
+  }
+
+  .modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--soladia-dark-muted);
+    padding: 0.5rem;
+  }
+
+  .modal-body {
+    padding: 2rem;
+  }
+
+  .nft-form {
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
   }
 
   .form-group {
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
   }
 
-  .form-label {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #374151;
+  .form-group label {
+    font-weight: 600;
+    color: var(--soladia-dark);
+    margin-bottom: 0.5rem;
   }
 
-  .form-input,
-  .form-textarea {
-    padding: 0.5rem 0.75rem;
-    border: 1px solid #D1D5DB;
-    border-radius: 4px;
-    font-size: 0.875rem;
-    color: #374151;
-    background: white;
+  .form-group input,
+  .form-group textarea,
+  .form-group select {
+    padding: 0.75rem;
+    border: 1px solid var(--soladia-border);
+    border-radius: var(--soladia-radius-md);
+    font-size: 1rem;
+    transition: border-color 0.2s ease;
   }
 
-  .form-input:focus,
-  .form-textarea:focus {
+  .form-group input:focus,
+  .form-group textarea:focus,
+  .form-group select:focus {
     outline: none;
-    border-color: #E60012;
-    box-shadow: 0 0 0 3px rgba(230, 0, 18, 0.1);
+    border-color: var(--soladia-primary);
   }
 
-  .attributes-container {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  .file-upload {
+    position: relative;
   }
 
-  .attribute-item {
+  .file-upload input[type="file"] {
+    position: absolute;
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    cursor: pointer;
+  }
+
+  .file-upload-area {
+    border: 2px dashed var(--soladia-border);
+    border-radius: var(--soladia-radius-md);
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .file-upload-area:hover {
+    border-color: var(--soladia-primary);
+    background: rgba(230, 0, 18, 0.05);
+  }
+
+  .file-upload-area.drag-over {
+    border-color: var(--soladia-primary);
+    background: rgba(230, 0, 18, 0.1);
+  }
+
+  .file-upload-hint {
+    font-size: 0.875rem;
+    color: var(--soladia-dark-muted);
+    margin-top: 0.5rem;
+  }
+
+  .attribute-row {
     display: flex;
-    gap: 0.5rem;
+    gap: 0.75rem;
+    margin-bottom: 0.75rem;
     align-items: center;
   }
 
-  .attribute-item .form-input {
+  .attribute-input {
     flex: 1;
   }
 
-  .remove-attribute-btn {
+  .remove-attribute {
+    background: var(--soladia-error);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+    font-size: 1.25rem;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 32px;
-    height: 32px;
-    background: #FEE2E2;
-    color: #991B1B;
+  }
+
+  .add-attribute {
+    background: var(--soladia-success);
+    color: white;
     border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .remove-attribute-btn:hover {
-    background: #FECACA;
-  }
-
-  .add-attribute-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
     padding: 0.5rem 1rem;
-    background: #F3F4F6;
-    color: #374151;
-    border: 1px solid #D1D5DB;
-    border-radius: 4px;
-    font-size: 0.875rem;
-    font-weight: 500;
+    border-radius: var(--soladia-radius-md);
     cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .add-attribute-btn:hover {
-    background: #E5E7EB;
+    font-weight: 600;
   }
 
   .form-actions {
     display: flex;
+    gap: 1rem;
     justify-content: flex-end;
+    margin-top: 1rem;
   }
 
-  .generate-metadata-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: #E60012;
+  .btn-primary {
+    background: var(--soladia-primary);
     color: white;
     border: none;
-    border-radius: 4px;
-    font-size: 0.875rem;
-    font-weight: 500;
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--soladia-radius-md);
+    font-weight: 600;
     cursor: pointer;
     transition: all 0.2s ease;
   }
 
-  .generate-metadata-btn:hover {
-    background: #CC0010;
+  .btn-primary:hover {
+    background: #c5000f;
   }
 
-  .ipfs-tools {
+  .btn-secondary {
+    background: white;
+    color: var(--soladia-dark);
+    border: 1px solid var(--soladia-border);
+    padding: 0.75rem 1.5rem;
+    border-radius: var(--soladia-radius-md);
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-secondary:hover {
+    background: var(--soladia-light);
+  }
+
+  .metadata-tools {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .tool-section h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--soladia-dark);
+    margin-bottom: 0.5rem;
+  }
+
+  .tool-section p {
+    color: var(--soladia-dark-muted);
+    margin-bottom: 1rem;
+  }
+
+  .validation-area {
     display: flex;
     flex-direction: column;
     gap: 1rem;
   }
 
-  .ipfs-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  .validation-area textarea {
+    min-height: 200px;
+    font-family: monospace;
   }
 
-  .info-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
+  .template-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
   }
 
-  .info-label {
-    font-size: 0.875rem;
-    color: #6B7280;
-  }
-
-  .info-value {
-    font-size: 0.875rem;
-    color: #374151;
-    font-weight: 500;
-  }
-
-  .status-active {
-    color: #059669;
-  }
-
-  .ipfs-files {
-    background: #F9FAFB;
-    border: 1px solid #E5E7EB;
-    border-radius: 8px;
-    padding: 1rem;
-  }
-
-  .files-title {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #111827;
-    margin-bottom: 0.75rem;
-  }
-
-  .files-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.75rem;
-  }
-
-  .file-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 0.75rem;
+  .template-btn {
     background: white;
-    border: 1px solid #E5E7EB;
-    border-radius: 6px;
-  }
-
-  .file-info {
-    display: flex;
-    flex-direction: column;
-    gap: 0.25rem;
-  }
-
-  .file-name {
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: #111827;
-  }
-
-  .file-meta {
-    display: flex;
-    gap: 0.5rem;
-    font-size: 0.75rem;
-    color: #6B7280;
-  }
-
-  .file-hash {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-  }
-
-  .file-hash code {
-    background: #F3F4F6;
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 0.75rem;
-    color: #374151;
-  }
-
-  .copy-hash-btn {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 28px;
-    height: 28px;
-    background: #E60012;
-    color: white;
-    border: none;
-    border-radius: 4px;
+    color: var(--soladia-dark);
+    border: 1px solid var(--soladia-border);
+    padding: 0.75rem;
+    border-radius: var(--soladia-radius-md);
     cursor: pointer;
     transition: all 0.2s ease;
   }
 
-  .copy-hash-btn:hover {
-    background: #CC0010;
+  .template-btn:hover {
+    background: var(--soladia-primary);
+    color: white;
   }
 
   .ipfs-upload {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    gap: 1.5rem;
   }
 
-  .upload-btn {
+  .upload-area {
+    position: relative;
+  }
+
+  .upload-zone {
+    border: 2px dashed var(--soladia-border);
+    border-radius: var(--soladia-radius-md);
+    padding: 3rem;
+    text-align: center;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .upload-zone:hover {
+    border-color: var(--soladia-primary);
+    background: rgba(230, 0, 18, 0.05);
+  }
+
+  .upload-zone.drag-over {
+    border-color: var(--soladia-primary);
+    background: rgba(230, 0, 18, 0.1);
+  }
+
+  .upload-zone h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--soladia-dark);
+    margin: 1rem 0 0.5rem;
+  }
+
+  .upload-zone p {
+    color: var(--soladia-dark-muted);
+    margin: 0.25rem 0;
+  }
+
+  .upload-hint {
+    font-size: 0.875rem;
+  }
+
+  .upload-options {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .checkbox-label {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
-    padding: 0.75rem 1.5rem;
-    background: #E60012;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    font-weight: 500;
     cursor: pointer;
-    transition: all 0.2s ease;
-  }
-
-  .upload-btn:hover {
-    background: #CC0010;
-  }
-
-  .validation-tools {
-    background: #F9FAFB;
-    border: 1px solid #E5E7EB;
-    border-radius: 8px;
-    padding: 1rem;
-  }
-
-  .validation-form {
-    margin-bottom: 1rem;
-  }
-
-  .url-input-group {
-    display: flex;
-    gap: 0.5rem;
-  }
-
-  .url-input-group .form-input {
-    flex: 1;
-  }
-
-  .validate-url-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: #E60012;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    font-size: 0.875rem;
     font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
   }
 
-  .validate-url-btn:hover {
-    background: #CC0010;
+  .checkbox-label input[type="checkbox"] {
+    margin-right: 0.5rem;
   }
 
-  .validation-results {
+  .upload-progress {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.5rem;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 8px;
+    background: var(--soladia-border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--soladia-primary);
+    transition: width 0.3s ease;
+    width: 0%;
+  }
+
+  .progress-text {
+    font-size: 0.875rem;
+    color: var(--soladia-dark-muted);
+    text-align: center;
+  }
+
+  .upload-results {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .upload-results h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--soladia-dark);
+  }
+
+  .results-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
   }
 
   .result-item {
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 0.75rem;
     padding: 0.75rem;
-    background: white;
-    border: 1px solid #E5E7EB;
-    border-radius: 6px;
+    background: var(--soladia-light);
+    border-radius: var(--soladia-radius-md);
   }
 
-  .result-icon {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
+  .file-name {
+    font-weight: 500;
+    color: var(--soladia-dark);
   }
 
-  .result-icon.success {
-    background: #D1FAE5;
-    color: #059669;
+  .file-size {
+    color: var(--soladia-dark-muted);
+    font-size: 0.875rem;
   }
 
-  .result-icon.warning {
-    background: #FEF3C7;
-    color: #D97706;
-  }
-
-  .result-content {
-    flex: 1;
-  }
-
-  .result-title {
+  .file-status {
     font-size: 0.875rem;
     font-weight: 500;
-    color: #111827;
-    margin-bottom: 0.25rem;
   }
 
-  .result-description {
-    font-size: 0.75rem;
-    color: #6B7280;
+  .file-status.success {
+    color: var(--soladia-success);
   }
 
-  .ipfs-status {
+  .file-status.error {
+    color: var(--soladia-error);
+  }
+
+  .upload-actions {
     display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    gap: 1rem;
+    justify-content: flex-end;
   }
 
-  .status-indicator {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-  }
+  @media (max-width: 768px) {
+    .advanced-nft-tools {
+      padding: 1rem;
+    }
 
-  .status-indicator.active {
-    background: #10B981;
-  }
+    .tools-grid {
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+    }
 
-  .status-text {
-    font-size: 0.875rem;
-    color: #374151;
-  }
+    .tool-card {
+      padding: 1.5rem;
+    }
 
-  .validate-all-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-    background: #E60012;
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-size: 0.875rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: all 0.2s ease;
-  }
+    .modal-content {
+      margin: 1rem;
+    }
 
-  .validate-all-btn:hover {
-    background: #CC0010;
-  }
+    .modal-body {
+      padding: 1.5rem;
+    }
 
+    .attribute-row {
+      flex-direction: column;
+      align-items: stretch;
+    }
+
+    .upload-options {
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .form-actions,
+    .upload-actions {
+      flex-direction: column;
+    }
+  }
 </style>
-
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
-    // Add attribute functionality
-    const addAttributeBtn = document.getElementById('add-attribute-btn');
-    const attributesContainer = document.querySelector('.attributes-container');
-    
-    if (addAttributeBtn && attributesContainer) {
-      addAttributeBtn.addEventListener('click', () => {
-        const attributeItem = document.createElement('div');
-        attributeItem.className = 'attribute-item';
-        attributeItem.innerHTML = `
-          <input type="text" placeholder="Trait Type" class="form-input" />
-          <input type="text" placeholder="Value" class="form-input" />
-          <button class="remove-attribute-btn">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <line x1="18" y1="6" x2="6" y2="18"></line>
-              <line x1="6" y1="6" x2="18" y2="18"></line>
-            </svg>
-          </button>
-        `;
-        
-        attributesContainer.appendChild(attributeItem);
-        
-        // Add remove functionality to new button
-        const removeBtn = attributeItem.querySelector('.remove-attribute-btn');
-        if (removeBtn) {
-          removeBtn.addEventListener('click', () => {
-            attributeItem.remove();
-          });
-        }
-      });
-    }
-
-    // Copy hash functionality
-    const copyHashButtons = document.querySelectorAll('.copy-hash-btn');
-    copyHashButtons.forEach(button => {
-      button.addEventListener('click', (e) => {
-        const hash = button.getAttribute('data-hash');
-        if (hash) {
-          navigator.clipboard.writeText(hash).then(() => {
-            const originalContent = button.innerHTML;
-            button.innerHTML = `
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <polyline points="20,6 9,17 4,12"></polyline>
-              </svg>
-            `;
-            setTimeout(() => {
-              button.innerHTML = originalContent;
-            }, 2000);
-          });
-        }
-      });
-    });
-
-    // Generate metadata functionality
-    const generateMetadataBtn = document.getElementById('generate-metadata-btn');
-    if (generateMetadataBtn) {
-      generateMetadataBtn.addEventListener('click', () => {
-        console.log('Generating metadata...');
-        // Here you would typically generate and validate metadata
-      });
-    }
-
-    // Validate URL functionality
-    const validateUrlBtn = document.getElementById('validate-url-btn');
-    if (validateUrlBtn) {
-      validateUrlBtn.addEventListener('click', () => {
-        const urlInput = document.getElementById('metadata-url') as HTMLInputElement;
-        if (urlInput) {
-          const url = urlInput.value;
-          if (url) {
-            console.log('Validating metadata URL:', url);
-            // Here you would typically validate the metadata URL
-          }
-        }
-      });
-    }
-
-    // Upload functionality
-    const uploadBtn = document.getElementById('upload-btn');
-    if (uploadBtn) {
-      uploadBtn.addEventListener('click', () => {
-        console.log('Uploading to IPFS...');
-        // Here you would typically handle file upload to IPFS
-      });
-    }
-
-    // Action buttons
-    const actionButtons = document.querySelectorAll('.action-btn');
-    actionButtons.forEach(button => {
-      button.addEventListener('click', (e) => {
-        const action = button.getAttribute('data-action');
-        const collectionId = button.getAttribute('data-collection-id');
-        
-        console.log(`Action: ${action}, Collection ID: ${collectionId}`);
-        
-        switch (action) {
-          case 'mint':
-            console.log('Minting NFT...');
-            break;
-          case 'edit':
-            console.log('Editing collection...');
-            break;
-        }
-      });
-    });
-  });
-</script>

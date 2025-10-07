@@ -1,14 +1,15 @@
 version: '3.8'
 
 services:
-  # Prometheus for metrics collection
+  # Prometheus - Metrics collection and storage
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.45.0
     container_name: soladia-prometheus
     ports:
       - "9090:9090"
     volumes:
-      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./monitoring/prometheus/rules:/etc/prometheus/rules
       - prometheus_data:/prometheus
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
@@ -17,28 +18,51 @@ services:
       - '--web.console.templates=/etc/prometheus/consoles'
       - '--storage.tsdb.retention.time=200h'
       - '--web.enable-lifecycle'
+    restart: unless-stopped
     networks:
       - monitoring
 
-  # Grafana for visualization
+  # Grafana - Visualization and dashboards
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:10.0.0
     container_name: soladia-grafana
     ports:
       - "3001:3000"
     volumes:
       - grafana_data:/var/lib/grafana
-      - ./monitoring/grafana/dashboards:/etc/grafana/provisioning/dashboards
-      - ./monitoring/grafana/datasources:/etc/grafana/provisioning/datasources
+      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
+      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
     environment:
+      - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=admin123
       - GF_USERS_ALLOW_SIGN_UP=false
+      - GF_INSTALL_PLUGINS=grafana-piechart-panel,grafana-worldmap-panel
+    restart: unless-stopped
+    networks:
+      - monitoring
+    depends_on:
+      - prometheus
+
+  # Alertmanager - Alert handling
+  alertmanager:
+    image: prom/alertmanager:v0.25.0
+    container_name: soladia-alertmanager
+    ports:
+      - "9093:9093"
+    volumes:
+      - ./monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - alertmanager_data:/alertmanager
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
+      - '--web.external-url=http://localhost:9093'
+    restart: unless-stopped
     networks:
       - monitoring
 
-  # Node Exporter for system metrics
+  # Node Exporter - System metrics
   node-exporter:
-    image: prom/node-exporter:latest
+    image: prom/node-exporter:v1.6.0
     container_name: soladia-node-exporter
     ports:
       - "9100:9100"
@@ -51,99 +75,71 @@ services:
       - '--path.rootfs=/rootfs'
       - '--path.sysfs=/host/sys'
       - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
+    restart: unless-stopped
     networks:
       - monitoring
 
-  # Redis for caching and session storage
-  redis:
-    image: redis:7-alpine
-    container_name: soladia-redis
+  # cAdvisor - Container metrics
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.47.0
+    container_name: soladia-cadvisor
     ports:
-      - "6379:6379"
+      - "8080:8080"
     volumes:
-      - redis_data:/data
-    command: redis-server --appendonly yes
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    privileged: true
+    devices:
+      - /dev/kmsg
+    restart: unless-stopped
     networks:
       - monitoring
 
-  # PostgreSQL database
-  postgres:
-    image: postgres:15
-    container_name: soladia-postgres
+  # Redis Exporter - Redis metrics
+  redis-exporter:
+    image: oliver006/redis_exporter:v1.52.0
+    container_name: soladia-redis-exporter
     ports:
-      - "5432:5432"
+      - "9121:9121"
     environment:
-      - POSTGRES_DB=soladia
-      - POSTGRES_USER=soladia
-      - POSTGRES_PASSWORD=soladia123
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./monitoring/postgres-exporter.yml:/etc/postgres-exporter.yml
+      - REDIS_ADDR=redis://redis:6379
+    restart: unless-stopped
     networks:
       - monitoring
+    depends_on:
+      - redis
 
-  # Postgres Exporter for database metrics
+  # PostgreSQL Exporter - Database metrics
   postgres-exporter:
-    image: prometheuscommunity/postgres-exporter:latest
+    image: prometheuscommunity/postgres-exporter:v0.13.2
     container_name: soladia-postgres-exporter
     ports:
       - "9187:9187"
     environment:
-      - DATA_SOURCE_NAME=postgresql://soladia:soladia123@postgres:5432/soladia?sslmode=disable
+      - DATA_SOURCE_NAME=postgresql://soladia_user:soladia_password@postgres:5432/soladia?sslmode=disable
+    restart: unless-stopped
     networks:
       - monitoring
-
-  # Nginx for load balancing and SSL termination
-  nginx:
-    image: nginx:alpine
-    container_name: soladia-nginx
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./monitoring/nginx.conf:/etc/nginx/nginx.conf
-      - ./monitoring/ssl:/etc/nginx/ssl
-    depends_on:
-      - frontend
-      - backend
-    networks:
-      - monitoring
-
-  # Frontend application
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: soladia-frontend
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=production
-      - API_URL=http://backend:8000
-    networks:
-      - monitoring
-
-  # Backend application
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: soladia-backend
-    ports:
-      - "8000:8000"
-    environment:
-      - DATABASE_URL=postgresql://soladia:soladia123@postgres:5432/soladia
-      - REDIS_URL=redis://redis:6379
-      - SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
-      - JWT_SECRET=your-jwt-secret-here
-      - LOG_LEVEL=INFO
     depends_on:
       - postgres
-      - redis
+
+  # Jaeger - Distributed tracing
+  jaeger:
+    image: jaegertracing/all-in-one:1.47
+    container_name: soladia-jaeger
+    ports:
+      - "16686:16686"
+      - "14268:14268"
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    restart: unless-stopped
     networks:
       - monitoring
 
-  # Log aggregation with ELK stack
+  # Elasticsearch - Log storage
   elasticsearch:
     image: docker.elastic.co/elasticsearch/elasticsearch:8.8.0
     container_name: soladia-elasticsearch
@@ -152,21 +148,14 @@ services:
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
     volumes:
       - elasticsearch_data:/usr/share/elasticsearch/data
+    restart: unless-stopped
     networks:
       - monitoring
 
-  logstash:
-    image: docker.elastic.co/logstash/logstash:8.8.0
-    container_name: soladia-logstash
-    volumes:
-      - ./monitoring/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-    depends_on:
-      - elasticsearch
-    networks:
-      - monitoring
-
+  # Kibana - Log visualization
   kibana:
     image: docker.elastic.co/kibana/kibana:8.8.0
     container_name: soladia-kibana
@@ -174,43 +163,63 @@ services:
       - "5601:5601"
     environment:
       - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+    restart: unless-stopped
+    networks:
+      - monitoring
     depends_on:
       - elasticsearch
-    networks:
-      - monitoring
 
-  # Alert Manager for notifications
-  alertmanager:
-    image: prom/alertmanager:latest
-    container_name: soladia-alertmanager
+  # Logstash - Log processing
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.8.0
+    container_name: soladia-logstash
     ports:
-      - "9093:9093"
+      - "5044:5044"
     volumes:
-      - ./monitoring/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-    command:
-      - '--config.file=/etc/alertmanager/alertmanager.yml'
-      - '--storage.path=/alertmanager'
+      - ./monitoring/logstash/pipeline:/usr/share/logstash/pipeline
+      - ./monitoring/logstash/config:/usr/share/logstash/config
+    restart: unless-stopped
+    networks:
+      - monitoring
+    depends_on:
+      - elasticsearch
+
+  # Uptime Kuma - Uptime monitoring
+  uptime-kuma:
+    image: louislam/uptime-kuma:1.22.0
+    container_name: soladia-uptime-kuma
+    ports:
+      - "3002:3001"
+    volumes:
+      - uptime_kuma_data:/app/data
+    restart: unless-stopped
     networks:
       - monitoring
 
-  # Jaeger for distributed tracing
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    container_name: soladia-jaeger
+  # Nginx - Reverse proxy for monitoring
+  monitoring-nginx:
+    image: nginx:alpine
+    container_name: soladia-monitoring-nginx
     ports:
-      - "16686:16686"
-      - "14268:14268"
-    environment:
-      - COLLECTOR_OTLP_ENABLED=true
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./monitoring/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - ./monitoring/nginx/ssl:/etc/nginx/ssl
+    restart: unless-stopped
     networks:
       - monitoring
+    depends_on:
+      - prometheus
+      - grafana
+      - alertmanager
 
 volumes:
   prometheus_data:
   grafana_data:
-  redis_data:
-  postgres_data:
+  alertmanager_data:
   elasticsearch_data:
+  uptime_kuma_data:
 
 networks:
   monitoring:

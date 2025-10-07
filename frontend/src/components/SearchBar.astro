@@ -1,0 +1,267 @@
+---
+export interface Props {
+  placeholder?: string;
+  className?: string;
+  onSearch?: (query: string) => void;
+  showFilters?: boolean;
+  initialQuery?: string;
+}
+
+const {
+  placeholder = "Search products, collections, and more...",
+  className = "",
+  onSearch,
+  showFilters = true,
+  initialQuery = ""
+} = Astro.props;
+---
+
+<div class={`search-bar ${className}`}>
+  <form class="search-form" id="search-form">
+    <div class="search-input-container">
+      <input
+        type="text"
+        id="search-input"
+        class="search-input"
+        placeholder={placeholder}
+        value={initialQuery}
+        autocomplete="off"
+        data-testid="search-input"
+      />
+      <button
+        type="submit"
+        class="search-button"
+        data-testid="search-button"
+        aria-label="Search"
+      >
+        <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <path d="m21 21-4.35-4.35"></path>
+        </svg>
+      </button>
+    </div>
+    
+    {showFilters && (
+      <div class="search-filters" id="search-filters">
+        <select class="filter-select" id="category-filter" data-testid="category-filter">
+          <option value="">All Categories</option>
+          <option value="digital-art">Digital Art</option>
+          <option value="gaming">Gaming</option>
+          <option value="music">Music</option>
+          <option value="virtual-world">Virtual World</option>
+          <option value="trading-cards">Trading Cards</option>
+          <option value="3d-assets">3D Assets</option>
+          <option value="photography">Photography</option>
+          <option value="collectibles">Collectibles</option>
+          <option value="sports">Sports</option>
+          <option value="fashion">Fashion</option>
+          <option value="real-estate">Real Estate</option>
+          <option value="home-garden">Home & Garden</option>
+          <option value="automotive">Automotive</option>
+          <option value="jewelry">Jewelry</option>
+        </select>
+        
+        <select class="filter-select" id="price-filter" data-testid="price-filter">
+          <option value="">Any Price</option>
+          <option value="0-1">Under 1 SOL</option>
+          <option value="1-5">1 - 5 SOL</option>
+          <option value="5-10">5 - 10 SOL</option>
+          <option value="10-50">10 - 50 SOL</option>
+          <option value="50+">50+ SOL</option>
+        </select>
+        
+        <select class="filter-select" id="sort-filter" data-testid="sort-filter">
+          <option value="relevance">Relevance</option>
+          <option value="price-low">Price: Low to High</option>
+          <option value="price-high">Price: High to Low</option>
+          <option value="newest">Newest</option>
+          <option value="oldest">Oldest</option>
+          <option value="popular">Most Popular</option>
+        </select>
+        
+        <label class="filter-checkbox">
+          <input type="checkbox" id="nft-only" data-testid="nft-only">
+          <span class="checkmark"></span>
+          NFT Only
+        </label>
+        
+        <label class="filter-checkbox">
+          <input type="checkbox" id="solana-only" data-testid="solana-only">
+          <span class="checkmark"></span>
+          Solana Only
+        </label>
+      </div>
+    )}
+  </form>
+</div>
+
+<style>
+  .search-bar {
+    @apply w-full max-w-4xl mx-auto;
+  }
+
+  .search-form {
+    @apply space-y-4;
+  }
+
+  .search-input-container {
+    @apply relative flex items-center;
+  }
+
+  .search-input {
+    @apply w-full px-4 py-3 pl-12 pr-16 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-soladia-primary focus:border-transparent outline-none transition-all duration-200 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400;
+  }
+
+  .search-button {
+    @apply absolute right-2 top-1/2 transform -translate-y-1/2 p-2 bg-soladia-primary text-white rounded-md hover:bg-soladia-primary/90 focus:outline-none focus:ring-2 focus:ring-soladia-primary focus:ring-offset-2 transition-all duration-200;
+  }
+
+  .search-icon {
+    @apply w-5 h-5;
+  }
+
+  .search-filters {
+    @apply flex flex-wrap gap-4 items-center justify-center;
+  }
+
+  .filter-select {
+    @apply px-3 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-md text-gray-900 dark:text-white focus:ring-2 focus:ring-soladia-primary focus:border-transparent outline-none transition-all duration-200;
+  }
+
+  .filter-checkbox {
+    @apply flex items-center space-x-2 cursor-pointer text-gray-700 dark:text-gray-300 hover:text-soladia-primary transition-colors duration-200;
+  }
+
+  .filter-checkbox input[type="checkbox"] {
+    @apply sr-only;
+  }
+
+  .checkmark {
+    @apply w-4 h-4 border-2 border-gray-300 dark:border-gray-600 rounded flex items-center justify-center transition-all duration-200;
+  }
+
+  .filter-checkbox input[type="checkbox"]:checked + .checkmark {
+    @apply bg-soladia-primary border-soladia-primary;
+  }
+
+  .filter-checkbox input[type="checkbox"]:checked + .checkmark::after {
+    content: "✓";
+    @apply text-white text-xs font-bold;
+  }
+
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .search-filters {
+      @apply flex-col items-stretch;
+    }
+    
+    .filter-select {
+      @apply w-full;
+    }
+  }
+
+  /* Dark mode transitions */
+  .search-input,
+  .filter-select,
+  .filter-checkbox {
+    @apply theme-transitioning;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const searchForm = document.getElementById('search-form') as HTMLFormElement;
+    const searchInput = document.getElementById('search-input') as HTMLInputElement;
+    const categoryFilter = document.getElementById('category-filter') as HTMLSelectElement;
+    const priceFilter = document.getElementById('price-filter') as HTMLSelectElement;
+    const sortFilter = document.getElementById('sort-filter') as HTMLSelectElement;
+    const nftOnly = document.getElementById('nft-only') as HTMLInputElement;
+    const solanaOnly = document.getElementById('solana-only') as HTMLInputElement;
+
+    // Handle search form submission
+    searchForm?.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const query = searchInput.value.trim();
+      
+      if (query) {
+        // Get filter values
+        const filters = {
+          query,
+          category: categoryFilter.value,
+          priceRange: priceFilter.value,
+          sortBy: sortFilter.value,
+          nftOnly: nftOnly.checked,
+          solanaOnly: solanaOnly.checked
+        };
+        
+        // Dispatch custom event with search data
+        const searchEvent = new CustomEvent('search', {
+          detail: filters
+        });
+        document.dispatchEvent(searchEvent);
+        
+        // If onSearch prop is provided, call it
+        if (window.handleSearch) {
+          window.handleSearch(filters);
+        }
+      }
+    });
+
+    // Handle filter changes
+    const filterElements = [categoryFilter, priceFilter, sortFilter, nftOnly, solanaOnly];
+    filterElements.forEach(element => {
+      element?.addEventListener('change', () => {
+        const query = searchInput.value.trim();
+        if (query) {
+          const filters = {
+            query,
+            category: categoryFilter.value,
+            priceRange: priceFilter.value,
+            sortBy: sortFilter.value,
+            nftOnly: nftOnly.checked,
+            solanaOnly: solanaOnly.checked
+          };
+          
+          const searchEvent = new CustomEvent('search', {
+            detail: filters
+          });
+          document.dispatchEvent(searchEvent);
+        }
+      });
+    });
+
+    // Handle search input changes with debouncing
+    let searchTimeout: NodeJS.Timeout;
+    searchInput?.addEventListener('input', () => {
+      clearTimeout(searchTimeout);
+      searchTimeout = setTimeout(() => {
+        const query = searchInput.value.trim();
+        if (query.length >= 2) {
+          const filters = {
+            query,
+            category: categoryFilter.value,
+            priceRange: priceFilter.value,
+            sortBy: sortFilter.value,
+            nftOnly: nftOnly.checked,
+            solanaOnly: solanaOnly.checked
+          };
+          
+          const searchEvent = new CustomEvent('search', {
+            detail: filters
+          });
+          document.dispatchEvent(searchEvent);
+        }
+      }, 300);
+    });
+
+    // Handle keyboard shortcuts
+    document.addEventListener('keydown', (e) => {
+      // Focus search input with Ctrl/Cmd + K
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        searchInput?.focus();
+      }
+    });
+  });
+</script>
+

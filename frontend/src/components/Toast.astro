@@ -1,0 +1,200 @@
+---
+export interface ToastProps {
+  id?: string;
+  type?: 'success' | 'error' | 'warning' | 'info';
+  title?: string;
+  message: string;
+  duration?: number;
+  closable?: boolean;
+  className?: string;
+}
+
+const {
+  id = `toast-${Math.random().toString(36).substr(2, 9)}`,
+  type = 'info',
+  title = '',
+  message,
+  duration = 5000,
+  closable = true,
+  className = ''
+} = Astro.props;
+
+const typeClasses = {
+  success: 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-800 dark:text-green-200',
+  error: 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-800 dark:text-red-200',
+  warning: 'bg-yellow-50 dark:bg-yellow-900/20 border-yellow-200 dark:border-yellow-800 text-yellow-800 dark:text-yellow-200',
+  info: 'bg-blue-50 dark:bg-blue-900/20 border-blue-200 dark:border-blue-800 text-blue-800 dark:text-blue-200'
+};
+
+const iconClasses = {
+  success: 'text-green-500',
+  error: 'text-red-500',
+  warning: 'text-yellow-500',
+  info: 'text-blue-500'
+};
+---
+
+<div 
+  class={`toast ${typeClasses[type]} ${className}`}
+  id={id}
+  data-testid="toast"
+  data-type={type}
+  data-duration={duration}
+>
+  <div class="toast-content">
+    <div class="toast-icon">
+      {type === 'success' && (
+        <svg class={`w-5 h-5 ${iconClasses[type]}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+          <polyline points="22,4 12,14.01 9,11.01"></polyline>
+        </svg>
+      )}
+      {type === 'error' && (
+        <svg class={`w-5 h-5 ${iconClasses[type]}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="15" y1="9" x2="9" y2="15"></line>
+          <line x1="9" y1="9" x2="15" y2="15"></line>
+        </svg>
+      )}
+      {type === 'warning' && (
+        <svg class={`w-5 h-5 ${iconClasses[type]}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+          <line x1="12" y1="9" x2="12" y2="13"></line>
+          <line x1="12" y1="17" x2="12.01" y2="17"></line>
+        </svg>
+      )}
+      {type === 'info' && (
+        <svg class={`w-5 h-5 ${iconClasses[type]}`} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="16" x2="12" y2="12"></line>
+          <line x1="12" y1="8" x2="12.01" y2="8"></line>
+        </svg>
+      )}
+    </div>
+    
+    <div class="toast-body">
+      {title && (
+        <h4 class="toast-title" data-testid="toast-title">{title}</h4>
+      )}
+      <p class="toast-message" data-testid="toast-message">{message}</p>
+    </div>
+    
+    {closable && (
+      <button 
+        class="toast-close" 
+        data-testid="toast-close"
+        onclick={`closeToast('${id}')`}
+        aria-label="Close notification"
+      >
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    )}
+  </div>
+  
+  <div class="toast-progress" data-testid="toast-progress">
+    <div class="toast-progress-bar"></div>
+  </div>
+</div>
+
+<style>
+  .toast {
+    @apply fixed top-4 right-4 z-50 max-w-sm w-full bg-white dark:bg-gray-800 border rounded-lg shadow-lg transform transition-all duration-300 ease-in-out;
+  }
+
+  .toast-content {
+    @apply flex items-start p-4;
+  }
+
+  .toast-icon {
+    @apply flex-shrink-0 mr-3 mt-0.5;
+  }
+
+  .toast-body {
+    @apply flex-1 min-w-0;
+  }
+
+  .toast-title {
+    @apply text-sm font-semibold mb-1;
+  }
+
+  .toast-message {
+    @apply text-sm;
+  }
+
+  .toast-close {
+    @apply flex-shrink-0 ml-3 p-1 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-gray-500;
+  }
+
+  .toast-progress {
+    @apply h-1 bg-gray-200 dark:bg-gray-700 rounded-b-lg overflow-hidden;
+  }
+
+  .toast-progress-bar {
+    @apply h-full bg-current opacity-30 transition-all duration-100 ease-linear;
+  }
+
+  /* Animation classes */
+  .toast-enter {
+    @apply transform translate-x-full opacity-0;
+  }
+
+  .toast-enter-active {
+    @apply transform translate-x-0 opacity-100;
+  }
+
+  .toast-exit {
+    @apply transform translate-x-0 opacity-100;
+  }
+
+  .toast-exit-active {
+    @apply transform translate-x-full opacity-0;
+  }
+
+  /* Responsive design */
+  @media (max-width: 640px) {
+    .toast {
+      @apply top-2 right-2 left-2 max-w-none;
+    }
+  }
+
+  /* Dark mode transitions */
+  .toast {
+    @apply theme-transitioning;
+  }
+</style>
+
+<script>
+  // Global function to close toast
+  window.closeToast = (toastId: string) => {
+    const toast = document.getElementById(toastId);
+    if (toast) {
+      toast.classList.add('toast-exit-active');
+      setTimeout(() => {
+        toast.remove();
+      }, 300);
+    }
+  };
+
+  // Auto-close toast after duration
+  document.addEventListener('DOMContentLoaded', () => {
+    const toast = document.getElementById('{id}');
+    if (toast) {
+      const duration = parseInt(toast.dataset.duration || '5000');
+      const progressBar = toast.querySelector('.toast-progress-bar') as HTMLElement;
+      
+      if (progressBar) {
+        progressBar.style.width = '100%';
+        progressBar.style.transition = `width ${duration}ms linear`;
+      }
+      
+      setTimeout(() => {
+        window.closeToast('{id}');
+      }, duration);
+    }
+  });
+</script>
+
+

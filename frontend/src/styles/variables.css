@@ -1,0 +1,365 @@
+/* Soladia Marketplace - CSS Custom Properties */
+/* Centralized design system variables for consistent theming */
+
+:root {
+  /* ========================================
+     BRAND COLORS
+     ======================================== */
+  
+  /* Primary Colors */
+  --soladia-primary: #E60012;
+  --soladia-primary-50: #fef2f2;
+  --soladia-primary-100: #fee2e2;
+  --soladia-primary-200: #fecaca;
+  --soladia-primary-300: #fca5a5;
+  --soladia-primary-400: #f87171;
+  --soladia-primary-500: #E60012;
+  --soladia-primary-600: #dc2626;
+  --soladia-primary-700: #b91c1c;
+  --soladia-primary-800: #991b1b;
+  --soladia-primary-900: #7f1d1d;
+
+  /* Secondary Colors */
+  --soladia-secondary: #0066CC;
+  --soladia-secondary-50: #eff6ff;
+  --soladia-secondary-100: #dbeafe;
+  --soladia-secondary-200: #bfdbfe;
+  --soladia-secondary-300: #93c5fd;
+  --soladia-secondary-400: #60a5fa;
+  --soladia-secondary-500: #0066CC;
+  --soladia-secondary-600: #2563eb;
+  --soladia-secondary-700: #1d4ed8;
+  --soladia-secondary-800: #1e40af;
+  --soladia-secondary-900: #1e3a8a;
+
+  /* Accent Colors */
+  --soladia-accent: #FFD700;
+  --soladia-accent-50: #fffbeb;
+  --soladia-accent-100: #fef3c7;
+  --soladia-accent-200: #fde68a;
+  --soladia-accent-300: #fcd34d;
+  --soladia-accent-400: #fbbf24;
+  --soladia-accent-500: #FFD700;
+  --soladia-accent-600: #d97706;
+  --soladia-accent-700: #b45309;
+  --soladia-accent-800: #92400e;
+  --soladia-accent-900: #78350f;
+
+  /* Semantic Colors */
+  --soladia-success: #00A650;
+  --soladia-success-50: #ecfdf5;
+  --soladia-success-100: #d1fae5;
+  --soladia-success-200: #a7f3d0;
+  --soladia-success-300: #6ee7b7;
+  --soladia-success-400: #34d399;
+  --soladia-success-500: #00A650;
+  --soladia-success-600: #059669;
+  --soladia-success-700: #047857;
+  --soladia-success-800: #065f46;
+  --soladia-success-900: #064e3b;
+
+  --soladia-warning: #FF8C00;
+  --soladia-warning-50: #fffbeb;
+  --soladia-warning-100: #fef3c7;
+  --soladia-warning-200: #fde68a;
+  --soladia-warning-300: #fcd34d;
+  --soladia-warning-400: #fbbf24;
+  --soladia-warning-500: #FF8C00;
+  --soladia-warning-600: #d97706;
+  --soladia-warning-700: #b45309;
+  --soladia-warning-800: #92400e;
+  --soladia-warning-900: #78350f;
+
+  --soladia-error: #DC2626;
+  --soladia-error-50: #fef2f2;
+  --soladia-error-100: #fee2e2;
+  --soladia-error-200: #fecaca;
+  --soladia-error-300: #fca5a5;
+  --soladia-error-400: #f87171;
+  --soladia-error-500: #DC2626;
+  --soladia-error-600: #dc2626;
+  --soladia-error-700: #b91c1c;
+  --soladia-error-800: #991b1b;
+  --soladia-error-900: #7f1d1d;
+
+  --soladia-info: #0EA5E9;
+  --soladia-info-50: #f0f9ff;
+  --soladia-info-100: #e0f2fe;
+  --soladia-info-200: #bae6fd;
+  --soladia-info-300: #7dd3fc;
+  --soladia-info-400: #38bdf8;
+  --soladia-info-500: #0EA5E9;
+  --soladia-info-600: #0284c7;
+  --soladia-info-700: #0369a1;
+  --soladia-info-800: #075985;
+  --soladia-info-900: #0c4a6e;
+
+  /* Neutral Colors */
+  --soladia-gray-50: #f9fafb;
+  --soladia-gray-100: #f3f4f6;
+  --soladia-gray-200: #e5e7eb;
+  --soladia-gray-300: #d1d5db;
+  --soladia-gray-400: #9ca3af;
+  --soladia-gray-500: #6b7280;
+  --soladia-gray-600: #4b5563;
+  --soladia-gray-700: #374151;
+  --soladia-gray-800: #1f2937;
+  --soladia-gray-900: #111827;
+
+  /* ========================================
+     TYPOGRAPHY
+     ======================================== */
+  
+  /* Font Families */
+  --soladia-font-primary: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --soladia-font-display: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --soladia-font-mono: 'Fira Code', 'Monaco', 'Cascadia Code', 'Roboto Mono', monospace;
+
+  /* Font Sizes */
+  --soladia-text-xs: 0.75rem;    /* 12px */
+  --soladia-text-sm: 0.875rem;   /* 14px */
+  --soladia-text-base: 1rem;     /* 16px */
+  --soladia-text-lg: 1.125rem;   /* 18px */
+  --soladia-text-xl: 1.25rem;    /* 20px */
+  --soladia-text-2xl: 1.5rem;    /* 24px */
+  --soladia-text-3xl: 1.875rem;  /* 30px */
+  --soladia-text-4xl: 2.25rem;   /* 36px */
+  --soladia-text-5xl: 3rem;      /* 48px */
+  --soladia-text-6xl: 3.75rem;   /* 60px */
+  --soladia-text-7xl: 4.5rem;    /* 72px */
+  --soladia-text-8xl: 6rem;      /* 96px */
+  --soladia-text-9xl: 8rem;      /* 128px */
+
+  /* Font Weights */
+  --soladia-font-thin: 100;
+  --soladia-font-extralight: 200;
+  --soladia-font-light: 300;
+  --soladia-font-normal: 400;
+  --soladia-font-medium: 500;
+  --soladia-font-semibold: 600;
+  --soladia-font-bold: 700;
+  --soladia-font-extrabold: 800;
+  --soladia-font-black: 900;
+
+  /* Line Heights */
+  --soladia-leading-none: 1;
+  --soladia-leading-tight: 1.25;
+  --soladia-leading-snug: 1.375;
+  --soladia-leading-normal: 1.5;
+  --soladia-leading-relaxed: 1.625;
+  --soladia-leading-loose: 2;
+
+  /* Letter Spacing */
+  --soladia-tracking-tighter: -0.05em;
+  --soladia-tracking-tight: -0.025em;
+  --soladia-tracking-normal: 0em;
+  --soladia-tracking-wide: 0.025em;
+  --soladia-tracking-wider: 0.05em;
+  --soladia-tracking-widest: 0.1em;
+
+  /* ========================================
+     SPACING
+     ======================================== */
+  
+  /* Spacing Scale */
+  --soladia-space-0: 0;
+  --soladia-space-px: 1px;
+  --soladia-space-0-5: 0.125rem;  /* 2px */
+  --soladia-space-1: 0.25rem;     /* 4px */
+  --soladia-space-1-5: 0.375rem;  /* 6px */
+  --soladia-space-2: 0.5rem;      /* 8px */
+  --soladia-space-2-5: 0.625rem;  /* 10px */
+  --soladia-space-3: 0.75rem;     /* 12px */
+  --soladia-space-3-5: 0.875rem;  /* 14px */
+  --soladia-space-4: 1rem;        /* 16px */
+  --soladia-space-5: 1.25rem;     /* 20px */
+  --soladia-space-6: 1.5rem;      /* 24px */
+  --soladia-space-7: 1.75rem;     /* 28px */
+  --soladia-space-8: 2rem;        /* 32px */
+  --soladia-space-9: 2.25rem;     /* 36px */
+  --soladia-space-10: 2.5rem;     /* 40px */
+  --soladia-space-11: 2.75rem;    /* 44px */
+  --soladia-space-12: 3rem;       /* 48px */
+  --soladia-space-14: 3.5rem;     /* 56px */
+  --soladia-space-16: 4rem;       /* 64px */
+  --soladia-space-20: 5rem;       /* 80px */
+  --soladia-space-24: 6rem;       /* 96px */
+  --soladia-space-28: 7rem;       /* 112px */
+  --soladia-space-32: 8rem;       /* 128px */
+  --soladia-space-36: 9rem;       /* 144px */
+  --soladia-space-40: 10rem;      /* 160px */
+  --soladia-space-44: 11rem;      /* 176px */
+  --soladia-space-48: 12rem;      /* 192px */
+  --soladia-space-52: 13rem;      /* 208px */
+  --soladia-space-56: 14rem;      /* 224px */
+  --soladia-space-60: 15rem;      /* 240px */
+  --soladia-space-64: 16rem;      /* 256px */
+  --soladia-space-72: 18rem;      /* 288px */
+  --soladia-space-80: 20rem;      /* 320px */
+  --soladia-space-96: 24rem;      /* 384px */
+
+  /* ========================================
+     BORDER RADIUS
+     ======================================== */
+  
+  --soladia-radius-none: 0;
+  --soladia-radius-sm: 0.125rem;   /* 2px */
+  --soladia-radius: 0.25rem;       /* 4px */
+  --soladia-radius-md: 0.375rem;   /* 6px */
+  --soladia-radius-lg: 0.5rem;     /* 8px */
+  --soladia-radius-xl: 0.75rem;    /* 12px */
+  --soladia-radius-2xl: 1rem;      /* 16px */
+  --soladia-radius-3xl: 1.5rem;    /* 24px */
+  --soladia-radius-full: 9999px;
+
+  /* ========================================
+     SHADOWS
+     ======================================== */
+  
+  /* Standard Shadows */
+  --soladia-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --soladia-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+  --soladia-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --soladia-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --soladia-shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --soladia-shadow-2xl: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --soladia-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+  --soladia-shadow-none: 0 0 #0000;
+
+  /* Brand Shadows */
+  --soladia-shadow-primary: 0 4px 20px rgba(230, 0, 18, 0.15);
+  --soladia-shadow-primary-lg: 0 8px 40px rgba(230, 0, 18, 0.25);
+  --soladia-shadow-primary-hover: 0 8px 25px rgba(230, 0, 18, 0.2);
+  --soladia-shadow-secondary: 0 4px 20px rgba(0, 102, 204, 0.15);
+  --soladia-shadow-accent: 0 4px 20px rgba(255, 215, 0, 0.15);
+
+  /* ========================================
+     GRADIENTS
+     ======================================== */
+  
+  --soladia-gradient-primary: linear-gradient(135deg, #E60012 0%, #0066CC 100%);
+  --soladia-gradient-secondary: linear-gradient(135deg, #0066CC 0%, #0EA5E9 100%);
+  --soladia-gradient-accent: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  --soladia-gradient-soft: linear-gradient(135deg, rgba(230, 0, 18, 0.1) 0%, rgba(0, 102, 204, 0.1) 100%);
+  --soladia-gradient-hero: linear-gradient(135deg, rgba(230, 0, 18, 0.05) 0%, rgba(0, 102, 204, 0.05) 100%);
+  --soladia-gradient-card: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.8) 100%);
+
+  /* ========================================
+     ANIMATIONS
+     ======================================== */
+  
+  /* Transition Durations */
+  --soladia-duration-75: 75ms;
+  --soladia-duration-100: 100ms;
+  --soladia-duration-150: 150ms;
+  --soladia-duration-200: 200ms;
+  --soladia-duration-300: 300ms;
+  --soladia-duration-500: 500ms;
+  --soladia-duration-700: 700ms;
+  --soladia-duration-1000: 1000ms;
+
+  /* Transition Timing Functions */
+  --soladia-ease-linear: linear;
+  --soladia-ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --soladia-ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --soladia-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Custom Transitions */
+  --soladia-transition: all 0.3s var(--soladia-ease-in-out);
+  --soladia-transition-fast: all 0.15s var(--soladia-ease-out);
+  --soladia-transition-slow: all 0.5s var(--soladia-ease-in-out);
+  --soladia-transition-colors: color 0.3s var(--soladia-ease-in-out), background-color 0.3s var(--soladia-ease-in-out), border-color 0.3s var(--soladia-ease-in-out);
+  --soladia-transition-transform: transform 0.3s var(--soladia-ease-in-out);
+  --soladia-transition-opacity: opacity 0.3s var(--soladia-ease-in-out);
+
+  /* ========================================
+     Z-INDEX SCALE
+     ======================================== */
+  
+  --soladia-z-dropdown: 1000;
+  --soladia-z-sticky: 1020;
+  --soladia-z-fixed: 1030;
+  --soladia-z-modal: 1040;
+  --soladia-z-popover: 1050;
+  --soladia-z-tooltip: 1060;
+  --soladia-z-toast: 1070;
+
+  /* ========================================
+     BREAKPOINTS
+     ======================================== */
+  
+  --soladia-breakpoint-sm: 640px;
+  --soladia-breakpoint-md: 768px;
+  --soladia-breakpoint-lg: 1024px;
+  --soladia-breakpoint-xl: 1280px;
+  --soladia-breakpoint-2xl: 1536px;
+
+  /* ========================================
+     LIGHT THEME COLORS
+     ======================================== */
+  
+  --soladia-bg-primary: #ffffff;
+  --soladia-bg-secondary: #f8f9fa;
+  --soladia-bg-tertiary: #f1f3f4;
+  --soladia-text-primary: #1a1a1a;
+  --soladia-text-secondary: #666666;
+  --soladia-text-tertiary: #999999;
+  --soladia-text-inverse: #ffffff;
+  --soladia-border: #e1e5e9;
+  --soladia-border-light: #f1f3f4;
+  --soladia-border-dark: #d1d5db;
+  --soladia-overlay: rgba(0, 0, 0, 0.5);
+  --soladia-overlay-light: rgba(0, 0, 0, 0.1);
+  --soladia-overlay-dark: rgba(0, 0, 0, 0.8);
+}
+
+/* ========================================
+   DARK THEME COLORS
+   ======================================== */
+
+[data-theme="dark"] {
+  --soladia-bg-primary: #0f0f0f;
+  --soladia-bg-secondary: #1a1a1a;
+  --soladia-bg-tertiary: #2a2a2a;
+  --soladia-text-primary: #ffffff;
+  --soladia-text-secondary: #cccccc;
+  --soladia-text-tertiary: #999999;
+  --soladia-text-inverse: #1a1a1a;
+  --soladia-border: #333333;
+  --soladia-border-light: #2a2a2a;
+  --soladia-border-dark: #404040;
+  --soladia-overlay: rgba(0, 0, 0, 0.7);
+  --soladia-overlay-light: rgba(0, 0, 0, 0.3);
+  --soladia-overlay-dark: rgba(0, 0, 0, 0.9);
+}
+
+/* ========================================
+   REDUCED MOTION
+   ======================================== */
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --soladia-transition: none;
+    --soladia-transition-fast: none;
+    --soladia-transition-slow: none;
+    --soladia-transition-colors: none;
+    --soladia-transition-transform: none;
+    --soladia-transition-opacity: none;
+  }
+}
+
+/* ========================================
+   HIGH CONTRAST MODE
+   ======================================== */
+
+@media (prefers-contrast: high) {
+  :root {
+    --soladia-border: #000000;
+    --soladia-text-secondary: #000000;
+  }
+  
+  [data-theme="dark"] {
+    --soladia-border: #ffffff;
+    --soladia-text-secondary: #ffffff;
+  }
+}
