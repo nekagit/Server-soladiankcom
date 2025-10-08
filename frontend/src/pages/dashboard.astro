@@ -1,0 +1,379 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+import AuthGuard from '../components/AuthGuard.astro';
+---
+
+<Layout title='Dashboard - Soladia'>
+  <Navigation />
+
+  <AuthGuard>
+    <main class='min-h-screen bg-gray-50 py-8'>
+      <div class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+        <!-- Dashboard Header -->
+        <div class='mb-8'>
+          <h1 class='text-3xl font-bold text-gray-900'>Dashboard</h1>
+          <p class='mt-2 text-gray-600'>
+            Welcome back, <span id='dashboard-username'>User</span>!
+          </p>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8'>
+          <div class='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+            <div class='flex items-center'>
+              <div class='flex-shrink-0'>
+                <div
+                  class='w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center'
+                >
+                  <svg
+                    class='w-4 h-4 text-blue-600'
+                    fill='none'
+                    stroke='currentColor'
+                    viewBox='0 0 24 24'
+                  >
+                    <path
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                      stroke-width='2'
+                      d='M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z'></path>
+                  </svg>
+                </div>
+              </div>
+              <div class='ml-4'>
+                <p class='text-sm font-medium text-gray-500'>Total Orders</p>
+                <p
+                  class='text-2xl font-semibold text-gray-900'
+                  id='total-orders'
+                >
+                  0
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+            <div class='flex items-center'>
+              <div class='flex-shrink-0'>
+                <div
+                  class='w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center'
+                >
+                  <svg
+                    class='w-4 h-4 text-green-600'
+                    fill='none'
+                    stroke='currentColor'
+                    viewBox='0 0 24 24'
+                  >
+                    <path
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                      stroke-width='2'
+                      d='M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1'
+                    ></path>
+                  </svg>
+                </div>
+              </div>
+              <div class='ml-4'>
+                <p class='text-sm font-medium text-gray-500'>Total Spent</p>
+                <p
+                  class='text-2xl font-semibold text-gray-900'
+                  id='total-spent'
+                >
+                  $0.00
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+            <div class='flex items-center'>
+              <div class='flex-shrink-0'>
+                <div
+                  class='w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center'
+                >
+                  <svg
+                    class='w-4 h-4 text-purple-600'
+                    fill='none'
+                    stroke='currentColor'
+                    viewBox='0 0 24 24'
+                  >
+                    <path
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                      stroke-width='2'
+                      d='M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z'
+                    ></path>
+                  </svg>
+                </div>
+              </div>
+              <div class='ml-4'>
+                <p class='text-sm font-medium text-gray-500'>Wishlist Items</p>
+                <p
+                  class='text-2xl font-semibold text-gray-900'
+                  id='wishlist-items'
+                >
+                  0
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+            <div class='flex items-center'>
+              <div class='flex-shrink-0'>
+                <div
+                  class='w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center'
+                >
+                  <svg
+                    class='w-4 h-4 text-yellow-600'
+                    fill='none'
+                    stroke='currentColor'
+                    viewBox='0 0 24 24'
+                  >
+                    <path
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                      stroke-width='2'
+                      d='M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'></path>
+                  </svg>
+                </div>
+              </div>
+              <div class='ml-4'>
+                <p class='text-sm font-medium text-gray-500'>Active Listings</p>
+                <p
+                  class='text-2xl font-semibold text-gray-900'
+                  id='active-listings'
+                >
+                  0
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class='grid grid-cols-1 lg:grid-cols-3 gap-8'>
+          <!-- Recent Orders -->
+          <div class='lg:col-span-2'>
+            <div class='bg-white rounded-lg shadow-sm border border-gray-200'>
+              <div class='px-6 py-4 border-b border-gray-200'>
+                <h3 class='text-lg font-semibold text-gray-900'>
+                  Recent Orders
+                </h3>
+              </div>
+              <div class='p-6'>
+                <div class='text-center py-8'>
+                  <svg
+                    class='mx-auto h-12 w-12 text-gray-400'
+                    fill='none'
+                    stroke='currentColor'
+                    viewBox='0 0 24 24'
+                  >
+                    <path
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                      stroke-width='2'
+                      d='M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z'></path>
+                  </svg>
+                  <h3 class='mt-2 text-sm font-medium text-gray-900'>
+                    No orders yet
+                  </h3>
+                  <p class='mt-1 text-sm text-gray-500'>
+                    Start shopping to see your orders here.
+                  </p>
+                  <div class='mt-6'>
+                    <a
+                      href='/products'
+                      class='inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700'
+                    >
+                      Start Shopping
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Quick Actions -->
+          <div class='space-y-6'>
+            <div
+              class='bg-white rounded-lg shadow-sm border border-gray-200 p-6'
+            >
+              <h3 class='text-lg font-semibold text-gray-900 mb-4'>
+                Quick Actions
+              </h3>
+              <div class='space-y-3'>
+                <a
+                  href='/products'
+                  class='w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50'
+                >
+                  <svg
+                    class='w-4 h-4 mr-2'
+                    fill='none'
+                    stroke='currentColor'
+                    viewBox='0 0 24 24'
+                  >
+                    <path
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                      stroke-width='2'
+                      d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'></path>
+                  </svg>
+                  Browse Products
+                </a>
+
+                <a
+                  href='/sell'
+                  class='w-full flex items-center justify-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700'
+                >
+                  <svg
+                    class='w-4 h-4 mr-2'
+                    fill='none'
+                    stroke='currentColor'
+                    viewBox='0 0 24 24'
+                  >
+                    <path
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                      stroke-width='2'
+                      d='M12 6v6m0 0v6m0-6h6m-6 0H6'></path>
+                  </svg>
+                  Sell Item
+                </a>
+
+                <a
+                  href='/profile'
+                  class='w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50'
+                >
+                  <svg
+                    class='w-4 h-4 mr-2'
+                    fill='none'
+                    stroke='currentColor'
+                    viewBox='0 0 24 24'
+                  >
+                    <path
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                      stroke-width='2'
+                      d='M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z'
+                    ></path>
+                  </svg>
+                  Edit Profile
+                </a>
+              </div>
+            </div>
+
+            <!-- Account Status -->
+            <div
+              class='bg-white rounded-lg shadow-sm border border-gray-200 p-6'
+            >
+              <h3 class='text-lg font-semibold text-gray-900 mb-4'>
+                Account Status
+              </h3>
+              <div class='space-y-3'>
+                <div class='flex items-center justify-between'>
+                  <span class='text-sm text-gray-500'>Email Verified</span>
+                  <span
+                    class='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800'
+                  >
+                    Verified
+                  </span>
+                </div>
+                <div class='flex items-center justify-between'>
+                  <span class='text-sm text-gray-500'>Wallet Connected</span>
+                  <span
+                    class='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800'
+                  >
+                    Not Connected
+                  </span>
+                </div>
+                <div class='flex items-center justify-between'>
+                  <span class='text-sm text-gray-500'>KYC Status</span>
+                  <span
+                    class='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800'
+                  >
+                    Pending
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </AuthGuard>
+</Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const authManager = (window as any).authManager;
+
+    if (!authManager) {
+      console.error('Auth manager not available');
+      window.location.href = '/auth';
+      return;
+    }
+
+    const user = authManager.getCurrentUser();
+
+    if (!user) {
+      console.log('No user found, redirecting to auth');
+      window.location.href = '/auth';
+      return;
+    }
+
+    // Update dashboard information
+    const updateDashboard = () => {
+      const dashboardUsername = document.getElementById('dashboard-username');
+
+      if (dashboardUsername) {
+        dashboardUsername.textContent =
+          user.full_name || user.username || 'User';
+      }
+
+      // Load dashboard data (mock for now)
+      loadDashboardData();
+    };
+
+    const loadDashboardData = async () => {
+      try {
+        // Mock data - replace with actual API calls
+        const mockData = {
+          totalOrders: 0,
+          totalSpent: 0,
+          wishlistItems: 0,
+          activeListings: 0,
+        };
+
+        // Update stats
+        const totalOrders = document.getElementById('total-orders');
+        const totalSpent = document.getElementById('total-spent');
+        const wishlistItems = document.getElementById('wishlist-items');
+        const activeListings = document.getElementById('active-listings');
+
+        if (totalOrders)
+          totalOrders.textContent = mockData.totalOrders.toString();
+        if (totalSpent)
+          totalSpent.textContent = `$${mockData.totalSpent.toFixed(2)}`;
+        if (wishlistItems)
+          wishlistItems.textContent = mockData.wishlistItems.toString();
+        if (activeListings)
+          activeListings.textContent = mockData.activeListings.toString();
+      } catch (error) {
+        console.error('Failed to load dashboard data:', error);
+      }
+    };
+
+    updateDashboard();
+
+    // Listen for auth state changes
+    window.addEventListener('authStateChanged', () => {
+      const currentUser = authManager.getCurrentUser();
+      if (!currentUser) {
+        window.location.href = '/auth';
+      } else {
+        updateDashboard();
+      }
+    });
+  });
+</script>

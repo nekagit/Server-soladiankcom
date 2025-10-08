@@ -1,0 +1,138 @@
+config:
+  target: 'http://localhost:4321'
+  phases:
+    - duration: 60
+      arrivalRate: 5
+      name: "Warm up"
+    - duration: 120
+      arrivalRate: 10
+      name: "Ramp up load"
+    - duration: 300
+      arrivalRate: 20
+      name: "Sustained load"
+    - duration: 60
+      arrivalRate: 5
+      name: "Ramp down"
+  defaults:
+    headers:
+      User-Agent: "Artillery Load Test"
+  plugins:
+    metrics-by-endpoint:
+      useOnlyRequestNames: true
+
+scenarios:
+  - name: "Homepage and API Health Check"
+    weight: 40
+    flow:
+      - get:
+          url: "/"
+          name: "Homepage"
+          expect:
+            - statusCode: 200
+            - hasHeader: "content-type"
+      - think: 1
+      - get:
+          url: "http://localhost:8001/health"
+          name: "API Health Check"
+          expect:
+            - statusCode: 200
+
+  - name: "Product Browsing"
+    weight: 30
+    flow:
+      - get:
+          url: "http://localhost:8001/api/v1/products"
+          name: "Get Products"
+          expect:
+            - statusCode: 200
+      - think: 2
+      - get:
+          url: "http://localhost:8001/api/v1/categories"
+          name: "Get Categories"
+          expect:
+            - statusCode: 200
+      - think: 1
+      - get:
+          url: "http://localhost:8001/api/v1/search?q=test"
+          name: "Search Products"
+          expect:
+            - statusCode: 200
+
+  - name: "User Authentication Flow"
+    weight: 20
+    flow:
+      - post:
+          url: "http://localhost:8001/api/v1/auth/register"
+          name: "User Registration"
+          json:
+            email: "test{{ $randomString() }}@example.com"
+            password: "testpassword123"
+            username: "user{{ $randomString() }}"
+          expect:
+            - statusCode: [201, 400] # 400 if user already exists
+      - think: 1
+      - post:
+          url: "http://localhost:8001/api/v1/auth/login"
+          name: "User Login"
+          json:
+            email: "test@example.com"
+            password: "testpassword123"
+          expect:
+            - statusCode: [200, 401] # 401 if invalid credentials
+
+  - name: "Solana Integration"
+    weight: 10
+    flow:
+      - get:
+          url: "http://localhost:8001/api/v1/solana/wallet/connect"
+          name: "Wallet Connect"
+          expect:
+            - statusCode: 200
+      - think: 1
+      - get:
+          url: "http://localhost:8001/api/v1/solana/balance"
+          name: "Get Balance"
+          expect:
+            - statusCode: 200
+      - think: 1
+      - get:
+          url: "http://localhost:8001/api/v1/nfts"
+          name: "Get NFTs"
+          expect:
+            - statusCode: 200
+
+  - name: "NFT Marketplace"
+    weight: 15
+    flow:
+      - get:
+          url: "http://localhost:8001/api/v1/nfts"
+          name: "Get NFT Listings"
+          expect:
+            - statusCode: 200
+      - think: 2
+      - get:
+          url: "http://localhost:8001/api/v1/nfts/collections"
+          name: "Get NFT Collections"
+          expect:
+            - statusCode: 200
+      - think: 1
+      - get:
+          url: "http://localhost:8001/api/v1/nfts/search?q=art"
+          name: "Search NFTs"
+          expect:
+            - statusCode: 200
+
+  - name: "Error Handling"
+    weight: 5
+    flow:
+      - get:
+          url: "/nonexistent-page"
+          name: "404 Page"
+          expect:
+            - statusCode: 404
+      - think: 1
+      - get:
+          url: "http://localhost:8001/api/v1/invalid-endpoint"
+          name: "API 404"
+          expect:
+            - statusCode: 404

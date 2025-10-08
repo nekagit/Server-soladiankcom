@@ -569,3 +569,4 @@ class AdvancedAnalyticsService:
 advanced_analytics_service = AdvancedAnalyticsService()
 
 
+

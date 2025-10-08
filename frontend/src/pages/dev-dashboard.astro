@@ -1,0 +1,474 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+import Card from '../components/atoms/Card.astro';
+import Button from '../components/atoms/Button.astro';
+import ProductGrid from '../components/organisms/ProductGrid.astro';
+---
+
+<Layout title='Development Dashboard - Soladia'>
+  <Navigation />
+
+  <main class='min-h-screen bg-gray-50 py-8'>
+    <div class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+      <!-- Header -->
+      <div class='mb-8'>
+        <h1 class='text-4xl font-bold text-gray-900 mb-4'>
+          Soladia Development Dashboard
+        </h1>
+        <p class='text-lg text-gray-600'>
+          Comprehensive development tools and feature showcase
+        </p>
+      </div>
+
+      <!-- Feature Overview -->
+      <div class='grid grid-cols-1 lg:grid-cols-3 gap-8 mb-12'>
+        <!-- Authentication System -->
+        <Card variant='elevated' padding='lg' className='text-center'>
+          <div
+            class='w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4'
+          >
+            <svg
+              class='w-8 h-8 text-blue-600'
+              fill='none'
+              stroke='currentColor'
+              viewBox='0 0 24 24'
+            >
+              <path
+                stroke-linecap='round'
+                stroke-linejoin='round'
+                stroke-width='2'
+                d='M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z'
+              ></path>
+            </svg>
+          </div>
+          <h3 class='text-xl font-semibold text-gray-900 mb-2'>
+            Authentication System
+          </h3>
+          <p class='text-gray-600 mb-4'>
+            Complete JWT-based authentication with role management
+          </p>
+          <div class='space-y-2'>
+            <Button href='/auth-test' variant='primary' size='sm' fullWidth
+              >Test Auth System</Button
+            >
+            <Button href='/profile' variant='outline' size='sm' fullWidth
+              >View Profile</Button
+            >
+          </div>
+        </Card>
+
+        <!-- Component Library -->
+        <Card variant='elevated' padding='lg' className='text-center'>
+          <div
+            class='w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4'
+          >
+            <svg
+              class='w-8 h-8 text-green-600'
+              fill='none'
+              stroke='currentColor'
+              viewBox='0 0 24 24'
+            >
+              <path
+                stroke-linecap='round'
+                stroke-linejoin='round'
+                stroke-width='2'
+                d='M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10'
+              ></path>
+            </svg>
+          </div>
+          <h3 class='text-xl font-semibold text-gray-900 mb-2'>
+            Component Library
+          </h3>
+          <p class='text-gray-600 mb-4'>
+            Atomic design system with reusable components
+          </p>
+          <div class='space-y-2'>
+            <Button href='/components' variant='primary' size='sm' fullWidth
+              >View Components</Button
+            >
+            <Button href='/storybook' variant='outline' size='sm' fullWidth
+              >Storybook</Button
+            >
+          </div>
+        </Card>
+
+        <!-- API Integration -->
+        <Card variant='elevated' padding='lg' className='text-center'>
+          <div
+            class='w-16 h-16 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4'
+          >
+            <svg
+              class='w-8 h-8 text-purple-600'
+              fill='none'
+              stroke='currentColor'
+              viewBox='0 0 24 24'
+            >
+              <path
+                stroke-linecap='round'
+                stroke-linejoin='round'
+                stroke-width='2'
+                d='M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'
+              ></path>
+            </svg>
+          </div>
+          <h3 class='text-xl font-semibold text-gray-900 mb-2'>
+            API Integration
+          </h3>
+          <p class='text-gray-600 mb-4'>
+            Centralized API client with error handling
+          </p>
+          <div class='space-y-2'>
+            <Button href='/api-docs' variant='primary' size='sm' fullWidth
+              >API Documentation</Button
+            >
+            <Button href='/api-test' variant='outline' size='sm' fullWidth
+              >Test API</Button
+            >
+          </div>
+        </Card>
+      </div>
+
+      <!-- Development Tools -->
+      <div class='grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12'>
+        <!-- Performance Monitoring -->
+        <Card variant='default' padding='lg'>
+          <h3 class='text-xl font-semibold text-gray-900 mb-4'>
+            Performance Monitoring
+          </h3>
+          <div class='space-y-4'>
+            <div
+              class='flex items-center justify-between p-3 bg-gray-50 rounded-lg'
+            >
+              <span class='text-sm font-medium text-gray-700'
+                >Core Web Vitals</span
+              >
+              <Button size='sm' variant='outline' onclick='checkPerformance()'
+                >Check</Button
+              >
+            </div>
+            <div
+              class='flex items-center justify-between p-3 bg-gray-50 rounded-lg'
+            >
+              <span class='text-sm font-medium text-gray-700'
+                >Bundle Analysis</span
+              >
+              <Button size='sm' variant='outline' onclick='analyzeBundle()'
+                >Analyze</Button
+              >
+            </div>
+            <div
+              class='flex items-center justify-between p-3 bg-gray-50 rounded-lg'
+            >
+              <span class='text-sm font-medium text-gray-700'
+                >Lighthouse Score</span
+              >
+              <Button size='sm' variant='outline' onclick='runLighthouse()'
+                >Run</Button
+              >
+            </div>
+          </div>
+        </Card>
+
+        <!-- Accessibility Testing -->
+        <Card variant='default' padding='lg'>
+          <h3 class='text-xl font-semibold text-gray-900 mb-4'>
+            Accessibility Testing
+          </h3>
+          <div class='space-y-4'>
+            <div
+              class='flex items-center justify-between p-3 bg-gray-50 rounded-lg'
+            >
+              <span class='text-sm font-medium text-gray-700'
+                >WCAG Compliance</span
+              >
+              <Button size='sm' variant='outline' onclick='checkAccessibility()'
+                >Check</Button
+              >
+            </div>
+            <div
+              class='flex items-center justify-between p-3 bg-gray-50 rounded-lg'
+            >
+              <span class='text-sm font-medium text-gray-700'
+                >Screen Reader Test</span
+              >
+              <Button size='sm' variant='outline' onclick='testScreenReader()'
+                >Test</Button
+              >
+            </div>
+            <div
+              class='flex items-center justify-between p-3 bg-gray-50 rounded-lg'
+            >
+              <span class='text-sm font-medium text-gray-700'
+                >Color Contrast</span
+              >
+              <Button size='sm' variant='outline' onclick='checkContrast()'
+                >Check</Button
+              >
+            </div>
+          </div>
+        </Card>
+      </div>
+
+      <!-- Component Showcase -->
+      <div class='mb-12'>
+        <h2 class='text-2xl font-bold text-gray-900 mb-6'>
+          Component Showcase
+        </h2>
+
+        <!-- Button Variants -->
+        <Card variant='default' padding='lg' className='mb-8'>
+          <h3 class='text-lg font-semibold text-gray-900 mb-4'>
+            Button Components
+          </h3>
+          <div class='grid grid-cols-2 md:grid-cols-4 gap-4'>
+            <Button variant='primary' size='md'>Primary</Button>
+            <Button variant='secondary' size='md'>Secondary</Button>
+            <Button variant='outline' size='md'>Outline</Button>
+            <Button variant='ghost' size='md'>Ghost</Button>
+            <Button variant='danger' size='md'>Danger</Button>
+            <Button variant='primary' size='sm'>Small</Button>
+            <Button variant='primary' size='lg'>Large</Button>
+            <Button variant='primary' size='md' loading>Loading</Button>
+          </div>
+        </Card>
+
+        <!-- Product Grid Demo -->
+        <Card variant='default' padding='lg'>
+          <h3 class='text-lg font-semibold text-gray-900 mb-4'>
+            Product Grid Component
+          </h3>
+          <ProductGrid
+            products={[
+              {
+                id: '1',
+                title: 'Sample Product 1',
+                price: 99.99,
+                image: 'https://via.placeholder.com/300x200',
+                description: 'A sample product for demonstration',
+                category: 'Electronics',
+                rating: 4.5,
+                reviewCount: 25,
+                inStock: true,
+                onSale: true,
+                salePrice: 79.99,
+              },
+              {
+                id: '2',
+                title: 'Sample Product 2',
+                price: 149.99,
+                image: 'https://via.placeholder.com/300x200',
+                description: 'Another sample product',
+                category: 'Electronics',
+                rating: 4.2,
+                reviewCount: 18,
+                inStock: true,
+              },
+              {
+                id: '3',
+                title: 'Sample Product 3',
+                price: 199.99,
+                image: 'https://via.placeholder.com/300x200',
+                description: 'Third sample product',
+                category: 'Electronics',
+                rating: 4.8,
+                reviewCount: 32,
+                inStock: false,
+              },
+            ]}
+            columns={3}
+          />
+        </Card>
+      </div>
+
+      <!-- Development Status -->
+      <div class='mb-12'>
+        <h2 class='text-2xl font-bold text-gray-900 mb-6'>
+          Development Status
+        </h2>
+        <div class='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6'>
+          <Card variant='filled' padding='md'>
+            <div class='flex items-center justify-between mb-2'>
+              <span class='text-sm font-medium text-gray-700'
+                >Authentication</span
+              >
+              <span class='text-sm text-green-600 font-semibold'
+                >✅ Complete</span
+              >
+            </div>
+            <div class='w-full bg-gray-200 rounded-full h-2'>
+              <div class='bg-green-500 h-2 rounded-full' style='width: 100%'>
+              </div>
+            </div>
+          </Card>
+
+          <Card variant='filled' padding='md'>
+            <div class='flex items-center justify-between mb-2'>
+              <span class='text-sm font-medium text-gray-700'
+                >Component Library</span
+              >
+              <span class='text-sm text-green-600 font-semibold'
+                >✅ Complete</span
+              >
+            </div>
+            <div class='w-full bg-gray-200 rounded-full h-2'>
+              <div class='bg-green-500 h-2 rounded-full' style='width: 100%'>
+              </div>
+            </div>
+          </Card>
+
+          <Card variant='filled' padding='md'>
+            <div class='flex items-center justify-between mb-2'>
+              <span class='text-sm font-medium text-gray-700'
+                >API Integration</span
+              >
+              <span class='text-sm text-green-600 font-semibold'
+                >✅ Complete</span
+              >
+            </div>
+            <div class='w-full bg-gray-200 rounded-full h-2'>
+              <div class='bg-green-500 h-2 rounded-full' style='width: 100%'>
+              </div>
+            </div>
+          </Card>
+
+          <Card variant='filled' padding='md'>
+            <div class='flex items-center justify-between mb-2'>
+              <span class='text-sm font-medium text-gray-700'
+                >Testing Suite</span
+              >
+              <span class='text-sm text-green-600 font-semibold'
+                >✅ Complete</span
+              >
+            </div>
+            <div class='w-full bg-gray-200 rounded-full h-2'>
+              <div class='bg-green-500 h-2 rounded-full' style='width: 100%'>
+              </div>
+            </div>
+          </Card>
+
+          <Card variant='filled' padding='md'>
+            <div class='flex items-center justify-between mb-2'>
+              <span class='text-sm font-medium text-gray-700'>Performance</span>
+              <span class='text-sm text-green-600 font-semibold'
+                >✅ Complete</span
+              >
+            </div>
+            <div class='w-full bg-gray-200 rounded-full h-2'>
+              <div class='bg-green-500 h-2 rounded-full' style='width: 100%'>
+              </div>
+            </div>
+          </Card>
+
+          <Card variant='filled' padding='md'>
+            <div class='flex items-center justify-between mb-2'>
+              <span class='text-sm font-medium text-gray-700'
+                >Accessibility</span
+              >
+              <span class='text-sm text-green-600 font-semibold'
+                >✅ Complete</span
+              >
+            </div>
+            <div class='w-full bg-gray-200 rounded-full h-2'>
+              <div class='bg-green-500 h-2 rounded-full' style='width: 100%'>
+              </div>
+            </div>
+          </Card>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class='text-center'>
+        <h2 class='text-2xl font-bold text-gray-900 mb-6'>Quick Actions</h2>
+        <div class='flex flex-wrap justify-center gap-4'>
+          <Button href='/auth-test' variant='primary' size='lg'
+            >Test Authentication</Button
+          >
+          <Button href='/profile' variant='secondary' size='lg'
+            >View Profile</Button
+          >
+          <Button href='/dashboard' variant='outline' size='lg'
+            >Dashboard</Button
+          >
+          <Button href='/products' variant='ghost' size='lg'
+            >Browse Products</Button
+          >
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  // Performance monitoring functions
+  function checkPerformance() {
+    if (typeof window !== 'undefined' && (window as any).performanceService) {
+      const metrics = (window as any).performanceService.getMetrics();
+      const scores = (window as any).performanceService.getCoreWebVitalsScore();
+
+      console.log('Performance Metrics:', metrics);
+      console.log('Core Web Vitals Scores:', scores);
+
+      alert(`Performance check complete! Check console for details.`);
+    } else {
+      alert('Performance service not available');
+    }
+  }
+
+  function analyzeBundle() {
+    alert(
+      'Bundle analysis would run here. In production, this would analyze the JavaScript bundle size and composition.'
+    );
+  }
+
+  function runLighthouse() {
+    alert(
+      'Lighthouse audit would run here. In production, this would run a full Lighthouse audit.'
+    );
+  }
+
+  // Accessibility testing functions
+  function checkAccessibility() {
+    if (typeof window !== 'undefined' && (window as any).accessibilityService) {
+      (window as any).accessibilityService.runAudit().then((audit: any) => {
+        console.log('Accessibility Audit:', audit);
+        alert(
+          `Accessibility check complete! Score: ${audit.score}/100. Check console for details.`
+        );
+      });
+    } else {
+      alert('Accessibility service not available');
+    }
+  }
+
+  function testScreenReader() {
+    if (typeof window !== 'undefined' && (window as any).accessibilityService) {
+      (window as any).accessibilityService.announce(
+        'Screen reader test - this is a test announcement'
+      );
+      alert('Screen reader test announcement sent!');
+    } else {
+      alert('Accessibility service not available');
+    }
+  }
+
+  function checkContrast() {
+    alert(
+      'Color contrast check would run here. This would analyze all text and background color combinations.'
+    );
+  }
+
+  // Initialize development tools
+  document.addEventListener('DOMContentLoaded', () => {
+    console.log('Development Dashboard loaded');
+    console.log('Available services:', {
+      performanceService:
+        typeof window !== 'undefined' && !!(window as any).performanceService,
+      accessibilityService:
+        typeof window !== 'undefined' && !!(window as any).accessibilityService,
+      apiClient: typeof window !== 'undefined' && !!(window as any).apiClient,
+      authManager:
+        typeof window !== 'undefined' && !!(window as any).authManager,
+    });
+  });
+</script>

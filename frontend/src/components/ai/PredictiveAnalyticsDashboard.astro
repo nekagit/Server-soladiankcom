@@ -1,0 +1,1717 @@
+---
+// Predictive Analytics Dashboard Component
+// Advanced AI-powered business insights and forecasting
+---
+
+<div class="predictive-analytics-dashboard">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1 class="dashboard-title">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        </svg>
+        Predictive Analytics
+      </h1>
+      <p class="dashboard-subtitle">AI-powered business insights and forecasting</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" id="refresh-analytics">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+        </svg>
+        Refresh
+      </button>
+      <button class="btn btn-primary" id="generate-report">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+        </svg>
+        Generate Report
+      </button>
+    </div>
+  </div>
+
+  <!-- Analytics Tabs -->
+  <div class="analytics-tabs">
+    <button class="tab-button active" data-tab="overview">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 5a2 2 0 012-2h4a2 2 0 012 2v6H8V5z"></path>
+      </svg>
+      Overview
+    </button>
+    <button class="tab-button" data-tab="forecasting">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+      </svg>
+      Forecasting
+    </button>
+    <button class="tab-button" data-tab="trends">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+      </svg>
+      Trends
+    </button>
+    <button class="tab-button" data-tab="insights">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+      </svg>
+      Insights
+    </button>
+    <button class="tab-button" data-tab="alerts">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5 5v-5zM4.828 7l2.586 2.586a2 2 0 002.828 0L16 4l-4 4-2.586-2.586a2 2 0 00-2.828 0L4.828 7z"></path>
+      </svg>
+      Alerts
+    </button>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="tab-content-container">
+    <!-- Overview Tab -->
+    <div class="tab-content active" id="overview-tab">
+      <!-- Key Metrics -->
+      <div class="metrics-grid">
+        <div class="metric-card primary">
+          <div class="metric-icon">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+            </svg>
+          </div>
+          <div class="metric-content">
+            <h3 class="metric-value" id="revenue-forecast">$0</h3>
+            <p class="metric-label">Revenue Forecast (30 days)</p>
+            <div class="metric-change positive" id="revenue-change">+0%</div>
+          </div>
+        </div>
+        
+        <div class="metric-card success">
+          <div class="metric-icon">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+            </svg>
+          </div>
+          <div class="metric-content">
+            <h3 class="metric-value" id="user-growth">0</h3>
+            <p class="metric-label">Predicted User Growth</p>
+            <div class="metric-change positive" id="user-growth-change">+0%</div>
+          </div>
+        </div>
+        
+        <div class="metric-card warning">
+          <div class="metric-icon">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+          </div>
+          <div class="metric-content">
+            <h3 class="metric-value" id="conversion-rate">0%</h3>
+            <p class="metric-label">Predicted Conversion Rate</p>
+            <div class="metric-change negative" id="conversion-change">-0%</div>
+          </div>
+        </div>
+        
+        <div class="metric-card info">
+          <div class="metric-icon">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+            </svg>
+          </div>
+          <div class="metric-content">
+            <h3 class="metric-value" id="market-trend">0%</h3>
+            <p class="metric-label">Market Trend</p>
+            <div class="metric-change neutral" id="market-trend-change">0%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="charts-row">
+        <div class="chart-container">
+          <h3 class="chart-title">Revenue Forecast</h3>
+          <div class="chart" id="revenue-chart">
+            <!-- Revenue forecast chart -->
+          </div>
+        </div>
+        
+        <div class="chart-container">
+          <h3 class="chart-title">User Growth Prediction</h3>
+          <div class="chart" id="user-growth-chart">
+            <!-- User growth chart -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Insights Summary -->
+      <div class="insights-summary">
+        <h3 class="section-title">Key Insights</h3>
+        <div class="insights-grid" id="insights-grid">
+          <!-- Insights will be loaded here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Forecasting Tab -->
+    <div class="tab-content" id="forecasting-tab">
+      <div class="forecasting-controls">
+        <div class="control-group">
+          <label for="forecast-period" class="control-label">Forecast Period</label>
+          <select id="forecast-period" class="control-select">
+            <option value="7">7 days</option>
+            <option value="30" selected>30 days</option>
+            <option value="90">90 days</option>
+            <option value="365">1 year</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label for="forecast-metric" class="control-label">Metric</label>
+          <select id="forecast-metric" class="control-select">
+            <option value="revenue">Revenue</option>
+            <option value="users">Users</option>
+            <option value="transactions">Transactions</option>
+            <option value="conversion">Conversion Rate</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label for="confidence-level" class="control-label">Confidence Level</label>
+          <select id="confidence-level" class="control-select">
+            <option value="80">80%</option>
+            <option value="90" selected>90%</option>
+            <option value="95">95%</option>
+          </select>
+        </div>
+        
+        <button class="btn btn-primary" id="generate-forecast">Generate Forecast</button>
+      </div>
+
+      <div class="forecast-results">
+        <div class="forecast-chart-container">
+          <h3 class="chart-title">Forecast Results</h3>
+          <div class="chart" id="forecast-chart">
+            <!-- Forecast chart will be rendered here -->
+          </div>
+        </div>
+        
+        <div class="forecast-details">
+          <h4 class="section-subtitle">Forecast Details</h4>
+          <div class="forecast-stats" id="forecast-stats">
+            <!-- Forecast statistics will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Trends Tab -->
+    <div class="tab-content" id="trends-tab">
+      <div class="trends-filters">
+        <div class="filter-group">
+          <label for="trend-category" class="filter-label">Category</label>
+          <select id="trend-category" class="filter-select">
+            <option value="all">All Categories</option>
+            <option value="sales">Sales</option>
+            <option value="users">Users</option>
+            <option value="products">Products</option>
+            <option value="marketing">Marketing</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label for="trend-timeframe" class="filter-label">Timeframe</label>
+          <select id="trend-timeframe" class="filter-select">
+            <option value="7">Last 7 days</option>
+            <option value="30" selected>Last 30 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="365">Last year</option>
+          </select>
+        </div>
+        
+        <button class="btn btn-secondary" id="apply-trend-filters">Apply Filters</button>
+      </div>
+
+      <div class="trends-content">
+        <div class="trend-chart-container">
+          <h3 class="chart-title">Trend Analysis</h3>
+          <div class="chart" id="trend-chart">
+            <!-- Trend chart will be rendered here -->
+          </div>
+        </div>
+        
+        <div class="trend-insights">
+          <h4 class="section-subtitle">Trend Insights</h4>
+          <div class="trend-list" id="trend-list">
+            <!-- Trend insights will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Insights Tab -->
+    <div class="tab-content" id="insights-tab">
+      <div class="insights-content">
+        <div class="insights-header">
+          <h3 class="section-title">AI-Generated Insights</h3>
+          <button class="btn btn-primary" id="generate-insights">Generate New Insights</button>
+        </div>
+        
+        <div class="insights-grid" id="detailed-insights-grid">
+          <!-- Detailed insights will be loaded here -->
+        </div>
+        
+        <div class="insights-actions">
+          <button class="btn btn-secondary" id="export-insights">Export Insights</button>
+          <button class="btn btn-secondary" id="schedule-insights">Schedule Report</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts Tab -->
+    <div class="tab-content" id="alerts-tab">
+      <div class="alerts-content">
+        <div class="alerts-header">
+          <h3 class="section-title">Predictive Alerts</h3>
+          <button class="btn btn-primary" id="create-alert">Create Alert</button>
+        </div>
+        
+        <div class="alerts-list" id="alerts-list">
+          <!-- Alerts will be loaded here -->
+        </div>
+        
+        <div class="alert-settings">
+          <h4 class="section-subtitle">Alert Settings</h4>
+          <div class="settings-grid" id="alert-settings">
+            <!-- Alert settings will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Generate Report Modal -->
+<div id="generate-report-modal" class="modal">
+  <div class="modal-content large">
+    <div class="modal-header">
+      <h2>Generate Analytics Report</h2>
+      <button class="modal-close" id="close-report-modal">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="report-form" class="form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="report-type" class="form-label">Report Type *</label>
+            <select id="report-type" name="report_type" class="form-select" required>
+              <option value="">Select Report Type</option>
+              <option value="executive">Executive Summary</option>
+              <option value="detailed">Detailed Analysis</option>
+              <option value="forecast">Forecasting Report</option>
+              <option value="custom">Custom Report</option>
+            </select>
+          </div>
+          
+          <div class="form-group">
+            <label for="report-period" class="form-label">Time Period *</label>
+            <select id="report-period" name="report_period" class="form-select" required>
+              <option value="">Select Period</option>
+              <option value="7">Last 7 days</option>
+              <option value="30">Last 30 days</option>
+              <option value="90">Last 90 days</option>
+              <option value="365">Last year</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="report-sections" class="form-label">Include Sections</label>
+          <div class="checkbox-group">
+            <label class="checkbox-label">
+              <input type="checkbox" name="sections" value="overview" checked>
+              <span class="checkmark"></span>
+              Overview
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="sections" value="forecasting" checked>
+              <span class="checkmark"></span>
+              Forecasting
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="sections" value="trends" checked>
+              <span class="checkmark"></span>
+              Trends
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="sections" value="insights" checked>
+              <span class="checkmark"></span>
+              Insights
+            </label>
+            <label class="checkbox-label">
+              <input type="checkbox" name="sections" value="recommendations" checked>
+              <span class="checkmark"></span>
+              Recommendations
+            </label>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="report-format" class="form-label">Export Format</label>
+          <select id="report-format" name="report_format" class="form-select">
+            <option value="pdf">PDF</option>
+            <option value="excel">Excel</option>
+            <option value="csv">CSV</option>
+            <option value="json">JSON</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="report-email" class="form-label">Email Address (Optional)</label>
+          <input type="email" id="report-email" name="email" class="form-input" placeholder="Enter email to receive report">
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" id="cancel-report">Cancel</button>
+      <button type="submit" form="report-form" class="btn btn-primary">Generate Report</button>
+    </div>
+  </div>
+</div>
+
+<!-- Create Alert Modal -->
+<div id="create-alert-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Create Predictive Alert</h2>
+      <button class="modal-close" id="close-alert-modal">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="alert-form" class="form">
+        <div class="form-group">
+          <label for="alert-name" class="form-label">Alert Name *</label>
+          <input type="text" id="alert-name" name="name" class="form-input" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="alert-metric" class="form-label">Metric to Monitor *</label>
+          <select id="alert-metric" name="metric" class="form-select" required>
+            <option value="">Select Metric</option>
+            <option value="revenue">Revenue</option>
+            <option value="users">User Count</option>
+            <option value="conversion">Conversion Rate</option>
+            <option value="churn">Churn Rate</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="alert-condition" class="form-label">Condition *</label>
+          <select id="alert-condition" name="condition" class="form-select" required>
+            <option value="">Select Condition</option>
+            <option value="above">Above Threshold</option>
+            <option value="below">Below Threshold</option>
+            <option value="change">Significant Change</option>
+            <option value="anomaly">Anomaly Detected</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="alert-threshold" class="form-label">Threshold Value</label>
+          <input type="number" id="alert-threshold" name="threshold" class="form-input" step="0.01">
+        </div>
+        
+        <div class="form-group">
+          <label for="alert-frequency" class="form-label">Check Frequency</label>
+          <select id="alert-frequency" name="frequency" class="form-select">
+            <option value="hourly">Hourly</option>
+            <option value="daily" selected>Daily</option>
+            <option value="weekly">Weekly</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="alert-email" class="form-label">Notification Email *</label>
+          <input type="email" id="alert-email" name="email" class="form-input" required>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" id="cancel-alert">Cancel</button>
+      <button type="submit" form="alert-form" class="btn btn-primary">Create Alert</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .predictive-analytics-dashboard {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .dashboard-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .dashboard-subtitle {
+    color: var(--text-secondary);
+    margin: 0.5rem 0 0 0;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .analytics-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 2rem;
+    overflow-x: auto;
+  }
+
+  .tab-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .tab-button:hover {
+    color: var(--text-primary);
+  }
+
+  .tab-button.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+  }
+
+  .tab-button .icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .tab-content-container {
+    min-height: 500px;
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .metric-card {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .metric-card.primary {
+    border-left: 4px solid var(--primary-color);
+  }
+
+  .metric-card.success {
+    border-left: 4px solid var(--success-color);
+  }
+
+  .metric-card.warning {
+    border-left: 4px solid var(--warning-color);
+  }
+
+  .metric-card.info {
+    border-left: 4px solid var(--info-color);
+  }
+
+  .metric-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+
+  .metric-card.primary .metric-icon {
+    background: var(--primary-color);
+  }
+
+  .metric-card.success .metric-icon {
+    background: var(--success-color);
+  }
+
+  .metric-card.warning .metric-icon {
+    background: var(--warning-color);
+  }
+
+  .metric-card.info .metric-icon {
+    background: var(--info-color);
+  }
+
+  .metric-icon .icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .metric-content {
+    flex: 1;
+  }
+
+  .metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .metric-label {
+    color: var(--text-secondary);
+    margin: 0.25rem 0 0 0;
+    font-size: 0.875rem;
+  }
+
+  .metric-change {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .metric-change.positive {
+    background: var(--success-color-alpha);
+    color: var(--success-color);
+  }
+
+  .metric-change.negative {
+    background: var(--error-color-alpha);
+    color: var(--error-color);
+  }
+
+  .metric-change.neutral {
+    background: var(--background-secondary);
+    color: var(--text-secondary);
+  }
+
+  .charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .chart-container {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+  }
+
+  .chart-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 1rem 0;
+  }
+
+  .chart {
+    height: 300px;
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+  }
+
+  .insights-summary {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 1.5rem 0;
+  }
+
+  .section-subtitle {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 1rem 0;
+  }
+
+  .insights-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1rem;
+  }
+
+  .insight-card {
+    background: var(--background-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    padding: 1rem;
+  }
+
+  .insight-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+  }
+
+  .insight-description {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin: 0;
+  }
+
+  .forecasting-controls,
+  .trends-filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    flex-wrap: wrap;
+  }
+
+  .control-group,
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 150px;
+  }
+
+  .control-label,
+  .filter-label {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+  }
+
+  .control-select,
+  .filter-select {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    background: var(--input-background);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+  }
+
+  .forecast-results {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .forecast-chart-container {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+  }
+
+  .forecast-details {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+  }
+
+  .forecast-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .forecast-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-md);
+  }
+
+  .forecast-stat-label {
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .forecast-stat-value {
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .trends-content {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .trend-chart-container {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+  }
+
+  .trend-insights {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+  }
+
+  .trend-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .trend-item {
+    padding: 1rem;
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-md);
+    border-left: 4px solid var(--primary-color);
+  }
+
+  .trend-item-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+  }
+
+  .trend-item-description {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin: 0;
+  }
+
+  .insights-content {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+  }
+
+  .insights-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .insights-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .alerts-content {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+  }
+
+  .alerts-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .alerts-list {
+    margin-bottom: 2rem;
+  }
+
+  .alert-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-md);
+    margin-bottom: 1rem;
+  }
+
+  .alert-info {
+    flex: 1;
+  }
+
+  .alert-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.25rem 0;
+  }
+
+  .alert-description {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin: 0;
+  }
+
+  .alert-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .alert-status.active {
+    background: var(--success-color-alpha);
+    color: var(--success-color);
+  }
+
+  .alert-status.inactive {
+    background: var(--background-secondary);
+    color: var(--text-secondary);
+  }
+
+  .alert-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .alert-settings {
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 1.5rem;
+  }
+
+  .settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+
+  .setting-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    background: var(--card-background);
+    border-radius: var(--border-radius-md);
+  }
+
+  .setting-label {
+    font-weight: 500;
+    color: var(--text-primary);
+  }
+
+  .setting-toggle {
+    position: relative;
+    width: 3rem;
+    height: 1.5rem;
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-full);
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .setting-toggle.active {
+    background: var(--primary-color);
+  }
+
+  .setting-toggle::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 1.25rem;
+    height: 1.25rem;
+    background: white;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+  }
+
+  .setting-toggle.active::after {
+    transform: translateX(1.5rem);
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal.active {
+    display: flex;
+  }
+
+  .modal-content {
+    background: var(--card-background);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-xl);
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-content.large {
+    max-width: 800px;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .modal-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .modal-close {
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-close:hover {
+    background: var(--background-secondary);
+  }
+
+  .modal-close .icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .form-label {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+  }
+
+  .form-input,
+  .form-select {
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    background: var(--input-background);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+  }
+
+  .form-input:focus,
+  .form-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-color-alpha);
+  }
+
+  .checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+  }
+
+  .checkbox-label input[type="checkbox"] {
+    display: none;
+  }
+
+  .checkmark {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    position: relative;
+    transition: all 0.2s ease;
+  }
+
+  .checkbox-label input[type="checkbox"]:checked + .checkmark {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+  }
+
+  .checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 6px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .btn-primary {
+    background: var(--primary-color);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: var(--primary-color-dark);
+  }
+
+  .btn-secondary {
+    background: var(--background-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+  }
+
+  .btn-secondary:hover {
+    background: var(--border-color);
+  }
+
+  .btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  @media (max-width: 768px) {
+    .predictive-analytics-dashboard {
+      padding: 1rem;
+    }
+
+    .dashboard-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .charts-row {
+      grid-template-columns: 1fr;
+    }
+
+    .forecast-results {
+      grid-template-columns: 1fr;
+    }
+
+    .trends-content {
+      grid-template-columns: 1fr;
+    }
+
+    .forecasting-controls,
+    .trends-filters {
+      flex-direction: column;
+    }
+
+    .control-group,
+    .filter-group {
+      min-width: auto;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const predictiveAnalyticsDashboard = new PredictiveAnalyticsDashboard();
+    predictiveAnalyticsDashboard.init();
+  });
+
+  class PredictiveAnalyticsDashboard {
+    constructor() {
+      this.currentTab = 'overview';
+      this.currentForecast = null;
+    }
+
+    async init() {
+      this.setupEventListeners();
+      await this.loadOverviewData();
+    }
+
+    setupEventListeners() {
+      // Tab switching
+      document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+          this.switchTab(e.target.dataset.tab);
+        });
+      });
+
+      // Refresh analytics
+      document.getElementById('refresh-analytics').addEventListener('click', () => {
+        this.refreshAnalytics();
+      });
+
+      // Generate report
+      document.getElementById('generate-report').addEventListener('click', () => {
+        this.showGenerateReportModal();
+      });
+
+      document.getElementById('close-report-modal').addEventListener('click', () => {
+        this.hideGenerateReportModal();
+      });
+
+      document.getElementById('cancel-report').addEventListener('click', () => {
+        this.hideGenerateReportModal();
+      });
+
+      document.getElementById('report-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.generateReport();
+      });
+
+      // Generate forecast
+      document.getElementById('generate-forecast').addEventListener('click', () => {
+        this.generateForecast();
+      });
+
+      // Apply trend filters
+      document.getElementById('apply-trend-filters').addEventListener('click', () => {
+        this.applyTrendFilters();
+      });
+
+      // Generate insights
+      document.getElementById('generate-insights').addEventListener('click', () => {
+        this.generateInsights();
+      });
+
+      // Create alert
+      document.getElementById('create-alert').addEventListener('click', () => {
+        this.showCreateAlertModal();
+      });
+
+      document.getElementById('close-alert-modal').addEventListener('click', () => {
+        this.hideCreateAlertModal();
+      });
+
+      document.getElementById('cancel-alert').addEventListener('click', () => {
+        this.hideCreateAlertModal();
+      });
+
+      document.getElementById('alert-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.createAlert();
+      });
+    }
+
+    switchTab(tabName) {
+      // Update tab buttons
+      document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+      });
+      document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+      // Update tab content
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(`${tabName}-tab`).classList.add('active');
+
+      this.currentTab = tabName;
+
+      // Load tab-specific data
+      if (tabName === 'overview') {
+        this.loadOverviewData();
+      } else if (tabName === 'forecasting') {
+        this.loadForecastingData();
+      } else if (tabName === 'trends') {
+        this.loadTrendsData();
+      } else if (tabName === 'insights') {
+        this.loadInsightsData();
+      } else if (tabName === 'alerts') {
+        this.loadAlertsData();
+      }
+    }
+
+    async loadOverviewData() {
+      try {
+        const response = await fetch('/api/ai/analytics/overview');
+        const data = await response.json();
+
+        // Update metrics
+        document.getElementById('revenue-forecast').textContent = `$${data.revenue_forecast || 0}`;
+        document.getElementById('revenue-change').textContent = `+${data.revenue_change || 0}%`;
+        document.getElementById('user-growth').textContent = data.user_growth || 0;
+        document.getElementById('user-growth-change').textContent = `+${data.user_growth_change || 0}%`;
+        document.getElementById('conversion-rate').textContent = `${data.conversion_rate || 0}%`;
+        document.getElementById('conversion-change').textContent = `${data.conversion_change || 0}%`;
+        document.getElementById('market-trend').textContent = `${data.market_trend || 0}%`;
+        document.getElementById('market-trend-change').textContent = `${data.market_trend_change || 0}%`;
+
+        // Render charts
+        this.renderRevenueChart(data.revenue_data || []);
+        this.renderUserGrowthChart(data.user_growth_data || []);
+
+        // Render insights
+        this.renderInsights(data.insights || []);
+      } catch (error) {
+        console.error('Failed to load overview data:', error);
+      }
+    }
+
+    async loadForecastingData() {
+      try {
+        const response = await fetch('/api/ai/analytics/forecasting');
+        const data = await response.json();
+
+        this.renderForecastChart(data.forecast_data || []);
+        this.renderForecastStats(data.forecast_stats || []);
+      } catch (error) {
+        console.error('Failed to load forecasting data:', error);
+      }
+    }
+
+    async loadTrendsData() {
+      try {
+        const response = await fetch('/api/ai/analytics/trends');
+        const data = await response.json();
+
+        this.renderTrendChart(data.trend_data || []);
+        this.renderTrendInsights(data.trend_insights || []);
+      } catch (error) {
+        console.error('Failed to load trends data:', error);
+      }
+    }
+
+    async loadInsightsData() {
+      try {
+        const response = await fetch('/api/ai/analytics/insights');
+        const data = await response.json();
+
+        this.renderDetailedInsights(data.insights || []);
+      } catch (error) {
+        console.error('Failed to load insights data:', error);
+      }
+    }
+
+    async loadAlertsData() {
+      try {
+        const response = await fetch('/api/ai/analytics/alerts');
+        const data = await response.json();
+
+        this.renderAlerts(data.alerts || []);
+        this.renderAlertSettings(data.settings || []);
+      } catch (error) {
+        console.error('Failed to load alerts data:', error);
+      }
+    }
+
+    renderRevenueChart(data) {
+      const chart = document.getElementById('revenue-chart');
+      chart.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary);">
+          Revenue forecast chart will be rendered here
+        </div>
+      `;
+    }
+
+    renderUserGrowthChart(data) {
+      const chart = document.getElementById('user-growth-chart');
+      chart.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary);">
+          User growth chart will be rendered here
+        </div>
+      `;
+    }
+
+    renderInsights(insights) {
+      const grid = document.getElementById('insights-grid');
+      grid.innerHTML = '';
+
+      insights.forEach(insight => {
+        const card = document.createElement('div');
+        card.className = 'insight-card';
+        card.innerHTML = `
+          <h4 class="insight-title">${insight.title}</h4>
+          <p class="insight-description">${insight.description}</p>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    renderForecastChart(data) {
+      const chart = document.getElementById('forecast-chart');
+      chart.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary);">
+          Forecast chart will be rendered here
+        </div>
+      `;
+    }
+
+    renderForecastStats(stats) {
+      const container = document.getElementById('forecast-stats');
+      container.innerHTML = '';
+
+      stats.forEach(stat => {
+        const statItem = document.createElement('div');
+        statItem.className = 'forecast-stat';
+        statItem.innerHTML = `
+          <span class="forecast-stat-label">${stat.label}</span>
+          <span class="forecast-stat-value">${stat.value}</span>
+        `;
+        container.appendChild(statItem);
+      });
+    }
+
+    renderTrendChart(data) {
+      const chart = document.getElementById('trend-chart');
+      chart.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary);">
+          Trend chart will be rendered here
+        </div>
+      `;
+    }
+
+    renderTrendInsights(insights) {
+      const container = document.getElementById('trend-list');
+      container.innerHTML = '';
+
+      insights.forEach(insight => {
+        const item = document.createElement('div');
+        item.className = 'trend-item';
+        item.innerHTML = `
+          <h4 class="trend-item-title">${insight.title}</h4>
+          <p class="trend-item-description">${insight.description}</p>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    renderDetailedInsights(insights) {
+      const grid = document.getElementById('detailed-insights-grid');
+      grid.innerHTML = '';
+
+      insights.forEach(insight => {
+        const card = document.createElement('div');
+        card.className = 'insight-card';
+        card.innerHTML = `
+          <h4 class="insight-title">${insight.title}</h4>
+          <p class="insight-description">${insight.description}</p>
+          <div class="insight-meta">
+            <span class="insight-confidence">Confidence: ${insight.confidence}%</span>
+            <span class="insight-impact">Impact: ${insight.impact}</span>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    renderAlerts(alerts) {
+      const container = document.getElementById('alerts-list');
+      container.innerHTML = '';
+
+      alerts.forEach(alert => {
+        const item = document.createElement('div');
+        item.className = 'alert-item';
+        item.innerHTML = `
+          <div class="alert-info">
+            <h4 class="alert-name">${alert.name}</h4>
+            <p class="alert-description">${alert.description}</p>
+          </div>
+          <div class="alert-status ${alert.status}">${alert.status}</div>
+          <div class="alert-actions">
+            <button class="btn btn-sm btn-secondary">Edit</button>
+            <button class="btn btn-sm btn-secondary">Delete</button>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    renderAlertSettings(settings) {
+      const container = document.getElementById('alert-settings');
+      container.innerHTML = '';
+
+      settings.forEach(setting => {
+        const item = document.createElement('div');
+        item.className = 'setting-item';
+        item.innerHTML = `
+          <span class="setting-label">${setting.label}</span>
+          <div class="setting-toggle ${setting.enabled ? 'active' : ''}" data-setting="${setting.key}"></div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    async refreshAnalytics() {
+      await this.loadOverviewData();
+      this.showNotification('Analytics refreshed', 'success');
+    }
+
+    showGenerateReportModal() {
+      document.getElementById('generate-report-modal').classList.add('active');
+    }
+
+    hideGenerateReportModal() {
+      document.getElementById('generate-report-modal').classList.remove('active');
+      document.getElementById('report-form').reset();
+    }
+
+    async generateReport() {
+      try {
+        const formData = new FormData(document.getElementById('report-form'));
+        const reportData = {
+          type: formData.get('report_type'),
+          period: formData.get('report_period'),
+          sections: formData.getAll('sections'),
+          format: formData.get('report_format'),
+          email: formData.get('email')
+        };
+
+        const response = await fetch('/api/ai/analytics/reports', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(reportData)
+        });
+
+        if (response.ok) {
+          this.hideGenerateReportModal();
+          this.showNotification('Report generation started', 'success');
+        } else {
+          this.showNotification('Failed to generate report', 'error');
+        }
+      } catch (error) {
+        console.error('Failed to generate report:', error);
+        this.showNotification('Failed to generate report', 'error');
+      }
+    }
+
+    async generateForecast() {
+      try {
+        const period = document.getElementById('forecast-period').value;
+        const metric = document.getElementById('forecast-metric').value;
+        const confidence = document.getElementById('confidence-level').value;
+
+        const response = await fetch('/api/ai/analytics/forecast', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            period: parseInt(period),
+            metric,
+            confidence: parseInt(confidence)
+          })
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          this.renderForecastChart(data.forecast_data || []);
+          this.renderForecastStats(data.forecast_stats || []);
+          this.showNotification('Forecast generated successfully', 'success');
+        } else {
+          this.showNotification('Failed to generate forecast', 'error');
+        }
+      } catch (error) {
+        console.error('Failed to generate forecast:', error);
+        this.showNotification('Failed to generate forecast', 'error');
+      }
+    }
+
+    async applyTrendFilters() {
+      const category = document.getElementById('trend-category').value;
+      const timeframe = document.getElementById('trend-timeframe').value;
+
+      try {
+        const response = await fetch(`/api/ai/analytics/trends?category=${category}&timeframe=${timeframe}`);
+        const data = await response.json();
+
+        this.renderTrendChart(data.trend_data || []);
+        this.renderTrendInsights(data.trend_insights || []);
+      } catch (error) {
+        console.error('Failed to apply trend filters:', error);
+      }
+    }
+
+    async generateInsights() {
+      try {
+        const response = await fetch('/api/ai/analytics/insights/generate', {
+          method: 'POST'
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          this.renderDetailedInsights(data.insights || []);
+          this.showNotification('New insights generated', 'success');
+        } else {
+          this.showNotification('Failed to generate insights', 'error');
+        }
+      } catch (error) {
+        console.error('Failed to generate insights:', error);
+        this.showNotification('Failed to generate insights', 'error');
+      }
+    }
+
+    showCreateAlertModal() {
+      document.getElementById('create-alert-modal').classList.add('active');
+    }
+
+    hideCreateAlertModal() {
+      document.getElementById('create-alert-modal').classList.remove('active');
+      document.getElementById('alert-form').reset();
+    }
+
+    async createAlert() {
+      try {
+        const formData = new FormData(document.getElementById('alert-form'));
+        const alertData = {
+          name: formData.get('name'),
+          metric: formData.get('metric'),
+          condition: formData.get('condition'),
+          threshold: parseFloat(formData.get('threshold')),
+          frequency: formData.get('frequency'),
+          email: formData.get('email')
+        };
+
+        const response = await fetch('/api/ai/analytics/alerts', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(alertData)
+        });
+
+        if (response.ok) {
+          this.hideCreateAlertModal();
+          this.loadAlertsData();
+          this.showNotification('Alert created successfully', 'success');
+        } else {
+          this.showNotification('Failed to create alert', 'error');
+        }
+      } catch (error) {
+        console.error('Failed to create alert:', error);
+        this.showNotification('Failed to create alert', 'error');
+      }
+    }
+
+    showNotification(message, type) {
+      // Implementation for showing notifications
+      console.log(`${type.toUpperCase()}: ${message}`);
+    }
+  }
+</script>
+

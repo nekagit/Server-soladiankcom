@@ -1,0 +1,227 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+import AuthGuard from '../components/AuthGuard.astro';
+---
+
+<Layout title='Orders - Soladia'>
+  <Navigation />
+
+  <AuthGuard>
+    <main class='min-h-screen bg-gray-50 py-8'>
+      <div class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+        <!-- Orders Header -->
+        <div class='mb-8'>
+          <h1 class='text-3xl font-bold text-gray-900'>My Orders</h1>
+          <p class='mt-2 text-gray-600'>Track and manage your orders</p>
+        </div>
+
+        <!-- Orders Filter -->
+        <div
+          class='bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-8'
+        >
+          <div
+            class='flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4'
+          >
+            <div class='flex flex-wrap gap-2'>
+              <button
+                class='px-4 py-2 text-sm font-medium text-blue-600 bg-blue-50 rounded-md hover:bg-blue-100'
+              >
+                All Orders
+              </button>
+              <button
+                class='px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-md hover:bg-gray-100'
+              >
+                Pending
+              </button>
+              <button
+                class='px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-md hover:bg-gray-100'
+              >
+                Completed
+              </button>
+              <button
+                class='px-4 py-2 text-sm font-medium text-gray-600 bg-gray-50 rounded-md hover:bg-gray-100'
+              >
+                Cancelled
+              </button>
+            </div>
+            <div class='flex items-center space-x-4'>
+              <div class='relative'>
+                <input
+                  type='text'
+                  placeholder='Search orders...'
+                  class='w-64 px-4 py-2 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-blue-500'
+                />
+                <div class='absolute inset-y-0 right-0 pr-3 flex items-center'>
+                  <svg
+                    class='w-4 h-4 text-gray-400'
+                    fill='none'
+                    stroke='currentColor'
+                    viewBox='0 0 24 24'
+                  >
+                    <path
+                      stroke-linecap='round'
+                      stroke-linejoin='round'
+                      stroke-width='2'
+                      d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'></path>
+                  </svg>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Orders List -->
+        <div class='bg-white rounded-lg shadow-sm border border-gray-200'>
+          <div class='px-6 py-4 border-b border-gray-200'>
+            <h3 class='text-lg font-semibold text-gray-900'>Order History</h3>
+          </div>
+
+          <!-- Empty State -->
+          <div class='text-center py-12'>
+            <svg
+              class='mx-auto h-12 w-12 text-gray-400'
+              fill='none'
+              stroke='currentColor'
+              viewBox='0 0 24 24'
+            >
+              <path
+                stroke-linecap='round'
+                stroke-linejoin='round'
+                stroke-width='2'
+                d='M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z'></path>
+            </svg>
+            <h3 class='mt-2 text-sm font-medium text-gray-900'>
+              No orders yet
+            </h3>
+            <p class='mt-1 text-sm text-gray-500'>
+              Start shopping to see your orders here.
+            </p>
+            <div class='mt-6'>
+              <a
+                href='/products'
+                class='inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700'
+              >
+                <svg
+                  class='w-4 h-4 mr-2'
+                  fill='none'
+                  stroke='currentColor'
+                  viewBox='0 0 24 24'
+                >
+                  <path
+                    stroke-linecap='round'
+                    stroke-linejoin='round'
+                    stroke-width='2'
+                    d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'></path>
+                </svg>
+                Start Shopping
+              </a>
+            </div>
+          </div>
+
+          <!-- Sample Order (Hidden by default) -->
+          <div class='hidden' id='sample-order'>
+            <div class='px-6 py-4 border-b border-gray-200'>
+              <div class='flex items-center justify-between'>
+                <div class='flex items-center space-x-4'>
+                  <div
+                    class='w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center'
+                  >
+                    <svg
+                      class='w-8 h-8 text-gray-400'
+                      fill='none'
+                      stroke='currentColor'
+                      viewBox='0 0 24 24'
+                    >
+                      <path
+                        stroke-linecap='round'
+                        stroke-linejoin='round'
+                        stroke-width='2'
+                        d='M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z'
+                      ></path>
+                    </svg>
+                  </div>
+                  <div>
+                    <h4 class='text-sm font-medium text-gray-900'>
+                      Sample Product
+                    </h4>
+                    <p class='text-sm text-gray-500'>Order #12345</p>
+                    <p class='text-sm text-gray-500'>Placed on Jan 1, 2024</p>
+                  </div>
+                </div>
+                <div class='text-right'>
+                  <p class='text-sm font-medium text-gray-900'>$99.99</p>
+                  <span
+                    class='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800'
+                  >
+                    Completed
+                  </span>
+                </div>
+              </div>
+              <div class='mt-4 flex items-center justify-between'>
+                <div class='flex space-x-4'>
+                  <button class='text-sm text-blue-600 hover:text-blue-800'
+                    >View Details</button
+                  >
+                  <button class='text-sm text-blue-600 hover:text-blue-800'
+                    >Track Package</button
+                  >
+                  <button class='text-sm text-blue-600 hover:text-blue-800'
+                    >Buy Again</button
+                  >
+                </div>
+                <button class='text-sm text-gray-600 hover:text-gray-800'
+                  >Leave Review</button
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </AuthGuard>
+</Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const authManager = (window as any).authManager;
+
+    if (!authManager) {
+      console.error('Auth manager not available');
+      window.location.href = '/auth';
+      return;
+    }
+
+    const user = authManager.getCurrentUser();
+
+    if (!user) {
+      console.log('No user found, redirecting to auth');
+      window.location.href = '/auth';
+      return;
+    }
+
+    // Load orders data
+    const loadOrders = async () => {
+      try {
+        // Mock data - replace with actual API calls
+        const orders = [];
+
+        // For now, show empty state
+        // In a real app, you would fetch orders from the API
+        console.log('Loading orders for user:', user.email);
+      } catch (error) {
+        console.error('Failed to load orders:', error);
+      }
+    };
+
+    loadOrders();
+
+    // Listen for auth state changes
+    window.addEventListener('authStateChanged', () => {
+      const currentUser = authManager.getCurrentUser();
+      if (!currentUser) {
+        window.location.href = '/auth';
+      }
+    });
+  });
+</script>

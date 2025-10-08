@@ -290,4 +290,463 @@ To create the world's most advanced, user-friendly, and secure Solana-powered ma
 - Technology stack updates
 - User feedback integration
 
+## 🤖 AI Assistant Guidelines
+
+### Code Generation Rules
+1. **Always use TypeScript** with strict type checking for all frontend code
+2. **Follow Soladia brand guidelines** - use the defined color palette and typography
+3. **Implement responsive design** with mobile-first approach
+4. **Use CSS custom properties** for all styling values
+5. **Follow Astro component patterns** with proper hydration strategies
+6. **Implement proper error handling** and loading states
+7. **Use Solana-specific patterns** for blockchain integration
+8. **Follow FastAPI patterns** for backend development
+9. **Implement comprehensive testing** for all new features
+10. **Use proper accessibility patterns** (WCAG 2.1 AA compliance)
+
+### File Organization Rules
+1. **Frontend components** go in `frontend/src/components/`
+2. **Backend services** go in `backend/services/` or appropriate modules
+3. **Database models** go in `backend/models/`
+4. **API schemas** go in `backend/schemas/`
+5. **Tests** go in respective `tests/` directories
+6. **Documentation** goes in `docs/`
+7. **Configuration files** at project root level
+
+### Naming Conventions
+1. **Components**: PascalCase (e.g., `ProductCard.astro`)
+2. **Services**: camelCase (e.g., `solanaService.ts`)
+3. **Database models**: PascalCase (e.g., `UserModel`)
+4. **API endpoints**: kebab-case (e.g., `/api/user-profile`)
+5. **CSS classes**: kebab-case (e.g., `.product-card`)
+6. **Variables**: camelCase (e.g., `userProfile`)
+
+### Code Quality Requirements
+1. **TypeScript strict mode** enabled
+2. **ESLint rules** enforced
+3. **Prettier formatting** applied
+4. **Comprehensive error handling**
+5. **Proper logging** with structured format
+6. **Security best practices** implemented
+7. **Performance optimization** considered
+8. **Accessibility compliance** maintained
+
+### Testing Requirements
+1. **Unit tests** for all functions and methods
+2. **Integration tests** for API endpoints
+3. **E2E tests** for user workflows
+4. **Component tests** for UI components
+5. **Performance tests** for critical paths
+6. **Accessibility tests** for WCAG compliance
+
+### Solana Integration Patterns
+1. **Wallet connection** with proper error handling
+2. **Transaction signing** with user confirmation
+3. **NFT operations** with metadata validation
+4. **Token transfers** with balance verification
+5. **Smart contract interactions** with proper gas estimation
+6. **Real-time updates** via WebSocket connections
+
+### Performance Optimization
+1. **Lazy loading** for images and components
+2. **Code splitting** for optimal bundle sizes
+3. **Caching strategies** for API responses
+4. **Database query optimization**
+5. **CDN usage** for static assets
+6. **Service worker** for offline functionality
+
 This comprehensive development plan ensures the Soladia marketplace achieves perfection through systematic cleaning, comprehensive testing, and complete feature implementation while maintaining the highest quality standards.
+
+## 🚀 Advanced Development Patterns
+
+### AI-Powered Development Guidelines
+1. **Code Generation**: Always generate production-ready code with comprehensive error handling
+2. **Type Safety**: Use strict TypeScript with comprehensive interfaces and generics
+3. **Performance First**: Implement lazy loading, code splitting, and optimization patterns
+4. **Security Focus**: Apply security best practices for blockchain and web applications
+5. **Accessibility**: Ensure WCAG 2.1 AA compliance in all generated components
+6. **Testing**: Generate comprehensive test suites with 95%+ coverage
+7. **Documentation**: Include inline documentation and JSDoc comments
+8. **Error Handling**: Implement graceful error handling with user-friendly messages
+9. **Loading States**: Add proper loading states and skeleton screens
+10. **Responsive Design**: Mobile-first approach with proper breakpoints
+
+### Solana-Specific Development Patterns
+1. **Wallet Integration**: Always implement proper wallet connection with error handling
+2. **Transaction Management**: Use proper transaction signing and confirmation flows
+3. **NFT Operations**: Implement metadata validation and IPFS integration
+4. **Token Management**: Handle SPL tokens with proper balance verification
+5. **Smart Contracts**: Use proper program interaction patterns
+6. **Real-time Updates**: Implement WebSocket connections for live data
+7. **Error Recovery**: Handle network failures and transaction retries
+8. **Security**: Validate all blockchain interactions and user inputs
+9. **Performance**: Optimize RPC calls and implement caching
+10. **Testing**: Mock Solana RPC calls for reliable testing
+
+### Component Architecture Patterns
+1. **Atomic Design**: Use atomic design principles for component structure
+2. **Composition**: Prefer composition over inheritance
+3. **Props Interface**: Define comprehensive TypeScript interfaces
+4. **Event Handling**: Use proper event delegation and cleanup
+5. **State Management**: Implement proper state management patterns
+6. **Lifecycle**: Handle component lifecycle properly
+7. **Performance**: Use React.memo, useMemo, and useCallback appropriately
+8. **Accessibility**: Implement proper ARIA attributes and keyboard navigation
+9. **Styling**: Use CSS custom properties and Tailwind classes
+10. **Testing**: Write comprehensive component tests
+
+### API Development Patterns
+1. **RESTful Design**: Follow RESTful API design principles
+2. **OpenAPI**: Use OpenAPI/Swagger for API documentation
+3. **Validation**: Implement comprehensive request/response validation
+4. **Authentication**: Use JWT with proper security measures
+5. **Rate Limiting**: Implement proper rate limiting and throttling
+6. **Error Handling**: Return consistent error responses
+7. **Logging**: Implement structured logging with proper levels
+8. **Monitoring**: Add health checks and metrics
+9. **Caching**: Implement proper caching strategies
+10. **Testing**: Write comprehensive API tests
+
+### Database Patterns
+1. **ORM Usage**: Use SQLAlchemy ORM with proper relationships
+2. **Migrations**: Implement proper database migrations
+3. **Indexing**: Add proper database indexes for performance
+4. **Transactions**: Use database transactions for data consistency
+5. **Connection Pooling**: Implement proper connection pooling
+6. **Query Optimization**: Optimize database queries for performance
+7. **Data Validation**: Implement comprehensive data validation
+8. **Backup**: Implement proper backup and recovery procedures
+9. **Security**: Use parameterized queries to prevent SQL injection
+10. **Testing**: Write comprehensive database tests
+
+### DevOps and Deployment Patterns
+1. **Containerization**: Use Docker for consistent environments
+2. **Orchestration**: Use Docker Compose for local development
+3. **CI/CD**: Implement comprehensive CI/CD pipelines
+4. **Monitoring**: Use Prometheus and Grafana for monitoring
+5. **Logging**: Implement centralized logging
+6. **Security**: Use proper secrets management
+7. **Scaling**: Implement horizontal scaling patterns
+8. **Backup**: Implement automated backup procedures
+9. **Testing**: Run comprehensive tests in CI/CD
+10. **Documentation**: Maintain up-to-date documentation
+
+## 🔧 Development Environment Setup
+
+### Required Tools
+- **Node.js**: >=18.0.0
+- **Python**: >=3.11
+- **Docker**: >=20.10
+- **Git**: >=2.30
+- **VS Code**: With recommended extensions
+- **PostgreSQL**: >=14
+- **Redis**: >=6.0
+- **Solana CLI**: Latest version
+
+### VS Code Extensions
+- **Astro**: Official Astro extension
+- **TypeScript**: TypeScript and JavaScript Language Features
+- **Tailwind CSS**: Tailwind CSS IntelliSense
+- **ESLint**: ESLint extension
+- **Prettier**: Prettier - Code formatter
+- **Python**: Python extension
+- **Pylance**: Python language server
+- **Docker**: Docker extension
+- **GitLens**: Git supercharged
+- **Thunder Client**: API testing
+- **REST Client**: HTTP client
+- **Error Lens**: Error highlighting
+- **Bracket Pair Colorizer**: Bracket matching
+- **Auto Rename Tag**: Auto rename paired tags
+- **Path Intellisense**: File path autocomplete
+- **Material Icon Theme**: File icons
+- **One Dark Pro**: Dark theme
+- **Indent Rainbow**: Indentation highlighting
+- **TODO Highlight**: TODO highlighting
+- **Code Spell Checker**: Spell checking
+- **Better Comments**: Enhanced comments
+- **Git Graph**: Git visualization
+- **Live Server**: Local development server
+- **REST Client**: HTTP client
+- **Thunder Client**: API testing
+- **Postman**: API testing
+- **MongoDB**: MongoDB tools
+- **Redis**: Redis tools
+- **Docker**: Docker tools
+- **Kubernetes**: Kubernetes tools
+- **Helm**: Helm tools
+- **Terraform**: Infrastructure as code
+- **Ansible**: Configuration management
+- **Jenkins**: CI/CD
+- **GitHub Actions**: CI/CD
+- **GitLab CI**: CI/CD
+- **Azure DevOps**: CI/CD
+- **AWS**: AWS tools
+- **Google Cloud**: GCP tools
+- **Azure**: Azure tools
+- **Kubernetes**: K8s tools
+- **Helm**: Helm tools
+- **Terraform**: IaC tools
+- **Ansible**: Config management
+- **Jenkins**: CI/CD
+- **GitHub Actions**: CI/CD
+- **GitLab CI**: CI/CD
+- **Azure DevOps**: CI/CD
+- **AWS**: AWS tools
+- **Google Cloud**: GCP tools
+- **Azure**: Azure tools
+
+### Environment Variables
+```bash
+# Database
+DATABASE_URL=postgresql://user:password@localhost:5432/soladia
+REDIS_URL=redis://localhost:6379
+
+# Solana
+SOLANA_RPC_URL=https://api.mainnet-beta.solana.com
+SOLANA_WS_URL=wss://api.mainnet-beta.solana.com
+SOLANA_PRIVATE_KEY=your_private_key
+
+# Authentication
+JWT_SECRET=your_jwt_secret
+JWT_ALGORITHM=HS256
+JWT_EXPIRE_MINUTES=30
+
+# API
+API_V1_STR=/api/v1
+PROJECT_NAME=Soladia Marketplace
+VERSION=1.0.0
+DESCRIPTION=Solana-powered marketplace
+
+# CORS
+BACKEND_CORS_ORIGINS=["http://localhost:3000", "http://localhost:4321"]
+
+# Security
+SECRET_KEY=your_secret_key
+ALGORITHM=HS256
+ACCESS_TOKEN_EXPIRE_MINUTES=30
+
+# Monitoring
+PROMETHEUS_PORT=9090
+GRAFANA_PORT=3000
+```
+
+### Development Scripts
+```json
+{
+  "scripts": {
+    "dev": "concurrently \"npm run dev:backend\" \"npm run dev:frontend\"",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && python3 -m uvicorn main:app --reload --host 0.0.0.0 --port 8001",
+    "build": "npm run build:frontend && npm run build:backend",
+    "test": "npm run test:frontend && npm run test:backend",
+    "lint": "npm run lint:frontend && npm run lint:backend",
+    "format": "npm run format:frontend && npm run format:backend",
+    "docker:up": "docker-compose up -d",
+    "docker:down": "docker-compose down",
+    "db:migrate": "cd backend && alembic upgrade head",
+    "db:reset": "cd backend && alembic downgrade base && alembic upgrade head",
+    "security:audit": "npm audit && cd frontend && npm audit && cd ../backend && safety check",
+    "performance:test": "cd frontend && npm run lighthouse",
+    "monitor": "docker-compose -f docker-compose.monitoring.yml up -d"
+  }
+}
+```
+
+## 🧪 Testing Strategy
+
+### Frontend Testing
+- **Unit Tests**: Jest + React Testing Library
+- **Component Tests**: Storybook + Chromatic
+- **E2E Tests**: Playwright
+- **Visual Tests**: Chromatic
+- **Accessibility Tests**: axe-core
+- **Performance Tests**: Lighthouse CI
+
+### Backend Testing
+- **Unit Tests**: pytest
+- **Integration Tests**: pytest + httpx
+- **API Tests**: pytest + FastAPI TestClient
+- **Database Tests**: pytest + SQLAlchemy
+- **Solana Tests**: pytest + mock
+- **Performance Tests**: pytest + locust
+
+### Test Coverage Requirements
+- **Unit Tests**: 95%+ coverage
+- **Integration Tests**: 90%+ coverage
+- **E2E Tests**: 80%+ coverage
+- **Component Tests**: 95%+ coverage
+- **API Tests**: 95%+ coverage
+- **Database Tests**: 90%+ coverage
+
+## 📊 Performance Optimization
+
+### Frontend Performance
+- **Bundle Size**: <500KB gzipped
+- **First Contentful Paint**: <1.5s
+- **Largest Contentful Paint**: <2.5s
+- **Cumulative Layout Shift**: <0.1
+- **First Input Delay**: <100ms
+- **Time to Interactive**: <3.5s
+
+### Backend Performance
+- **API Response Time**: <200ms
+- **Database Query Time**: <50ms
+- **Memory Usage**: <512MB
+- **CPU Usage**: <50%
+- **Concurrent Users**: 1000+
+- **Throughput**: 1000+ requests/second
+
+### Optimization Techniques
+- **Code Splitting**: Dynamic imports
+- **Lazy Loading**: Component and route lazy loading
+- **Caching**: Redis for API responses
+- **CDN**: Static asset delivery
+- **Compression**: Gzip/Brotli compression
+- **Minification**: CSS/JS minification
+- **Tree Shaking**: Remove unused code
+- **Image Optimization**: WebP format, lazy loading
+- **Database Indexing**: Proper database indexes
+- **Connection Pooling**: Database connection pooling
+
+## 🔒 Security Best Practices
+
+### Frontend Security
+- **Content Security Policy**: Implement CSP headers
+- **XSS Protection**: Sanitize user inputs
+- **CSRF Protection**: Use CSRF tokens
+- **HTTPS**: Enforce HTTPS in production
+- **Secure Headers**: Implement security headers
+- **Input Validation**: Validate all user inputs
+- **Error Handling**: Don't expose sensitive information
+
+### Backend Security
+- **Authentication**: JWT with proper expiration
+- **Authorization**: Role-based access control
+- **Input Validation**: Pydantic models for validation
+- **SQL Injection**: Use parameterized queries
+- **Rate Limiting**: Implement rate limiting
+- **CORS**: Configure CORS properly
+- **Secrets Management**: Use environment variables
+- **Logging**: Implement security logging
+- **Monitoring**: Monitor for security threats
+
+### Blockchain Security
+- **Wallet Validation**: Validate wallet addresses
+- **Transaction Verification**: Verify transaction signatures
+- **Smart Contract Audits**: Audit smart contracts
+- **Private Key Security**: Never expose private keys
+- **Network Security**: Use secure RPC endpoints
+- **Error Handling**: Handle blockchain errors gracefully
+
+## 📱 Mobile Development
+
+### React Native App
+- **Framework**: React Native + TypeScript
+- **Navigation**: React Navigation
+- **State Management**: Redux Toolkit
+- **UI Components**: React Native Elements
+- **Styling**: Styled Components
+- **Testing**: Jest + React Native Testing Library
+- **Build**: EAS Build
+- **Deployment**: App Store + Google Play
+
+### Mobile Features
+- **Wallet Integration**: Solana wallet connection
+- **NFT Management**: Create, view, and trade NFTs
+- **Push Notifications**: Real-time notifications
+- **Offline Support**: Offline functionality
+- **Biometric Auth**: Fingerprint/Face ID
+- **Deep Linking**: URL scheme handling
+- **Analytics**: User behavior tracking
+- **Crash Reporting**: Error tracking
+
+## 🚀 Deployment Strategy
+
+### Development Environment
+- **Local Development**: Docker Compose
+- **Database**: PostgreSQL + Redis
+- **Monitoring**: Prometheus + Grafana
+- **Logging**: Structured logging
+- **Testing**: Automated testing
+
+### Staging Environment
+- **Kubernetes**: GKE/EKS/AKS
+- **Database**: Managed PostgreSQL
+- **Cache**: Managed Redis
+- **Monitoring**: Prometheus + Grafana
+- **Logging**: Centralized logging
+- **Testing**: CI/CD pipeline
+
+### Production Environment
+- **Kubernetes**: Multi-region deployment
+- **Database**: High-availability PostgreSQL
+- **Cache**: Redis Cluster
+- **CDN**: CloudFlare/AWS CloudFront
+- **Monitoring**: Prometheus + Grafana + AlertManager
+- **Logging**: Centralized logging with ELK stack
+- **Backup**: Automated backups
+- **Security**: WAF + DDoS protection
+
+## 📈 Monitoring and Analytics
+
+### Application Monitoring
+- **Metrics**: Prometheus metrics
+- **Logs**: Structured logging with ELK
+- **Traces**: Distributed tracing
+- **Alerts**: AlertManager notifications
+- **Dashboards**: Grafana dashboards
+- **Health Checks**: Application health endpoints
+
+### Business Analytics
+- **User Analytics**: User behavior tracking
+- **Transaction Analytics**: Blockchain transaction analysis
+- **Performance Analytics**: Application performance metrics
+- **Error Analytics**: Error tracking and analysis
+- **Security Analytics**: Security event monitoring
+- **Financial Analytics**: Revenue and transaction analysis
+
+### Blockchain Analytics
+- **Transaction Monitoring**: Real-time transaction tracking
+- **Wallet Analytics**: Wallet behavior analysis
+- **NFT Analytics**: NFT trading patterns
+- **Market Analytics**: Market trends and insights
+- **Risk Analytics**: Risk assessment and monitoring
+- **Compliance Analytics**: Regulatory compliance tracking
+
+## 🔄 CI/CD Pipeline
+
+### GitHub Actions Workflow
+1. **Code Quality**: Linting, formatting, type checking
+2. **Testing**: Unit, integration, and E2E tests
+3. **Security**: Security scanning and vulnerability assessment
+4. **Build**: Frontend and backend builds
+5. **Deploy**: Staging and production deployments
+6. **Monitoring**: Health checks and monitoring setup
+
+### Deployment Stages
+1. **Development**: Local development environment
+2. **Staging**: Pre-production testing environment
+3. **Production**: Live production environment
+4. **Rollback**: Automated rollback capabilities
+5. **Monitoring**: Post-deployment monitoring
+
+## 📚 Documentation Standards
+
+### Code Documentation
+- **Inline Comments**: Explain complex logic
+- **JSDoc**: Function and class documentation
+- **README**: Project setup and usage
+- **API Docs**: OpenAPI/Swagger documentation
+- **Architecture**: System architecture documentation
+- **Deployment**: Deployment and operations guides
+
+### User Documentation
+- **User Guide**: End-user documentation
+- **API Guide**: Developer API documentation
+- **Integration Guide**: Third-party integration guides
+- **Troubleshooting**: Common issues and solutions
+- **FAQ**: Frequently asked questions
+- **Changelog**: Version history and changes
+
+This comprehensive development framework ensures the Soladia marketplace maintains the highest standards of quality, security, and performance while providing an exceptional user experience.

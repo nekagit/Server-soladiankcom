@@ -1,0 +1,688 @@
+---
+import Card from '../atoms/Card.astro';
+import Button from '../atoms/Button.astro';
+import Input from '../atoms/Input.astro';
+
+export interface FilterOption {
+  id: string;
+  label: string;
+  value: string;
+  count?: number;
+}
+
+export interface FilterGroup {
+  id: string;
+  label: string;
+  type: 'checkbox' | 'radio' | 'range' | 'select';
+  options: FilterOption[];
+  min?: number;
+  max?: number;
+  step?: number;
+}
+
+export interface SearchFilters {
+  query: string;
+  category: string;
+  priceRange: {
+    min: number;
+    max: number;
+  };
+  sortBy: string;
+  availability: string;
+  rating: number;
+  tags: string[];
+  customFilters: Record<string, any>;
+}
+
+export interface Props {
+  filters: FilterGroup[];
+  onFilterChange?: (filters: SearchFilters) => void;
+  onSearch?: (query: string) => void;
+  onClearFilters?: () => void;
+  className?: string;
+  'data-testid'?: string;
+}
+
+const {
+  filters = [],
+  onFilterChange,
+  onSearch,
+  onClearFilters,
+  className = '',
+  'data-testid': testId,
+} = Astro.props;
+
+const defaultFilters: SearchFilters = {
+  query: '',
+  category: '',
+  priceRange: { min: 0, max: 10000 },
+  sortBy: 'relevance',
+  availability: 'all',
+  rating: 0,
+  tags: [],
+  customFilters: {},
+};
+---
+
+<Card
+  variant='default'
+  padding='lg'
+  className={`search-filters ${className}`}
+  data-testid={testId}
+>
+  <!-- Search Bar -->
+  <div class='mb-6'>
+    <div class='relative'>
+      <Input
+        id='search-query'
+        name='search-query'
+        type='search'
+        placeholder='Search products, NFTs, collections...'
+        className='pr-12'
+        onInput='handleSearchInput(event)'
+      />
+      <button
+        class='absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600'
+        onclick='performSearch()'
+        title='Search'
+      >
+        <svg
+          class='w-5 h-5'
+          fill='none'
+          stroke='currentColor'
+          viewBox='0 0 24 24'
+        >
+          <path
+            stroke-linecap='round'
+            stroke-linejoin='round'
+            stroke-width='2'
+            d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'></path>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Quick Filters -->
+  <div class='mb-6'>
+    <h3 class='text-sm font-medium text-gray-900 mb-3'>Quick Filters</h3>
+    <div class='flex flex-wrap gap-2'>
+      <Button
+        variant='outline'
+        size='sm'
+        onclick='toggleQuickFilter("featured")'
+        data-filter='featured'
+      >
+        Featured
+      </Button>
+      <Button
+        variant='outline'
+        size='sm'
+        onclick='toggleQuickFilter("new")'
+        data-filter='new'
+      >
+        New Arrivals
+      </Button>
+      <Button
+        variant='outline'
+        size='sm'
+        onclick='toggleQuickFilter("sale")'
+        data-filter='sale'
+      >
+        On Sale
+      </Button>
+      <Button
+        variant='outline'
+        size='sm'
+        onclick='toggleQuickFilter("verified")'
+        data-filter='verified'
+      >
+        Verified
+      </Button>
+    </div>
+  </div>
+
+  <!-- Filter Groups -->
+  <div class='space-y-6'>
+    {
+      filters.map(filterGroup => (
+        <div key={filterGroup.id} class='filter-group'>
+          <h4 class='text-sm font-medium text-gray-900 mb-3'>
+            {filterGroup.label}
+          </h4>
+
+          {filterGroup.type === 'checkbox' && (
+            <div class='space-y-2'>
+              {filterGroup.options.map(option => (
+                <label
+                  key={option.id}
+                  class='flex items-center space-x-2 cursor-pointer'
+                >
+                  <input
+                    type='checkbox'
+                    name={filterGroup.id}
+                    value={option.value}
+                    class='rounded border-gray-300 text-soladia-primary focus:ring-soladia-primary'
+                    onchange='handleFilterChange(event)'
+                  />
+                  <span class='text-sm text-gray-700'>{option.label}</span>
+                  {option.count !== undefined && (
+                    <span class='text-xs text-gray-500'>({option.count})</span>
+                  )}
+                </label>
+              ))}
+            </div>
+          )}
+
+          {filterGroup.type === 'radio' && (
+            <div class='space-y-2'>
+              {filterGroup.options.map(option => (
+                <label
+                  key={option.id}
+                  class='flex items-center space-x-2 cursor-pointer'
+                >
+                  <input
+                    type='radio'
+                    name={filterGroup.id}
+                    value={option.value}
+                    class='border-gray-300 text-soladia-primary focus:ring-soladia-primary'
+                    onchange='handleFilterChange(event)'
+                  />
+                  <span class='text-sm text-gray-700'>{option.label}</span>
+                  {option.count !== undefined && (
+                    <span class='text-xs text-gray-500'>({option.count})</span>
+                  )}
+                </label>
+              ))}
+            </div>
+          )}
+
+          {filterGroup.type === 'select' && (
+            <select
+              name={filterGroup.id}
+              class='w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-soladia-primary focus:border-soladia-primary'
+              onchange='handleFilterChange(event)'
+            >
+              <option value=''>All {filterGroup.label}</option>
+              {filterGroup.options.map(option => (
+                <option key={option.id} value={option.value}>
+                  {option.label}
+                  {option.count !== undefined && ` (${option.count})`}
+                </option>
+              ))}
+            </select>
+          )}
+
+          {filterGroup.type === 'range' && (
+            <div class='space-y-3'>
+              <div class='flex items-center space-x-2'>
+                <Input
+                  type='number'
+                  name={`${filterGroup.id}-min`}
+                  placeholder='Min'
+                  min={filterGroup.min || 0}
+                  max={filterGroup.max || 1000}
+                  step={filterGroup.step || 1}
+                  className='w-20'
+                  onchange='handleRangeChange(event)'
+                />
+                <span class='text-sm text-gray-500'>to</span>
+                <Input
+                  type='number'
+                  name={`${filterGroup.id}-max`}
+                  placeholder='Max'
+                  min={filterGroup.min || 0}
+                  max={filterGroup.max || 1000}
+                  step={filterGroup.step || 1}
+                  className='w-20'
+                  onchange='handleRangeChange(event)'
+                />
+              </div>
+              <input
+                type='range'
+                name={`${filterGroup.id}-range`}
+                min={filterGroup.min || 0}
+                max={filterGroup.max || 1000}
+                step={filterGroup.step || 1}
+                class='w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer slider'
+                onchange='handleRangeSlider(event)'
+              />
+            </div>
+          )}
+        </div>
+      ))
+    }
+  </div>
+
+  <!-- Sort Options -->
+  <div class='mt-6 pt-6 border-t border-gray-200'>
+    <h4 class='text-sm font-medium text-gray-900 mb-3'>Sort By</h4>
+    <select
+      id='sort-by'
+      name='sortBy'
+      class='w-full px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-soladia-primary focus:border-soladia-primary'
+      onchange='handleSortChange(event)'
+    >
+      <option value='relevance'>Relevance</option>
+      <option value='price-low'>Price: Low to High</option>
+      <option value='price-high'>Price: High to Low</option>
+      <option value='newest'>Newest First</option>
+      <option value='oldest'>Oldest First</option>
+      <option value='rating'>Highest Rated</option>
+      <option value='popular'>Most Popular</option>
+    </select>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class='mt-6 flex space-x-3'>
+    <Button variant='primary' size='sm' fullWidth onclick='applyFilters()'>
+      Apply Filters
+    </Button>
+    <Button variant='outline' size='sm' fullWidth onclick='clearAllFilters()'>
+      Clear All
+    </Button>
+  </div>
+
+  <!-- Active Filters Display -->
+  <div id='active-filters' class='mt-4 hidden'>
+    <h4 class='text-sm font-medium text-gray-900 mb-2'>Active Filters</h4>
+    <div id='active-filters-list' class='flex flex-wrap gap-2'>
+      <!-- Active filters will be populated by JavaScript -->
+    </div>
+  </div>
+</Card>
+
+<script>
+  let currentFilters = { ...defaultFilters };
+  let searchTimeout: NodeJS.Timeout | null = null;
+
+  // Initialize filters
+  document.addEventListener('DOMContentLoaded', () => {
+    loadSavedFilters();
+    updateActiveFiltersDisplay();
+  });
+
+  // Handle search input with debouncing
+  function handleSearchInput(event: Event) {
+    const target = event.target as HTMLInputElement;
+    currentFilters.query = target.value;
+
+    // Clear existing timeout
+    if (searchTimeout) {
+      clearTimeout(searchTimeout);
+    }
+
+    // Set new timeout for search
+    searchTimeout = setTimeout(() => {
+      performSearch();
+    }, 500);
+  }
+
+  // Perform search
+  function performSearch() {
+    if (onSearch) {
+      onSearch(currentFilters.query);
+    }
+    updateActiveFiltersDisplay();
+    saveFilters();
+  }
+
+  // Handle filter changes
+  function handleFilterChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const filterName = target.name;
+    const filterValue = target.value;
+
+    if (target.type === 'checkbox') {
+      if (target.checked) {
+        if (!currentFilters.customFilters[filterName]) {
+          currentFilters.customFilters[filterName] = [];
+        }
+        currentFilters.customFilters[filterName].push(filterValue);
+      } else {
+        if (currentFilters.customFilters[filterName]) {
+          currentFilters.customFilters[filterName] =
+            currentFilters.customFilters[filterName].filter(
+              (v: string) => v !== filterValue
+            );
+          if (currentFilters.customFilters[filterName].length === 0) {
+            delete currentFilters.customFilters[filterName];
+          }
+        }
+      }
+    } else {
+      currentFilters.customFilters[filterName] = filterValue;
+    }
+
+    updateActiveFiltersDisplay();
+    saveFilters();
+  }
+
+  // Handle range changes
+  function handleRangeChange(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const filterName = target.name.replace('-min', '').replace('-max', '');
+    const isMin = target.name.includes('-min');
+
+    if (!currentFilters.customFilters[filterName]) {
+      currentFilters.customFilters[filterName] = { min: 0, max: 1000 };
+    }
+
+    if (isMin) {
+      currentFilters.customFilters[filterName].min =
+        parseFloat(target.value) || 0;
+    } else {
+      currentFilters.customFilters[filterName].max =
+        parseFloat(target.value) || 1000;
+    }
+
+    updateActiveFiltersDisplay();
+    saveFilters();
+  }
+
+  // Handle range slider
+  function handleRangeSlider(event: Event) {
+    const target = event.target as HTMLInputElement;
+    const filterName = target.name.replace('-range', '');
+    const value = parseFloat(target.value);
+
+    // Update both min and max inputs
+    const minInput = document.querySelector(
+      `input[name="${filterName}-min"]`
+    ) as HTMLInputElement;
+    const maxInput = document.querySelector(
+      `input[name="${filterName}-max"]`
+    ) as HTMLInputElement;
+
+    if (minInput && maxInput) {
+      const currentMin = parseFloat(minInput.value) || 0;
+      const currentMax = parseFloat(maxInput.value) || 1000;
+
+      if (value < currentMax) {
+        minInput.value = value.toString();
+        currentFilters.customFilters[filterName] = {
+          min: value,
+          max: currentMax,
+        };
+      } else {
+        maxInput.value = value.toString();
+        currentFilters.customFilters[filterName] = {
+          min: currentMin,
+          max: value,
+        };
+      }
+    }
+
+    updateActiveFiltersDisplay();
+    saveFilters();
+  }
+
+  // Handle sort changes
+  function handleSortChange(event: Event) {
+    const target = event.target as HTMLSelectElement;
+    currentFilters.sortBy = target.value;
+    updateActiveFiltersDisplay();
+    saveFilters();
+  }
+
+  // Toggle quick filters
+  function toggleQuickFilter(filterType: string) {
+    const button = document.querySelector(
+      `[data-filter="${filterType}"]`
+    ) as HTMLButtonElement;
+    if (!button) return;
+
+    const isActive = button.classList.contains('bg-soladia-primary');
+
+    if (isActive) {
+      button.classList.remove('bg-soladia-primary', 'text-white');
+      button.classList.add('bg-white', 'text-gray-700');
+      // Remove from filters
+      if (currentFilters.tags.includes(filterType)) {
+        currentFilters.tags = currentFilters.tags.filter(
+          tag => tag !== filterType
+        );
+      }
+    } else {
+      button.classList.remove('bg-white', 'text-gray-700');
+      button.classList.add('bg-soladia-primary', 'text-white');
+      // Add to filters
+      if (!currentFilters.tags.includes(filterType)) {
+        currentFilters.tags.push(filterType);
+      }
+    }
+
+    updateActiveFiltersDisplay();
+    saveFilters();
+  }
+
+  // Apply all filters
+  function applyFilters() {
+    if (onFilterChange) {
+      onFilterChange(currentFilters);
+    }
+    showNotification('Filters applied successfully!', 'success');
+  }
+
+  // Clear all filters
+  function clearAllFilters() {
+    currentFilters = { ...defaultFilters };
+
+    // Reset all form elements
+    const form = document.querySelector('.search-filters') as HTMLFormElement;
+    if (form) {
+      form.reset();
+    }
+
+    // Reset quick filter buttons
+    document.querySelectorAll('[data-filter]').forEach(button => {
+      button.classList.remove('bg-soladia-primary', 'text-white');
+      button.classList.add('bg-white', 'text-gray-700');
+    });
+
+    updateActiveFiltersDisplay();
+    saveFilters();
+
+    if (onClearFilters) {
+      onClearFilters();
+    }
+
+    showNotification('All filters cleared!', 'info');
+  }
+
+  // Update active filters display
+  function updateActiveFiltersDisplay() {
+    const activeFiltersContainer = document.getElementById('active-filters');
+    const activeFiltersList = document.getElementById('active-filters-list');
+
+    if (!activeFiltersContainer || !activeFiltersList) return;
+
+    const activeFilters: string[] = [];
+
+    // Add query filter
+    if (currentFilters.query) {
+      activeFilters.push(`Search: "${currentFilters.query}"`);
+    }
+
+    // Add custom filters
+    Object.entries(currentFilters.customFilters).forEach(([key, value]) => {
+      if (Array.isArray(value) && value.length > 0) {
+        activeFilters.push(`${key}: ${value.join(', ')}`);
+      } else if (
+        typeof value === 'object' &&
+        value.min !== undefined &&
+        value.max !== undefined
+      ) {
+        activeFilters.push(`${key}: $${value.min} - $${value.max}`);
+      } else if (value) {
+        activeFilters.push(`${key}: ${value}`);
+      }
+    });
+
+    // Add tags
+    if (currentFilters.tags.length > 0) {
+      activeFilters.push(`Tags: ${currentFilters.tags.join(', ')}`);
+    }
+
+    if (activeFilters.length > 0) {
+      activeFiltersList.innerHTML = activeFilters
+        .map(
+          filter => `
+        <span class='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-soladia-primary text-white'>
+          ${filter}
+          <button
+            class='ml-1.5 inline-flex items-center justify-center w-4 h-4 rounded-full hover:bg-white hover:bg-opacity-20'
+            onclick='removeActiveFilter("${filter}")'
+          >
+            <svg class='w-2 h-2' fill='currentColor' viewBox='0 0 20 20'>
+              <path fill-rule='evenodd' d='M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z' clip-rule='evenodd' />
+            </svg>
+          </button>
+        </span>
+      `
+        )
+        .join('');
+      activeFiltersContainer.classList.remove('hidden');
+    } else {
+      activeFiltersContainer.classList.add('hidden');
+    }
+  }
+
+  // Remove active filter
+  function removeActiveFilter(filterText: string) {
+    // This is a simplified implementation
+    // In a real app, you'd need to parse the filter text and remove the specific filter
+    console.log('Removing filter:', filterText);
+    showNotification('Filter removed', 'info');
+  }
+
+  // Save filters to localStorage
+  function saveFilters() {
+    try {
+      localStorage.setItem(
+        'soladia-search-filters',
+        JSON.stringify(currentFilters)
+      );
+    } catch (error) {
+      console.error('Failed to save filters:', error);
+    }
+  }
+
+  // Load saved filters
+  function loadSavedFilters() {
+    try {
+      const saved = localStorage.getItem('soladia-search-filters');
+      if (saved) {
+        currentFilters = { ...defaultFilters, ...JSON.parse(saved) };
+
+        // Apply saved filters to form elements
+        applySavedFiltersToForm();
+      }
+    } catch (error) {
+      console.error('Failed to load filters:', error);
+    }
+  }
+
+  // Apply saved filters to form elements
+  function applySavedFiltersToForm() {
+    // Apply query
+    const queryInput = document.getElementById(
+      'search-query'
+    ) as HTMLInputElement;
+    if (queryInput) {
+      queryInput.value = currentFilters.query;
+    }
+
+    // Apply custom filters
+    Object.entries(currentFilters.customFilters).forEach(([key, value]) => {
+      if (Array.isArray(value)) {
+        value.forEach(val => {
+          const checkbox = document.querySelector(
+            `input[name="${key}"][value="${val}"]`
+          ) as HTMLInputElement;
+          if (checkbox) checkbox.checked = true;
+        });
+      } else if (typeof value === 'string') {
+        const radio = document.querySelector(
+          `input[name="${key}"][value="${value}"]`
+        ) as HTMLInputElement;
+        const select = document.querySelector(
+          `select[name="${key}"]`
+        ) as HTMLSelectElement;
+        if (radio) radio.checked = true;
+        if (select) select.value = value;
+      }
+    });
+
+    // Apply tags to quick filters
+    currentFilters.tags.forEach(tag => {
+      const button = document.querySelector(
+        `[data-filter="${tag}"]`
+      ) as HTMLButtonElement;
+      if (button) {
+        button.classList.remove('bg-white', 'text-gray-700');
+        button.classList.add('bg-soladia-primary', 'text-white');
+      }
+    });
+  }
+
+  // Show notification
+  function showNotification(
+    message: string,
+    type: 'success' | 'error' | 'info'
+  ) {
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 p-4 rounded-md text-white z-50 ${
+      type === 'success'
+        ? 'bg-green-500'
+        : type === 'error'
+          ? 'bg-red-500'
+          : 'bg-blue-500'
+    }`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
+  }
+</script>
+
+<style>
+  .search-filters {
+    position: sticky;
+    top: 1rem;
+  }
+
+  .slider {
+    -webkit-appearance: none;
+    appearance: none;
+    background: #e5e7eb;
+    outline: none;
+    border-radius: 0.5rem;
+  }
+
+  .slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    background: var(--soladia-primary);
+    cursor: pointer;
+    border-radius: 50%;
+  }
+
+  .slider::-moz-range-thumb {
+    width: 20px;
+    height: 20px;
+    background: var(--soladia-primary);
+    cursor: pointer;
+    border-radius: 50%;
+    border: none;
+  }
+
+  .filter-group input[type='checkbox']:checked,
+  .filter-group input[type='radio']:checked {
+    background-color: var(--soladia-primary);
+    border-color: var(--soladia-primary);
+  }
+</style>

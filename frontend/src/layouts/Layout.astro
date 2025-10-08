@@ -15,90 +15,109 @@ export interface Props {
   structuredData?: any;
 }
 
-const { 
-  title, 
-  description, 
-  canonical, 
-  ogImage, 
-  ogType, 
-  keywords, 
-  author, 
-  publishedTime, 
-  modifiedTime, 
-  structuredData 
+const {
+  title,
+  description,
+  canonical,
+  ogImage,
+  ogType,
+  keywords,
+  author,
+  publishedTime,
+  modifiedTime,
+  structuredData,
 } = Astro.props;
 ---
 
-       <!DOCTYPE html>
-       <html lang="en">
-         <head>
-           <meta charset="UTF-8" />
-           <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-           <meta name="generator" content={Astro.generator} />
-           
-           <!-- Theme Color Meta Tag -->
-           <meta name="theme-color" content="#F8F9FA" />
-           <meta name="msapplication-TileColor" content="#E60012" />
-           <meta name="msapplication-config" content="/browserconfig.xml" />
+<!doctype html>
+<html lang='en'>
+  <head>
+    <meta charset='UTF-8' />
+    <meta name='viewport' content='width=device-width, initial-scale=1.0' />
+    <meta name='generator' content={Astro.generator} />
 
-           <!-- SEO Component -->
-           <SEO
-             title={title}
-             description={description}
-             canonical={canonical}
-             ogImage={ogImage}
-             ogType={ogType}
-             keywords={keywords}
-             author={author}
-             publishedTime={publishedTime}
-             modifiedTime={modifiedTime}
-             structuredData={structuredData}
-           />
+    <!-- Theme Color Meta Tag -->
+    <meta name='theme-color' content='#F8F9FA' />
+    <meta name='msapplication-TileColor' content='#E60012' />
+    <meta name='msapplication-config' content='/browserconfig.xml' />
 
-           <!-- Payment Permissions Policy -->
-           <meta http-equiv="Permissions-Policy" content="payment=*, camera=(), microphone=(), geolocation=()" />
+    <!-- SEO Component -->
+    <SEO
+      title={title}
+      description={description}
+      canonical={canonical}
+      ogImage={ogImage}
+      ogType={ogType}
+      keywords={keywords}
+      author={author}
+      publishedTime={publishedTime}
+      modifiedTime={modifiedTime}
+      structuredData={structuredData}
+    />
 
-           <!-- Security Headers -->
-           <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost:8000;" />
-         </head>
+    <!-- Payment Permissions Policy -->
+    <meta
+      http-equiv='Permissions-Policy'
+      content='payment=*, camera=(), microphone=(), geolocation=()'
+    />
+
+    <!-- Security Headers -->
+    <meta
+      http-equiv='Content-Security-Policy'
+      content="default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' http://localhost:8000;"
+    />
+  </head>
   <body>
     <!-- Sticky Navigation -->
     <Navigation />
-    
+
     <!-- Main Content Area -->
-    <main id="main-content" class="main-content">
+    <main id='main-content' class='main-content'>
       <slot />
     </main>
-    
+
+    <!-- Notification Center -->
+    <div id='notification-center-container'></div>
+
+    <!-- Global Auth Script -->
+    <script src='/src/scripts/auth-global.ts'></script>
+
+    <!-- Notification Service -->
+    <script src='/src/services/notifications.ts'></script>
+
     <!-- Global Error Handling Script -->
     <script>
       // Block external scripts and domains
-      (function() {
+      (function () {
         // Override console methods to filter out external script errors
         const originalConsoleError = console.error;
         const originalConsoleWarn = console.warn;
-        
-        console.error = function(...args) {
+
+        console.error = function (...args) {
           const message = args.join(' ');
-          if (!message.includes('app.masterschool.com') && 
-              !message.includes('masterschool.com') &&
-              !message.includes('postMessage')) {
+          if (
+            !message.includes('app.masterschool.com') &&
+            !message.includes('masterschool.com') &&
+            !message.includes('postMessage')
+          ) {
             originalConsoleError.apply(console, args);
           }
         };
-        
-        console.warn = function(...args) {
+
+        console.warn = function (...args) {
           const message = args.join(' ');
-          if (!message.includes('app.masterschool.com') && 
-              !message.includes('masterschool.com') &&
-              !message.includes('postMessage')) {
+          if (
+            !message.includes('app.masterschool.com') &&
+            !message.includes('masterschool.com') &&
+            !message.includes('postMessage')
+          ) {
             originalConsoleWarn.apply(console, args);
           }
         };
-        
+
         // Block external domain requests
         const originalFetch = window.fetch;
-        window.fetch = function(...args) {
+        window.fetch = function (...args) {
           const url = args[0];
           if (typeof url === 'string' && url.includes('masterschool.com')) {
             console.log('Blocked external request to:', url);
@@ -106,61 +125,93 @@ const {
           }
           return originalFetch.apply(this, args);
         };
-        
+
         // Block external postMessage calls
         const originalPostMessage = window.postMessage;
-        window.postMessage = function(message, targetOrigin, transfer) {
+        window.postMessage = function (message, targetOrigin, transfer) {
           if (targetOrigin && targetOrigin.includes('masterschool.com')) {
-            console.log('Blocked postMessage to external domain:', targetOrigin);
+            console.log(
+              'Blocked postMessage to external domain:',
+              targetOrigin
+            );
             return;
           }
-          return originalPostMessage.call(this, message, targetOrigin, transfer);
+          return originalPostMessage.call(
+            this,
+            message,
+            targetOrigin,
+            transfer
+          );
         };
       })();
-      
+
       // Global error handling
-      window.addEventListener('error', function(event) {
+      window.addEventListener('error', function (event) {
         const message = event.message || '';
-        if (!message.includes('masterschool.com') && 
-            !message.includes('postMessage') &&
-            !message.includes('app.masterschool.com')) {
+        if (
+          !message.includes('masterschool.com') &&
+          !message.includes('postMessage') &&
+          !message.includes('app.masterschool.com')
+        ) {
           console.log('Global error caught:', event.error);
         }
         // Prevent error from showing in console
         event.preventDefault();
       });
-      
+
       // Handle unhandled promise rejections
-      window.addEventListener('unhandledrejection', function(event) {
+      window.addEventListener('unhandledrejection', function (event) {
         const message = event.reason?.message || '';
-        if (!message.includes('masterschool.com') && 
-            !message.includes('postMessage') &&
-            !message.includes('app.masterschool.com')) {
+        if (
+          !message.includes('masterschool.com') &&
+          !message.includes('postMessage') &&
+          !message.includes('app.masterschool.com')
+        ) {
           console.log('Unhandled promise rejection:', event.reason);
         }
         // Prevent the default behavior
         event.preventDefault();
       });
-      
+
       // Handle API errors gracefully
-      window.addEventListener('DOMContentLoaded', function() {
+      window.addEventListener('DOMContentLoaded', function () {
         // Override fetch to handle errors gracefully
         const originalFetch = window.fetch;
-        window.fetch = function(...args) {
-          return originalFetch.apply(this, args)
-            .catch(error => {
-              console.log('API call failed:', error);
-              // Return a mock response for failed API calls
-              return new Response(JSON.stringify({
+        window.fetch = function (...args) {
+          return originalFetch.apply(this, args).catch(error => {
+            console.log('API call failed:', error);
+            // Return a mock response for failed API calls
+            return new Response(
+              JSON.stringify({
                 success: false,
                 message: 'Service temporarily unavailable',
-                data: null
-              }), {
+                data: null,
+              }),
+              {
                 status: 200,
-                headers: { 'Content-Type': 'application/json' }
-              });
-            });
+                headers: { 'Content-Type': 'application/json' },
+              }
+            );
+          });
         };
+      });
+
+      // Initialize notification center
+      document.addEventListener('DOMContentLoaded', function () {
+        const container = document.getElementById(
+          'notification-center-container'
+        );
+        if (container) {
+          // Load notification center component
+          fetch('/src/components/NotificationCenter.astro')
+            .then(response => response.text())
+            .then(html => {
+              container.innerHTML = html;
+            })
+            .catch(error => {
+              console.error('Failed to load notification center:', error);
+            });
+        }
       });
     </script>
   </body>
@@ -168,25 +219,25 @@ const {
 
 <style is:global>
   @import '../styles/global.css';
-  
+
   /* Layout Styles */
   .main-content {
     min-height: calc(100vh - 80px);
     padding-top: 80px; /* Account for sticky navbar height */
   }
-  
+
   /* Ensure smooth scrolling */
   html {
     scroll-behavior: smooth;
   }
-  
+
   /* Prevent layout shift */
   body {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
   }
-  
+
   /* Sticky Navigation Styles */
   nav {
     position: fixed !important;
@@ -200,7 +251,7 @@ const {
     box-shadow: var(--soladia-shadow);
     transition: all 0.3s ease;
   }
-  
+
   /* Mobile Responsive Layout */
   @media (max-width: 1024px) {
     .main-content {
@@ -208,195 +259,195 @@ const {
       padding-top: 72px;
     }
   }
-  
+
   @media (max-width: 768px) {
     .main-content {
       min-height: calc(100vh - 64px);
       padding-top: 64px;
     }
   }
-  
+
   @media (max-width: 480px) {
     .main-content {
       min-height: calc(100vh - 56px);
       padding-top: 56px;
     }
   }
-  
+
   /* Mobile-first responsive containers */
   .container {
     width: 100%;
     margin: 0 auto;
     padding: 0 1rem;
   }
-  
+
   @media (min-width: 640px) {
     .container {
       max-width: 640px;
       padding: 0 1.5rem;
     }
   }
-  
+
   @media (min-width: 768px) {
     .container {
       max-width: 768px;
       padding: 0 2rem;
     }
   }
-  
+
   @media (min-width: 1024px) {
     .container {
       max-width: 1024px;
       padding: 0 2rem;
     }
   }
-  
+
   @media (min-width: 1280px) {
     .container {
       max-width: 1280px;
       padding: 0 2rem;
     }
   }
-  
+
   /* Mobile-optimized spacing */
   .section-padding {
     padding: 2rem 0;
   }
-  
+
   @media (min-width: 768px) {
     .section-padding {
       padding: 4rem 0;
     }
   }
-  
+
   @media (min-width: 1024px) {
     .section-padding {
       padding: 6rem 0;
     }
   }
-  
+
   /* Mobile-friendly touch targets */
   .touch-target {
     min-height: 44px;
     min-width: 44px;
   }
-  
+
   /* Mobile-optimized typography */
   .mobile-text-sm {
     font-size: 0.875rem;
     line-height: 1.25rem;
   }
-  
+
   .mobile-text-base {
     font-size: 1rem;
     line-height: 1.5rem;
   }
-  
+
   .mobile-text-lg {
     font-size: 1.125rem;
     line-height: 1.75rem;
   }
-  
+
   .mobile-text-xl {
     font-size: 1.25rem;
     line-height: 1.75rem;
   }
-  
+
   .mobile-text-2xl {
     font-size: 1.5rem;
     line-height: 2rem;
   }
-  
+
   .mobile-text-3xl {
     font-size: 1.875rem;
     line-height: 2.25rem;
   }
-  
+
   @media (min-width: 768px) {
     .mobile-text-sm {
       font-size: 1rem;
       line-height: 1.5rem;
     }
-    
+
     .mobile-text-base {
       font-size: 1.125rem;
       line-height: 1.75rem;
     }
-    
+
     .mobile-text-lg {
       font-size: 1.25rem;
       line-height: 1.75rem;
     }
-    
+
     .mobile-text-xl {
       font-size: 1.5rem;
       line-height: 2rem;
     }
-    
+
     .mobile-text-2xl {
       font-size: 2rem;
       line-height: 2.5rem;
     }
-    
+
     .mobile-text-3xl {
       font-size: 2.25rem;
       line-height: 2.5rem;
     }
   }
-  
+
   /* Mobile-optimized grids */
   .mobile-grid {
     display: grid;
     gap: 1rem;
     grid-template-columns: 1fr;
   }
-  
+
   @media (min-width: 640px) {
     .mobile-grid {
       grid-template-columns: repeat(2, 1fr);
       gap: 1.5rem;
     }
   }
-  
+
   @media (min-width: 768px) {
     .mobile-grid {
       grid-template-columns: repeat(3, 1fr);
       gap: 2rem;
     }
   }
-  
+
   @media (min-width: 1024px) {
     .mobile-grid {
       grid-template-columns: repeat(4, 1fr);
       gap: 2rem;
     }
   }
-  
+
   /* Mobile-optimized flex layouts */
   .mobile-flex {
     display: flex;
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   @media (min-width: 768px) {
     .mobile-flex {
       flex-direction: row;
       gap: 2rem;
     }
   }
-  
+
   /* Mobile-optimized spacing */
   .mobile-space-y > * + * {
     margin-top: 1rem;
   }
-  
+
   @media (min-width: 768px) {
     .mobile-space-y > * + * {
       margin-top: 2rem;
     }
   }
-  
+
   /* Mobile-optimized buttons */
   .mobile-btn {
     width: 100%;
@@ -411,41 +462,41 @@ const {
     justify-content: center;
     gap: 0.5rem;
   }
-  
+
   @media (min-width: 640px) {
     .mobile-btn {
       width: auto;
       padding: 0.75rem 1.5rem;
     }
   }
-  
+
   /* Mobile-optimized forms */
   .mobile-form {
     display: flex;
     flex-direction: column;
     gap: 1rem;
   }
-  
+
   .mobile-form input,
   .mobile-form textarea,
   .mobile-form select {
     width: 100%;
     padding: 0.75rem;
-    border: 2px solid #E1E5E9;
+    border: 2px solid #e1e5e9;
     border-radius: 0.5rem;
     font-size: 1rem;
     min-height: 44px;
     transition: border-color 0.2s ease;
   }
-  
+
   .mobile-form input:focus,
   .mobile-form textarea:focus,
   .mobile-form select:focus {
     outline: none;
-    border-color: #3B82F6;
+    border-color: #3b82f6;
     box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
   }
-  
+
   /* Mobile-optimized cards */
   .mobile-card {
     background: white;
@@ -454,19 +505,19 @@ const {
     padding: 1rem;
     transition: all 0.3s ease;
   }
-  
+
   @media (min-width: 768px) {
     .mobile-card {
       padding: 1.5rem;
       border-radius: 1rem;
     }
   }
-  
+
   .mobile-card:hover {
     transform: translateY(-2px);
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   }
-  
+
   /* Mobile-optimized images */
   .mobile-img {
     width: 100%;
@@ -474,31 +525,31 @@ const {
     object-fit: cover;
     border-radius: 0.5rem;
   }
-  
+
   @media (min-width: 768px) {
     .mobile-img {
       border-radius: 0.75rem;
     }
   }
-  
+
   /* Mobile-optimized navigation */
   .mobile-nav {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
   }
-  
+
   @media (min-width: 768px) {
     .mobile-nav {
       flex-direction: row;
       gap: 1rem;
     }
   }
-  
+
   .mobile-nav a {
     display: block;
     padding: 0.75rem 1rem;
-    color: #6B7280;
+    color: #6b7280;
     text-decoration: none;
     font-weight: 500;
     border-radius: 0.5rem;
@@ -507,39 +558,39 @@ const {
     display: flex;
     align-items: center;
   }
-  
+
   .mobile-nav a:hover {
-    background: #F3F4F6;
-    color: #1F2937;
+    background: #f3f4f6;
+    color: #1f2937;
   }
-  
+
   /* Mobile-optimized tables */
   .mobile-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 0.875rem;
   }
-  
+
   @media (min-width: 768px) {
     .mobile-table {
       font-size: 1rem;
     }
   }
-  
+
   .mobile-table th,
   .mobile-table td {
     padding: 0.5rem;
     text-align: left;
-    border-bottom: 1px solid #E1E5E9;
+    border-bottom: 1px solid #e1e5e9;
   }
-  
+
   @media (min-width: 768px) {
     .mobile-table th,
     .mobile-table td {
       padding: 0.75rem;
     }
   }
-  
+
   /* Mobile-optimized modals */
   .mobile-modal {
     position: fixed;
@@ -554,7 +605,7 @@ const {
     z-index: 9999;
     padding: 1rem;
   }
-  
+
   .mobile-modal-content {
     background: white;
     border-radius: 0.75rem;
@@ -564,35 +615,35 @@ const {
     overflow-y: auto;
     width: 100%;
   }
-  
+
   @media (min-width: 640px) {
     .mobile-modal-content {
       max-width: 32rem;
       padding: 2rem;
     }
   }
-  
+
   /* Mobile-optimized utilities */
   .mobile-hidden {
     display: none;
   }
-  
+
   @media (min-width: 768px) {
     .mobile-hidden {
       display: block;
     }
   }
-  
+
   .mobile-only {
     display: block;
   }
-  
+
   @media (min-width: 768px) {
     .mobile-only {
       display: none;
     }
   }
-  
+
   /* Mobile-optimized animations */
   @media (prefers-reduced-motion: reduce) {
     *,
@@ -603,5 +654,4 @@ const {
       transition-duration: 0.01ms !important;
     }
   }
-  
 </style>

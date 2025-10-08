@@ -1,567 +1,522 @@
 """
-Multi-tenancy Service for Soladia Marketplace
-Provides enterprise-grade multi-tenant architecture
+Multi-Tenancy System for Soladia Marketplace
+Enterprise-grade multi-tenant architecture with tenant isolation
 """
 
-import asyncio
-import json
-import hashlib
-import secrets
-from typing import Dict, Any, Optional, List, Tuple
-from dataclasses import dataclass
+from typing import Optional, Dict, Any, List
 from datetime import datetime, timedelta
-import logging
 from enum import Enum
 import uuid
+import hashlib
+import secrets
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, JSON, ForeignKey
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship, sessionmaker
+from sqlalchemy import create_engine
+from fastapi import HTTPException, Depends, Request
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import jwt
+from pydantic import BaseModel, Field
+import redis
+import json
 
-logger = logging.getLogger(__name__)
+Base = declarative_base()
 
-class TenantTier(Enum):
-    """Tenant subscription tiers"""
-    FREE = "free"
-    BASIC = "basic"
+class TenantStatus(str, Enum):
+    ACTIVE = "active"
+    SUSPENDED = "suspended"
+    PENDING = "pending"
+    EXPIRED = "expired"
+
+class TenantTier(str, Enum):
+    STARTER = "starter"
     PROFESSIONAL = "professional"
     ENTERPRISE = "enterprise"
     CUSTOM = "custom"
 
-class TenantStatus(Enum):
-    """Tenant status"""
-    ACTIVE = "active"
-    SUSPENDED = "suspended"
-    PENDING = "pending"
-    CANCELLED = "cancelled"
+class Tenant(Base):
+    __tablename__ = "tenants"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    tenant_id = Column(String(36), unique=True, index=True, nullable=False)
+    name = Column(String(255), nullable=False)
+    domain = Column(String(255), unique=True, index=True, nullable=False)
+    subdomain = Column(String(100), unique=True, index=True, nullable=True)
+    status = Column(String(20), default=TenantStatus.PENDING)
+    tier = Column(String(20), default=TenantTier.STARTER)
+    
+    # Branding and customization
+    logo_url = Column(String(500), nullable=True)
+    primary_color = Column(String(7), default="#E60012")
+    secondary_color = Column(String(7), default="#0066CC")
+    custom_css = Column(Text, nullable=True)
+    custom_js = Column(Text, nullable=True)
+    favicon_url = Column(String(500), nullable=True)
+    
+    # Configuration
+    settings = Column(JSON, default=dict)
+    features = Column(JSON, default=dict)
+    limits = Column(JSON, default=dict)
+    
+    # Billing and subscription
+    subscription_id = Column(String(100), nullable=True)
+    billing_email = Column(String(255), nullable=True)
+    trial_ends_at = Column(DateTime, nullable=True)
+    subscription_ends_at = Column(DateTime, nullable=True)
+    
+    # Security
+    api_key = Column(String(64), unique=True, index=True, nullable=False)
+    webhook_secret = Column(String(64), nullable=True)
+    encryption_key = Column(String(64), nullable=True)
+    
+    # Metadata
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    
+    # Relationships
+    users = relationship("User", back_populates="tenant")
+    products = relationship("Product", back_populates="tenant")
+    orders = relationship("Order", back_populates="tenant")
 
-@dataclass
-class TenantConfig:
-    """Tenant configuration"""
+class TenantUser(Base):
+    __tablename__ = "tenant_users"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    tenant_id = Column(String(36), ForeignKey("tenants.tenant_id"), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    role = Column(String(50), default="member")
+    permissions = Column(JSON, default=dict)
+    joined_at = Column(DateTime, default=datetime.utcnow)
+    is_active = Column(Boolean, default=True)
+
+class TenantInvitation(Base):
+    __tablename__ = "tenant_invitations"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    tenant_id = Column(String(36), ForeignKey("tenants.tenant_id"), nullable=False)
+    email = Column(String(255), nullable=False)
+    role = Column(String(50), default="member")
+    token = Column(String(64), unique=True, index=True, nullable=False)
+    expires_at = Column(DateTime, nullable=False)
+    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+    accepted_at = Column(DateTime, nullable=True)
+
+# Pydantic models
+class TenantCreate(BaseModel):
+    name: str = Field(..., min_length=1, max_length=255)
+    domain: str = Field(..., min_length=3, max_length=255)
+    subdomain: Optional[str] = Field(None, min_length=3, max_length=100)
+    tier: TenantTier = TenantTier.STARTER
+    billing_email: str = Field(..., min_length=5, max_length=255)
+    settings: Dict[str, Any] = Field(default_factory=dict)
+    features: Dict[str, Any] = Field(default_factory=dict)
+
+class TenantUpdate(BaseModel):
+    name: Optional[str] = Field(None, min_length=1, max_length=255)
+    logo_url: Optional[str] = Field(None, max_length=500)
+    primary_color: Optional[str] = Field(None, regex=r"^#[0-9A-Fa-f]{6}$")
+    secondary_color: Optional[str] = Field(None, regex=r"^#[0-9A-Fa-f]{6}$")
+    custom_css: Optional[str] = None
+    custom_js: Optional[str] = None
+    favicon_url: Optional[str] = Field(None, max_length=500)
+    settings: Optional[Dict[str, Any]] = None
+    features: Optional[Dict[str, Any]] = None
+
+class TenantResponse(BaseModel):
+    id: int
     tenant_id: str
     name: str
     domain: str
-    tier: TenantTier
+    subdomain: Optional[str]
     status: TenantStatus
-    max_users: int
-    max_storage: int  # in GB
-    max_api_calls: int
-    custom_domain: Optional[str] = None
-    white_label: bool = False
-    custom_branding: Optional[Dict[str, Any]] = None
-    features: List[str] = None
-    created_at: datetime = None
-    updated_at: datetime = None
+    tier: TenantTier
+    logo_url: Optional[str]
+    primary_color: str
+    secondary_color: str
+    custom_css: Optional[str]
+    custom_js: Optional[str]
+    favicon_url: Optional[str]
+    settings: Dict[str, Any]
+    features: Dict[str, Any]
+    limits: Dict[str, Any]
+    created_at: datetime
+    updated_at: datetime
 
-@dataclass
-class TenantLimits:
-    """Tenant usage limits and current usage"""
-    max_users: int
-    current_users: int
-    max_storage: int
-    current_storage: int
-    max_api_calls: int
-    current_api_calls: int
-    max_nft_listings: int
-    current_nft_listings: int
-    max_transactions: int
-    current_transactions: int
+class TenantInvitationCreate(BaseModel):
+    email: str = Field(..., min_length=5, max_length=255)
+    role: str = Field(default="member", max_length=50)
+    expires_in_days: int = Field(default=7, ge=1, le=30)
 
-@dataclass
-class TenantBilling:
-    """Tenant billing information"""
+class TenantInvitationResponse(BaseModel):
+    id: int
     tenant_id: str
-    subscription_id: str
-    plan_name: str
-    amount: float
-    currency: str
-    billing_cycle: str  # monthly, yearly
-    next_billing_date: datetime
-    payment_method: str
-    status: str
+    email: str
+    role: str
+    token: str
+    expires_at: datetime
+    created_at: datetime
 
 class MultiTenancyService:
-    """Multi-tenancy service for enterprise features"""
+    def __init__(self, db_session, redis_client):
+        self.db = db_session
+        self.redis = redis_client
+        self.cache_ttl = 3600  # 1 hour
     
-    def __init__(self, database_connection=None):
-        self.db = database_connection
-        self.tenant_cache = {}
-        self.tenant_limits_cache = {}
-        
-    async def create_tenant(self, 
-                           name: str,
-                           domain: str,
-                           tier: TenantTier = TenantTier.BASIC,
-                           admin_user_id: str = None,
-                           custom_config: Optional[Dict[str, Any]] = None) -> TenantConfig:
+    async def create_tenant(self, tenant_data: TenantCreate, created_by: int) -> TenantResponse:
         """Create a new tenant"""
-        try:
-            tenant_id = str(uuid.uuid4())
-            
-            # Generate tenant-specific configuration
-            tenant_config = TenantConfig(
-                tenant_id=tenant_id,
-                name=name,
-                domain=domain,
-                tier=tier,
-                status=TenantStatus.PENDING,
-                max_users=self._get_tier_limits(tier)['max_users'],
-                max_storage=self._get_tier_limits(tier)['max_storage'],
-                max_api_calls=self._get_tier_limits(tier)['max_api_calls'],
-                features=self._get_tier_features(tier),
-                created_at=datetime.utcnow(),
-                updated_at=datetime.utcnow()
+        # Generate unique tenant ID
+        tenant_id = str(uuid.uuid4())
+        
+        # Generate API key
+        api_key = self._generate_api_key()
+        
+        # Check domain uniqueness
+        existing_tenant = self.db.query(Tenant).filter(
+            (Tenant.domain == tenant_data.domain) | 
+            (Tenant.subdomain == tenant_data.subdomain)
+        ).first()
+        
+        if existing_tenant:
+            raise HTTPException(
+                status_code=400,
+                detail="Domain or subdomain already exists"
             )
-            
-            # Apply custom configuration if provided
-            if custom_config:
-                tenant_config = self._apply_custom_config(tenant_config, custom_config)
-            
-            # Save tenant to database
-            await self._save_tenant(tenant_config)
-            
-            # Initialize tenant limits
-            await self._initialize_tenant_limits(tenant_id)
-            
-            # Create admin user if provided
-            if admin_user_id:
-                await self._create_tenant_admin(tenant_id, admin_user_id)
-            
-            # Cache tenant configuration
-            self.tenant_cache[tenant_id] = tenant_config
-            
-            logger.info(f"Created tenant {tenant_id} for {name}")
-            return tenant_config
-            
-        except Exception as e:
-            logger.error(f"Failed to create tenant: {str(e)}")
-            raise
-            
-    async def get_tenant(self, tenant_id: str) -> Optional[TenantConfig]:
-        """Get tenant configuration"""
-        try:
-            # Check cache first
-            if tenant_id in self.tenant_cache:
-                return self.tenant_cache[tenant_id]
-            
-            # Load from database
-            tenant_config = await self._load_tenant(tenant_id)
-            if tenant_config:
-                self.tenant_cache[tenant_id] = tenant_config
-            
-            return tenant_config
-            
-        except Exception as e:
-            logger.error(f"Failed to get tenant {tenant_id}: {str(e)}")
+        
+        # Create tenant
+        tenant = Tenant(
+            tenant_id=tenant_id,
+            name=tenant_data.name,
+            domain=tenant_data.domain,
+            subdomain=tenant_data.subdomain,
+            tier=tenant_data.tier,
+            billing_email=tenant_data.billing_email,
+            api_key=api_key,
+            settings=tenant_data.settings,
+            features=tenant_data.features,
+            limits=self._get_tenant_limits(tenant_data.tier),
+            created_by=created_by,
+            trial_ends_at=datetime.utcnow() + timedelta(days=14)
+        )
+        
+        self.db.add(tenant)
+        self.db.commit()
+        self.db.refresh(tenant)
+        
+        # Add creator as admin
+        await self.add_user_to_tenant(tenant_id, created_by, "admin")
+        
+        # Cache tenant data
+        await self._cache_tenant(tenant)
+        
+        return TenantResponse.from_orm(tenant)
+    
+    async def get_tenant(self, tenant_id: str) -> Optional[TenantResponse]:
+        """Get tenant by ID"""
+        # Try cache first
+        cached_tenant = await self._get_cached_tenant(tenant_id)
+        if cached_tenant:
+            return cached_tenant
+        
+        # Query database
+        tenant = self.db.query(Tenant).filter(Tenant.tenant_id == tenant_id).first()
+        if not tenant:
             return None
-            
-    async def update_tenant(self, 
-                           tenant_id: str,
-                           updates: Dict[str, Any]) -> Optional[TenantConfig]:
+        
+        # Cache result
+        await self._cache_tenant(tenant)
+        
+        return TenantResponse.from_orm(tenant)
+    
+    async def get_tenant_by_domain(self, domain: str) -> Optional[TenantResponse]:
+        """Get tenant by domain or subdomain"""
+        # Try cache first
+        cached_tenant = await self._get_cached_tenant_by_domain(domain)
+        if cached_tenant:
+            return cached_tenant
+        
+        # Query database
+        tenant = self.db.query(Tenant).filter(
+            (Tenant.domain == domain) | (Tenant.subdomain == domain)
+        ).first()
+        
+        if not tenant:
+            return None
+        
+        # Cache result
+        await self._cache_tenant(tenant)
+        
+        return TenantResponse.from_orm(tenant)
+    
+    async def update_tenant(self, tenant_id: str, update_data: TenantUpdate) -> TenantResponse:
         """Update tenant configuration"""
-        try:
-            tenant_config = await self.get_tenant(tenant_id)
-            if not tenant_config:
-                return None
-            
-            # Apply updates
-            for key, value in updates.items():
-                if hasattr(tenant_config, key):
-                    setattr(tenant_config, key, value)
-            
-            tenant_config.updated_at = datetime.utcnow()
-            
-            # Save updated configuration
-            await self._save_tenant(tenant_config)
-            
-            # Update cache
-            self.tenant_cache[tenant_id] = tenant_config
-            
-            logger.info(f"Updated tenant {tenant_id}")
-            return tenant_config
-            
-        except Exception as e:
-            logger.error(f"Failed to update tenant {tenant_id}: {str(e)}")
-            return None
-            
-    async def delete_tenant(self, tenant_id: str) -> bool:
-        """Delete tenant and all associated data"""
-        try:
-            # Get tenant configuration
-            tenant_config = await self.get_tenant(tenant_id)
-            if not tenant_config:
-                return False
-            
-            # Soft delete - mark as cancelled
-            tenant_config.status = TenantStatus.CANCELLED
-            tenant_config.updated_at = datetime.utcnow()
-            
-            await self._save_tenant(tenant_config)
-            
-            # Remove from cache
-            if tenant_id in self.tenant_cache:
-                del self.tenant_cache[tenant_id]
-            
-            # Clean up tenant data (implement based on requirements)
-            await self._cleanup_tenant_data(tenant_id)
-            
-            logger.info(f"Deleted tenant {tenant_id}")
-            return True
-            
-        except Exception as e:
-            logger.error(f"Failed to delete tenant {tenant_id}: {str(e)}")
+        tenant = self.db.query(Tenant).filter(Tenant.tenant_id == tenant_id).first()
+        if not tenant:
+            raise HTTPException(status_code=404, detail="Tenant not found")
+        
+        # Update fields
+        for field, value in update_data.dict(exclude_unset=True).items():
+            setattr(tenant, field, value)
+        
+        tenant.updated_at = datetime.utcnow()
+        
+        self.db.commit()
+        self.db.refresh(tenant)
+        
+        # Update cache
+        await self._cache_tenant(tenant)
+        
+        return TenantResponse.from_orm(tenant)
+    
+    async def add_user_to_tenant(self, tenant_id: str, user_id: int, role: str = "member") -> bool:
+        """Add user to tenant"""
+        # Check if user is already in tenant
+        existing = self.db.query(TenantUser).filter(
+            TenantUser.tenant_id == tenant_id,
+            TenantUser.user_id == user_id
+        ).first()
+        
+        if existing:
             return False
-            
-    async def get_tenant_limits(self, tenant_id: str) -> Optional[TenantLimits]:
-        """Get tenant usage limits and current usage"""
-        try:
-            # Check cache first
-            if tenant_id in self.tenant_limits_cache:
-                return self.tenant_limits_cache[tenant_id]
-            
-            # Get tenant configuration
-            tenant_config = await self.get_tenant(tenant_id)
-            if not tenant_config:
-                return None
-            
-            # Get current usage
-            current_usage = await self._get_tenant_usage(tenant_id)
-            
-            # Create limits object
-            limits = TenantLimits(
-                max_users=tenant_config.max_users,
-                current_users=current_usage.get('users', 0),
-                max_storage=tenant_config.max_storage,
-                current_storage=current_usage.get('storage', 0),
-                max_api_calls=tenant_config.max_api_calls,
-                current_api_calls=current_usage.get('api_calls', 0),
-                max_nft_listings=self._get_tier_limits(tenant_config.tier)['max_nft_listings'],
-                current_nft_listings=current_usage.get('nft_listings', 0),
-                max_transactions=self._get_tier_limits(tenant_config.tier)['max_transactions'],
-                current_transactions=current_usage.get('transactions', 0)
-            )
-            
-            # Cache limits
-            self.tenant_limits_cache[tenant_id] = limits
-            
-            return limits
-            
-        except Exception as e:
-            logger.error(f"Failed to get tenant limits {tenant_id}: {str(e)}")
-            return None
-            
-    async def check_tenant_limit(self, 
-                                tenant_id: str,
-                                limit_type: str,
-                                increment: int = 1) -> bool:
-        """Check if tenant can perform an action within limits"""
-        try:
-            limits = await self.get_tenant_limits(tenant_id)
-            if not limits:
-                return False
-            
-            # Check specific limit
-            if limit_type == 'users':
-                return limits.current_users + increment <= limits.max_users
-            elif limit_type == 'storage':
-                return limits.current_storage + increment <= limits.max_storage
-            elif limit_type == 'api_calls':
-                return limits.current_api_calls + increment <= limits.max_api_calls
-            elif limit_type == 'nft_listings':
-                return limits.current_nft_listings + increment <= limits.max_nft_listings
-            elif limit_type == 'transactions':
-                return limits.current_transactions + increment <= limits.max_transactions
-            else:
-                return False
-                
-        except Exception as e:
-            logger.error(f"Failed to check tenant limit {tenant_id}: {str(e)}")
+        
+        # Add user to tenant
+        tenant_user = TenantUser(
+            tenant_id=tenant_id,
+            user_id=user_id,
+            role=role,
+            permissions=self._get_role_permissions(role)
+        )
+        
+        self.db.add(tenant_user)
+        self.db.commit()
+        
+        return True
+    
+    async def remove_user_from_tenant(self, tenant_id: str, user_id: int) -> bool:
+        """Remove user from tenant"""
+        tenant_user = self.db.query(TenantUser).filter(
+            TenantUser.tenant_id == tenant_id,
+            TenantUser.user_id == user_id
+        ).first()
+        
+        if not tenant_user:
             return False
-            
-    async def increment_tenant_usage(self, 
-                                   tenant_id: str,
-                                   usage_type: str,
-                                   amount: int = 1) -> bool:
-        """Increment tenant usage counter"""
-        try:
-            # Check if within limits
-            if not await self.check_tenant_limit(tenant_id, usage_type, amount):
-                return False
-            
-            # Increment usage
-            await self._increment_usage(tenant_id, usage_type, amount)
-            
-            # Clear cache to force refresh
-            if tenant_id in self.tenant_limits_cache:
-                del self.tenant_limits_cache[tenant_id]
-            
-            return True
-            
-        except Exception as e:
-            logger.error(f"Failed to increment tenant usage {tenant_id}: {str(e)}")
+        
+        self.db.delete(tenant_user)
+        self.db.commit()
+        
+        return True
+    
+    async def create_tenant_invitation(self, tenant_id: str, invitation_data: TenantInvitationCreate, created_by: int) -> TenantInvitationResponse:
+        """Create tenant invitation"""
+        # Generate invitation token
+        token = secrets.token_urlsafe(32)
+        expires_at = datetime.utcnow() + timedelta(days=invitation_data.expires_in_days)
+        
+        # Create invitation
+        invitation = TenantInvitation(
+            tenant_id=tenant_id,
+            email=invitation_data.email,
+            role=invitation_data.role,
+            token=token,
+            expires_at=expires_at,
+            created_by=created_by
+        )
+        
+        self.db.add(invitation)
+        self.db.commit()
+        self.db.refresh(invitation)
+        
+        return TenantInvitationResponse.from_orm(invitation)
+    
+    async def accept_tenant_invitation(self, token: str, user_id: int) -> bool:
+        """Accept tenant invitation"""
+        invitation = self.db.query(TenantInvitation).filter(
+            TenantInvitation.token == token,
+            TenantInvitation.accepted_at.is_(None)
+        ).first()
+        
+        if not invitation or invitation.expires_at < datetime.utcnow():
             return False
-            
-    async def upgrade_tenant_tier(self, 
-                                 tenant_id: str,
-                                 new_tier: TenantTier) -> bool:
-        """Upgrade tenant to new tier"""
-        try:
-            tenant_config = await self.get_tenant(tenant_id)
-            if not tenant_config:
-                return False
-            
-            # Update tier and limits
-            tenant_config.tier = new_tier
-            tenant_config.max_users = self._get_tier_limits(new_tier)['max_users']
-            tenant_config.max_storage = self._get_tier_limits(new_tier)['max_storage']
-            tenant_config.max_api_calls = self._get_tier_limits(new_tier)['max_api_calls']
-            tenant_config.features = self._get_tier_features(new_tier)
-            tenant_config.updated_at = datetime.utcnow()
-            
-            # Save updated configuration
-            await self._save_tenant(tenant_config)
-            
-            # Update cache
-            self.tenant_cache[tenant_id] = tenant_config
-            
-            # Clear limits cache
-            if tenant_id in self.tenant_limits_cache:
-                del self.tenant_limits_cache[tenant_id]
-            
-            logger.info(f"Upgraded tenant {tenant_id} to {new_tier.value}")
-            return True
-            
-        except Exception as e:
-            logger.error(f"Failed to upgrade tenant {tenant_id}: {str(e)}")
-            return False
-            
-    async def get_tenant_billing(self, tenant_id: str) -> Optional[TenantBilling]:
-        """Get tenant billing information"""
-        try:
-            # Load billing information from database
-            billing_data = await self._load_tenant_billing(tenant_id)
-            if not billing_data:
-                return None
-            
-            return TenantBilling(
-                tenant_id=billing_data['tenant_id'],
-                subscription_id=billing_data['subscription_id'],
-                plan_name=billing_data['plan_name'],
-                amount=billing_data['amount'],
-                currency=billing_data['currency'],
-                billing_cycle=billing_data['billing_cycle'],
-                next_billing_date=datetime.fromisoformat(billing_data['next_billing_date']),
-                payment_method=billing_data['payment_method'],
-                status=billing_data['status']
-            )
-            
-        except Exception as e:
-            logger.error(f"Failed to get tenant billing {tenant_id}: {str(e)}")
-            return None
-            
-    async def update_tenant_billing(self, 
-                                   tenant_id: str,
-                                   billing_data: Dict[str, Any]) -> bool:
-        """Update tenant billing information"""
-        try:
-            # Save billing information to database
-            await self._save_tenant_billing(tenant_id, billing_data)
-            
-            logger.info(f"Updated billing for tenant {tenant_id}")
-            return True
-            
-        except Exception as e:
-            logger.error(f"Failed to update tenant billing {tenant_id}: {str(e)}")
-            return False
-            
-    async def get_tenant_analytics(self, tenant_id: str) -> Dict[str, Any]:
-        """Get tenant-specific analytics"""
-        try:
-            # Get tenant configuration
-            tenant_config = await self.get_tenant(tenant_id)
-            if not tenant_config:
-                return {}
-            
-            # Get usage statistics
-            usage_stats = await self._get_tenant_usage_stats(tenant_id)
-            
-            # Get performance metrics
-            performance_metrics = await self._get_tenant_performance(tenant_id)
-            
-            # Get user activity
-            user_activity = await self._get_tenant_user_activity(tenant_id)
-            
-            return {
-                'tenant_id': tenant_id,
-                'tenant_name': tenant_config.name,
-                'tier': tenant_config.tier.value,
-                'status': tenant_config.status.value,
-                'usage_stats': usage_stats,
-                'performance_metrics': performance_metrics,
-                'user_activity': user_activity,
-                'generated_at': datetime.utcnow().isoformat()
+        
+        # Add user to tenant
+        success = await self.add_user_to_tenant(invitation.tenant_id, user_id, invitation.role)
+        
+        if success:
+            invitation.accepted_at = datetime.utcnow()
+            self.db.commit()
+        
+        return success
+    
+    async def get_tenant_users(self, tenant_id: str, skip: int = 0, limit: int = 100) -> List[Dict[str, Any]]:
+        """Get tenant users"""
+        users = self.db.query(TenantUser, User).join(User).filter(
+            TenantUser.tenant_id == tenant_id,
+            TenantUser.is_active == True
+        ).offset(skip).limit(limit).all()
+        
+        return [
+            {
+                "user_id": user.id,
+                "email": user.email,
+                "username": user.username,
+                "full_name": user.full_name,
+                "role": tenant_user.role,
+                "permissions": tenant_user.permissions,
+                "joined_at": tenant_user.joined_at
             }
-            
-        except Exception as e:
-            logger.error(f"Failed to get tenant analytics {tenant_id}: {str(e)}")
-            return {}
-            
-    def _get_tier_limits(self, tier: TenantTier) -> Dict[str, int]:
-        """Get limits for tenant tier"""
+            for tenant_user, user in users
+        ]
+    
+    async def get_user_tenants(self, user_id: int) -> List[TenantResponse]:
+        """Get user's tenants"""
+        tenant_users = self.db.query(TenantUser).filter(
+            TenantUser.user_id == user_id,
+            TenantUser.is_active == True
+        ).all()
+        
+        tenant_ids = [tu.tenant_id for tu in tenant_users]
+        tenants = self.db.query(Tenant).filter(Tenant.tenant_id.in_(tenant_ids)).all()
+        
+        return [TenantResponse.from_orm(tenant) for tenant in tenants]
+    
+    def _generate_api_key(self) -> str:
+        """Generate secure API key"""
+        return secrets.token_urlsafe(32)
+    
+    def _get_tenant_limits(self, tier: TenantTier) -> Dict[str, Any]:
+        """Get tenant limits based on tier"""
         limits = {
-            TenantTier.FREE: {
-                'max_users': 5,
-                'max_storage': 1,  # GB
-                'max_api_calls': 1000,
-                'max_nft_listings': 10,
-                'max_transactions': 100
-            },
-            TenantTier.BASIC: {
-                'max_users': 25,
-                'max_storage': 10,
-                'max_api_calls': 10000,
-                'max_nft_listings': 100,
-                'max_transactions': 1000
+            TenantTier.STARTER: {
+                "max_users": 10,
+                "max_products": 100,
+                "max_orders_per_month": 1000,
+                "storage_gb": 1,
+                "api_calls_per_month": 10000,
+                "custom_domain": False,
+                "white_label": False,
+                "priority_support": False
             },
             TenantTier.PROFESSIONAL: {
-                'max_users': 100,
-                'max_storage': 50,
-                'max_api_calls': 100000,
-                'max_nft_listings': 1000,
-                'max_transactions': 10000
+                "max_users": 50,
+                "max_products": 1000,
+                "max_orders_per_month": 10000,
+                "storage_gb": 10,
+                "api_calls_per_month": 100000,
+                "custom_domain": True,
+                "white_label": False,
+                "priority_support": True
             },
             TenantTier.ENTERPRISE: {
-                'max_users': 1000,
-                'max_storage': 500,
-                'max_api_calls': 1000000,
-                'max_nft_listings': 10000,
-                'max_transactions': 100000
+                "max_users": 500,
+                "max_products": 10000,
+                "max_orders_per_month": 100000,
+                "storage_gb": 100,
+                "api_calls_per_month": 1000000,
+                "custom_domain": True,
+                "white_label": True,
+                "priority_support": True
             },
             TenantTier.CUSTOM: {
-                'max_users': 999999,
-                'max_storage': 999999,
-                'max_api_calls': 999999999,
-                'max_nft_listings': 999999,
-                'max_transactions': 999999
+                "max_users": -1,  # Unlimited
+                "max_products": -1,
+                "max_orders_per_month": -1,
+                "storage_gb": -1,
+                "api_calls_per_month": -1,
+                "custom_domain": True,
+                "white_label": True,
+                "priority_support": True
             }
         }
         
-        return limits.get(tier, limits[TenantTier.FREE])
-        
-    def _get_tier_features(self, tier: TenantTier) -> List[str]:
-        """Get features for tenant tier"""
-        features = {
-            TenantTier.FREE: [
-                'basic_nft_marketplace',
-                'wallet_integration',
-                'basic_analytics'
-            ],
-            TenantTier.BASIC: [
-                'basic_nft_marketplace',
-                'wallet_integration',
-                'basic_analytics',
-                'api_access',
-                'custom_branding'
-            ],
-            TenantTier.PROFESSIONAL: [
-                'advanced_nft_marketplace',
-                'multi_wallet_support',
-                'advanced_analytics',
-                'api_access',
-                'custom_branding',
-                'webhooks',
-                'priority_support'
-            ],
-            TenantTier.ENTERPRISE: [
-                'full_nft_marketplace',
-                'multi_wallet_support',
-                'advanced_analytics',
-                'unlimited_api_access',
-                'white_label',
-                'custom_domain',
-                'webhooks',
-                'dedicated_support',
-                'custom_integrations',
-                'sla_guarantee'
-            ],
-            TenantTier.CUSTOM: [
-                'all_features',
-                'custom_development',
-                'dedicated_infrastructure',
-                'custom_sla'
-            ]
+        return limits.get(tier, limits[TenantTier.STARTER])
+    
+    def _get_role_permissions(self, role: str) -> Dict[str, Any]:
+        """Get role permissions"""
+        permissions = {
+            "admin": {
+                "manage_tenant": True,
+                "manage_users": True,
+                "manage_products": True,
+                "manage_orders": True,
+                "view_analytics": True,
+                "manage_billing": True,
+                "manage_settings": True
+            },
+            "manager": {
+                "manage_tenant": False,
+                "manage_users": True,
+                "manage_products": True,
+                "manage_orders": True,
+                "view_analytics": True,
+                "manage_billing": False,
+                "manage_settings": False
+            },
+            "member": {
+                "manage_tenant": False,
+                "manage_users": False,
+                "manage_products": False,
+                "manage_orders": False,
+                "view_analytics": False,
+                "manage_billing": False,
+                "manage_settings": False
+            }
         }
         
-        return features.get(tier, features[TenantTier.FREE])
-        
-    def _apply_custom_config(self, 
-                           tenant_config: TenantConfig,
-                           custom_config: Dict[str, Any]) -> TenantConfig:
-        """Apply custom configuration to tenant"""
-        for key, value in custom_config.items():
-            if hasattr(tenant_config, key):
-                setattr(tenant_config, key, value)
-        
-        return tenant_config
-        
-    # Database operations (implement based on your database)
-    async def _save_tenant(self, tenant_config: TenantConfig) -> None:
-        """Save tenant configuration to database"""
-        # Implementation depends on your database
-        pass
-        
-    async def _load_tenant(self, tenant_id: str) -> Optional[TenantConfig]:
-        """Load tenant configuration from database"""
-        # Implementation depends on your database
+        return permissions.get(role, permissions["member"])
+    
+    async def _cache_tenant(self, tenant: Tenant):
+        """Cache tenant data"""
+        tenant_data = TenantResponse.from_orm(tenant).dict()
+        await self.redis.setex(
+            f"tenant:{tenant.tenant_id}",
+            self.cache_ttl,
+            json.dumps(tenant_data, default=str)
+        )
+        await self.redis.setex(
+            f"tenant:domain:{tenant.domain}",
+            self.cache_ttl,
+            json.dumps(tenant_data, default=str)
+        )
+        if tenant.subdomain:
+            await self.redis.setex(
+                f"tenant:subdomain:{tenant.subdomain}",
+                self.cache_ttl,
+                json.dumps(tenant_data, default=str)
+            )
+    
+    async def _get_cached_tenant(self, tenant_id: str) -> Optional[TenantResponse]:
+        """Get cached tenant"""
+        cached = await self.redis.get(f"tenant:{tenant_id}")
+        if cached:
+            return TenantResponse.parse_raw(cached)
         return None
+    
+    async def _get_cached_tenant_by_domain(self, domain: str) -> Optional[TenantResponse]:
+        """Get cached tenant by domain"""
+        cached = await self.redis.get(f"tenant:domain:{domain}")
+        if cached:
+            return TenantResponse.parse_raw(cached)
         
-    async def _initialize_tenant_limits(self, tenant_id: str) -> None:
-        """Initialize tenant usage limits"""
-        # Implementation depends on your database
-        pass
+        cached = await self.redis.get(f"tenant:subdomain:{domain}")
+        if cached:
+            return TenantResponse.parse_raw(cached)
         
-    async def _create_tenant_admin(self, tenant_id: str, admin_user_id: str) -> None:
-        """Create tenant admin user"""
-        # Implementation depends on your database
-        pass
-        
-    async def _cleanup_tenant_data(self, tenant_id: str) -> None:
-        """Clean up tenant data after deletion"""
-        # Implementation depends on your database
-        pass
-        
-    async def _get_tenant_usage(self, tenant_id: str) -> Dict[str, int]:
-        """Get current tenant usage"""
-        # Implementation depends on your database
-        return {}
-        
-    async def _increment_usage(self, tenant_id: str, usage_type: str, amount: int) -> None:
-        """Increment tenant usage counter"""
-        # Implementation depends on your database
-        pass
-        
-    async def _load_tenant_billing(self, tenant_id: str) -> Optional[Dict[str, Any]]:
-        """Load tenant billing information"""
-        # Implementation depends on your database
         return None
-        
-    async def _save_tenant_billing(self, tenant_id: str, billing_data: Dict[str, Any]) -> None:
-        """Save tenant billing information"""
-        # Implementation depends on your database
-        pass
-        
-    async def _get_tenant_usage_stats(self, tenant_id: str) -> Dict[str, Any]:
-        """Get tenant usage statistics"""
-        # Implementation depends on your database
-        return {}
-        
-    async def _get_tenant_performance(self, tenant_id: str) -> Dict[str, Any]:
-        """Get tenant performance metrics"""
-        # Implementation depends on your database
-        return {}
-        
-    async def _get_tenant_user_activity(self, tenant_id: str) -> Dict[str, Any]:
-        """Get tenant user activity"""
-        # Implementation depends on your database
-        return {}
 
-# Create singleton instance
-multi_tenancy_service = MultiTenancyService()
+# Dependency injection
+def get_current_tenant(request: Request) -> Optional[str]:
+    """Get current tenant from request"""
+    # Check subdomain
+    host = request.headers.get("host", "")
+    if "." in host:
+        subdomain = host.split(".")[0]
+        return subdomain
+    
+    # Check custom header
+    return request.headers.get("x-tenant-id")
 
-
+def get_tenant_service(db_session = Depends(get_db), redis_client = Depends(get_redis)) -> MultiTenancyService:
+    """Get multi-tenancy service"""
+    return MultiTenancyService(db_session, redis_client)

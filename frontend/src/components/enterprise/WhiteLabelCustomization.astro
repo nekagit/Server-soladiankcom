@@ -1,0 +1,1410 @@
+---
+// White-Label Customization Component
+// Enterprise white-label branding and customization
+---
+
+<div class="white-label-customization">
+  <!-- Header -->
+  <div class="customization-header">
+    <div class="header-content">
+      <h1 class="customization-title">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"></path>
+        </svg>
+        White-Label Customization
+      </h1>
+      <p class="customization-subtitle">Customize your marketplace branding and appearance</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" id="preview-btn">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+        </svg>
+        Preview
+      </button>
+      <button class="btn btn-primary" id="save-customization-btn">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+        </svg>
+        Save Changes
+      </button>
+    </div>
+  </div>
+
+  <!-- Customization Tabs -->
+  <div class="customization-tabs">
+    <button class="tab-button active" data-tab="branding">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"></path>
+      </svg>
+      Branding
+    </button>
+    <button class="tab-button" data-tab="colors">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zM21 5a2 2 0 00-2-2h-4a2 2 0 00-2 2v12a4 4 0 004 4h4a2 2 0 002-2V5z"></path>
+      </svg>
+      Colors
+    </button>
+    <button class="tab-button" data-tab="typography">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h7"></path>
+      </svg>
+      Typography
+    </button>
+    <button class="tab-button" data-tab="layout">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
+      </svg>
+      Layout
+    </button>
+    <button class="tab-button" data-tab="content">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+      </svg>
+      Content
+    </button>
+    <button class="tab-button" data-tab="advanced">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+      </svg>
+      Advanced
+    </button>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="tab-content-container">
+    <!-- Branding Tab -->
+    <div class="tab-content active" id="branding-tab">
+      <div class="customization-section">
+        <h3 class="section-title">Brand Assets</h3>
+        <div class="asset-upload-grid">
+          <div class="asset-upload-item">
+            <div class="asset-upload-box" id="logo-upload">
+              <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              <p class="upload-text">Upload Logo</p>
+              <p class="upload-subtext">PNG, JPG, SVG up to 2MB</p>
+              <input type="file" id="logo-file" accept="image/*" hidden>
+            </div>
+            <div class="asset-preview" id="logo-preview" style="display: none;">
+              <img id="logo-preview-img" src="" alt="Logo Preview">
+              <button class="remove-asset" onclick="whiteLabelCustomization.removeAsset('logo')">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="asset-upload-item">
+            <div class="asset-upload-box" id="favicon-upload">
+              <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              <p class="upload-text">Upload Favicon</p>
+              <p class="upload-subtext">ICO, PNG up to 1MB</p>
+              <input type="file" id="favicon-file" accept="image/*" hidden>
+            </div>
+            <div class="asset-preview" id="favicon-preview" style="display: none;">
+              <img id="favicon-preview-img" src="" alt="Favicon Preview">
+              <button class="remove-asset" onclick="whiteLabelCustomization.removeAsset('favicon')">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="asset-upload-item">
+            <div class="asset-upload-box" id="banner-upload">
+              <svg class="upload-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+              <p class="upload-text">Upload Banner</p>
+              <p class="upload-subtext">PNG, JPG up to 5MB</p>
+              <input type="file" id="banner-file" accept="image/*" hidden>
+            </div>
+            <div class="asset-preview" id="banner-preview" style="display: none;">
+              <img id="banner-preview-img" src="" alt="Banner Preview">
+              <button class="remove-asset" onclick="whiteLabelCustomization.removeAsset('banner')">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="customization-section">
+        <h3 class="section-title">Company Information</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="company-name" class="form-label">Company Name *</label>
+            <input type="text" id="company-name" class="form-input" placeholder="Enter company name">
+          </div>
+          <div class="form-group">
+            <label for="company-slogan" class="form-label">Company Slogan</label>
+            <input type="text" id="company-slogan" class="form-input" placeholder="Enter company slogan">
+          </div>
+          <div class="form-group full-width">
+            <label for="company-description" class="form-label">Company Description</label>
+            <textarea id="company-description" class="form-textarea" rows="3" placeholder="Enter company description"></textarea>
+          </div>
+          <div class="form-group">
+            <label for="company-website" class="form-label">Website URL</label>
+            <input type="url" id="company-website" class="form-input" placeholder="https://example.com">
+          </div>
+          <div class="form-group">
+            <label for="support-email" class="form-label">Support Email</label>
+            <input type="email" id="support-email" class="form-input" placeholder="support@example.com">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Colors Tab -->
+    <div class="tab-content" id="colors-tab">
+      <div class="customization-section">
+        <h3 class="section-title">Color Palette</h3>
+        <div class="color-palette-grid">
+          <div class="color-item">
+            <label for="primary-color" class="color-label">Primary Color</label>
+            <div class="color-input-group">
+              <input type="color" id="primary-color" class="color-picker" value="#E60012">
+              <input type="text" id="primary-color-hex" class="color-hex" value="#E60012">
+            </div>
+            <div class="color-preview" style="background-color: #E60012;"></div>
+          </div>
+
+          <div class="color-item">
+            <label for="secondary-color" class="color-label">Secondary Color</label>
+            <div class="color-input-group">
+              <input type="color" id="secondary-color" class="color-picker" value="#0066CC">
+              <input type="text" id="secondary-color-hex" class="color-hex" value="#0066CC">
+            </div>
+            <div class="color-preview" style="background-color: #0066CC;"></div>
+          </div>
+
+          <div class="color-item">
+            <label for="accent-color" class="color-label">Accent Color</label>
+            <div class="color-input-group">
+              <input type="color" id="accent-color" class="color-picker" value="#FFD700">
+              <input type="text" id="accent-color-hex" class="color-hex" value="#FFD700">
+            </div>
+            <div class="color-preview" style="background-color: #FFD700;"></div>
+          </div>
+
+          <div class="color-item">
+            <label for="background-color" class="color-label">Background Color</label>
+            <div class="color-input-group">
+              <input type="color" id="background-color" class="color-picker" value="#FFFFFF">
+              <input type="text" id="background-color-hex" class="color-hex" value="#FFFFFF">
+            </div>
+            <div class="color-preview" style="background-color: #FFFFFF; border: 1px solid #ddd;"></div>
+          </div>
+
+          <div class="color-item">
+            <label for="text-color" class="color-label">Text Color</label>
+            <div class="color-input-group">
+              <input type="color" id="text-color" class="color-picker" value="#000000">
+              <input type="text" id="text-color-hex" class="color-hex" value="#000000">
+            </div>
+            <div class="color-preview" style="background-color: #000000;"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="customization-section">
+        <h3 class="section-title">Color Preview</h3>
+        <div class="color-preview-demo">
+          <div class="demo-header" id="demo-header">
+            <div class="demo-logo">Your Logo</div>
+            <nav class="demo-nav">
+              <a href="#" class="demo-nav-link">Home</a>
+              <a href="#" class="demo-nav-link">Products</a>
+              <a href="#" class="demo-nav-link">About</a>
+              <a href="#" class="demo-nav-link">Contact</a>
+            </nav>
+          </div>
+          <div class="demo-content">
+            <div class="demo-card">
+              <h3 class="demo-card-title">Sample Product</h3>
+              <p class="demo-card-text">This is a sample product description to show how your colors will look.</p>
+              <button class="demo-btn demo-btn-primary">Primary Button</button>
+              <button class="demo-btn demo-btn-secondary">Secondary Button</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Typography Tab -->
+    <div class="tab-content" id="typography-tab">
+      <div class="customization-section">
+        <h3 class="section-title">Font Settings</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="font-family" class="form-label">Body Font</label>
+            <select id="font-family" class="form-select">
+              <option value="Inter">Inter</option>
+              <option value="Poppins">Poppins</option>
+              <option value="Roboto">Roboto</option>
+              <option value="Open Sans">Open Sans</option>
+              <option value="Lato">Lato</option>
+              <option value="Montserrat">Montserrat</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="heading-font" class="form-label">Heading Font</label>
+            <select id="heading-font" class="form-select">
+              <option value="Poppins">Poppins</option>
+              <option value="Inter">Inter</option>
+              <option value="Roboto">Roboto</option>
+              <option value="Open Sans">Open Sans</option>
+              <option value="Lato">Lato</option>
+              <option value="Montserrat">Montserrat</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="font-size-base" class="form-label">Base Font Size</label>
+            <select id="font-size-base" class="form-select">
+              <option value="14px">14px</option>
+              <option value="16px" selected>16px</option>
+              <option value="18px">18px</option>
+              <option value="20px">20px</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="customization-section">
+        <h3 class="section-title">Typography Preview</h3>
+        <div class="typography-preview" id="typography-preview">
+          <h1 class="preview-h1">Heading 1 - Main Title</h1>
+          <h2 class="preview-h2">Heading 2 - Section Title</h2>
+          <h3 class="preview-h3">Heading 3 - Subsection Title</h3>
+          <h4 class="preview-h4">Heading 4 - Card Title</h4>
+          <p class="preview-p">This is a paragraph of body text that demonstrates how your chosen fonts will look in regular content. It includes various elements like <strong>bold text</strong> and <em>italic text</em> to show the full range of typography.</p>
+          <p class="preview-small">This is small text used for captions, labels, and secondary information.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Layout Tab -->
+    <div class="tab-content" id="layout-tab">
+      <div class="customization-section">
+        <h3 class="section-title">Layout Settings</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="header-height" class="form-label">Header Height</label>
+            <select id="header-height" class="form-select">
+              <option value="60px">60px</option>
+              <option value="80px" selected>80px</option>
+              <option value="100px">100px</option>
+              <option value="120px">120px</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="sidebar-width" class="form-label">Sidebar Width</label>
+            <select id="sidebar-width" class="form-select">
+              <option value="200px">200px</option>
+              <option value="250px" selected>250px</option>
+              <option value="300px">300px</option>
+              <option value="350px">350px</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="border-radius" class="form-label">Border Radius</label>
+            <select id="border-radius" class="form-select">
+              <option value="4px">4px (Sharp)</option>
+              <option value="8px" selected>8px (Rounded)</option>
+              <option value="12px">12px (More Rounded)</option>
+              <option value="16px">16px (Very Rounded)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="box-shadow" class="form-label">Box Shadow</label>
+            <select id="box-shadow" class="form-select">
+              <option value="none">None</option>
+              <option value="0 1px 3px rgba(0,0,0,0.1)" selected>Light</option>
+              <option value="0 4px 6px rgba(0,0,0,0.1)">Medium</option>
+              <option value="0 10px 15px rgba(0,0,0,0.1)">Heavy</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="customization-section">
+        <h3 class="section-title">Layout Preview</h3>
+        <div class="layout-preview" id="layout-preview">
+          <div class="preview-header">
+            <div class="preview-logo">Logo</div>
+            <nav class="preview-nav">
+              <a href="#">Home</a>
+              <a href="#">Products</a>
+              <a href="#">About</a>
+            </nav>
+          </div>
+          <div class="preview-content">
+            <div class="preview-sidebar">
+              <h4>Sidebar</h4>
+              <ul>
+                <li>Menu Item 1</li>
+                <li>Menu Item 2</li>
+                <li>Menu Item 3</li>
+              </ul>
+            </div>
+            <div class="preview-main">
+              <div class="preview-card">
+                <h3>Sample Card</h3>
+                <p>This card demonstrates the border radius and shadow settings.</p>
+                <button class="preview-button">Action Button</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Tab -->
+    <div class="tab-content" id="content-tab">
+      <div class="customization-section">
+        <h3 class="section-title">Legal Content</h3>
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label for="terms-of-service" class="form-label">Terms of Service</label>
+            <textarea id="terms-of-service" class="form-textarea" rows="6" placeholder="Enter your terms of service..."></textarea>
+          </div>
+          <div class="form-group full-width">
+            <label for="privacy-policy" class="form-label">Privacy Policy</label>
+            <textarea id="privacy-policy" class="form-textarea" rows="6" placeholder="Enter your privacy policy..."></textarea>
+          </div>
+          <div class="form-group full-width">
+            <label for="cookie-policy" class="form-label">Cookie Policy</label>
+            <textarea id="cookie-policy" class="form-textarea" rows="4" placeholder="Enter your cookie policy..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="customization-section">
+        <h3 class="section-title">Custom Content</h3>
+        <div class="form-grid">
+          <div class="form-group full-width">
+            <label for="custom-footer" class="form-label">Custom Footer HTML</label>
+            <textarea id="custom-footer" class="form-textarea" rows="4" placeholder="Enter custom footer HTML..."></textarea>
+          </div>
+          <div class="form-group full-width">
+            <label for="custom-header" class="form-label">Custom Header HTML</label>
+            <textarea id="custom-header" class="form-textarea" rows="4" placeholder="Enter custom header HTML..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="customization-section">
+        <h3 class="section-title">Social Media Links</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="facebook-url" class="form-label">Facebook</label>
+            <input type="url" id="facebook-url" class="form-input" placeholder="https://facebook.com/yourpage">
+          </div>
+          <div class="form-group">
+            <label for="twitter-url" class="form-label">Twitter</label>
+            <input type="url" id="twitter-url" class="form-input" placeholder="https://twitter.com/yourhandle">
+          </div>
+          <div class="form-group">
+            <label for="instagram-url" class="form-label">Instagram</label>
+            <input type="url" id="instagram-url" class="form-input" placeholder="https://instagram.com/yourhandle">
+          </div>
+          <div class="form-group">
+            <label for="linkedin-url" class="form-label">LinkedIn</label>
+            <input type="url" id="linkedin-url" class="form-input" placeholder="https://linkedin.com/company/yourcompany">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Advanced Tab -->
+    <div class="tab-content" id="advanced-tab">
+      <div class="customization-section">
+        <h3 class="section-title">Analytics & Tracking</h3>
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="google-analytics-id" class="form-label">Google Analytics ID</label>
+            <input type="text" id="google-analytics-id" class="form-input" placeholder="GA-XXXXXXXXX">
+          </div>
+          <div class="form-group">
+            <label for="facebook-pixel-id" class="form-label">Facebook Pixel ID</label>
+            <input type="text" id="facebook-pixel-id" class="form-input" placeholder="1234567890">
+          </div>
+          <div class="form-group full-width">
+            <label for="custom-tracking-code" class="form-label">Custom Tracking Code</label>
+            <textarea id="custom-tracking-code" class="form-textarea" rows="4" placeholder="Enter custom tracking code (HTML/JavaScript)..."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="customization-section">
+        <h3 class="section-title">Custom CSS</h3>
+        <div class="form-group">
+          <label for="custom-css" class="form-label">Custom CSS</label>
+          <textarea id="custom-css" class="form-textarea code-editor" rows="10" placeholder="/* Enter your custom CSS here */"></textarea>
+        </div>
+      </div>
+
+      <div class="customization-section">
+        <h3 class="section-title">Custom JavaScript</h3>
+        <div class="form-group">
+          <label for="custom-js" class="form-label">Custom JavaScript</label>
+          <textarea id="custom-js" class="form-textarea code-editor" rows="10" placeholder="// Enter your custom JavaScript here"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .white-label-customization {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+
+  .customization-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .customization-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .customization-subtitle {
+    color: var(--text-secondary);
+    margin: 0.5rem 0 0 0;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .customization-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 2rem;
+    overflow-x: auto;
+  }
+
+  .tab-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .tab-button:hover {
+    color: var(--text-primary);
+  }
+
+  .tab-button.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+  }
+
+  .tab-button .icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .tab-content-container {
+    min-height: 500px;
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  .customization-section {
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 1.5rem 0;
+  }
+
+  .asset-upload-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .asset-upload-item {
+    position: relative;
+  }
+
+  .asset-upload-box {
+    border: 2px dashed var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    background: var(--background-secondary);
+  }
+
+  .asset-upload-box:hover {
+    border-color: var(--primary-color);
+    background: var(--primary-color-alpha);
+  }
+
+  .upload-icon {
+    width: 3rem;
+    height: 3rem;
+    color: var(--text-secondary);
+    margin-bottom: 1rem;
+  }
+
+  .upload-text {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+  }
+
+  .upload-subtext {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .asset-preview {
+    position: relative;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1rem;
+    background: var(--card-background);
+  }
+
+  .asset-preview img {
+    max-width: 100%;
+    max-height: 100px;
+    object-fit: contain;
+  }
+
+  .remove-asset {
+    position: absolute;
+    top: 0.5rem;
+    right: 0.5rem;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: none;
+    background: var(--error-color);
+    color: white;
+    border-radius: var(--border-radius-full);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .remove-asset .icon {
+    width: 0.75rem;
+    height: 0.75rem;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .form-group.full-width {
+    grid-column: 1 / -1;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .form-label {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    background: var(--input-background);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+  }
+
+  .form-input:focus,
+  .form-select:focus,
+  .form-textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-color-alpha);
+  }
+
+  .form-textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+
+  .code-editor {
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+    font-size: 0.875rem;
+    line-height: 1.5;
+  }
+
+  .color-palette-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .color-item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  .color-label {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+  }
+
+  .color-input-group {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .color-picker {
+    width: 3rem;
+    height: 2.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    cursor: pointer;
+  }
+
+  .color-hex {
+    flex: 1;
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    background: var(--input-background);
+    color: var(--text-primary);
+    font-family: monospace;
+  }
+
+  .color-preview {
+    width: 100%;
+    height: 2rem;
+    border-radius: var(--border-radius-md);
+    border: 1px solid var(--border-color);
+  }
+
+  .color-preview-demo {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    background: var(--card-background);
+  }
+
+  .demo-header {
+    background: var(--primary-color);
+    color: white;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .demo-logo {
+    font-weight: 700;
+    font-size: 1.25rem;
+  }
+
+  .demo-nav {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .demo-nav-link {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .demo-nav-link:hover {
+    text-decoration: underline;
+  }
+
+  .demo-content {
+    padding: 1.5rem;
+  }
+
+  .demo-card {
+    background: var(--background-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+  }
+
+  .demo-card-title {
+    color: var(--text-primary);
+    margin: 0 0 1rem 0;
+  }
+
+  .demo-card-text {
+    color: var(--text-secondary);
+    margin: 0 0 1rem 0;
+  }
+
+  .demo-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-weight: 500;
+    cursor: pointer;
+    margin-right: 0.5rem;
+  }
+
+  .demo-btn-primary {
+    background: var(--primary-color);
+    color: white;
+  }
+
+  .demo-btn-secondary {
+    background: var(--secondary-color);
+    color: white;
+  }
+
+  .typography-preview {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 2rem;
+    background: var(--card-background);
+  }
+
+  .preview-h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+  }
+
+  .preview-h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+  }
+
+  .preview-h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+  }
+
+  .preview-h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+  }
+
+  .preview-p {
+    font-size: 1rem;
+    line-height: 1.6;
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+  }
+
+  .preview-small {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .layout-preview {
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    background: var(--card-background);
+  }
+
+  .preview-header {
+    background: var(--primary-color);
+    color: white;
+    padding: 1rem 1.5rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .preview-logo {
+    font-weight: 700;
+    font-size: 1.25rem;
+  }
+
+  .preview-nav {
+    display: flex;
+    gap: 1.5rem;
+  }
+
+  .preview-nav a {
+    color: white;
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .preview-content {
+    display: flex;
+    min-height: 300px;
+  }
+
+  .preview-sidebar {
+    background: var(--background-secondary);
+    padding: 1.5rem;
+    border-right: 1px solid var(--border-color);
+  }
+
+  .preview-sidebar h4 {
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+  }
+
+  .preview-sidebar ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .preview-sidebar li {
+    padding: 0.5rem 0;
+    color: var(--text-secondary);
+  }
+
+  .preview-main {
+    flex: 1;
+    padding: 1.5rem;
+  }
+
+  .preview-card {
+    background: var(--background-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    box-shadow: var(--box-shadow);
+  }
+
+  .preview-card h3 {
+    margin: 0 0 1rem 0;
+    color: var(--text-primary);
+  }
+
+  .preview-card p {
+    margin: 0 0 1rem 0;
+    color: var(--text-secondary);
+  }
+
+  .preview-button {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: var(--border-radius-md);
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  @media (max-width: 768px) {
+    .white-label-customization {
+      padding: 1rem;
+    }
+
+    .customization-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .customization-tabs {
+      flex-direction: column;
+    }
+
+    .tab-button {
+      justify-content: flex-start;
+    }
+
+    .form-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .color-palette-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .asset-upload-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const whiteLabelCustomization = new WhiteLabelCustomization();
+    whiteLabelCustomization.init();
+  });
+
+  class WhiteLabelCustomization {
+    constructor() {
+      this.currentTab = 'branding';
+      this.customizationData = {
+        branding: {},
+        colors: {},
+        typography: {},
+        layout: {},
+        content: {},
+        advanced: {}
+      };
+    }
+
+    async init() {
+      this.setupEventListeners();
+      await this.loadCustomizationData();
+      this.updatePreview();
+    }
+
+    setupEventListeners() {
+      // Tab switching
+      document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+          this.switchTab(e.target.dataset.tab);
+        });
+      });
+
+      // Asset uploads
+      document.getElementById('logo-file').addEventListener('change', (e) => {
+        this.handleAssetUpload(e, 'logo');
+      });
+
+      document.getElementById('favicon-file').addEventListener('change', (e) => {
+        this.handleAssetUpload(e, 'favicon');
+      });
+
+      document.getElementById('banner-file').addEventListener('change', (e) => {
+        this.handleAssetUpload(e, 'banner');
+      });
+
+      // Color pickers
+      document.querySelectorAll('.color-picker').forEach(picker => {
+        picker.addEventListener('change', (e) => {
+          this.updateColorPreview(e.target);
+        });
+      });
+
+      document.querySelectorAll('.color-hex').forEach(input => {
+        input.addEventListener('input', (e) => {
+          this.updateColorFromHex(e.target);
+        });
+      });
+
+      // Typography changes
+      document.getElementById('font-family').addEventListener('change', (e) => {
+        this.updateTypographyPreview();
+      });
+
+      document.getElementById('heading-font').addEventListener('change', (e) => {
+        this.updateTypographyPreview();
+      });
+
+      document.getElementById('font-size-base').addEventListener('change', (e) => {
+        this.updateTypographyPreview();
+      });
+
+      // Layout changes
+      document.getElementById('header-height').addEventListener('change', (e) => {
+        this.updateLayoutPreview();
+      });
+
+      document.getElementById('sidebar-width').addEventListener('change', (e) => {
+        this.updateLayoutPreview();
+      });
+
+      document.getElementById('border-radius').addEventListener('change', (e) => {
+        this.updateLayoutPreview();
+      });
+
+      document.getElementById('box-shadow').addEventListener('change', (e) => {
+        this.updateLayoutPreview();
+      });
+
+      // Save button
+      document.getElementById('save-customization-btn').addEventListener('click', () => {
+        this.saveCustomization();
+      });
+
+      // Preview button
+      document.getElementById('preview-btn').addEventListener('click', () => {
+        this.openPreview();
+      });
+    }
+
+    switchTab(tabName) {
+      // Update tab buttons
+      document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+      });
+      document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+      // Update tab content
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(`${tabName}-tab`).classList.add('active');
+
+      this.currentTab = tabName;
+    }
+
+    async loadCustomizationData() {
+      try {
+        const response = await fetch('/api/enterprise/white-label/configuration');
+        const data = await response.json();
+
+        if (data) {
+          this.customizationData = data;
+          this.populateFormFields();
+        }
+      } catch (error) {
+        console.error('Failed to load customization data:', error);
+      }
+    }
+
+    populateFormFields() {
+      // Populate branding fields
+      if (this.customizationData.branding) {
+        document.getElementById('company-name').value = this.customizationData.branding.company_name || '';
+        document.getElementById('company-slogan').value = this.customizationData.branding.company_slogan || '';
+        document.getElementById('company-description').value = this.customizationData.branding.company_description || '';
+        document.getElementById('company-website').value = this.customizationData.branding.company_website || '';
+        document.getElementById('support-email').value = this.customizationData.branding.support_email || '';
+      }
+
+      // Populate color fields
+      if (this.customizationData.colors) {
+        document.getElementById('primary-color').value = this.customizationData.colors.primary_color || '#E60012';
+        document.getElementById('secondary-color').value = this.customizationData.colors.secondary_color || '#0066CC';
+        document.getElementById('accent-color').value = this.customizationData.colors.accent_color || '#FFD700';
+        document.getElementById('background-color').value = this.customizationData.colors.background_color || '#FFFFFF';
+        document.getElementById('text-color').value = this.customizationData.colors.text_color || '#000000';
+      }
+
+      // Populate typography fields
+      if (this.customizationData.typography) {
+        document.getElementById('font-family').value = this.customizationData.typography.font_family || 'Inter';
+        document.getElementById('heading-font').value = this.customizationData.typography.heading_font || 'Poppins';
+        document.getElementById('font-size-base').value = this.customizationData.typography.font_size_base || '16px';
+      }
+
+      // Populate layout fields
+      if (this.customizationData.layout) {
+        document.getElementById('header-height').value = this.customizationData.layout.header_height || '80px';
+        document.getElementById('sidebar-width').value = this.customizationData.layout.sidebar_width || '250px';
+        document.getElementById('border-radius').value = this.customizationData.layout.border_radius || '8px';
+        document.getElementById('box-shadow').value = this.customizationData.layout.box_shadow || '0 2px 4px rgba(0,0,0,0.1)';
+      }
+
+      // Populate content fields
+      if (this.customizationData.content) {
+        document.getElementById('terms-of-service').value = this.customizationData.content.terms_of_service || '';
+        document.getElementById('privacy-policy').value = this.customizationData.content.privacy_policy || '';
+        document.getElementById('cookie-policy').value = this.customizationData.content.cookie_policy || '';
+        document.getElementById('custom-footer').value = this.customizationData.content.custom_footer || '';
+        document.getElementById('custom-header').value = this.customizationData.content.custom_header || '';
+        document.getElementById('facebook-url').value = this.customizationData.content.social_links?.facebook || '';
+        document.getElementById('twitter-url').value = this.customizationData.content.social_links?.twitter || '';
+        document.getElementById('instagram-url').value = this.customizationData.content.social_links?.instagram || '';
+        document.getElementById('linkedin-url').value = this.customizationData.content.social_links?.linkedin || '';
+      }
+
+      // Populate advanced fields
+      if (this.customizationData.advanced) {
+        document.getElementById('google-analytics-id').value = this.customizationData.advanced.google_analytics_id || '';
+        document.getElementById('facebook-pixel-id').value = this.customizationData.advanced.facebook_pixel_id || '';
+        document.getElementById('custom-tracking-code').value = this.customizationData.advanced.custom_tracking_code || '';
+        document.getElementById('custom-css').value = this.customizationData.advanced.custom_css || '';
+        document.getElementById('custom-js').value = this.customizationData.advanced.custom_js || '';
+      }
+    }
+
+    async handleAssetUpload(event, assetType) {
+      const file = event.target.files[0];
+      if (!file) return;
+
+      try {
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('asset_type', assetType);
+
+        const response = await fetch('/api/enterprise/white-label/upload-asset', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (response.ok) {
+          const data = await response.json();
+          this.showAssetPreview(assetType, data.url);
+        } else {
+          this.showNotification('Failed to upload asset', 'error');
+        }
+      } catch (error) {
+        console.error('Failed to upload asset:', error);
+        this.showNotification('Failed to upload asset', 'error');
+      }
+    }
+
+    showAssetPreview(assetType, url) {
+      const uploadBox = document.getElementById(`${assetType}-upload`);
+      const preview = document.getElementById(`${assetType}-preview`);
+      const previewImg = document.getElementById(`${assetType}-preview-img`);
+
+      uploadBox.style.display = 'none';
+      preview.style.display = 'block';
+      previewImg.src = url;
+    }
+
+    removeAsset(assetType) {
+      const uploadBox = document.getElementById(`${assetType}-upload`);
+      const preview = document.getElementById(`${assetType}-preview`);
+      const fileInput = document.getElementById(`${assetType}-file`);
+
+      uploadBox.style.display = 'block';
+      preview.style.display = 'none';
+      fileInput.value = '';
+    }
+
+    updateColorPreview(colorPicker) {
+      const hexInput = document.getElementById(colorPicker.id.replace('-color', '-color-hex'));
+      const preview = colorPicker.parentElement.nextElementSibling;
+
+      hexInput.value = colorPicker.value;
+      preview.style.backgroundColor = colorPicker.value;
+    }
+
+    updateColorFromHex(hexInput) {
+      const colorPicker = hexInput.previousElementSibling;
+      const preview = hexInput.parentElement.nextElementSibling;
+
+      if (this.isValidHex(hexInput.value)) {
+        colorPicker.value = hexInput.value;
+        preview.style.backgroundColor = hexInput.value;
+      }
+    }
+
+    isValidHex(hex) {
+      return /^#[0-9A-F]{6}$/i.test(hex);
+    }
+
+    updateTypographyPreview() {
+      const fontFamily = document.getElementById('font-family').value;
+      const headingFont = document.getElementById('heading-font').value;
+      const fontSize = document.getElementById('font-size-base').value;
+
+      const preview = document.getElementById('typography-preview');
+      preview.style.fontFamily = fontFamily;
+      preview.style.fontSize = fontSize;
+
+      preview.querySelectorAll('h1, h2, h3, h4').forEach(heading => {
+        heading.style.fontFamily = headingFont;
+      });
+    }
+
+    updateLayoutPreview() {
+      const headerHeight = document.getElementById('header-height').value;
+      const sidebarWidth = document.getElementById('sidebar-width').value;
+      const borderRadius = document.getElementById('border-radius').value;
+      const boxShadow = document.getElementById('box-shadow').value;
+
+      const preview = document.getElementById('layout-preview');
+      const header = preview.querySelector('.preview-header');
+      const sidebar = preview.querySelector('.preview-sidebar');
+      const card = preview.querySelector('.preview-card');
+
+      header.style.height = headerHeight;
+      sidebar.style.width = sidebarWidth;
+      card.style.borderRadius = borderRadius;
+      card.style.boxShadow = boxShadow;
+    }
+
+    updatePreview() {
+      this.updateColorPreview(document.getElementById('primary-color'));
+      this.updateColorPreview(document.getElementById('secondary-color'));
+      this.updateColorPreview(document.getElementById('accent-color'));
+      this.updateColorPreview(document.getElementById('background-color'));
+      this.updateColorPreview(document.getElementById('text-color'));
+      this.updateTypographyPreview();
+      this.updateLayoutPreview();
+    }
+
+    async saveCustomization() {
+      try {
+        const customizationData = this.collectFormData();
+
+        const response = await fetch('/api/enterprise/white-label/configuration', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(customizationData)
+        });
+
+        if (response.ok) {
+          this.showNotification('Customization saved successfully', 'success');
+        } else {
+          this.showNotification('Failed to save customization', 'error');
+        }
+      } catch (error) {
+        console.error('Failed to save customization:', error);
+        this.showNotification('Failed to save customization', 'error');
+      }
+    }
+
+    collectFormData() {
+      return {
+        branding: {
+          company_name: document.getElementById('company-name').value,
+          company_slogan: document.getElementById('company-slogan').value,
+          company_description: document.getElementById('company-description').value,
+          company_website: document.getElementById('company-website').value,
+          support_email: document.getElementById('support-email').value
+        },
+        colors: {
+          primary_color: document.getElementById('primary-color').value,
+          secondary_color: document.getElementById('secondary-color').value,
+          accent_color: document.getElementById('accent-color').value,
+          background_color: document.getElementById('background-color').value,
+          text_color: document.getElementById('text-color').value
+        },
+        typography: {
+          font_family: document.getElementById('font-family').value,
+          heading_font: document.getElementById('heading-font').value,
+          font_size_base: document.getElementById('font-size-base').value
+        },
+        layout: {
+          header_height: document.getElementById('header-height').value,
+          sidebar_width: document.getElementById('sidebar-width').value,
+          border_radius: document.getElementById('border-radius').value,
+          box_shadow: document.getElementById('box-shadow').value
+        },
+        content: {
+          terms_of_service: document.getElementById('terms-of-service').value,
+          privacy_policy: document.getElementById('privacy-policy').value,
+          cookie_policy: document.getElementById('cookie-policy').value,
+          custom_footer: document.getElementById('custom-footer').value,
+          custom_header: document.getElementById('custom-header').value,
+          social_links: {
+            facebook: document.getElementById('facebook-url').value,
+            twitter: document.getElementById('twitter-url').value,
+            instagram: document.getElementById('instagram-url').value,
+            linkedin: document.getElementById('linkedin-url').value
+          }
+        },
+        advanced: {
+          google_analytics_id: document.getElementById('google-analytics-id').value,
+          facebook_pixel_id: document.getElementById('facebook-pixel-id').value,
+          custom_tracking_code: document.getElementById('custom-tracking-code').value,
+          custom_css: document.getElementById('custom-css').value,
+          custom_js: document.getElementById('custom-js').value
+        }
+      };
+    }
+
+    openPreview() {
+      // Open preview in new window
+      const previewWindow = window.open('', '_blank');
+      previewWindow.document.write(`
+        <!DOCTYPE html>
+        <html>
+        <head>
+          <title>White-Label Preview</title>
+          <style>
+            body { font-family: ${document.getElementById('font-family').value}; }
+            h1, h2, h3, h4 { font-family: ${document.getElementById('heading-font').value}; }
+            :root {
+              --primary-color: ${document.getElementById('primary-color').value};
+              --secondary-color: ${document.getElementById('secondary-color').value};
+              --accent-color: ${document.getElementById('accent-color').value};
+              --background-color: ${document.getElementById('background-color').value};
+              --text-color: ${document.getElementById('text-color').value};
+            }
+            ${document.getElementById('custom-css').value}
+          </style>
+        </head>
+        <body>
+          <h1>White-Label Preview</h1>
+          <p>This is a preview of your customized marketplace.</p>
+          <button style="background: var(--primary-color); color: white; padding: 0.5rem 1rem; border: none; border-radius: 4px;">Sample Button</button>
+          <script>
+            ${document.getElementById('custom-js').value}
+          </script>
+        </body>
+        </html>
+      `);
+    }
+
+    showNotification(message, type) {
+      // Implementation for showing notifications
+      console.log(`${type.toUpperCase()}: ${message}`);
+    }
+  }
+</script>
+

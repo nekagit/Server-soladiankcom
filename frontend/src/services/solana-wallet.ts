@@ -1,197 +1,506 @@
-// Solana wallet service for Soladia marketplace
-import type { SolanaWallet, SolanaTransaction } from '../types';
+/**
+ * Solana Wallet Integration Service
+ * Handles wallet connection, transactions, and Solana blockchain interactions
+ */
 
-export class SolanaWalletService {
-  private wallet: SolanaWallet | null = null;
-  private phantom: any = null;
+export interface Wallet {
+  publicKey: string;
+  connected: boolean;
+  name: string;
+  icon: string;
+}
+
+export interface TransactionResult {
+  signature: string;
+  success: boolean;
+  error?: string;
+}
+
+export interface NFTMetadata {
+  name: string;
+  symbol: string;
+  description: string;
+  image: string;
+  animation_url?: string;
+  external_url?: string;
+  attributes: Array<{
+    trait_type: string;
+    value: string | number;
+  }>;
+  properties: {
+    files: Array<{
+      uri: string;
+      type: string;
+    }>;
+    category: string;
+  };
+}
+
+export interface TokenBalance {
+  mint: string;
+  amount: number;
+  decimals: number;
+  uiAmount: number;
+  symbol?: string;
+  name?: string;
+}
+
+class SolanaWalletService {
+  private wallet: Wallet | null = null;
+  private connection: any = null;
+  private subscribers: ((wallet: Wallet | null) => void)[] = [];
 
   constructor() {
-    this.initializePhantom();
+    this.initializeConnection();
+    this.setupWalletListeners();
   }
 
-  private initializePhantom() {
-    if (typeof window !== 'undefined' && window.solana?.isPhantom) {
-      this.phantom = window.solana;
-    }
-  }
-
-  async connect(): Promise<SolanaWallet> {
-    if (!this.phantom) {
-      throw new Error('Phantom wallet not found. Please install Phantom wallet.');
-    }
+  /**
+   * Initialize Solana connection
+   */
+  private async initializeConnection() {
+    if (typeof window === 'undefined') return;
 
     try {
-      const response = await this.phantom.connect();
+      // Dynamic import to avoid SSR issues
+      const { Connection, clusterApiUrl } = await import('@solana/web3.js');
+      this.connection = new Connection(clusterApiUrl('mainnet-beta'), 'confirmed');
+    } catch (error) {
+      console.error('Failed to initialize Solana connection:', error);
+    }
+  }
+
+  /**
+   * Setup wallet event listeners
+   */
+  private setupWalletListeners() {
+    if (typeof window === 'undefined') return;
+
+    // Listen for wallet changes
+    window.addEventListener('solana#initialized', () => {
+      this.detectWallets();
+    });
+
+    // Listen for account changes
+    window.addEventListener('solana#accountChanged', (event: any) => {
+      if (this.wallet) {
+        this.wallet.publicKey = event.detail.publicKey;
+        this.notifySubscribers();
+      }
+    });
+
+    // Listen for disconnect
+    window.addEventListener('solana#disconnect', () => {
+      this.disconnect();
+    });
+  }
+
+  /**
+   * Detect available wallets
+   */
+  private detectWallets(): Wallet[] {
+    const wallets: Wallet[] = [];
+
+    // Phantom Wallet
+    if ((window as any).solana?.isPhantom) {
+      wallets.push({
+        publicKey: '',
+        connected: false,
+        name: 'Phantom',
+        icon: 'https://phantom.app/img/logo.png',
+      });
+    }
+
+    // Solflare Wallet
+    if ((window as any).solflare?.isSolflare) {
+      wallets.push({
+        publicKey: '',
+        connected: false,
+        name: 'Solflare',
+        icon: 'https://solflare.com/favicon.ico',
+      });
+    }
+
+    // Backpack Wallet
+    if ((window as any).backpack) {
+      wallets.push({
+        publicKey: '',
+        connected: false,
+        name: 'Backpack',
+        icon: 'https://backpack.app/favicon.ico',
+      });
+    }
+
+    return wallets;
+  }
+
+  /**
+   * Get available wallets
+   */
+  getAvailableWallets(): Wallet[] {
+    return this.detectWallets();
+  }
+
+  /**
+   * Connect to wallet
+   */
+  async connectWallet(walletName: string): Promise<{ success: boolean; error?: string }> {
+    try {
+      let provider: any = null;
+
+      switch (walletName.toLowerCase()) {
+        case 'phantom':
+          provider = (window as any).solana;
+          break;
+        case 'solflare':
+          provider = (window as any).solflare;
+          break;
+        case 'backpack':
+          provider = (window as any).backpack;
+          break;
+        default:
+          throw new Error('Unsupported wallet');
+      }
+
+      if (!provider) {
+        throw new Error(`${walletName} wallet not found`);
+      }
+
+      // Request connection
+      const response = await provider.connect();
+
       this.wallet = {
         publicKey: response.publicKey.toString(),
         connected: true,
-        balance: 0
+        name: walletName,
+        icon: this.detectWallets().find(w => w.name === walletName)?.icon || '',
       };
 
-      // Get balance
-      await this.updateBalance();
-
-      // Dispatch custom event
-      this.dispatchEvent('wallet:connected', { wallet: this.wallet });
-
-      return this.wallet;
+      this.notifySubscribers();
+      return { success: true };
     } catch (error) {
-      throw new Error(`Failed to connect wallet: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error('Wallet connection failed:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Connection failed'
+      };
     }
   }
 
+  /**
+   * Disconnect wallet
+   */
   async disconnect(): Promise<void> {
-    if (!this.phantom) {
-      throw new Error('Phantom wallet not found.');
+    if (this.wallet) {
+      try {
+        const provider = this.getProvider();
+        if (provider && provider.disconnect) {
+          await provider.disconnect();
+        }
+      } catch (error) {
+        console.error('Wallet disconnect failed:', error);
+      }
     }
 
-    try {
-      await this.phantom.disconnect();
-      this.wallet = null;
+    this.wallet = null;
+    this.notifySubscribers();
+  }
 
-      // Dispatch custom event
-      this.dispatchEvent('wallet:disconnected', {});
-    } catch (error) {
-      throw new Error(`Failed to disconnect wallet: ${error instanceof Error ? error.message : 'Unknown error'}`);
+  /**
+   * Get current wallet
+   */
+  getWallet(): Wallet | null {
+    return this.wallet;
+  }
+
+  /**
+   * Check if wallet is connected
+   */
+  isConnected(): boolean {
+    return this.wallet?.connected || false;
+  }
+
+  /**
+   * Get wallet provider
+   */
+  private getProvider(): any {
+    if (!this.wallet) return null;
+
+    switch (this.wallet.name.toLowerCase()) {
+      case 'phantom':
+        return (window as any).solana;
+      case 'solflare':
+        return (window as any).solflare;
+      case 'backpack':
+        return (window as any).backpack;
+      default:
+        return null;
     }
   }
 
-  async updateBalance(): Promise<number> {
-    if (!this.wallet || !this.phantom) {
-      return 0;
-    }
-
-    try {
-      // This would typically involve an RPC call to get the balance
-      // For now, we'll simulate it
-      const balance = Math.random() * 100; // Simulated balance
-      this.wallet.balance = balance;
-      return balance;
-    } catch (error) {
-      console.error('Failed to update balance:', error);
-      return 0;
-    }
-  }
-
-  async signTransaction(transaction: any): Promise<any> {
-    if (!this.phantom || !this.wallet) {
+  /**
+   * Get account balance
+   */
+  async getBalance(): Promise<number> {
+    if (!this.wallet || !this.connection) {
       throw new Error('Wallet not connected');
     }
 
     try {
-      return await this.phantom.signTransaction(transaction);
+      const { PublicKey } = await import('@solana/web3.js');
+      const publicKey = new PublicKey(this.wallet.publicKey);
+      const balance = await this.connection.getBalance(publicKey);
+      return balance / 1e9; // Convert lamports to SOL
     } catch (error) {
-      throw new Error(`Failed to sign transaction: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error('Failed to get balance:', error);
+      throw error;
     }
   }
 
-  async signAllTransactions(transactions: any[]): Promise<any[]> {
-    if (!this.phantom || !this.wallet) {
+  /**
+   * Get token balances
+   */
+  async getTokenBalances(): Promise<TokenBalance[]> {
+    if (!this.wallet || !this.connection) {
       throw new Error('Wallet not connected');
     }
 
     try {
-      return await this.phantom.signAllTransactions(transactions);
+      const { PublicKey } = await import('@solana/web3.js');
+      const publicKey = new PublicKey(this.wallet.publicKey);
+
+      // Get token accounts
+      const tokenAccounts = await this.connection.getParsedTokenAccountsByOwner(
+        publicKey,
+        { programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA') }
+      );
+
+      return tokenAccounts.value.map(account => {
+        const parsed = account.account.data.parsed.info;
+        return {
+          mint: parsed.mint,
+          amount: parsed.tokenAmount.amount,
+          decimals: parsed.tokenAmount.decimals,
+          uiAmount: parsed.tokenAmount.uiAmount,
+        };
+      });
     } catch (error) {
-      throw new Error(`Failed to sign transactions: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error('Failed to get token balances:', error);
+      throw error;
     }
   }
 
-  async sendPayment(to: string, amount: number, memo?: string): Promise<SolanaTransaction> {
+  /**
+   * Send SOL transaction
+   */
+  async sendSOL(to: string, amount: number): Promise<TransactionResult> {
+    if (!this.wallet || !this.connection) {
+      throw new Error('Wallet not connected');
+    }
+
+    try {
+      const {
+        PublicKey,
+        Transaction,
+        SystemProgram,
+        LAMPORTS_PER_SOL
+      } = await import('@solana/web3.js');
+
+      const fromPubkey = new PublicKey(this.wallet.publicKey);
+      const toPubkey = new PublicKey(to);
+      const lamports = amount * LAMPORTS_PER_SOL;
+
+      const transaction = new Transaction().add(
+        SystemProgram.transfer({
+          fromPubkey,
+          toPubkey,
+          lamports,
+        })
+      );
+
+      const provider = this.getProvider();
+      const { signature } = await provider.signAndSendTransaction(transaction);
+
+      return { signature, success: true };
+    } catch (error) {
+      console.error('SOL transaction failed:', error);
+      return {
+        signature: '',
+        success: false,
+        error: error instanceof Error ? error.message : 'Transaction failed'
+      };
+    }
+  }
+
+  /**
+   * Sign message
+   */
+  async signMessage(message: string): Promise<{ signature: string; success: boolean; error?: string }> {
     if (!this.wallet) {
       throw new Error('Wallet not connected');
     }
 
     try {
-      // This would typically involve creating and sending a Solana transaction
-      // For now, we'll simulate it
-      const transaction: SolanaTransaction = {
-        signature: this.generateSignature(),
-        amount,
-        from: this.wallet.publicKey,
-        to,
-        status: 'pending',
-        created_at: new Date().toISOString()
-      };
+      const provider = this.getProvider();
+      const encodedMessage = new TextEncoder().encode(message);
+      const { signature } = await provider.signMessage(encodedMessage);
 
-      // Simulate transaction confirmation
-      setTimeout(() => {
-        transaction.status = 'confirmed';
-        this.dispatchEvent('transaction:confirmed', { transaction });
-      }, 2000);
-
-      this.dispatchEvent('transaction:created', { transaction });
-
-      return transaction;
+      return { signature: signature.toString(), success: true };
     } catch (error) {
-      throw new Error(`Failed to send payment: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error('Message signing failed:', error);
+      return {
+        signature: '',
+        success: false,
+        error: error instanceof Error ? error.message : 'Signing failed'
+      };
     }
   }
 
-  isConnected(): boolean {
-    return this.wallet?.connected || false;
-  }
+  /**
+   * Create NFT
+   */
+  async createNFT(metadata: NFTMetadata): Promise<TransactionResult> {
+    if (!this.wallet || !this.connection) {
+      throw new Error('Wallet not connected');
+    }
 
-  getPublicKey(): string | null {
-    return this.wallet?.publicKey || null;
-  }
+    try {
+      // This is a simplified implementation
+      // In a real app, you would use a proper NFT creation service
+      const { PublicKey, Transaction } = await import('@solana/web3.js');
 
-  getBalance(): number {
-    return this.wallet?.balance || 0;
-  }
+      // Mock NFT creation - replace with actual implementation
+      const transaction = new Transaction();
 
-  getWallet(): SolanaWallet | null {
-    return this.wallet;
-  }
+      const provider = this.getProvider();
+      const { signature } = await provider.signAndSendTransaction(transaction);
 
-  private generateSignature(): string {
-    // Generate a mock signature
-    return Array.from({ length: 88 }, () => 
-      Math.floor(Math.random() * 16).toString(16)
-    ).join('');
-  }
-
-  private dispatchEvent(eventName: string, detail: any): void {
-    if (typeof window !== 'undefined') {
-      window.dispatchEvent(new CustomEvent(eventName, { detail }));
+      return { signature, success: true };
+    } catch (error) {
+      console.error('NFT creation failed:', error);
+      return {
+        signature: '',
+        success: false,
+        error: error instanceof Error ? error.message : 'NFT creation failed'
+      };
     }
   }
 
-  // Event listeners
-  on(eventName: string, callback: (detail: any) => void): void {
-    if (typeof window !== 'undefined') {
-      window.addEventListener(eventName, (event: any) => callback(event.detail));
+  /**
+   * Buy NFT
+   */
+  async buyNFT(nftId: string, price: number): Promise<TransactionResult> {
+    if (!this.wallet || !this.connection) {
+      throw new Error('Wallet not connected');
+    }
+
+    try {
+      // Mock NFT purchase - replace with actual marketplace contract interaction
+      const { Transaction } = await import('@solana/web3.js');
+
+      const transaction = new Transaction();
+
+      const provider = this.getProvider();
+      const { signature } = await provider.signAndSendTransaction(transaction);
+
+      return { signature, success: true };
+    } catch (error) {
+      console.error('NFT purchase failed:', error);
+      return {
+        signature: '',
+        success: false,
+        error: error instanceof Error ? error.message : 'Purchase failed'
+      };
     }
   }
 
-  off(eventName: string, callback: (detail: any) => void): void {
-    if (typeof window !== 'undefined') {
-      window.removeEventListener(eventName, callback);
+  /**
+   * Place bid on NFT
+   */
+  async placeBid(nftId: string, bidAmount: number): Promise<TransactionResult> {
+    if (!this.wallet || !this.connection) {
+      throw new Error('Wallet not connected');
+    }
+
+    try {
+      // Mock bid placement - replace with actual auction contract interaction
+      const { Transaction } = await import('@solana/web3.js');
+
+      const transaction = new Transaction();
+
+      const provider = this.getProvider();
+      const { signature } = await provider.signAndSendTransaction(transaction);
+
+      return { signature, success: true };
+    } catch (error) {
+      console.error('Bid placement failed:', error);
+      return {
+        signature: '',
+        success: false,
+        error: error instanceof Error ? error.message : 'Bid failed'
+      };
     }
   }
 
-  // Utility methods
-  formatAddress(address: string, length: number = 8): string {
-    if (address.length <= length * 2) {
-      return address;
+  /**
+   * Subscribe to wallet changes
+   */
+  subscribe(callback: (wallet: Wallet | null) => void): () => void {
+    this.subscribers.push(callback);
+    return () => {
+      this.subscribers = this.subscribers.filter(sub => sub !== callback);
+    };
+  }
+
+  /**
+   * Notify subscribers
+   */
+  private notifySubscribers(): void {
+    this.subscribers.forEach(callback => callback(this.wallet));
+  }
+
+  /**
+   * Get transaction history
+   */
+  async getTransactionHistory(limit: number = 10): Promise<any[]> {
+    if (!this.wallet || !this.connection) {
+      throw new Error('Wallet not connected');
     }
-    return `${address.slice(0, length)}...${address.slice(-length)}`;
+
+    try {
+      const { PublicKey } = await import('@solana/web3.js');
+      const publicKey = new PublicKey(this.wallet.publicKey);
+
+      const signatures = await this.connection.getSignaturesForAddress(publicKey, { limit });
+
+      return signatures.map(sig => ({
+        signature: sig.signature,
+        slot: sig.slot,
+        blockTime: sig.blockTime,
+        confirmationStatus: sig.confirmationStatus,
+        err: sig.err,
+      }));
+    } catch (error) {
+      console.error('Failed to get transaction history:', error);
+      throw error;
+    }
   }
 
-  formatBalance(balance: number, decimals: number = 9): string {
-    return (balance / Math.pow(10, decimals)).toFixed(4);
-  }
-
-  // Check if Phantom is installed
-  isPhantomInstalled(): boolean {
-    return !!this.phantom;
-  }
-
-  // Get Phantom installation URL
-  getInstallationUrl(): string {
-    return 'https://phantom.app/';
+  /**
+   * Get connection status
+   */
+  getConnectionStatus(): { connected: boolean; network: string } {
+    return {
+      connected: this.isConnected(),
+      network: 'mainnet-beta',
+    };
   }
 }
 
-// Create and export a singleton instance
+// Create singleton instance
 export const solanaWalletService = new SolanaWalletService();
+
+// Export for global access
+if (typeof window !== 'undefined') {
+  (window as any).solanaWalletService = solanaWalletService;
+}

@@ -1,0 +1,88 @@
+---
+export interface Props {
+  type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search';
+  placeholder?: string;
+  value?: string;
+  disabled?: boolean;
+  required?: boolean;
+  readonly?: boolean;
+  name?: string;
+  id?: string;
+  className?: string;
+  error?: boolean;
+  errorMessage?: string;
+  label?: string;
+  helperText?: string;
+  size?: 'sm' | 'md' | 'lg';
+  'data-testid'?: string;
+}
+
+const {
+  type = 'text',
+  placeholder = '',
+  value = '',
+  disabled = false,
+  required = false,
+  readonly = false,
+  name,
+  id,
+  className = '',
+  error = false,
+  errorMessage = '',
+  label = '',
+  helperText = '',
+  size = 'md',
+  'data-testid': testId,
+} = Astro.props;
+
+const baseClasses =
+  'block w-full rounded-md border-gray-300 shadow-sm focus:border-soladia-primary focus:ring-soladia-primary transition-colors duration-200';
+const sizeClasses = {
+  sm: 'px-3 py-1.5 text-sm',
+  md: 'px-3 py-2 text-sm',
+  lg: 'px-4 py-3 text-base',
+};
+const errorClasses = error
+  ? 'border-red-300 focus:border-red-500 focus:ring-red-500'
+  : 'border-gray-300';
+const disabledClasses = disabled ? 'bg-gray-50 cursor-not-allowed' : 'bg-white';
+
+const inputClasses =
+  `${baseClasses} ${sizeClasses[size]} ${errorClasses} ${disabledClasses} ${className}`.trim();
+const inputId =
+  id || name || `input-${Math.random().toString(36).substr(2, 9)}`;
+---
+
+<div class='space-y-1'>
+  {
+    label && (
+      <label for={inputId} class='block text-sm font-medium text-gray-700'>
+        {label}
+        {required && <span class='text-red-500 ml-1'>*</span>}
+      </label>
+    )
+  }
+
+  <input
+    type={type}
+    id={inputId}
+    name={name}
+    placeholder={placeholder}
+    value={value}
+    disabled={disabled}
+    required={required}
+    readonly={readonly}
+    class={inputClasses}
+    data-testid={testId}
+  />
+
+  {
+    error && errorMessage && (
+      <p class='text-sm text-red-600' role='alert'>
+        {errorMessage}
+      </p>
+    )
+  }
+
+  {helperText && !error && <p class='text-sm text-gray-500'>{helperText}</p>}
+</div>

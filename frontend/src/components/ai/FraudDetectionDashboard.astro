@@ -1,0 +1,1984 @@
+---
+// Fraud Detection Dashboard Component
+// Advanced AI-powered fraud detection and prevention system
+---
+
+<div class="fraud-detection-dashboard">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1 class="dashboard-title">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+        </svg>
+        Fraud Detection
+      </h1>
+      <p class="dashboard-subtitle">AI-powered fraud detection and prevention system</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" id="refresh-fraud-data">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+        </svg>
+        Refresh
+      </button>
+      <button class="btn btn-primary" id="run-fraud-scan">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        Run Scan
+      </button>
+    </div>
+  </div>
+
+  <!-- Fraud Detection Tabs -->
+  <div class="fraud-tabs">
+    <button class="tab-button active" data-tab="overview">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+      </svg>
+      Overview
+    </button>
+    <button class="tab-button" data-tab="alerts">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+      </svg>
+      Alerts
+    </button>
+    <button class="tab-button" data-tab="transactions">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+      </svg>
+      Transactions
+    </button>
+    <button class="tab-button" data-tab="patterns">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+      </svg>
+      Patterns
+    </button>
+    <button class="tab-button" data-tab="rules">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+      </svg>
+      Rules
+    </button>
+    <button class="tab-button" data-tab="analytics">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+      </svg>
+      Analytics
+    </button>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="tab-content-container">
+    <!-- Overview Tab -->
+    <div class="tab-content active" id="overview-tab">
+      <!-- Key Metrics -->
+      <div class="metrics-grid">
+        <div class="metric-card critical">
+          <div class="metric-icon">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+            </svg>
+          </div>
+          <div class="metric-content">
+            <h3 class="metric-value" id="fraud-alerts">0</h3>
+            <p class="metric-label">Active Fraud Alerts</p>
+            <div class="metric-change critical" id="fraud-alerts-change">+0</div>
+          </div>
+        </div>
+        
+        <div class="metric-card warning">
+          <div class="metric-icon">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+            </svg>
+          </div>
+          <div class="metric-content">
+            <h3 class="metric-value" id="suspicious-transactions">0</h3>
+            <p class="metric-label">Suspicious Transactions</p>
+            <div class="metric-change warning" id="suspicious-transactions-change">+0</div>
+          </div>
+        </div>
+        
+        <div class="metric-card success">
+          <div class="metric-icon">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <div class="metric-content">
+            <h3 class="metric-value" id="blocked-attempts">0</h3>
+            <p class="metric-label">Blocked Attempts</p>
+            <div class="metric-change success" id="blocked-attempts-change">+0</div>
+          </div>
+        </div>
+        
+        <div class="metric-card info">
+          <div class="metric-icon">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+          </div>
+          <div class="metric-content">
+            <h3 class="metric-value" id="accuracy-rate">0%</h3>
+            <p class="metric-label">Detection Accuracy</p>
+            <div class="metric-change positive" id="accuracy-rate-change">+0%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="charts-row">
+        <div class="chart-container">
+          <h3 class="chart-title">Fraud Detection Trends</h3>
+          <div class="chart" id="fraud-trends-chart">
+            <!-- Fraud trends chart -->
+          </div>
+        </div>
+        
+        <div class="chart-container">
+          <h3 class="chart-title">Risk Distribution</h3>
+          <div class="chart" id="risk-distribution-chart">
+            <!-- Risk distribution chart -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Alerts -->
+      <div class="recent-alerts">
+        <h3 class="section-title">Recent Fraud Alerts</h3>
+        <div class="alerts-list" id="recent-alerts-list">
+          <!-- Recent alerts will be loaded here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts Tab -->
+    <div class="tab-content" id="alerts-tab">
+      <div class="alerts-controls">
+        <div class="control-group">
+          <label for="alert-severity" class="control-label">Severity</label>
+          <select id="alert-severity" class="control-select">
+            <option value="">All Severities</option>
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label for="alert-status" class="control-label">Status</label>
+          <select id="alert-status" class="control-select">
+            <option value="">All Statuses</option>
+            <option value="open">Open</option>
+            <option value="investigating">Investigating</option>
+            <option value="resolved">Resolved</option>
+            <option value="false_positive">False Positive</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label for="alert-timeframe" class="control-label">Timeframe</label>
+          <select id="alert-timeframe" class="control-select">
+            <option value="1">Last 24 hours</option>
+            <option value="7" selected>Last 7 days</option>
+            <option value="30">Last 30 days</option>
+            <option value="90">Last 90 days</option>
+          </select>
+        </div>
+        
+        <button class="btn btn-primary" id="apply-alert-filters">Apply Filters</button>
+      </div>
+
+      <div class="alerts-table-container">
+        <table class="alerts-table" id="alerts-table">
+          <thead>
+            <tr>
+              <th>Alert ID</th>
+              <th>Severity</th>
+              <th>Type</th>
+              <th>Description</th>
+              <th>Risk Score</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="alerts-table-body">
+            <!-- Alerts will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Transactions Tab -->
+    <div class="tab-content" id="transactions-tab">
+      <div class="transactions-controls">
+        <div class="control-group">
+          <label for="transaction-status" class="control-label">Status</label>
+          <select id="transaction-status" class="control-select">
+            <option value="">All Statuses</option>
+            <option value="approved">Approved</option>
+            <option value="pending">Pending Review</option>
+            <option value="blocked">Blocked</option>
+            <option value="flagged">Flagged</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label for="transaction-amount" class="control-label">Amount Range</label>
+          <select id="transaction-amount" class="control-select">
+            <option value="">Any Amount</option>
+            <option value="0-100">$0 - $100</option>
+            <option value="100-1000">$100 - $1,000</option>
+            <option value="1000-10000">$1,000 - $10,000</option>
+            <option value="10000+">$10,000+</option>
+          </select>
+        </div>
+        
+        <div class="control-group">
+          <label for="transaction-date" class="control-label">Date Range</label>
+          <select id="transaction-date" class="control-select">
+            <option value="1">Last 24 hours</option>
+            <option value="7" selected>Last 7 days</option>
+            <option value="30">Last 30 days</option>
+            <option value="90">Last 90 days</option>
+          </select>
+        </div>
+        
+        <button class="btn btn-primary" id="apply-transaction-filters">Apply Filters</button>
+      </div>
+
+      <div class="transactions-table-container">
+        <table class="transactions-table" id="transactions-table">
+          <thead>
+            <tr>
+              <th>Transaction ID</th>
+              <th>User</th>
+              <th>Amount</th>
+              <th>Type</th>
+              <th>Risk Score</th>
+              <th>Status</th>
+              <th>Created</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody id="transactions-table-body">
+            <!-- Transactions will be loaded here -->
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- Patterns Tab -->
+    <div class="tab-content" id="patterns-tab">
+      <div class="patterns-content">
+        <div class="patterns-header">
+          <h3 class="section-title">Fraud Patterns</h3>
+          <button class="btn btn-primary" id="analyze-patterns">Analyze Patterns</button>
+        </div>
+        
+        <div class="patterns-grid" id="patterns-grid">
+          <!-- Fraud patterns will be loaded here -->
+        </div>
+        
+        <div class="pattern-analysis">
+          <h4 class="section-subtitle">Pattern Analysis</h4>
+          <div class="analysis-chart" id="pattern-analysis-chart">
+            <!-- Pattern analysis chart will be rendered here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Rules Tab -->
+    <div class="tab-content" id="rules-tab">
+      <div class="rules-content">
+        <div class="rules-header">
+          <h3 class="section-title">Fraud Detection Rules</h3>
+          <button class="btn btn-primary" id="create-rule">Create Rule</button>
+        </div>
+        
+        <div class="rules-list" id="rules-list">
+          <!-- Fraud detection rules will be loaded here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Analytics Tab -->
+    <div class="tab-content" id="analytics-tab">
+      <div class="analytics-content">
+        <div class="analytics-header">
+          <h3 class="section-title">Fraud Analytics</h3>
+          <button class="btn btn-secondary" id="export-analytics">Export Data</button>
+        </div>
+        
+        <div class="analytics-metrics">
+          <div class="metric-card">
+            <div class="metric-content">
+              <h3 class="metric-value" id="false-positive-rate">0%</h3>
+              <p class="metric-label">False Positive Rate</p>
+            </div>
+          </div>
+          
+          <div class="metric-card">
+            <div class="metric-content">
+              <h3 class="metric-value" id="detection-time">0s</h3>
+              <p class="metric-label">Average Detection Time</p>
+            </div>
+          </div>
+          
+          <div class="metric-card">
+            <div class="metric-content">
+              <h3 class="metric-value" id="cost-savings">$0</h3>
+              <p class="metric-label">Cost Savings</p>
+            </div>
+          </div>
+        </div>
+        
+        <div class="analytics-charts">
+          <div class="chart-container">
+            <h4 class="chart-title">Fraud Detection Performance</h4>
+            <div class="chart" id="performance-chart">
+              <!-- Performance chart will be rendered here -->
+            </div>
+          </div>
+          
+          <div class="chart-container">
+            <h4 class="chart-title">Fraud Types Distribution</h4>
+            <div class="chart" id="fraud-types-chart">
+              <!-- Fraud types chart will be rendered here -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Alert Details Modal -->
+<div id="alert-details-modal" class="modal">
+  <div class="modal-content large">
+    <div class="modal-header">
+      <h2 id="alert-details-title">Alert Details</h2>
+      <button class="modal-close" id="close-alert-details">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="alert-details-content" id="alert-details-content">
+        <!-- Alert details will be loaded here -->
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" id="mark-false-positive">Mark as False Positive</button>
+      <button class="btn btn-warning" id="investigate-alert">Investigate</button>
+      <button class="btn btn-primary" id="resolve-alert">Resolve</button>
+    </div>
+  </div>
+</div>
+
+<!-- Create Rule Modal -->
+<div id="create-rule-modal" class="modal">
+  <div class="modal-content large">
+    <div class="modal-header">
+      <h2>Create Fraud Detection Rule</h2>
+      <button class="modal-close" id="close-create-rule">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="create-rule-form" class="form">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="rule-name" class="form-label">Rule Name *</label>
+            <input type="text" id="rule-name" name="name" class="form-input" required>
+          </div>
+          
+          <div class="form-group">
+            <label for="rule-severity" class="form-label">Severity *</label>
+            <select id="rule-severity" name="severity" class="form-select" required>
+              <option value="">Select Severity</option>
+              <option value="low">Low</option>
+              <option value="medium">Medium</option>
+              <option value="high">High</option>
+              <option value="critical">Critical</option>
+            </select>
+          </div>
+        </div>
+        
+        <div class="form-group">
+          <label for="rule-description" class="form-label">Description</label>
+          <textarea id="rule-description" name="description" class="form-textarea" rows="3"></textarea>
+        </div>
+        
+        <div class="form-group">
+          <label for="rule-conditions" class="form-label">Conditions *</label>
+          <div class="conditions-container" id="conditions-container">
+            <div class="condition-row">
+              <select name="condition_field" class="form-select">
+                <option value="amount">Amount</option>
+                <option value="frequency">Frequency</option>
+                <option value="location">Location</option>
+                <option value="device">Device</option>
+                <option value="time">Time</option>
+              </select>
+              <select name="condition_operator" class="form-select">
+                <option value="equals">Equals</option>
+                <option value="greater_than">Greater Than</option>
+                <option value="less_than">Less Than</option>
+                <option value="contains">Contains</option>
+                <option value="not_equals">Not Equals</option>
+              </select>
+              <input type="text" name="condition_value" class="form-input" placeholder="Value">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="removeCondition(this)">Remove</button>
+            </div>
+          </div>
+          <button type="button" class="btn btn-secondary" id="add-condition">Add Condition</button>
+        </div>
+        
+        <div class="form-group">
+          <label for="rule-action" class="form-label">Action *</label>
+          <select id="rule-action" name="action" class="form-select" required>
+            <option value="">Select Action</option>
+            <option value="block">Block Transaction</option>
+            <option value="flag">Flag for Review</option>
+            <option value="alert">Send Alert</option>
+            <option value="log">Log Only</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label class="checkbox-label">
+            <input type="checkbox" name="enabled" id="rule-enabled" checked>
+            <span class="checkmark"></span>
+            Enable Rule
+          </label>
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" id="cancel-create-rule">Cancel</button>
+      <button type="submit" form="create-rule-form" class="btn btn-primary">Create Rule</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  .fraud-detection-dashboard {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .dashboard-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .dashboard-subtitle {
+    color: var(--text-secondary);
+    margin: 0.5rem 0 0 0;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .fraud-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 2rem;
+    overflow-x: auto;
+  }
+
+  .tab-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .tab-button:hover {
+    color: var(--text-primary);
+  }
+
+  .tab-button.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+  }
+
+  .tab-button .icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .tab-content-container {
+    min-height: 500px;
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .metric-card {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .metric-card.critical {
+    border-left: 4px solid var(--error-color);
+  }
+
+  .metric-card.warning {
+    border-left: 4px solid var(--warning-color);
+  }
+
+  .metric-card.success {
+    border-left: 4px solid var(--success-color);
+  }
+
+  .metric-card.info {
+    border-left: 4px solid var(--info-color);
+  }
+
+  .metric-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+
+  .metric-card.critical .metric-icon {
+    background: var(--error-color);
+  }
+
+  .metric-card.warning .metric-icon {
+    background: var(--warning-color);
+  }
+
+  .metric-card.success .metric-icon {
+    background: var(--success-color);
+  }
+
+  .metric-card.info .metric-icon {
+    background: var(--info-color);
+  }
+
+  .metric-icon .icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .metric-content {
+    flex: 1;
+  }
+
+  .metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .metric-label {
+    color: var(--text-secondary);
+    margin: 0.25rem 0 0 0;
+    font-size: 0.875rem;
+  }
+
+  .metric-change {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .metric-change.critical {
+    background: var(--error-color-alpha);
+    color: var(--error-color);
+  }
+
+  .metric-change.warning {
+    background: var(--warning-color-alpha);
+    color: var(--warning-color);
+  }
+
+  .metric-change.success {
+    background: var(--success-color-alpha);
+    color: var(--success-color);
+  }
+
+  .metric-change.positive {
+    background: var(--success-color-alpha);
+    color: var(--success-color);
+  }
+
+  .charts-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .chart-container {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+  }
+
+  .chart-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 1rem 0;
+  }
+
+  .chart {
+    height: 300px;
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+  }
+
+  .recent-alerts {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 1.5rem 0;
+  }
+
+  .section-subtitle {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 1rem 0;
+  }
+
+  .alerts-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .alert-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-md);
+    border-left: 4px solid var(--error-color);
+  }
+
+  .alert-info {
+    flex: 1;
+  }
+
+  .alert-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.25rem 0;
+  }
+
+  .alert-description {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin: 0;
+  }
+
+  .alert-meta {
+    display: flex;
+    gap: 1rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .alert-severity {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .alert-severity.critical {
+    background: var(--error-color-alpha);
+    color: var(--error-color);
+  }
+
+  .alert-severity.high {
+    background: var(--warning-color-alpha);
+    color: var(--warning-color);
+  }
+
+  .alert-severity.medium {
+    background: var(--info-color-alpha);
+    color: var(--info-color);
+  }
+
+  .alert-severity.low {
+    background: var(--background-secondary);
+    color: var(--text-secondary);
+  }
+
+  .alerts-controls,
+  .transactions-controls {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    flex-wrap: wrap;
+  }
+
+  .control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 150px;
+  }
+
+  .control-label {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+  }
+
+  .control-select {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    background: var(--input-background);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+  }
+
+  .alerts-table-container,
+  .transactions-table-container {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+  }
+
+  .alerts-table,
+  .transactions-table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .alerts-table th,
+  .alerts-table td,
+  .transactions-table th,
+  .transactions-table td {
+    padding: 1rem;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .alerts-table th,
+  .transactions-table th {
+    background: var(--background-secondary);
+    font-weight: 600;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+  }
+
+  .alerts-table td,
+  .transactions-table td {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+  }
+
+  .risk-score {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .score-bar {
+    width: 60px;
+    height: 4px;
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-full);
+    overflow: hidden;
+  }
+
+  .score-fill {
+    height: 100%;
+    transition: width 0.3s ease;
+  }
+
+  .score-fill.low {
+    background: var(--success-color);
+  }
+
+  .score-fill.medium {
+    background: var(--warning-color);
+  }
+
+  .score-fill.high {
+    background: var(--error-color);
+  }
+
+  .patterns-content {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+  }
+
+  .patterns-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .patterns-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .pattern-card {
+    background: var(--background-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    padding: 1.5rem;
+  }
+
+  .pattern-title {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+  }
+
+  .pattern-description {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin: 0 0 1rem 0;
+  }
+
+  .pattern-metrics {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .pattern-metric {
+    text-align: center;
+  }
+
+  .pattern-metric-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+  }
+
+  .pattern-metric-label {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+  }
+
+  .pattern-analysis {
+    margin-top: 2rem;
+  }
+
+  .analysis-chart {
+    height: 300px;
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+  }
+
+  .rules-content {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+  }
+
+  .rules-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .rules-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .rule-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-md);
+    border-left: 4px solid var(--primary-color);
+  }
+
+  .rule-info {
+    flex: 1;
+  }
+
+  .rule-name {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.25rem 0;
+  }
+
+  .rule-description {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin: 0;
+  }
+
+  .rule-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius-sm);
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+
+  .rule-status.enabled {
+    background: var(--success-color-alpha);
+    color: var(--success-color);
+  }
+
+  .rule-status.disabled {
+    background: var(--background-secondary);
+    color: var(--text-secondary);
+  }
+
+  .rule-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .analytics-content {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+  }
+
+  .analytics-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+
+  .analytics-metrics {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+  }
+
+  .analytics-charts {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal.active {
+    display: flex;
+  }
+
+  .modal-content {
+    background: var(--card-background);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-xl);
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-content.large {
+    max-width: 800px;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .modal-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .modal-close {
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-close:hover {
+    background: var(--background-secondary);
+  }
+
+  .modal-close .icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .form-label {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+  }
+
+  .form-input,
+  .form-select,
+  .form-textarea {
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    background: var(--input-background);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+  }
+
+  .form-input:focus,
+  .form-select:focus,
+  .form-textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-color-alpha);
+  }
+
+  .conditions-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .condition-row {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+
+  .condition-row select,
+  .condition-row input {
+    flex: 1;
+  }
+
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    font-size: 0.875rem;
+    color: var(--text-primary);
+  }
+
+  .checkbox-label input[type="checkbox"] {
+    display: none;
+  }
+
+  .checkmark {
+    width: 1.25rem;
+    height: 1.25rem;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    position: relative;
+    transition: all 0.2s ease;
+  }
+
+  .checkbox-label input[type="checkbox"]:checked + .checkmark {
+    background: var(--primary-color);
+    border-color: var(--primary-color);
+  }
+
+  .checkbox-label input[type="checkbox"]:checked + .checkmark::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 6px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .btn-primary {
+    background: var(--primary-color);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: var(--primary-color-dark);
+  }
+
+  .btn-secondary {
+    background: var(--background-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+  }
+
+  .btn-secondary:hover {
+    background: var(--border-color);
+  }
+
+  .btn-warning {
+    background: var(--warning-color);
+    color: white;
+  }
+
+  .btn-warning:hover {
+    background: var(--warning-color-dark);
+  }
+
+  .btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  @media (max-width: 768px) {
+    .fraud-detection-dashboard {
+      padding: 1rem;
+    }
+
+    .dashboard-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .charts-row {
+      grid-template-columns: 1fr;
+    }
+
+    .analytics-charts {
+      grid-template-columns: 1fr;
+    }
+
+    .alerts-controls,
+    .transactions-controls {
+      flex-direction: column;
+    }
+
+    .control-group {
+      min-width: auto;
+    }
+
+    .form-row {
+      grid-template-columns: 1fr;
+    }
+
+    .condition-row {
+      flex-direction: column;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const fraudDetectionDashboard = new FraudDetectionDashboard();
+    fraudDetectionDashboard.init();
+  });
+
+  class FraudDetectionDashboard {
+    constructor() {
+      this.currentTab = 'overview';
+      this.currentPage = 1;
+      this.pageSize = 20;
+    }
+
+    async init() {
+      this.setupEventListeners();
+      await this.loadOverviewData();
+    }
+
+    setupEventListeners() {
+      // Tab switching
+      document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+          this.switchTab(e.target.dataset.tab);
+        });
+      });
+
+      // Refresh fraud data
+      document.getElementById('refresh-fraud-data').addEventListener('click', () => {
+        this.refreshFraudData();
+      });
+
+      // Run fraud scan
+      document.getElementById('run-fraud-scan').addEventListener('click', () => {
+        this.runFraudScan();
+      });
+
+      // Alert filters
+      document.getElementById('apply-alert-filters').addEventListener('click', () => {
+        this.applyAlertFilters();
+      });
+
+      // Transaction filters
+      document.getElementById('apply-transaction-filters').addEventListener('click', () => {
+        this.applyTransactionFilters();
+      });
+
+      // Analyze patterns
+      document.getElementById('analyze-patterns').addEventListener('click', () => {
+        this.analyzePatterns();
+      });
+
+      // Create rule
+      document.getElementById('create-rule').addEventListener('click', () => {
+        this.showCreateRuleModal();
+      });
+
+      document.getElementById('close-create-rule').addEventListener('click', () => {
+        this.hideCreateRuleModal();
+      });
+
+      document.getElementById('cancel-create-rule').addEventListener('click', () => {
+        this.hideCreateRuleModal();
+      });
+
+      document.getElementById('create-rule-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.createRule();
+      });
+
+      // Add condition
+      document.getElementById('add-condition').addEventListener('click', () => {
+        this.addCondition();
+      });
+
+      // Alert details
+      document.getElementById('close-alert-details').addEventListener('click', () => {
+        this.hideAlertDetailsModal();
+      });
+
+      document.getElementById('mark-false-positive').addEventListener('click', () => {
+        this.markAsFalsePositive();
+      });
+
+      document.getElementById('investigate-alert').addEventListener('click', () => {
+        this.investigateAlert();
+      });
+
+      document.getElementById('resolve-alert').addEventListener('click', () => {
+        this.resolveAlert();
+      });
+
+      // Export analytics
+      document.getElementById('export-analytics').addEventListener('click', () => {
+        this.exportAnalytics();
+      });
+    }
+
+    switchTab(tabName) {
+      // Update tab buttons
+      document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+      });
+      document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+      // Update tab content
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(`${tabName}-tab`).classList.add('active');
+
+      this.currentTab = tabName;
+
+      // Load tab-specific data
+      if (tabName === 'overview') {
+        this.loadOverviewData();
+      } else if (tabName === 'alerts') {
+        this.loadAlertsData();
+      } else if (tabName === 'transactions') {
+        this.loadTransactionsData();
+      } else if (tabName === 'patterns') {
+        this.loadPatternsData();
+      } else if (tabName === 'rules') {
+        this.loadRulesData();
+      } else if (tabName === 'analytics') {
+        this.loadAnalyticsData();
+      }
+    }
+
+    async loadOverviewData() {
+      try {
+        const response = await fetch('/api/ai/fraud/overview');
+        const data = await response.json();
+
+        // Update metrics
+        document.getElementById('fraud-alerts').textContent = data.fraud_alerts || 0;
+        document.getElementById('fraud-alerts-change').textContent = `+${data.fraud_alerts_change || 0}`;
+        document.getElementById('suspicious-transactions').textContent = data.suspicious_transactions || 0;
+        document.getElementById('suspicious-transactions-change').textContent = `+${data.suspicious_transactions_change || 0}`;
+        document.getElementById('blocked-attempts').textContent = data.blocked_attempts || 0;
+        document.getElementById('blocked-attempts-change').textContent = `+${data.blocked_attempts_change || 0}`;
+        document.getElementById('accuracy-rate').textContent = `${data.accuracy_rate || 0}%`;
+        document.getElementById('accuracy-rate-change').textContent = `+${data.accuracy_rate_change || 0}%`;
+
+        // Render charts
+        this.renderFraudTrendsChart(data.fraud_trends || []);
+        this.renderRiskDistributionChart(data.risk_distribution || []);
+
+        // Render recent alerts
+        this.renderRecentAlerts(data.recent_alerts || []);
+      } catch (error) {
+        console.error('Failed to load overview data:', error);
+      }
+    }
+
+    async loadAlertsData() {
+      try {
+        const response = await fetch('/api/ai/fraud/alerts');
+        const data = await response.json();
+
+        this.renderAlertsTable(data.alerts || []);
+      } catch (error) {
+        console.error('Failed to load alerts data:', error);
+      }
+    }
+
+    async loadTransactionsData() {
+      try {
+        const response = await fetch('/api/ai/fraud/transactions');
+        const data = await response.json();
+
+        this.renderTransactionsTable(data.transactions || []);
+      } catch (error) {
+        console.error('Failed to load transactions data:', error);
+      }
+    }
+
+    async loadPatternsData() {
+      try {
+        const response = await fetch('/api/ai/fraud/patterns');
+        const data = await response.json();
+
+        this.renderPatterns(data.patterns || []);
+        this.renderPatternAnalysisChart(data.pattern_analysis || []);
+      } catch (error) {
+        console.error('Failed to load patterns data:', error);
+      }
+    }
+
+    async loadRulesData() {
+      try {
+        const response = await fetch('/api/ai/fraud/rules');
+        const data = await response.json();
+
+        this.renderRules(data.rules || []);
+      } catch (error) {
+        console.error('Failed to load rules data:', error);
+      }
+    }
+
+    async loadAnalyticsData() {
+      try {
+        const response = await fetch('/api/ai/fraud/analytics');
+        const data = await response.json();
+
+        // Update analytics metrics
+        document.getElementById('false-positive-rate').textContent = `${data.false_positive_rate || 0}%`;
+        document.getElementById('detection-time').textContent = `${data.detection_time || 0}s`;
+        document.getElementById('cost-savings').textContent = `$${data.cost_savings || 0}`;
+
+        // Render charts
+        this.renderPerformanceChart(data.performance_data || []);
+        this.renderFraudTypesChart(data.fraud_types || []);
+      } catch (error) {
+        console.error('Failed to load analytics data:', error);
+      }
+    }
+
+    renderFraudTrendsChart(data) {
+      const chart = document.getElementById('fraud-trends-chart');
+      chart.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary);">
+          Fraud trends chart will be rendered here
+        </div>
+      `;
+    }
+
+    renderRiskDistributionChart(data) {
+      const chart = document.getElementById('risk-distribution-chart');
+      chart.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary);">
+          Risk distribution chart will be rendered here
+        </div>
+      `;
+    }
+
+    renderRecentAlerts(alerts) {
+      const container = document.getElementById('recent-alerts-list');
+      container.innerHTML = '';
+
+      alerts.forEach(alert => {
+        const item = document.createElement('div');
+        item.className = 'alert-item';
+        item.innerHTML = `
+          <div class="alert-info">
+            <h4 class="alert-title">${alert.title}</h4>
+            <p class="alert-description">${alert.description}</p>
+            <div class="alert-meta">
+              <span>Type: ${alert.type}</span>
+              <span>Created: ${new Date(alert.created_at).toLocaleString()}</span>
+            </div>
+          </div>
+          <div class="alert-severity ${alert.severity}">${alert.severity}</div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    renderAlertsTable(alerts) {
+      const tbody = document.getElementById('alerts-table-body');
+      tbody.innerHTML = '';
+
+      alerts.forEach(alert => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${alert.id}</td>
+          <td><span class="alert-severity ${alert.severity}">${alert.severity}</span></td>
+          <td>${alert.type}</td>
+          <td>${alert.description}</td>
+          <td>
+            <div class="risk-score">
+              <span>${Math.round(alert.risk_score * 100)}%</span>
+              <div class="score-bar">
+                <div class="score-fill ${this.getRiskLevel(alert.risk_score)}" style="width: ${alert.risk_score * 100}%"></div>
+              </div>
+            </div>
+          </td>
+          <td>${alert.status}</td>
+          <td>${new Date(alert.created_at).toLocaleString()}</td>
+          <td>
+            <button class="btn btn-sm btn-secondary" onclick="fraudDetectionDashboard.viewAlertDetails('${alert.id}')">View</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    renderTransactionsTable(transactions) {
+      const tbody = document.getElementById('transactions-table-body');
+      tbody.innerHTML = '';
+
+      transactions.forEach(transaction => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+          <td>${transaction.id}</td>
+          <td>${transaction.user_id}</td>
+          <td>$${transaction.amount}</td>
+          <td>${transaction.type}</td>
+          <td>
+            <div class="risk-score">
+              <span>${Math.round(transaction.risk_score * 100)}%</span>
+              <div class="score-bar">
+                <div class="score-fill ${this.getRiskLevel(transaction.risk_score)}" style="width: ${transaction.risk_score * 100}%"></div>
+              </div>
+            </div>
+          </td>
+          <td>${transaction.status}</td>
+          <td>${new Date(transaction.created_at).toLocaleString()}</td>
+          <td>
+            <button class="btn btn-sm btn-secondary" onclick="fraudDetectionDashboard.viewTransactionDetails('${transaction.id}')">View</button>
+          </td>
+        `;
+        tbody.appendChild(row);
+      });
+    }
+
+    renderPatterns(patterns) {
+      const container = document.getElementById('patterns-grid');
+      container.innerHTML = '';
+
+      patterns.forEach(pattern => {
+        const card = document.createElement('div');
+        card.className = 'pattern-card';
+        card.innerHTML = `
+          <h4 class="pattern-title">${pattern.name}</h4>
+          <p class="pattern-description">${pattern.description}</p>
+          <div class="pattern-metrics">
+            <div class="pattern-metric">
+              <div class="pattern-metric-value">${pattern.frequency}</div>
+              <div class="pattern-metric-label">Frequency</div>
+            </div>
+            <div class="pattern-metric">
+              <div class="pattern-metric-value">${Math.round(pattern.risk_score * 100)}%</div>
+              <div class="pattern-metric-label">Risk Score</div>
+            </div>
+            <div class="pattern-metric">
+              <div class="pattern-metric-value">${pattern.affected_users}</div>
+              <div class="pattern-metric-label">Affected Users</div>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    renderPatternAnalysisChart(data) {
+      const chart = document.getElementById('pattern-analysis-chart');
+      chart.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary);">
+          Pattern analysis chart will be rendered here
+        </div>
+      `;
+    }
+
+    renderRules(rules) {
+      const container = document.getElementById('rules-list');
+      container.innerHTML = '';
+
+      rules.forEach(rule => {
+        const item = document.createElement('div');
+        item.className = 'rule-item';
+        item.innerHTML = `
+          <div class="rule-info">
+            <h4 class="rule-name">${rule.name}</h4>
+            <p class="rule-description">${rule.description}</p>
+          </div>
+          <div class="rule-status ${rule.enabled ? 'enabled' : 'disabled'}">${rule.enabled ? 'Enabled' : 'Disabled'}</div>
+          <div class="rule-actions">
+            <button class="btn btn-sm btn-secondary">Edit</button>
+            <button class="btn btn-sm btn-secondary">Delete</button>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    renderPerformanceChart(data) {
+      const chart = document.getElementById('performance-chart');
+      chart.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary);">
+          Performance chart will be rendered here
+        </div>
+      `;
+    }
+
+    renderFraudTypesChart(data) {
+      const chart = document.getElementById('fraud-types-chart');
+      chart.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary);">
+          Fraud types chart will be rendered here
+        </div>
+      `;
+    }
+
+    getRiskLevel(score) {
+      if (score < 0.3) return 'low';
+      if (score < 0.7) return 'medium';
+      return 'high';
+    }
+
+    async refreshFraudData() {
+      await this.loadOverviewData();
+      this.showNotification('Fraud data refreshed', 'success');
+    }
+
+    async runFraudScan() {
+      try {
+        const response = await fetch('/api/ai/fraud/scan', {
+          method: 'POST'
+        });
+
+        if (response.ok) {
+          this.showNotification('Fraud scan started', 'success');
+          await this.loadOverviewData();
+        } else {
+          this.showNotification('Failed to start fraud scan', 'error');
+        }
+      } catch (error) {
+        console.error('Failed to run fraud scan:', error);
+        this.showNotification('Failed to run fraud scan', 'error');
+      }
+    }
+
+    async applyAlertFilters() {
+      const severity = document.getElementById('alert-severity').value;
+      const status = document.getElementById('alert-status').value;
+      const timeframe = document.getElementById('alert-timeframe').value;
+
+      try {
+        const params = new URLSearchParams({
+          severity,
+          status,
+          timeframe
+        });
+
+        const response = await fetch(`/api/ai/fraud/alerts?${params}`);
+        const data = await response.json();
+
+        this.renderAlertsTable(data.alerts || []);
+      } catch (error) {
+        console.error('Failed to apply alert filters:', error);
+      }
+    }
+
+    async applyTransactionFilters() {
+      const status = document.getElementById('transaction-status').value;
+      const amount = document.getElementById('transaction-amount').value;
+      const date = document.getElementById('transaction-date').value;
+
+      try {
+        const params = new URLSearchParams({
+          status,
+          amount,
+          date
+        });
+
+        const response = await fetch(`/api/ai/fraud/transactions?${params}`);
+        const data = await response.json();
+
+        this.renderTransactionsTable(data.transactions || []);
+      } catch (error) {
+        console.error('Failed to apply transaction filters:', error);
+      }
+    }
+
+    async analyzePatterns() {
+      try {
+        const response = await fetch('/api/ai/fraud/patterns/analyze', {
+          method: 'POST'
+        });
+
+        if (response.ok) {
+          this.showNotification('Pattern analysis started', 'success');
+          await this.loadPatternsData();
+        } else {
+          this.showNotification('Failed to start pattern analysis', 'error');
+        }
+      } catch (error) {
+        console.error('Failed to analyze patterns:', error);
+        this.showNotification('Failed to analyze patterns', 'error');
+      }
+    }
+
+    showCreateRuleModal() {
+      document.getElementById('create-rule-modal').classList.add('active');
+    }
+
+    hideCreateRuleModal() {
+      document.getElementById('create-rule-modal').classList.remove('active');
+      document.getElementById('create-rule-form').reset();
+    }
+
+    addCondition() {
+      const container = document.getElementById('conditions-container');
+      const conditionRow = document.createElement('div');
+      conditionRow.className = 'condition-row';
+      conditionRow.innerHTML = `
+        <select name="condition_field" class="form-select">
+          <option value="amount">Amount</option>
+          <option value="frequency">Frequency</option>
+          <option value="location">Location</option>
+          <option value="device">Device</option>
+          <option value="time">Time</option>
+        </select>
+        <select name="condition_operator" class="form-select">
+          <option value="equals">Equals</option>
+          <option value="greater_than">Greater Than</option>
+          <option value="less_than">Less Than</option>
+          <option value="contains">Contains</option>
+          <option value="not_equals">Not Equals</option>
+        </select>
+        <input type="text" name="condition_value" class="form-input" placeholder="Value">
+        <button type="button" class="btn btn-secondary btn-sm" onclick="removeCondition(this)">Remove</button>
+      `;
+      container.appendChild(conditionRow);
+    }
+
+    async createRule() {
+      try {
+        const formData = new FormData(document.getElementById('create-rule-form'));
+        const ruleData = {
+          name: formData.get('name'),
+          severity: formData.get('severity'),
+          description: formData.get('description'),
+          action: formData.get('action'),
+          enabled: formData.has('enabled'),
+          conditions: this.extractConditions()
+        };
+
+        const response = await fetch('/api/ai/fraud/rules', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(ruleData)
+        });
+
+        if (response.ok) {
+          this.hideCreateRuleModal();
+          this.loadRulesData();
+          this.showNotification('Rule created successfully', 'success');
+        } else {
+          this.showNotification('Failed to create rule', 'error');
+        }
+      } catch (error) {
+        console.error('Failed to create rule:', error);
+        this.showNotification('Failed to create rule', 'error');
+      }
+    }
+
+    extractConditions() {
+      const conditions = [];
+      const conditionRows = document.querySelectorAll('.condition-row');
+      
+      conditionRows.forEach(row => {
+        const field = row.querySelector('[name="condition_field"]').value;
+        const operator = row.querySelector('[name="condition_operator"]').value;
+        const value = row.querySelector('[name="condition_value"]').value;
+        
+        if (field && operator && value) {
+          conditions.push({ field, operator, value });
+        }
+      });
+      
+      return conditions;
+    }
+
+    async viewAlertDetails(alertId) {
+      try {
+        const response = await fetch(`/api/ai/fraud/alerts/${alertId}`);
+        const data = await response.json();
+        
+        document.getElementById('alert-details-title').textContent = `Alert ${data.id}`;
+        document.getElementById('alert-details-content').innerHTML = `
+          <div class="alert-detail-section">
+            <h4>Alert Information</h4>
+            <p><strong>Type:</strong> ${data.type}</p>
+            <p><strong>Severity:</strong> ${data.severity}</p>
+            <p><strong>Status:</strong> ${data.status}</p>
+            <p><strong>Risk Score:</strong> ${Math.round(data.risk_score * 100)}%</p>
+            <p><strong>Created:</strong> ${new Date(data.created_at).toLocaleString()}</p>
+          </div>
+          <div class="alert-detail-section">
+            <h4>Description</h4>
+            <p>${data.description}</p>
+          </div>
+          <div class="alert-detail-section">
+            <h4>Details</h4>
+            <p>${data.details || 'No additional details available.'}</p>
+          </div>
+        `;
+        
+        document.getElementById('alert-details-modal').classList.add('active');
+      } catch (error) {
+        console.error('Failed to load alert details:', error);
+      }
+    }
+
+    hideAlertDetailsModal() {
+      document.getElementById('alert-details-modal').classList.remove('active');
+    }
+
+    async markAsFalsePositive() {
+      // Implementation for marking as false positive
+      this.showNotification('Marked as false positive', 'success');
+      this.hideAlertDetailsModal();
+    }
+
+    async investigateAlert() {
+      // Implementation for investigating alert
+      this.showNotification('Alert investigation started', 'success');
+      this.hideAlertDetailsModal();
+    }
+
+    async resolveAlert() {
+      // Implementation for resolving alert
+      this.showNotification('Alert resolved', 'success');
+      this.hideAlertDetailsModal();
+    }
+
+    async viewTransactionDetails(transactionId) {
+      // Implementation for viewing transaction details
+      this.showNotification('Transaction details feature coming soon', 'info');
+    }
+
+    async exportAnalytics() {
+      try {
+        const response = await fetch('/api/ai/fraud/analytics/export');
+        const blob = await response.blob();
+        
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `fraud-analytics-${Date.now()}.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+      } catch (error) {
+        console.error('Failed to export analytics:', error);
+        this.showNotification('Failed to export analytics', 'error');
+      }
+    }
+
+    showNotification(message, type) {
+      // Implementation for showing notifications
+      console.log(`${type.toUpperCase()}: ${message}`);
+    }
+  }
+
+  // Global function for removing conditions
+  window.removeCondition = function(button) {
+    button.parentElement.remove();
+  };
+</script>
+

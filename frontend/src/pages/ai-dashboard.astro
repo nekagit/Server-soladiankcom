@@ -1,0 +1,979 @@
+---
+// AI Dashboard Page
+// Comprehensive AI-powered analytics and insights dashboard
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Dashboard - Soladia Marketplace</title>
+  <meta name="description" content="Advanced AI-powered analytics and insights dashboard for Soladia Marketplace">
+  
+  <!-- Preload critical resources -->
+  <link rel="preload" href="/src/styles/main.css" as="style">
+  <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Poppins:wght@300;400;500;600;700;800;900&display=swap" as="style">
+  
+  <!-- Styles -->
+  <link rel="stylesheet" href="/src/styles/main.css">
+  
+  <!-- Favicon -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+</head>
+<body>
+  <!-- Navigation -->
+  <nav class="navbar">
+    <div class="navbar-container">
+      <div class="navbar-brand">
+        <a href="/" class="brand-link">
+          <svg class="brand-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+          </svg>
+          <span class="brand-text">Soladia</span>
+        </a>
+      </div>
+      
+      <div class="navbar-nav">
+        <a href="/" class="nav-link">Home</a>
+        <a href="/marketplace" class="nav-link">Marketplace</a>
+        <a href="/ai-dashboard" class="nav-link active">AI Dashboard</a>
+        <a href="/analytics" class="nav-link">Analytics</a>
+        <a href="/profile" class="nav-link">Profile</a>
+      </div>
+      
+      <div class="navbar-actions">
+        <button class="btn btn-secondary" id="theme-toggle">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+          </svg>
+        </button>
+        <button class="btn btn-primary" id="connect-wallet">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 9V7a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2m2 4h10a2 2 0 002-2v-6a2 2 0 00-2-2H9a2 2 0 00-2 2v6a2 2 0 002 2zm7-5a2 2 0 11-4 0 2 2 0 014 0z"></path>
+          </svg>
+          Connect Wallet
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main class="main-content">
+    <!-- AI Dashboard Header -->
+    <div class="ai-dashboard-header">
+      <div class="header-content">
+        <h1 class="dashboard-title">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+          </svg>
+          AI Dashboard
+        </h1>
+        <p class="dashboard-subtitle">Advanced AI-powered analytics and insights for your marketplace</p>
+      </div>
+      
+      <div class="header-actions">
+        <button class="btn btn-secondary" id="refresh-dashboard">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+          </svg>
+          Refresh
+        </button>
+        <button class="btn btn-primary" id="generate-report">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+          </svg>
+          Generate Report
+        </button>
+      </div>
+    </div>
+
+    <!-- AI Services Status -->
+    <div class="ai-services-status">
+      <h3 class="status-title">AI Services Status</h3>
+      <div class="services-grid" id="services-grid">
+        <!-- Service status will be loaded here -->
+      </div>
+    </div>
+
+    <!-- Quick Stats -->
+    <div class="quick-stats">
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-value" id="total-recommendations">0</h3>
+          <p class="stat-label">AI Recommendations</p>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-value" id="predictive-insights">0</h3>
+          <p class="stat-label">Predictive Insights</p>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-value" id="search-queries">0</h3>
+          <p class="stat-label">AI Search Queries</p>
+        </div>
+      </div>
+      
+      <div class="stat-card">
+        <div class="stat-icon">
+          <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <h3 class="stat-value" id="fraud-alerts">0</h3>
+          <p class="stat-label">Fraud Alerts</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI Components Grid -->
+    <div class="ai-components-grid">
+      <!-- AI Recommendations -->
+      <div class="component-card">
+        <div class="component-header">
+          <h3 class="component-title">AI Recommendations</h3>
+          <a href="/ai-recommendations" class="component-link">View All</a>
+        </div>
+        <div class="component-content">
+          <div id="recommendations-preview">
+            <!-- Recommendations preview will be loaded here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Predictive Analytics -->
+      <div class="component-card">
+        <div class="component-header">
+          <h3 class="component-title">Predictive Analytics</h3>
+          <a href="/predictive-analytics" class="component-link">View All</a>
+        </div>
+        <div class="component-content">
+          <div id="analytics-preview">
+            <!-- Analytics preview will be loaded here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- AI Search -->
+      <div class="component-card">
+        <div class="component-header">
+          <h3 class="component-title">AI Search</h3>
+          <a href="/ai-search" class="component-link">View All</a>
+        </div>
+        <div class="component-content">
+          <div id="search-preview">
+            <!-- Search preview will be loaded here -->
+          </div>
+        </div>
+      </div>
+
+      <!-- Fraud Detection -->
+      <div class="component-card">
+        <div class="component-header">
+          <h3 class="component-title">Fraud Detection</h3>
+          <a href="/fraud-detection" class="component-link">View All</a>
+        </div>
+        <div class="component-content">
+          <div id="fraud-preview">
+            <!-- Fraud detection preview will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recent Activity -->
+    <div class="recent-activity">
+      <h3 class="section-title">Recent AI Activity</h3>
+      <div class="activity-list" id="activity-list">
+        <!-- Recent activity will be loaded here -->
+      </div>
+    </div>
+
+    <!-- AI Performance Metrics -->
+    <div class="ai-performance">
+      <h3 class="section-title">AI Performance Metrics</h3>
+      <div class="performance-grid">
+        <div class="performance-card">
+          <h4 class="performance-title">Model Accuracy</h4>
+          <div class="performance-value" id="model-accuracy">0%</div>
+          <div class="performance-chart" id="accuracy-chart">
+            <!-- Accuracy chart will be rendered here -->
+          </div>
+        </div>
+        
+        <div class="performance-card">
+          <h4 class="performance-title">Response Time</h4>
+          <div class="performance-value" id="response-time">0ms</div>
+          <div class="performance-chart" id="response-chart">
+            <!-- Response time chart will be rendered here -->
+          </div>
+        </div>
+        
+        <div class="performance-card">
+          <h4 class="performance-title">User Satisfaction</h4>
+          <div class="performance-value" id="user-satisfaction">0%</div>
+          <div class="performance-chart" id="satisfaction-chart">
+            <!-- Satisfaction chart will be rendered here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4 class="footer-title">Soladia</h4>
+          <p class="footer-description">Advanced AI-powered marketplace platform</p>
+        </div>
+        
+        <div class="footer-section">
+          <h4 class="footer-title">AI Services</h4>
+          <ul class="footer-links">
+            <li><a href="/ai-recommendations">Recommendations</a></li>
+            <li><a href="/predictive-analytics">Analytics</a></li>
+            <li><a href="/ai-search">Search</a></li>
+            <li><a href="/fraud-detection">Fraud Detection</a></li>
+          </ul>
+        </div>
+        
+        <div class="footer-section">
+          <h4 class="footer-title">Support</h4>
+          <ul class="footer-links">
+            <li><a href="/help">Help Center</a></li>
+            <li><a href="/docs">Documentation</a></li>
+            <li><a href="/contact">Contact Us</a></li>
+          </ul>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2024 Soladia Marketplace. All rights reserved.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script type="module" src="/src/services/ai-services-integration.ts"></script>
+  <script>
+    // AI Dashboard functionality
+    document.addEventListener('DOMContentLoaded', () => {
+      const aiDashboard = new AIDashboard();
+      aiDashboard.init();
+    });
+
+    class AIDashboard {
+      constructor() {
+        this.aiServices = null;
+        this.refreshInterval = null;
+      }
+
+      async init() {
+        try {
+          // Initialize AI services
+          this.aiServices = await import('/src/services/ai-services-integration.ts');
+          
+          // Load dashboard data
+          await this.loadDashboardData();
+          
+          // Set up event listeners
+          this.setupEventListeners();
+          
+          // Start auto-refresh
+          this.startAutoRefresh();
+        } catch (error) {
+          console.error('Failed to initialize AI dashboard:', error);
+        }
+      }
+
+      setupEventListeners() {
+        // Refresh dashboard
+        document.getElementById('refresh-dashboard').addEventListener('click', () => {
+          this.loadDashboardData();
+        });
+
+        // Generate report
+        document.getElementById('generate-report').addEventListener('click', () => {
+          this.generateReport();
+        });
+
+        // Theme toggle
+        document.getElementById('theme-toggle').addEventListener('click', () => {
+          this.toggleTheme();
+        });
+
+        // Connect wallet
+        document.getElementById('connect-wallet').addEventListener('click', () => {
+          this.connectWallet();
+        });
+      }
+
+      async loadDashboardData() {
+        try {
+          // Show loading state
+          this.showLoading();
+
+          // Load AI services status
+          await this.loadServicesStatus();
+
+          // Load quick stats
+          await this.loadQuickStats();
+
+          // Load component previews
+          await this.loadComponentPreviews();
+
+          // Load recent activity
+          await this.loadRecentActivity();
+
+          // Load performance metrics
+          await this.loadPerformanceMetrics();
+
+          // Hide loading state
+          this.hideLoading();
+        } catch (error) {
+          console.error('Failed to load dashboard data:', error);
+          this.hideLoading();
+        }
+      }
+
+      async loadServicesStatus() {
+        try {
+          const healthCheck = await this.aiServices.aiServices.healthCheck();
+          const servicesGrid = document.getElementById('services-grid');
+          
+          servicesGrid.innerHTML = '';
+          
+          Object.entries(healthCheck).forEach(([service, status]) => {
+            if (service === 'overall') return;
+            
+            const serviceCard = document.createElement('div');
+            serviceCard.className = `service-card ${status ? 'online' : 'offline'}`;
+            serviceCard.innerHTML = `
+              <div class="service-icon">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <div class="service-info">
+                <h4 class="service-name">${this.formatServiceName(service)}</h4>
+                <p class="service-status">${status ? 'Online' : 'Offline'}</p>
+              </div>
+            `;
+            servicesGrid.appendChild(serviceCard);
+          });
+        } catch (error) {
+          console.error('Failed to load services status:', error);
+        }
+      }
+
+      async loadQuickStats() {
+        try {
+          const dashboardData = await this.aiServices.aiServices.getDashboardData();
+          
+          document.getElementById('total-recommendations').textContent = dashboardData.recommendations.length;
+          document.getElementById('predictive-insights').textContent = dashboardData.insights.length;
+          document.getElementById('search-queries').textContent = dashboardData.searchTrends.length;
+          document.getElementById('fraud-alerts').textContent = dashboardData.recentAlerts.length;
+        } catch (error) {
+          console.error('Failed to load quick stats:', error);
+        }
+      }
+
+      async loadComponentPreviews() {
+        try {
+          const dashboardData = await this.aiServices.aiServices.getDashboardData();
+          
+          // Load recommendations preview
+          this.renderRecommendationsPreview(dashboardData.recommendations.slice(0, 3));
+          
+          // Load analytics preview
+          this.renderAnalyticsPreview(dashboardData.insights.slice(0, 3));
+          
+          // Load search preview
+          this.renderSearchPreview(dashboardData.searchTrends.slice(0, 3));
+          
+          // Load fraud preview
+          this.renderFraudPreview(dashboardData.recentAlerts.slice(0, 3));
+        } catch (error) {
+          console.error('Failed to load component previews:', error);
+        }
+      }
+
+      renderRecommendationsPreview(recommendations) {
+        const container = document.getElementById('recommendations-preview');
+        container.innerHTML = '';
+
+        recommendations.forEach(rec => {
+          const item = document.createElement('div');
+          item.className = 'preview-item';
+          item.innerHTML = `
+            <div class="preview-content">
+              <h4 class="preview-title">${rec.title}</h4>
+              <p class="preview-description">${rec.description}</p>
+            </div>
+            <div class="preview-score">${Math.round(rec.score * 100)}%</div>
+          `;
+          container.appendChild(item);
+        });
+      }
+
+      renderAnalyticsPreview(insights) {
+        const container = document.getElementById('analytics-preview');
+        container.innerHTML = '';
+
+        insights.forEach(insight => {
+          const item = document.createElement('div');
+          item.className = 'preview-item';
+          item.innerHTML = `
+            <div class="preview-content">
+              <h4 class="preview-title">${insight.title}</h4>
+              <p class="preview-description">${insight.description}</p>
+            </div>
+            <div class="preview-confidence">${Math.round(insight.confidence * 100)}%</div>
+          `;
+          container.appendChild(item);
+        });
+      }
+
+      renderSearchPreview(trends) {
+        const container = document.getElementById('search-preview');
+        container.innerHTML = '';
+
+        trends.forEach(trend => {
+          const item = document.createElement('div');
+          item.className = 'preview-item';
+          item.innerHTML = `
+            <div class="preview-content">
+              <h4 class="preview-title">${trend.query}</h4>
+              <p class="preview-description">${trend.count} searches</p>
+            </div>
+            <div class="preview-trend">${trend.trend > 0 ? '+' : ''}${trend.trend}%</div>
+          `;
+          container.appendChild(item);
+        });
+      }
+
+      renderFraudPreview(alerts) {
+        const container = document.getElementById('fraud-preview');
+        container.innerHTML = '';
+
+        alerts.forEach(alert => {
+          const item = document.createElement('div');
+          item.className = 'preview-item';
+          item.innerHTML = `
+            <div class="preview-content">
+              <h4 class="preview-title">${alert.type}</h4>
+              <p class="preview-description">${alert.description}</p>
+            </div>
+            <div class="preview-severity ${alert.severity}">${alert.severity}</div>
+          `;
+          container.appendChild(item);
+        });
+      }
+
+      async loadRecentActivity() {
+        try {
+          const response = await fetch('/api/ai/activity/recent');
+          const activities = await response.json();
+          
+          const container = document.getElementById('activity-list');
+          container.innerHTML = '';
+
+          activities.forEach(activity => {
+            const item = document.createElement('div');
+            item.className = 'activity-item';
+            item.innerHTML = `
+              <div class="activity-icon">
+                <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+              </div>
+              <div class="activity-content">
+                <h4 class="activity-title">${activity.title}</h4>
+                <p class="activity-description">${activity.description}</p>
+                <span class="activity-time">${new Date(activity.timestamp).toLocaleString()}</span>
+              </div>
+            `;
+            container.appendChild(item);
+          });
+        } catch (error) {
+          console.error('Failed to load recent activity:', error);
+        }
+      }
+
+      async loadPerformanceMetrics() {
+        try {
+          const performance = await this.aiServices.aiServices.getModelPerformance();
+          
+          // Update performance values
+          document.getElementById('model-accuracy').textContent = `${Math.round(performance.recommendations.accuracy * 100)}%`;
+          document.getElementById('response-time').textContent = `${performance.search.responseTime}ms`;
+          document.getElementById('user-satisfaction').textContent = `${Math.round(performance.recommendations.satisfaction * 100)}%`;
+
+          // Render charts
+          this.renderPerformanceCharts(performance);
+        } catch (error) {
+          console.error('Failed to load performance metrics:', error);
+        }
+      }
+
+      renderPerformanceCharts(performance) {
+        // Render accuracy chart
+        const accuracyChart = document.getElementById('accuracy-chart');
+        accuracyChart.innerHTML = `
+          <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary);">
+            Accuracy: ${Math.round(performance.recommendations.accuracy * 100)}%
+          </div>
+        `;
+
+        // Render response time chart
+        const responseChart = document.getElementById('response-chart');
+        responseChart.innerHTML = `
+          <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary);">
+            Response: ${performance.search.responseTime}ms
+          </div>
+        `;
+
+        // Render satisfaction chart
+        const satisfactionChart = document.getElementById('satisfaction-chart');
+        satisfactionChart.innerHTML = `
+          <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary);">
+            Satisfaction: ${Math.round(performance.recommendations.satisfaction * 100)}%
+          </div>
+        `;
+      }
+
+      async generateReport() {
+        try {
+          const blob = await this.aiServices.aiServices.generateReport('comprehensive', '30d', 'pdf');
+          
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `ai-dashboard-report-${Date.now()}.pdf`;
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+        } catch (error) {
+          console.error('Failed to generate report:', error);
+        }
+      }
+
+      toggleTheme() {
+        document.body.classList.toggle('dark-theme');
+        localStorage.setItem('theme', document.body.classList.contains('dark-theme') ? 'dark' : 'light');
+      }
+
+      connectWallet() {
+        // Implementation for wallet connection
+        console.log('Connecting wallet...');
+      }
+
+      startAutoRefresh() {
+        this.refreshInterval = setInterval(() => {
+          this.loadDashboardData();
+        }, 5 * 60 * 1000); // Refresh every 5 minutes
+      }
+
+      stopAutoRefresh() {
+        if (this.refreshInterval) {
+          clearInterval(this.refreshInterval);
+        }
+      }
+
+      showLoading() {
+        // Implementation for showing loading state
+        console.log('Loading dashboard data...');
+      }
+
+      hideLoading() {
+        // Implementation for hiding loading state
+        console.log('Dashboard data loaded');
+      }
+
+      formatServiceName(service) {
+        return service
+          .replace(/([A-Z])/g, ' $1')
+          .replace(/^./, str => str.toUpperCase())
+          .trim();
+      }
+    }
+  </script>
+</body>
+</html>
+
+<style>
+  .ai-dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding: 2rem;
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+  }
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .dashboard-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .dashboard-subtitle {
+    color: var(--text-secondary);
+    margin: 0.5rem 0 0 0;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .ai-services-status {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .status-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 1rem 0;
+  }
+
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+  }
+
+  .service-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-md);
+    border-left: 4px solid var(--success-color);
+  }
+
+  .service-card.offline {
+    border-left-color: var(--error-color);
+  }
+
+  .service-icon {
+    width: 2rem;
+    height: 2rem;
+    color: var(--success-color);
+  }
+
+  .service-card.offline .service-icon {
+    color: var(--error-color);
+  }
+
+  .service-name {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.25rem 0;
+  }
+
+  .service-status {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .quick-stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+  }
+
+  .stat-icon {
+    width: 3rem;
+    height: 3rem;
+    background: var(--primary-color);
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+
+  .stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .stat-label {
+    color: var(--text-secondary);
+    margin: 0.25rem 0 0 0;
+    font-size: 0.875rem;
+  }
+
+  .ai-components-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .component-card {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+  }
+
+  .component-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .component-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .component-link {
+    color: var(--primary-color);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+  }
+
+  .component-link:hover {
+    text-decoration: underline;
+  }
+
+  .component-content {
+    padding: 1.5rem;
+  }
+
+  .preview-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .preview-item:last-child {
+    border-bottom: none;
+  }
+
+  .preview-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.25rem 0;
+  }
+
+  .preview-description {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: 0;
+  }
+
+  .preview-score,
+  .preview-confidence,
+  .preview-trend {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius-sm);
+    background: var(--success-color-alpha);
+    color: var(--success-color);
+  }
+
+  .preview-severity {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+    border-radius: var(--border-radius-sm);
+  }
+
+  .preview-severity.critical {
+    background: var(--error-color-alpha);
+    color: var(--error-color);
+  }
+
+  .preview-severity.high {
+    background: var(--warning-color-alpha);
+    color: var(--warning-color);
+  }
+
+  .recent-activity {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 1.5rem 0;
+  }
+
+  .activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .activity-item {
+    display: flex;
+    gap: 1rem;
+    padding: 1rem;
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-md);
+  }
+
+  .activity-icon {
+    width: 2rem;
+    height: 2rem;
+    color: var(--primary-color);
+  }
+
+  .activity-title {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.25rem 0;
+  }
+
+  .activity-description {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    margin: 0 0 0.25rem 0;
+  }
+
+  .activity-time {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+  }
+
+  .ai-performance {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+  }
+
+  .performance-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .performance-card {
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-md);
+    padding: 1.5rem;
+  }
+
+  .performance-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 1rem 0;
+  }
+
+  .performance-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin: 0 0 1rem 0;
+  }
+
+  .performance-chart {
+    height: 100px;
+    background: var(--card-background);
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+  }
+
+  @media (max-width: 768px) {
+    .ai-dashboard-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .quick-stats {
+      grid-template-columns: 1fr;
+    }
+
+    .ai-components-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .performance-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+

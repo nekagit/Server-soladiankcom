@@ -1,0 +1,133 @@
+version: '3.8'
+
+services:
+  # Frontend Development Server
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "4321:4321"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:8001
+      - VITE_SOLANA_RPC_URL=https://api.devnet.solana.com
+    depends_on:
+      - backend
+    networks:
+      - soladia-network
+
+  # Backend Development Server
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    ports:
+      - "8001:8001"
+    volumes:
+      - ./backend:/app
+      - /app/__pycache__
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@postgres:5432/soladia_dev
+      - REDIS_URL=redis://redis:6379
+      - SOLANA_RPC_URL=https://api.devnet.solana.com
+      - JWT_SECRET=dev_jwt_secret
+      - SECRET_KEY=dev_secret_key
+      - DEBUG=true
+      - ENVIRONMENT=development
+    depends_on:
+      - postgres
+      - redis
+    networks:
+      - soladia-network
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:14-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_DB=soladia_dev
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./backend/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - soladia-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - soladia-network
+
+  # Solana Local Validator (for testing)
+  solana-validator:
+    image: solanalabs/solana:v1.16.0
+    ports:
+      - "8899:8899"
+      - "8900:8900"
+    command: >
+      sh -c "
+        solana-test-validator
+        --reset
+        --quiet
+        --rpc-port 8899
+        --faucet-sol 1000000
+        --faucet-lamports 1000000000
+      "
+    networks:
+      - soladia-network
+
+  # IPFS Node (for NFT metadata)
+  ipfs:
+    image: ipfs/go-ipfs:v0.18.1
+    ports:
+      - "5001:5001"
+      - "8080:8080"
+    volumes:
+      - ipfs_data:/data/ipfs
+    environment:
+      - IPFS_PROFILE=server
+    networks:
+      - soladia-network
+
+  # Mailhog (for email testing)
+  mailhog:
+    image: mailhog/mailhog:latest
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - soladia-network
+
+  # Nginx (for development proxy)
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./docker/nginx-dev.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - frontend
+      - backend
+    networks:
+      - soladia-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  ipfs_data:
+
+
+networks:
+  soladia-network:
+    driver: bridge

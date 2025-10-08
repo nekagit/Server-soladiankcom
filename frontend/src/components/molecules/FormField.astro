@@ -1,0 +1,59 @@
+---
+import Input from '../atoms/Input.astro';
+
+export interface Props {
+  label: string;
+  type?: 'text' | 'email' | 'password' | 'number' | 'tel' | 'url' | 'search';
+  placeholder?: string;
+  value?: string;
+  disabled?: boolean;
+  required?: boolean;
+  readonly?: boolean;
+  name?: string;
+  id?: string;
+  className?: string;
+  error?: boolean;
+  errorMessage?: string;
+  helperText?: string;
+  size?: 'sm' | 'md' | 'lg';
+  'data-testid'?: string;
+}
+
+const {
+  label,
+  type = 'text',
+  placeholder = '',
+  value = '',
+  disabled = false,
+  required = false,
+  readonly = false,
+  name,
+  id,
+  className = '',
+  error = false,
+  errorMessage = '',
+  helperText = '',
+  size = 'md',
+  'data-testid': testId,
+} = Astro.props;
+---
+
+<div class='space-y-2'>
+  <Input
+    label={label}
+    type={type}
+    placeholder={placeholder}
+    value={value}
+    disabled={disabled}
+    required={required}
+    readonly={readonly}
+    name={name}
+    id={id}
+    className={className}
+    error={error}
+    errorMessage={errorMessage}
+    helperText={helperText}
+    size={size}
+    data-testid={testId}
+  />
+</div>

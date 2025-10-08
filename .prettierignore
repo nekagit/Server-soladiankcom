@@ -1,0 +1,89 @@
+# Dependencies
+node_modules/
+*/node_modules/
+
+# Build outputs
+dist/
+build/
+*/dist/
+*/build/
+
+# Environment files
+.env
+.env.*
+
+# Logs
+*.log
+
+# Database
+*.db
+*.sqlite
+
+# Coverage
+coverage/
+.nyc_output/
+
+# Cache
+.cache/
+.temp/
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Generated files
+*.generated.*
+*.auto.*
+
+# Documentation
+docs/_build/
+docs/.doctrees/
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+.dockerignore
+
+# Kubernetes
+*.kubeconfig
+
+# Terraform
+*.tfstate
+*.tfstate.*
+
+# Ansible
+*.retry
+
+# Monitoring
+prometheus_data/
+grafana_data/
+
+# Testing
+test-results/
+playwright-report/
+
+# Security
+*.pem
+*.key
+*.crt
+
+# Backup
+*.bak
+*.backup
+
+# Local development
+.local/
+
+# Solana
+.anchor/
+target/
+
+# IPFS
+.ipfs/

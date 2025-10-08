@@ -1,0 +1,334 @@
+---
+import Card from '../atoms/Card.astro';
+import Button from '../atoms/Button.astro';
+import { cartService, type CartItem } from '../../services/cart';
+
+export interface Props {
+  showCheckoutButton?: boolean;
+  showRemoveButtons?: boolean;
+  className?: string;
+  'data-testid'?: string;
+}
+
+const {
+  showCheckoutButton = true,
+  showRemoveButtons = true,
+  className = '',
+  'data-testid': testId,
+} = Astro.props;
+---
+
+<div class={`shopping-cart ${className}`} data-testid={testId}>
+  <div id='cart-items' class='space-y-4'>
+    <!-- Cart items will be populated by JavaScript -->
+  </div>
+
+  <div id='cart-empty' class='text-center py-8 hidden'>
+    <svg
+      class='mx-auto h-12 w-12 text-gray-400'
+      fill='none'
+      stroke='currentColor'
+      viewBox='0 0 24 24'
+    >
+      <path
+        stroke-linecap='round'
+        stroke-linejoin='round'
+        stroke-width='2'
+        d='M3 3h2l.4 2M7 13h10l4-8H5.4m0 0L7 13m0 0l-2.5 5M7 13l2.5 5m6-5v6a2 2 0 01-2 2H9a2 2 0 01-2-2v-6m8 0V9a2 2 0 00-2-2H9a2 2 0 00-2 2v4.01'
+      ></path>
+    </svg>
+    <h3 class='mt-2 text-sm font-medium text-gray-900'>Your cart is empty</h3>
+    <p class='mt-1 text-sm text-gray-500'>
+      Start adding some items to your cart.
+    </p>
+    <div class='mt-6'>
+      <Button href='/products' variant='primary' size='md'>
+        Continue Shopping
+      </Button>
+    </div>
+  </div>
+
+  <div id='cart-summary' class='mt-6 border-t border-gray-200 pt-6 hidden'>
+    <div class='space-y-3'>
+      <div class='flex justify-between text-sm'>
+        <span class='text-gray-600'>Subtotal</span>
+        <span id='cart-subtotal' class='font-medium'>$0.00</span>
+      </div>
+      <div class='flex justify-between text-sm'>
+        <span class='text-gray-600'>Shipping</span>
+        <span id='cart-shipping' class='font-medium'>$0.00</span>
+      </div>
+      <div class='flex justify-between text-sm'>
+        <span class='text-gray-600'>Tax</span>
+        <span id='cart-tax' class='font-medium'>$0.00</span>
+      </div>
+      <div
+        id='cart-discount-row'
+        class='flex justify-between text-sm text-green-600 hidden'
+      >
+        <span>Discount</span>
+        <span id='cart-discount' class='font-medium'>-$0.00</span>
+      </div>
+      <div class='flex justify-between text-base font-medium'>
+        <span>Total</span>
+        <span id='cart-total' class='text-lg'>$0.00</span>
+      </div>
+    </div>
+
+    <div class='mt-6 space-y-3'>
+      <div class='flex space-x-2'>
+        <input
+          type='text'
+          id='discount-code'
+          placeholder='Discount code'
+          class='flex-1 px-3 py-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-soladia-primary focus:border-soladia-primary'
+        />
+        <Button
+          id='apply-discount'
+          variant='outline'
+          size='sm'
+          onclick='applyDiscountCode()'
+        >
+          Apply
+        </Button>
+      </div>
+
+      {
+        showCheckoutButton && (
+          <Button
+            id='checkout-btn'
+            variant='primary'
+            size='lg'
+            fullWidth
+            onclick='proceedToCheckout()'
+          >
+            Proceed to Checkout
+          </Button>
+        )
+      }
+    </div>
+  </div>
+</div>
+
+<script>
+  let cartService: any;
+  let cartSubscription: (() => void) | null = null;
+
+  // Initialize cart service
+  document.addEventListener('DOMContentLoaded', () => {
+    cartService = (window as any).cartService;
+    if (!cartService) {
+      console.error('Cart service not available');
+      return;
+    }
+
+    // Subscribe to cart changes
+    cartSubscription = cartService.subscribe(updateCartDisplay);
+
+    // Initial display update
+    updateCartDisplay(cartService.getCart());
+  });
+
+  // Update cart display
+  function updateCartDisplay(cart: any) {
+    const cartItems = document.getElementById('cart-items');
+    const cartEmpty = document.getElementById('cart-empty');
+    const cartSummary = document.getElementById('cart-summary');
+    const cartSubtotal = document.getElementById('cart-subtotal');
+    const cartShipping = document.getElementById('cart-shipping');
+    const cartTax = document.getElementById('cart-tax');
+    const cartDiscount = document.getElementById('cart-discount');
+    const cartDiscountRow = document.getElementById('cart-discount-row');
+    const cartTotal = document.getElementById('cart-total');
+
+    if (!cartItems || !cartEmpty || !cartSummary) return;
+
+    if (cart.items.length === 0) {
+      cartItems.classList.add('hidden');
+      cartEmpty.classList.remove('hidden');
+      cartSummary.classList.add('hidden');
+      return;
+    }
+
+    cartEmpty.classList.add('hidden');
+    cartItems.classList.remove('hidden');
+    cartSummary.classList.remove('hidden');
+
+    // Render cart items
+    cartItems.innerHTML = cart.items
+      .map(
+        (item: any) => `
+      <div class="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
+        <div class="flex-shrink-0">
+          ${
+            item.image
+              ? `<img src="${item.image}" alt="${item.title}" class="w-16 h-16 object-cover rounded-md">`
+              : `<div class="w-16 h-16 bg-gray-200 rounded-md flex items-center justify-center">
+              <svg class="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+              </svg>
+            </div>`
+          }
+        </div>
+        <div class="flex-1 min-w-0">
+          <h4 class="text-sm font-medium text-gray-900 truncate">${item.title}</h4>
+          <p class="text-sm text-gray-500">${item.sellerName}</p>
+          ${
+            item.variant
+              ? `
+            <div class="text-xs text-gray-500 mt-1">
+              ${Object.entries(item.variant)
+                .map(([key, value]) => `${key}: ${value}`)
+                .join(', ')}
+            </div>
+          `
+              : ''
+          }
+        </div>
+        <div class="flex items-center space-x-2">
+          <button 
+            onclick="updateQuantity('${item.id}', ${item.quantity - 1})"
+            class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100"
+            ${item.quantity <= 1 ? 'disabled' : ''}
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+            </svg>
+          </button>
+          <span class="w-8 text-center text-sm font-medium">${item.quantity}</span>
+          <button 
+            onclick="updateQuantity('${item.id}', ${item.quantity + 1})"
+            class="w-8 h-8 rounded-full border border-gray-300 flex items-center justify-center hover:bg-gray-100"
+            ${item.maxQuantity && item.quantity >= item.maxQuantity ? 'disabled' : ''}
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+          </button>
+        </div>
+        <div class="text-right">
+          <p class="text-sm font-medium text-gray-900">$${(item.price * item.quantity).toFixed(2)}</p>
+          <p class="text-xs text-gray-500">$${item.price.toFixed(2)} each</p>
+        </div>
+        ${
+          showRemoveButtons
+            ? `
+          <button 
+            onclick="removeItem('${item.id}')"
+            class="text-red-600 hover:text-red-800 p-1"
+            title="Remove item"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
+            </svg>
+          </button>
+        `
+            : ''
+        }
+      </div>
+    `
+      )
+      .join('');
+
+    // Update totals
+    if (cartSubtotal) cartSubtotal.textContent = `$${cart.subtotal.toFixed(2)}`;
+    if (cartShipping) cartShipping.textContent = `$${cart.shipping.toFixed(2)}`;
+    if (cartTax) cartTax.textContent = `$${cart.tax.toFixed(2)}`;
+    if (cartTotal) cartTotal.textContent = `$${cart.total.toFixed(2)}`;
+
+    // Update discount display
+    if (cart.discount > 0) {
+      if (cartDiscount)
+        cartDiscount.textContent = `-$${(cart.discount * cart.subtotal).toFixed(2)}`;
+      if (cartDiscountRow) cartDiscountRow.classList.remove('hidden');
+    } else {
+      if (cartDiscountRow) cartDiscountRow.classList.add('hidden');
+    }
+  }
+
+  // Update item quantity
+  function updateQuantity(itemId: string, quantity: number) {
+    if (cartService) {
+      cartService.updateQuantity(itemId, quantity);
+    }
+  }
+
+  // Remove item from cart
+  function removeItem(itemId: string) {
+    if (cartService) {
+      cartService.removeItem(itemId);
+    }
+  }
+
+  // Apply discount code
+  function applyDiscountCode() {
+    const codeInput = document.getElementById(
+      'discount-code'
+    ) as HTMLInputElement;
+    const code = codeInput?.value.trim();
+
+    if (!code || !cartService) return;
+
+    cartService.applyDiscount(code).then((result: any) => {
+      if (result.success) {
+        // Show success message
+        showNotification(result.message, 'success');
+        codeInput.value = '';
+      } else {
+        // Show error message
+        showNotification(result.message, 'error');
+      }
+    });
+  }
+
+  // Proceed to checkout
+  function proceedToCheckout() {
+    if (!cartService) return;
+
+    const validation = cartService.validateCart();
+    if (!validation.valid) {
+      showNotification(validation.errors.join(', '), 'error');
+      return;
+    }
+
+    // Redirect to checkout page
+    window.location.href = '/checkout';
+  }
+
+  // Show notification
+  function showNotification(message: string, type: 'success' | 'error') {
+    // Simple notification - replace with proper toast component
+    const notification = document.createElement('div');
+    notification.className = `fixed top-4 right-4 p-4 rounded-md text-white z-50 ${
+      type === 'success' ? 'bg-green-500' : 'bg-red-500'
+    }`;
+    notification.textContent = message;
+    document.body.appendChild(notification);
+
+    setTimeout(() => {
+      notification.remove();
+    }, 3000);
+  }
+
+  // Cleanup on page unload
+  window.addEventListener('beforeunload', () => {
+    if (cartSubscription) {
+      cartSubscription();
+    }
+  });
+</script>
+
+<style>
+  .shopping-cart {
+    max-width: 100%;
+  }
+
+  .shopping-cart button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .shopping-cart button:disabled:hover {
+    background-color: transparent;
+  }
+</style>

@@ -1,131 +1,68 @@
 ---
 export interface Props {
-  requireAuth?: boolean;
-  requireWallet?: boolean;
   redirectTo?: string;
+  requireAuth?: boolean;
+  requireRole?: string;
   fallback?: any;
-  children?: any;
 }
 
 const {
-  requireAuth = false,
-  requireWallet = false,
   redirectTo = '/auth',
-  fallback = null,
-  children
+  requireAuth = true,
+  requireRole,
+  fallback,
 } = Astro.props;
 ---
 
-<div class="auth-guard" data-testid="auth-guard">
-  <div id="auth-guard-content">
-    {children}
-  </div>
-  
-  <div id="auth-guard-fallback" style="display: none;">
-    {fallback}
-  </div>
+<div id='auth-guard'>
+  <slot />
 </div>
 
-<style>
-  .auth-guard {
-    @apply w-full;
-  }
-
-  .auth-guard-loading {
-    @apply flex items-center justify-center min-h-screen;
-  }
-
-  .auth-guard-error {
-    @apply text-center py-12;
-  }
-
-  .auth-guard-error h2 {
-    @apply text-2xl font-bold text-gray-900 dark:text-white mb-4;
-  }
-
-  .auth-guard-error p {
-    @apply text-gray-600 dark:text-gray-400 mb-6;
-  }
-
-  .auth-guard-error .btn {
-    @apply inline-flex items-center px-4 py-2 bg-soladia-primary text-white rounded-md hover:bg-soladia-primary/90 transition-colors duration-200;
-  }
-</style>
-
-<script>
+<script define:vars={{ redirectTo, requireAuth, requireRole }}>
   document.addEventListener('DOMContentLoaded', () => {
-    const content = document.getElementById('auth-guard-content');
-    const fallback = document.getElementById('auth-guard-fallback');
-    const requireAuth = {requireAuth};
-    const requireWallet = {requireWallet};
-    const redirectTo = '{redirectTo}';
+    const authManager = (window as any).authManager;
 
-    // Check authentication status
-    const checkAuth = async () => {
-      try {
-        // Check if user is authenticated
-        const authResponse = await fetch('/api/auth/profile', {
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('auth_token')}`
-          }
-        });
+    if (!authManager) {
+      console.error('Auth manager not available');
+      if (requireAuth) {
+        window.location.href = redirectTo;
+      }
+      return;
+    }
 
-        const isAuthenticated = authResponse.ok;
+    const checkAuth = () => {
+      const isAuthenticated = authManager.isAuthenticated();
+      const user = authManager.getCurrentUser();
 
-        // Check if wallet is connected
-        const walletInfo = localStorage.getItem('wallet_info');
-        const isWalletConnected = !!walletInfo;
+      if (requireAuth && !isAuthenticated) {
+        console.log('Authentication required, redirecting to:', redirectTo);
+        window.location.href = redirectTo;
+        return;
+      }
 
-        // Show/hide content based on requirements
-        if (requireAuth && !isAuthenticated) {
-          showFallback('Authentication required', 'Please log in to access this page.');
-          if (redirectTo) {
-            setTimeout(() => {
-              window.location.href = redirectTo;
-            }, 2000);
-          }
-          return;
-        }
+      if (requireRole && user && !authManager.hasRole(requireRole)) {
+        console.log('Insufficient permissions, redirecting to:', redirectTo);
+        window.location.href = redirectTo;
+        return;
+      }
 
-        if (requireWallet && !isWalletConnected) {
-          showFallback('Wallet connection required', 'Please connect your Solana wallet to access this page.');
-          return;
-        }
-
-        // All requirements met, show content
-        showContent();
-      } catch (error) {
-        console.error('Auth check failed:', error);
-        showFallback('Authentication error', 'Failed to verify authentication status.');
+      // Show the protected content
+      const authGuard = document.getElementById('auth-guard');
+      if (authGuard) {
+        authGuard.style.display = 'block';
       }
     };
 
-    const showContent = () => {
-      if (content) content.style.display = 'block';
-      if (fallback) fallback.style.display = 'none';
-    };
-
-    const showFallback = (title: string, message: string) => {
-      if (content) content.style.display = 'none';
-      if (fallback) {
-        fallback.style.display = 'block';
-        fallback.innerHTML = `
-          <div class="auth-guard-error">
-            <h2>${title}</h2>
-            <p>${message}</p>
-            ${redirectTo ? `<a href="${redirectTo}" class="btn">Go to ${redirectTo}</a>` : ''}
-          </div>
-        `;
-      }
-    };
-
-    // Initialize auth check
+    // Initial check
     checkAuth();
 
     // Listen for auth state changes
     window.addEventListener('authStateChanged', checkAuth);
-    window.addEventListener('walletStateChanged', checkAuth);
   });
 </script>
 
-
+<style>
+  #auth-guard {
+    display: none;
+  }
+</style>

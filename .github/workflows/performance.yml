@@ -1,0 +1,142 @@
+name: Performance Tests
+
+on:
+  schedule:
+    - cron: '0 3 * * 0' # Weekly on Sunday at 3 AM
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+  workflow_dispatch:
+
+jobs:
+  performance-tests:
+    name: Performance Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: |
+          npm ci
+          cd frontend
+          npm ci
+
+      - name: Build frontend
+        run: |
+          cd frontend
+          npm run build
+
+      - name: Start application
+        run: |
+          # Start backend
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          python -m uvicorn main:app --host 0.0.0.0 --port 8001 &
+          
+          # Start frontend
+          cd ../frontend
+          npm run preview &
+          
+          # Wait for services to be ready
+          sleep 30
+
+      - name: Run Lighthouse CI
+        run: |
+          cd frontend
+          npm install -g @lhci/cli@0.12.x
+          lhci autorun --upload.target=temporary-public-storage
+
+      - name: Run WebPageTest
+        run: |
+          # Install WebPageTest CLI
+          npm install -g webpagetest
+          
+          # Run WebPageTest (requires API key)
+          if [ -n "$WPT_API_KEY" ]; then
+            webpagetest test http://localhost:4321 --key $WPT_API_KEY --format json > webpagetest-results.json
+          fi
+        env:
+          WPT_API_KEY: ${{ secrets.WEBPAGETEST_API_KEY }}
+
+      - name: Run k6 load tests
+        run: |
+          # Install k6
+          sudo apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C5AD17C747E3415A3642D57D77C6C491D6AC1D69
+          echo "deb https://dl.k6.io/deb stable main" | sudo tee /etc/apt/sources.list.d/k6.list
+          sudo apt-get update
+          sudo apt-get install k6
+          
+          # Run load tests
+          k6 run --out json=load-test-results.json scripts/load-test.js
+
+      - name: Run Artillery load tests
+        run: |
+          # Install Artillery
+          npm install -g artillery
+          
+          # Run load tests
+          artillery run scripts/artillery-config.yml --output load-test-results.json
+
+      - name: Upload performance results
+        uses: actions/upload-artifact@v3
+        if: always()
+        with:
+          name: performance-test-results
+          path: |
+            frontend/.lighthouseci/
+            webpagetest-results.json
+            load-test-results.json
+
+      - name: Comment PR with performance results
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const fs = require('fs');
+            
+            // Read Lighthouse results
+            let lighthouseResults = '';
+            try {
+              const lighthouseData = fs.readFileSync('frontend/.lighthouseci/lighthouse-results.json', 'utf8');
+              const results = JSON.parse(lighthouseData);
+              
+              lighthouseResults = `
+              ## 🚀 Performance Results
+              
+              ### Lighthouse Scores
+              - **Performance**: ${results[0]?.summary?.performance || 'N/A'}
+              - **Accessibility**: ${results[0]?.summary?.accessibility || 'N/A'}
+              - **Best Practices**: ${results[0]?.summary?.['best-practices'] || 'N/A'}
+              - **SEO**: ${results[0]?.summary?.seo || 'N/A'}
+              `;
+            } catch (error) {
+              lighthouseResults = 'Lighthouse results not available';
+            }
+            
+            // Create comment
+            const comment = `
+            ${lighthouseResults}
+            
+            <details>
+            <summary>📊 Detailed Performance Metrics</summary>
+            
+            Performance test results have been uploaded as artifacts.
+            </details>
+            `;
+            
+            // Post comment
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });

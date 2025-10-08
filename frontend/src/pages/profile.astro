@@ -1,467 +1,352 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
-import SolanaWallet from '../components/solana/SolanaWallet.astro';
-import TransactionHistory from '../components/solana/TransactionHistory.astro';
-
-// Sample user data
-const user = {
-  id: 1,
-  username: "crypto_trader",
-  email: "user@example.com",
-  fullName: "John Doe",
-  avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&h=150&fit=crop&crop=center",
-  walletAddress: "9WzDXwBbmkg8ZTbNMqUxvQRAyrZzDsGYdLVL9zYtAWWM",
-  joinDate: "2024-01-15",
-  rating: 4.8,
-  totalSales: 156,
-  totalPurchases: 89
-};
-
-const recentOrders = [
-  {
-    id: "ORD-001",
-    date: "2024-01-20",
-    status: "Delivered",
-    total: 299.99,
-    items: 2
-  },
-  {
-    id: "ORD-002", 
-    date: "2024-01-18",
-    status: "Shipped",
-    total: 199.99,
-    items: 1
-  }
-];
-
-const recentListings = [
-  {
-    id: 1,
-    title: "Vintage Camera Collection",
-    price: 299.99,
-    status: "Active",
-    views: 45,
-    watchers: 3
-  },
-  {
-    id: 2,
-    title: "Wireless Headphones",
-    price: 199.99,
-    status: "Sold",
-    views: 89,
-    watchers: 7
-  }
-];
+import AuthGuard from '../components/AuthGuard.astro';
 ---
 
-<Layout title="Profile - Soladia">
+<Layout title='User Profile - Soladia'>
   <Navigation />
-  
-  <div class="profile-container">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div class="profile-header">
-        <div class="profile-avatar">
-          <img src={user.avatar} alt={user.fullName} />
-        </div>
-        <div class="profile-info">
-          <h1 class="profile-name">{user.fullName}</h1>
-          <p class="profile-username">@{user.username}</p>
-          <div class="profile-stats">
-            <div class="stat">
-              <span class="stat-value">{user.rating}</span>
-              <span class="stat-label">Rating</span>
-            </div>
-            <div class="stat">
-              <span class="stat-value">{user.totalSales}</span>
-              <span class="stat-label">Sales</span>
-            </div>
-            <div class="stat">
-              <span class="stat-value">{user.totalPurchases}</span>
-              <span class="stat-label">Purchases</span>
-            </div>
-          </div>
-        </div>
-        <div class="profile-actions">
-          <button class="btn-secondary">Edit Profile</button>
-          <button class="btn-primary">Settings</button>
-        </div>
-      </div>
 
-      <div class="profile-content">
-        <!-- Solana Wallet Section -->
-        <div class="profile-section">
-          <h2 class="section-title">Solana Wallet</h2>
-          <div class="wallet-container">
-            <SolanaWallet />
-          </div>
-        </div>
+  <AuthGuard>
+    <main class='min-h-screen bg-gray-50 py-8'>
+      <div class='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8'>
+        <div class='bg-white rounded-lg shadow-sm border border-gray-200 p-8'>
+          <h1 class='text-3xl font-bold text-gray-900 mb-6'>User Profile</h1>
 
-        <!-- Account Information -->
-        <div class="profile-section">
-          <h2 class="section-title">Account Information</h2>
-          <div class="info-grid">
-            <div class="info-item">
-              <label>Email</label>
-              <span>{user.email}</span>
-            </div>
-            <div class="info-item">
-              <label>Member Since</label>
-              <span>{new Date(user.joinDate).toLocaleDateString()}</span>
-            </div>
-            <div class="info-item">
-              <label>Wallet Address</label>
-              <span class="wallet-address">{user.walletAddress}</span>
-            </div>
-            <div class="info-item">
-              <label>Account Status</label>
-              <span class="status-verified">Verified</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Recent Orders -->
-        <div class="profile-section">
-          <h2 class="section-title">Recent Orders</h2>
-          <div class="orders-table">
-            <div class="table-header">
-              <span>Order ID</span>
-              <span>Date</span>
-              <span>Status</span>
-              <span>Total</span>
-              <span>Items</span>
-            </div>
-            {recentOrders.map((order) => (
-              <div class="table-row">
-                <span class="order-id">{order.id}</span>
-                <span class="order-date">{new Date(order.date).toLocaleDateString()}</span>
-                <span class={`order-status status-${order.status.toLowerCase()}`}>{order.status}</span>
-                <span class="order-total">${order.total.toFixed(2)}</span>
-                <span class="order-items">{order.items}</span>
+          <div class='space-y-6'>
+            <!-- Profile Header -->
+            <div class='flex items-center space-x-6'>
+              <div
+                class='w-20 h-20 bg-gradient-to-r from-red-500 to-blue-500 rounded-full flex items-center justify-center text-white text-2xl font-bold'
+              >
+                <span id='profile-avatar'>A</span>
               </div>
-            ))}
-          </div>
-        </div>
+              <div>
+                <h2
+                  class='text-2xl font-semibold text-gray-900'
+                  id='profile-name'
+                >
+                  Loading...
+                </h2>
+                <p class='text-gray-600' id='profile-email'>Loading...</p>
+                <p class='text-sm text-gray-500' id='profile-role'>
+                  Loading...
+                </p>
+              </div>
+            </div>
 
-        <!-- My Listings -->
-        <div class="profile-section">
-          <h2 class="section-title">My Listings</h2>
-          <div class="listings-grid">
-            {recentListings.map((listing) => (
-              <div class="listing-card">
-                <div class="listing-info">
-                  <h3 class="listing-title">{listing.title}</h3>
-                  <p class="listing-price">${listing.price.toFixed(2)}</p>
-                </div>
-                <div class="listing-stats">
-                  <div class="stat">
-                    <span class="stat-value">{listing.views}</span>
-                    <span class="stat-label">Views</span>
+            <!-- Profile Information -->
+            <div class='grid grid-cols-1 md:grid-cols-2 gap-6'>
+              <div class='bg-gray-50 rounded-lg p-6'>
+                <h3 class='text-lg font-semibold text-gray-900 mb-4'>
+                  Account Information
+                </h3>
+                <div class='space-y-3'>
+                  <div>
+                    <label class='block text-sm font-medium text-gray-700'
+                      >Full Name</label
+                    >
+                    <p
+                      class='mt-1 text-sm text-gray-900'
+                      id='profile-full-name'
+                    >
+                      Loading...
+                    </p>
                   </div>
-                  <div class="stat">
-                    <span class="stat-value">{listing.watchers}</span>
-                    <span class="stat-label">Watchers</span>
+                  <div>
+                    <label class='block text-sm font-medium text-gray-700'
+                      >Username</label
+                    >
+                    <p class='mt-1 text-sm text-gray-900' id='profile-username'>
+                      Loading...
+                    </p>
+                  </div>
+                  <div>
+                    <label class='block text-sm font-medium text-gray-700'
+                      >Email</label
+                    >
+                    <p
+                      class='mt-1 text-sm text-gray-900'
+                      id='profile-email-detail'
+                    >
+                      Loading...
+                    </p>
+                  </div>
+                  <div>
+                    <label class='block text-sm font-medium text-gray-700'
+                      >User Type</label
+                    >
+                    <p
+                      class='mt-1 text-sm text-gray-900'
+                      id='profile-user-type'
+                    >
+                      Loading...
+                    </p>
                   </div>
                 </div>
-                <div class="listing-actions">
-                  <span class={`status-badge status-${listing.status.toLowerCase()}`}>{listing.status}</span>
-                  <button class="btn-small">Edit</button>
+              </div>
+
+              <div class='bg-gray-50 rounded-lg p-6'>
+                <h3 class='text-lg font-semibold text-gray-900 mb-4'>
+                  Account Status
+                </h3>
+                <div class='space-y-3'>
+                  <div>
+                    <label class='block text-sm font-medium text-gray-700'
+                      >Status</label
+                    >
+                    <span
+                      class='inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800'
+                      id='profile-status'
+                    >
+                      Active
+                    </span>
+                  </div>
+                  <div>
+                    <label class='block text-sm font-medium text-gray-700'
+                      >Member Since</label
+                    >
+                    <p class='mt-1 text-sm text-gray-900' id='profile-created'>
+                      Loading...
+                    </p>
+                  </div>
+                  <div>
+                    <label class='block text-sm font-medium text-gray-700'
+                      >Last Login</label
+                    >
+                    <p
+                      class='mt-1 text-sm text-gray-900'
+                      id='profile-last-login'
+                    >
+                      Loading...
+                    </p>
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-
-        <!-- Transaction History -->
-        <div class="profile-section">
-          <h2 class="section-title">Transaction History</h2>
-          <div class="transaction-container">
-            <TransactionHistory />
-          </div>
-        </div>
-
-        <!-- Security Settings -->
-        <div class="profile-section">
-          <h2 class="section-title">Security Settings</h2>
-          <div class="security-options">
-            <div class="security-item">
-              <div class="security-info">
-                <h3>Two-Factor Authentication</h3>
-                <p>Add an extra layer of security to your account</p>
-              </div>
-              <button class="btn-outline">Enable</button>
             </div>
-            <div class="security-item">
-              <div class="security-info">
-                <h3>Wallet Security</h3>
-                <p>Manage your Solana wallet security settings</p>
+
+            <!-- Quick Actions -->
+            <div class='bg-blue-50 rounded-lg p-6'>
+              <h3 class='text-lg font-semibold text-blue-900 mb-4'>
+                Quick Actions
+              </h3>
+              <div class='grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4'>
+                <a
+                  href='/dashboard'
+                  class='bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow'
+                >
+                  <div
+                    class='w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-2'
+                  >
+                    <svg
+                      class='w-4 h-4 text-blue-600'
+                      fill='none'
+                      stroke='currentColor'
+                      viewBox='0 0 24 24'
+                    >
+                      <path
+                        stroke-linecap='round'
+                        stroke-linejoin='round'
+                        stroke-width='2'
+                        d='M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'
+                      ></path>
+                    </svg>
+                  </div>
+                  <p class='text-sm font-medium text-gray-900'>Dashboard</p>
+                </a>
+
+                <a
+                  href='/orders'
+                  class='bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow'
+                >
+                  <div
+                    class='w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-2'
+                  >
+                    <svg
+                      class='w-4 h-4 text-green-600'
+                      fill='none'
+                      stroke='currentColor'
+                      viewBox='0 0 24 24'
+                    >
+                      <path
+                        stroke-linecap='round'
+                        stroke-linejoin='round'
+                        stroke-width='2'
+                        d='M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z'></path>
+                    </svg>
+                  </div>
+                  <p class='text-sm font-medium text-gray-900'>Orders</p>
+                </a>
+
+                <a
+                  href='/settings'
+                  class='bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow'
+                >
+                  <div
+                    class='w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center mx-auto mb-2'
+                  >
+                    <svg
+                      class='w-4 h-4 text-gray-600'
+                      fill='none'
+                      stroke='currentColor'
+                      viewBox='0 0 24 24'
+                    >
+                      <path
+                        stroke-linecap='round'
+                        stroke-linejoin='round'
+                        stroke-width='2'
+                        d='M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z'
+                      ></path>
+                      <path
+                        stroke-linecap='round'
+                        stroke-linejoin='round'
+                        stroke-width='2'
+                        d='M15 12a3 3 0 11-6 0 3 3 0 016 0z'></path>
+                    </svg>
+                  </div>
+                  <p class='text-sm font-medium text-gray-900'>Settings</p>
+                </a>
+
+                <button
+                  id='logout-btn'
+                  class='bg-white rounded-lg p-4 text-center hover:shadow-md transition-shadow'
+                >
+                  <div
+                    class='w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center mx-auto mb-2'
+                  >
+                    <svg
+                      class='w-4 h-4 text-red-600'
+                      fill='none'
+                      stroke='currentColor'
+                      viewBox='0 0 24 24'
+                    >
+                      <path
+                        stroke-linecap='round'
+                        stroke-linejoin='round'
+                        stroke-width='2'
+                        d='M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1'
+                      ></path>
+                    </svg>
+                  </div>
+                  <p class='text-sm font-medium text-gray-900'>Sign Out</p>
+                </button>
               </div>
-              <button class="btn-outline">Configure</button>
-            </div>
-            <div class="security-item">
-              <div class="security-info">
-                <h3>Login Activity</h3>
-                <p>View recent login activity and sessions</p>
-              </div>
-              <button class="btn-outline">View</button>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  </div>
+    </main>
+  </AuthGuard>
 </Layout>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
-    // Copy wallet address functionality
-    const walletAddress = document.querySelector('.wallet-address');
-    if (walletAddress) {
-      walletAddress.addEventListener('click', () => {
-        navigator.clipboard.writeText(walletAddress.textContent || '');
-        showNotification('Wallet address copied to clipboard!', 'success');
+    const authManager = (window as any).authManager;
+
+    if (!authManager) {
+      console.error('Auth manager not available');
+      window.location.href = '/auth';
+      return;
+    }
+
+    const user = authManager.getCurrentUser();
+
+    if (!user) {
+      console.log('No user found, redirecting to auth');
+      window.location.href = '/auth';
+      return;
+    }
+
+    // Update profile information
+    const updateProfile = () => {
+      const profileAvatar = document.getElementById('profile-avatar');
+      const profileName = document.getElementById('profile-name');
+      const profileEmail = document.getElementById('profile-email');
+      const profileRole = document.getElementById('profile-role');
+      const profileFullName = document.getElementById('profile-full-name');
+      const profileUsername = document.getElementById('profile-username');
+      const profileEmailDetail = document.getElementById(
+        'profile-email-detail'
+      );
+      const profileUserType = document.getElementById('profile-user-type');
+      const profileCreated = document.getElementById('profile-created');
+      const profileLastLogin = document.getElementById('profile-last-login');
+
+      if (profileAvatar) {
+        profileAvatar.textContent = (
+          user.full_name ||
+          user.username ||
+          user.email ||
+          'U'
+        )
+          .charAt(0)
+          .toUpperCase();
+      }
+
+      if (profileName) {
+        profileName.textContent = user.full_name || user.username || 'User';
+      }
+
+      if (profileEmail) {
+        profileEmail.textContent = user.email || 'No email';
+      }
+
+      if (profileRole) {
+        profileRole.textContent = user.user_type || 'User';
+      }
+
+      if (profileFullName) {
+        profileFullName.textContent = user.full_name || 'Not provided';
+      }
+
+      if (profileUsername) {
+        profileUsername.textContent = user.username || 'Not provided';
+      }
+
+      if (profileEmailDetail) {
+        profileEmailDetail.textContent = user.email || 'Not provided';
+      }
+
+      if (profileUserType) {
+        profileUserType.textContent = user.user_type || 'User';
+      }
+
+      if (profileCreated) {
+        profileCreated.textContent = user.created_at
+          ? new Date(user.created_at).toLocaleDateString()
+          : 'Unknown';
+      }
+
+      if (profileLastLogin) {
+        profileLastLogin.textContent = user.last_login
+          ? new Date(user.last_login).toLocaleString()
+          : 'Just now';
+      }
+    };
+
+    updateProfile();
+
+    // Handle logout
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+      logoutBtn.addEventListener('click', async () => {
+        try {
+          await authManager.logout();
+          window.location.href = '/';
+        } catch (error) {
+          console.error('Logout failed:', error);
+        }
       });
     }
 
-    // Order row click handlers
-    const orderRows = document.querySelectorAll('.table-row');
-    orderRows.forEach(row => {
-      row.addEventListener('click', () => {
-        const orderId = row.querySelector('.order-id')?.textContent;
-        if (orderId) {
-          window.location.href = `/orders/${orderId}`;
-        }
-      });
+    // Listen for auth state changes
+    window.addEventListener('authStateChanged', () => {
+      const currentUser = authManager.getCurrentUser();
+      if (!currentUser) {
+        window.location.href = '/auth';
+      } else {
+        updateProfile();
+      }
     });
   });
-
-  function showNotification(message: string, type: 'success' | 'error' | 'info') {
-    const notification = document.createElement('div');
-    notification.className = `notification notification-${type}`;
-    notification.textContent = message;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-      notification.remove();
-    }, 3000);
-  }
 </script>
-
-<style>
-  .profile-container {
-    @apply min-h-screen bg-gray-50;
-  }
-
-  .profile-header {
-    @apply bg-white rounded-lg shadow-sm p-8 mb-8 flex items-center space-x-6;
-  }
-
-  .profile-avatar img {
-    @apply w-24 h-24 rounded-full object-cover;
-  }
-
-  .profile-info {
-    @apply flex-1;
-  }
-
-  .profile-name {
-    @apply text-2xl font-bold text-gray-900 mb-1;
-  }
-
-  .profile-username {
-    @apply text-gray-600 mb-4;
-  }
-
-  .profile-stats {
-    @apply flex space-x-6;
-  }
-
-  .stat {
-    @apply text-center;
-  }
-
-  .stat-value {
-    @apply block text-2xl font-bold text-gray-900;
-  }
-
-  .stat-label {
-    @apply text-sm text-gray-600;
-  }
-
-  .profile-actions {
-    @apply flex space-x-3;
-  }
-
-  .profile-content {
-    @apply space-y-8;
-  }
-
-  .profile-section {
-    @apply bg-white rounded-lg shadow-sm p-6;
-  }
-
-  .section-title {
-    @apply text-xl font-semibold text-gray-900 mb-6;
-  }
-
-  .wallet-container {
-    @apply max-w-2xl;
-  }
-
-  .info-grid {
-    @apply grid grid-cols-1 md:grid-cols-2 gap-4;
-  }
-
-  .info-item {
-    @apply flex justify-between items-center py-3 border-b border-gray-200;
-  }
-
-  .info-item label {
-    @apply font-medium text-gray-700;
-  }
-
-  .wallet-address {
-    @apply font-mono text-sm text-blue-600 cursor-pointer hover:text-blue-800;
-  }
-
-  .status-verified {
-    @apply text-green-600 font-medium;
-  }
-
-  .orders-table {
-    @apply space-y-2;
-  }
-
-  .table-header {
-    @apply grid grid-cols-5 gap-4 py-3 font-semibold text-gray-700 border-b-2 border-gray-200;
-  }
-
-  .table-row {
-    @apply grid grid-cols-5 gap-4 py-3 hover:bg-gray-50 cursor-pointer transition-colors;
-  }
-
-  .order-id {
-    @apply font-mono text-sm text-blue-600;
-  }
-
-  .order-date {
-    @apply text-gray-600;
-  }
-
-  .order-status {
-    @apply px-2 py-1 rounded-full text-xs font-medium;
-  }
-
-  .status-delivered {
-    @apply bg-green-100 text-green-800;
-  }
-
-  .status-shipped {
-    @apply bg-blue-100 text-blue-800;
-  }
-
-  .status-pending {
-    @apply bg-yellow-100 text-yellow-800;
-  }
-
-  .order-total {
-    @apply font-semibold text-gray-900;
-  }
-
-  .order-items {
-    @apply text-gray-600;
-  }
-
-  .listings-grid {
-    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4;
-  }
-
-  .listing-card {
-    @apply border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow;
-  }
-
-  .listing-info {
-    @apply mb-3;
-  }
-
-  .listing-title {
-    @apply font-semibold text-gray-900 mb-1;
-  }
-
-  .listing-price {
-    @apply text-lg font-bold text-green-600;
-  }
-
-  .listing-stats {
-    @apply flex space-x-4 mb-3;
-  }
-
-  .listing-actions {
-    @apply flex justify-between items-center;
-  }
-
-  .status-badge {
-    @apply px-2 py-1 rounded-full text-xs font-medium;
-  }
-
-  .status-active {
-    @apply bg-green-100 text-green-800;
-  }
-
-  .status-sold {
-    @apply bg-gray-100 text-gray-800;
-  }
-
-  .btn-small {
-    @apply px-3 py-1 text-sm bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors;
-  }
-
-  .transaction-container {
-    @apply max-w-4xl;
-  }
-
-  .security-options {
-    @apply space-y-4;
-  }
-
-  .security-item {
-    @apply flex justify-between items-center p-4 border border-gray-200 rounded-lg;
-  }
-
-  .security-info h3 {
-    @apply font-semibold text-gray-900 mb-1;
-  }
-
-  .security-info p {
-    @apply text-sm text-gray-600;
-  }
-
-  .btn-primary {
-    @apply px-4 py-2 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700 transition-colors;
-  }
-
-  .btn-secondary {
-    @apply px-4 py-2 bg-gray-200 text-gray-700 rounded-lg font-medium hover:bg-gray-300 transition-colors;
-  }
-
-  .btn-outline {
-    @apply px-4 py-2 border border-gray-300 text-gray-700 rounded-lg font-medium hover:bg-gray-50 transition-colors;
-  }
-
-  .notification {
-    @apply fixed top-4 right-4 px-4 py-2 rounded-lg text-white font-medium z-50;
-  }
-
-  .notification-success {
-    @apply bg-green-600;
-  }
-
-  .notification-error {
-    @apply bg-red-600;
-  }
-
-  .notification-info {
-    @apply bg-blue-600;
-  }
-</style>

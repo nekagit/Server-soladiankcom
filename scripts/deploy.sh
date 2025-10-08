@@ -1,16 +1,11 @@
 #!/bin/bash
 
 # Soladia Marketplace Deployment Script
-# Usage: ./scripts/deploy.sh [environment] [version]
+# This script handles deployment to different environments
 
 set -e
 
-# Configuration
-ENVIRONMENT=${1:-staging}
-VERSION=${2:-latest}
-PROJECT_NAME="soladia-marketplace"
-REGISTRY="your-registry.com"
-NAMESPACE="soladia"
+echo "🚀 Soladia Marketplace Deployment Script"
 
 # Colors for output
 RED='\033[0;31m'
@@ -19,257 +14,300 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Logging functions
-log_info() {
+# Function to print colored output
+print_status() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
 
-log_success() {
+print_success() {
     echo -e "${GREEN}[SUCCESS]${NC} $1"
 }
 
-log_warning() {
+print_warning() {
     echo -e "${YELLOW}[WARNING]${NC} $1"
 }
 
-log_error() {
+print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# Check if required tools are installed
-check_dependencies() {
-    log_info "Checking dependencies..."
-    
-    local missing_deps=()
-    
-    if ! command -v docker &> /dev/null; then
-        missing_deps+=("docker")
+# Default values
+ENVIRONMENT="staging"
+BUILD_TYPE="production"
+SKIP_TESTS=false
+SKIP_BUILD=false
+FORCE_DEPLOY=false
+
+# Parse command line arguments
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -e|--environment)
+            ENVIRONMENT="$2"
+            shift 2
+            ;;
+        -b|--build-type)
+            BUILD_TYPE="$2"
+            shift 2
+            ;;
+        --skip-tests)
+            SKIP_TESTS=true
+            shift
+            ;;
+        --skip-build)
+            SKIP_BUILD=true
+            shift
+            ;;
+        --force)
+            FORCE_DEPLOY=true
+            shift
+            ;;
+        -h|--help)
+            echo "Usage: $0 [OPTIONS]"
+            echo "Options:"
+            echo "  -e, --environment ENV    Deployment environment (staging|production)"
+            echo "  -b, --build-type TYPE   Build type (development|production)"
+            echo "  --skip-tests           Skip running tests"
+            echo "  --skip-build           Skip build process"
+            echo "  --force                Force deployment without confirmation"
+            echo "  -h, --help             Show this help message"
+            exit 0
+            ;;
+        *)
+            print_error "Unknown option: $1"
+            exit 1
+            ;;
+    esac
+done
+
+# Validate environment
+if [[ "$ENVIRONMENT" != "staging" && "$ENVIRONMENT" != "production" ]]; then
+    print_error "Invalid environment: $ENVIRONMENT. Must be 'staging' or 'production'"
+    exit 1
+fi
+
+# Validate build type
+if [[ "$BUILD_TYPE" != "development" && "$BUILD_TYPE" != "production" ]]; then
+    print_error "Invalid build type: $BUILD_TYPE. Must be 'development' or 'production'"
+    exit 1
+fi
+
+# Check if we're in the project root
+check_project_root() {
+    if [ ! -f "package.json" ] || [ ! -d "frontend" ] || [ ! -d "backend" ]; then
+        print_error "Please run this script from the project root directory"
+        exit 1
     fi
+}
+
+# Check Git status
+check_git_status() {
+    print_status "Checking Git status..."
     
-    if ! command -v docker-compose &> /dev/null; then
-        missing_deps+=("docker-compose")
-    fi
-    
-    if ! command -v kubectl &> /dev/null; then
-        missing_deps+=("kubectl")
-    fi
-    
-    if ! command -v helm &> /dev/null; then
-        missing_deps+=("helm")
-    fi
-    
-    if [ ${#missing_deps[@]} -ne 0 ]; then
-        log_error "Missing dependencies: ${missing_deps[*]}"
+    # Check if we're on a clean working directory
+    if ! git diff-index --quiet HEAD --; then
+        print_error "Working directory is not clean. Please commit or stash your changes."
         exit 1
     fi
     
-    log_success "All dependencies are installed"
+    # Check if we're on the correct branch
+    CURRENT_BRANCH=$(git branch --show-current)
+    if [[ "$ENVIRONMENT" == "production" && "$CURRENT_BRANCH" != "main" && "$CURRENT_BRANCH" != "master" ]]; then
+        print_error "Production deployments must be from main/master branch"
+        exit 1
+    fi
+    
+    print_success "Git status check passed"
 }
 
-# Build Docker images
-build_images() {
-    log_info "Building Docker images..."
-    
-    # Build frontend image
-    log_info "Building frontend image..."
-    docker build -t ${REGISTRY}/${PROJECT_NAME}-frontend:${VERSION} \
-        -f docker/frontend.Dockerfile \
-        frontend/
-    
-    # Build backend image
-    log_info "Building backend image..."
-    docker build -t ${REGISTRY}/${PROJECT_NAME}-backend:${VERSION} \
-        -f docker/backend.Dockerfile \
-        backend/
-    
-    log_success "Docker images built successfully"
-}
-
-# Run tests
+# Run pre-deployment tests
 run_tests() {
-    log_info "Running tests..."
+    if [[ "$SKIP_TESTS" == true ]]; then
+        print_warning "Skipping tests as requested"
+        return
+    fi
     
-    # Run unit tests
-    log_info "Running unit tests..."
-    docker-compose -f docker-compose.test.yml up --abort-on-container-exit
+    print_status "Running pre-deployment tests..."
     
-    # Check test results
-    if [ $? -ne 0 ]; then
-        log_error "Tests failed"
+    # Run quality checks
+    ./scripts/quality-check.sh
+    
+    print_success "All tests passed"
+}
+
+# Build the application
+build_application() {
+    if [[ "$SKIP_BUILD" == true ]]; then
+        print_warning "Skipping build as requested"
+        return
+    fi
+    
+    print_status "Building application for $BUILD_TYPE..."
+    
+    # Build frontend
+    print_status "Building frontend..."
+    cd frontend
+    npm run build
+    cd ..
+    
+    # Build backend (if needed)
+    print_status "Building backend..."
+    cd backend
+    # Backend doesn't need building for Python, but we can run checks
+    if [ -d ".venv" ]; then
+        source .venv/bin/activate
+    fi
+    python3 -m pip check
+    cd ..
+    
+    print_success "Build completed"
+}
+
+# Deploy to staging
+deploy_staging() {
+    print_status "Deploying to staging environment..."
+    
+    # Use Docker Compose for staging
+    if command -v docker-compose &> /dev/null; then
+        print_status "Starting staging deployment with Docker Compose..."
+        docker-compose -f docker-compose.yml up -d --build
+        
+        # Wait for services to be ready
+        print_status "Waiting for services to be ready..."
+        sleep 30
+        
+        # Health check
+        print_status "Running health checks..."
+        if curl -f http://localhost:8000/health; then
+            print_success "Backend health check passed"
+        else
+            print_error "Backend health check failed"
+            exit 1
+        fi
+        
+        if curl -f http://localhost:4321/; then
+            print_success "Frontend health check passed"
+        else
+            print_error "Frontend health check failed"
+            exit 1
+        fi
+        
+        print_success "Staging deployment completed"
+    else
+        print_error "Docker Compose not available. Please install Docker Compose."
         exit 1
     fi
-    
-    log_success "All tests passed"
 }
 
-# Push images to registry
-push_images() {
-    log_info "Pushing images to registry..."
+# Deploy to production
+deploy_production() {
+    print_status "Deploying to production environment..."
     
-    # Push frontend image
-    docker push ${REGISTRY}/${PROJECT_NAME}-frontend:${VERSION}
-    
-    # Push backend image
-    docker push ${REGISTRY}/${PROJECT_NAME}-backend:${VERSION}
-    
-    log_success "Images pushed to registry"
+    # Use production Docker Compose
+    if command -v docker-compose &> /dev/null; then
+        print_status "Starting production deployment with Docker Compose..."
+        docker-compose -f docker-compose.prod.yml up -d --build
+        
+        # Wait for services to be ready
+        print_status "Waiting for services to be ready..."
+        sleep 60
+        
+        # Health check
+        print_status "Running health checks..."
+        if curl -f http://localhost:8000/health; then
+            print_success "Backend health check passed"
+        else
+            print_error "Backend health check failed"
+            exit 1
+        fi
+        
+        if curl -f http://localhost:4321/; then
+            print_success "Frontend health check passed"
+        else
+            print_error "Frontend health check failed"
+            exit 1
+        fi
+        
+        print_success "Production deployment completed"
+    else
+        print_error "Docker Compose not available. Please install Docker Compose."
+        exit 1
+    fi
 }
 
-# Deploy to Kubernetes
-deploy_k8s() {
-    log_info "Deploying to Kubernetes..."
+# Post-deployment tasks
+post_deployment() {
+    print_status "Running post-deployment tasks..."
     
-    # Update image tags in deployment files
-    sed -i "s|IMAGE_TAG|${VERSION}|g" k8s/*.yaml
-    
-    # Apply Kubernetes manifests
-    kubectl apply -f k8s/namespace.yaml
-    kubectl apply -f k8s/configmap.yaml
-    kubectl apply -f k8s/secrets.yaml
-    kubectl apply -f k8s/deployment.yaml
-    kubectl apply -f k8s/service.yaml
-    kubectl apply -f k8s/ingress.yaml
-    
-    # Wait for deployment to be ready
-    kubectl rollout status deployment/${PROJECT_NAME}-backend -n ${NAMESPACE}
-    kubectl rollout status deployment/${PROJECT_NAME}-frontend -n ${NAMESPACE}
-    
-    log_success "Deployment completed"
-}
-
-# Deploy with Helm
-deploy_helm() {
-    log_info "Deploying with Helm..."
-    
-    # Update Helm values
-    sed -i "s|imageTag: .*|imageTag: ${VERSION}|g" helm/soladia/values-${ENVIRONMENT}.yaml
-    
-    # Deploy with Helm
-    helm upgrade --install ${PROJECT_NAME} helm/soladia \
-        --namespace ${NAMESPACE} \
-        --values helm/soladia/values-${ENVIRONMENT}.yaml \
-        --wait
-    
-    log_success "Helm deployment completed"
-}
-
-# Run health checks
-health_check() {
-    log_info "Running health checks..."
-    
-    # Get service URL
-    local service_url=$(kubectl get ingress ${PROJECT_NAME}-ingress -n ${NAMESPACE} -o jsonpath='{.spec.rules[0].host}')
-    
-    if [ -z "$service_url" ]; then
-        log_error "Could not get service URL"
-        return 1
+    # Start monitoring
+    if [[ "$ENVIRONMENT" == "production" ]]; then
+        print_status "Starting monitoring services..."
+        docker-compose -f docker-compose.monitoring.yml up -d
     fi
     
-    # Check frontend health
-    local frontend_health=$(curl -s -o /dev/null -w "%{http_code}" http://${service_url}/)
-    if [ "$frontend_health" != "200" ]; then
-        log_error "Frontend health check failed: HTTP $frontend_health"
-        return 1
+    # Send deployment notification (if configured)
+    if [[ -n "$SLACK_WEBHOOK_URL" ]]; then
+        print_status "Sending deployment notification..."
+        curl -X POST -H 'Content-type: application/json' \
+            --data "{\"text\":\"🚀 Soladia Marketplace deployed to $ENVIRONMENT environment\"}" \
+            "$SLACK_WEBHOOK_URL"
     fi
     
-    # Check backend health
-    local backend_health=$(curl -s -o /dev/null -w "%{http_code}" http://${service_url}/api/health)
-    if [ "$backend_health" != "200" ]; then
-        log_error "Backend health check failed: HTTP $backend_health"
-        return 1
-    fi
-    
-    log_success "Health checks passed"
-}
-
-# Rollback deployment
-rollback() {
-    log_info "Rolling back deployment..."
-    
-    # Rollback Kubernetes deployment
-    kubectl rollout undo deployment/${PROJECT_NAME}-backend -n ${NAMESPACE}
-    kubectl rollout undo deployment/${PROJECT_NAME}-frontend -n ${NAMESPACE}
-    
-    # Wait for rollback to complete
-    kubectl rollout status deployment/${PROJECT_NAME}-backend -n ${NAMESPACE}
-    kubectl rollout status deployment/${PROJECT_NAME}-frontend -n ${NAMESPACE}
-    
-    log_success "Rollback completed"
-}
-
-# Cleanup old images
-cleanup() {
-    log_info "Cleaning up old images..."
-    
-    # Remove old images (keep last 5 versions)
-    docker images ${REGISTRY}/${PROJECT_NAME}-frontend --format "table {{.Tag}}" | \
-        grep -v "latest" | sort -V | head -n -5 | \
-        xargs -I {} docker rmi ${REGISTRY}/${PROJECT_NAME}-frontend:{} || true
-    
-    docker images ${REGISTRY}/${PROJECT_NAME}-backend --format "table {{.Tag}}" | \
-        grep -v "latest" | sort -V | head -n -5 | \
-        xargs -I {} docker rmi ${REGISTRY}/${PROJECT_NAME}-backend:{} || true
-    
-    log_success "Cleanup completed"
+    print_success "Post-deployment tasks completed"
 }
 
 # Main deployment function
 main() {
-    log_info "Starting deployment to ${ENVIRONMENT} environment with version ${VERSION}"
+    echo "🎯 Soladia Marketplace Deployment"
+    echo "================================="
+    echo "Environment: $ENVIRONMENT"
+    echo "Build Type: $BUILD_TYPE"
+    echo "Skip Tests: $SKIP_TESTS"
+    echo "Skip Build: $SKIP_BUILD"
+    echo "Force Deploy: $FORCE_DEPLOY"
+    echo ""
     
-    # Check dependencies
-    check_dependencies
+    # Confirmation (unless forced)
+    if [[ "$FORCE_DEPLOY" != true ]]; then
+        read -p "Do you want to continue with the deployment? (y/N): " -n 1 -r
+        echo
+        if [[ ! $REPLY =~ ^[Yy]$ ]]; then
+            print_status "Deployment cancelled"
+            exit 0
+        fi
+    fi
     
-    # Build images
-    build_images
-    
-    # Run tests
+    check_project_root
+    check_git_status
     run_tests
-    
-    # Push images
-    push_images
+    build_application
     
     # Deploy based on environment
     case $ENVIRONMENT in
-        "staging")
-            deploy_k8s
+        staging)
+            deploy_staging
             ;;
-        "production")
-            deploy_helm
-            ;;
-        *)
-            log_error "Unknown environment: $ENVIRONMENT"
-            exit 1
+        production)
+            deploy_production
             ;;
     esac
     
-    # Run health checks
-    if ! health_check; then
-        log_error "Health checks failed, rolling back..."
-        rollback
-        exit 1
-    fi
+    post_deployment
     
-    # Cleanup old images
-    cleanup
-    
-    log_success "Deployment to ${ENVIRONMENT} completed successfully!"
+    print_success "🎉 Deployment to $ENVIRONMENT completed successfully!"
+    echo ""
+    echo "Deployment Summary:"
+    echo "- Environment: $ENVIRONMENT"
+    echo "- Build Type: $BUILD_TYPE"
+    echo "- Frontend: http://localhost:4321"
+    echo "- Backend API: http://localhost:8000"
+    echo "- Health Check: http://localhost:8000/health"
+    echo ""
+    echo "Next steps:"
+    echo "1. Verify the deployment is working correctly"
+    echo "2. Monitor logs: docker-compose logs -f"
+    echo "3. Check monitoring dashboard (if enabled)"
+    echo ""
 }
 
-# Handle script arguments
-case "${1:-}" in
-    "rollback")
-        rollback
-        ;;
-    "health")
-        health_check
-        ;;
-    "cleanup")
-        cleanup
-        ;;
-    *)
-        main
-        ;;
-esac
-
-
+# Run main function
+main "$@"

@@ -1,0 +1,157 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Navigation from '../components/Navigation.astro';
+import { authManager } from '../services/auth-manager';
+---
+
+<Layout title='Auth Test - Soladia'>
+  <Navigation />
+
+  <main class='min-h-screen bg-gray-50 py-8'>
+    <div class='max-w-4xl mx-auto px-4 sm:px-6 lg:px-8'>
+      <div class='bg-white rounded-lg shadow-sm border border-gray-200 p-8'>
+        <h1 class='text-3xl font-bold text-gray-900 mb-6'>
+          Authentication Test Page
+        </h1>
+
+        <div class='space-y-6'>
+          <!-- Auth State Display -->
+          <div class='bg-gray-50 rounded-lg p-6'>
+            <h2 class='text-xl font-semibold text-gray-900 mb-4'>
+              Current Auth State
+            </h2>
+            <div id='auth-state-display' class='space-y-2'>
+              <p>
+                <strong>Status:</strong>
+                <span id='auth-status'>Loading...</span>
+              </p>
+              <p>
+                <strong>User:</strong>
+                <span id='auth-user'>Loading...</span>
+              </p>
+              <p>
+                <strong>Token:</strong>
+                <span id='auth-token'>Loading...</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Test Buttons -->
+          <div class='flex space-x-4'>
+            <button
+              id='test-login'
+              class='bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700'
+            >
+              Test Login (admin@example.com)
+            </button>
+            <button
+              id='test-logout'
+              class='bg-red-600 text-white px-4 py-2 rounded-md hover:bg-red-700'
+            >
+              Test Logout
+            </button>
+            <button
+              id='refresh-state'
+              class='bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700'
+            >
+              Refresh State
+            </button>
+          </div>
+
+          <!-- Auth Manager Info -->
+          <div class='bg-blue-50 rounded-lg p-6'>
+            <h3 class='text-lg font-semibold text-blue-900 mb-2'>
+              Auth Manager Info
+            </h3>
+            <p class='text-blue-800'>
+              This page tests the centralized authentication manager.
+            </p>
+            <p class='text-blue-800'>
+              Check the browser console for detailed logs.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const authStatus = document.getElementById('auth-status');
+    const authUser = document.getElementById('auth-user');
+    const authToken = document.getElementById('auth-token');
+    const testLoginBtn = document.getElementById('test-login');
+    const testLogoutBtn = document.getElementById('test-logout');
+    const refreshStateBtn = document.getElementById('refresh-state');
+
+    // Update auth state display
+    const updateAuthDisplay = () => {
+      const state = authManager.getState();
+      const token = authManager.getToken();
+
+      if (authStatus) {
+        authStatus.textContent = state.isAuthenticated
+          ? 'Authenticated'
+          : 'Not Authenticated';
+        authStatus.className = state.isAuthenticated
+          ? 'text-green-600 font-semibold'
+          : 'text-red-600 font-semibold';
+      }
+
+      if (authUser) {
+        authUser.textContent = state.user
+          ? `${state.user.full_name || state.user.username} (${state.user.email})`
+          : 'No user';
+      }
+
+      if (authToken) {
+        authToken.textContent = token
+          ? `${token.substring(0, 20)}...`
+          : 'No token';
+      }
+
+      console.log('Auth State:', state);
+    };
+
+    // Test login
+    if (testLoginBtn) {
+      testLoginBtn.addEventListener('click', async () => {
+        console.log('Testing login...');
+        const success = await authManager.login(
+          'admin@example.com',
+          'admin123'
+        );
+        console.log('Login result:', success);
+        updateAuthDisplay();
+      });
+    }
+
+    // Test logout
+    if (testLogoutBtn) {
+      testLogoutBtn.addEventListener('click', async () => {
+        console.log('Testing logout...');
+        await authManager.logout();
+        console.log('Logout completed');
+        updateAuthDisplay();
+      });
+    }
+
+    // Refresh state
+    if (refreshStateBtn) {
+      refreshStateBtn.addEventListener('click', () => {
+        console.log('Refreshing auth state...');
+        updateAuthDisplay();
+      });
+    }
+
+    // Subscribe to auth state changes
+    authManager.subscribe(state => {
+      console.log('Auth state changed:', state);
+      updateAuthDisplay();
+    });
+
+    // Initial display
+    updateAuthDisplay();
+  });
+</script>

@@ -1,0 +1,120 @@
+---
+import ProductCard from '../molecules/ProductCard.astro';
+
+export interface Product {
+  id: string;
+  title: string;
+  price: number;
+  image?: string;
+  imageAlt?: string;
+  description?: string;
+  category?: string;
+  rating?: number;
+  reviewCount?: number;
+  inStock?: boolean;
+  onSale?: boolean;
+  salePrice?: number;
+}
+
+export interface Props {
+  products: Product[];
+  columns?: 1 | 2 | 3 | 4 | 5 | 6;
+  loading?: boolean;
+  emptyMessage?: string;
+  className?: string;
+  'data-testid'?: string;
+}
+
+const {
+  products = [],
+  columns = 4,
+  loading = false,
+  emptyMessage = 'No products found',
+  className = '',
+  'data-testid': testId,
+} = Astro.props;
+
+const gridClasses = {
+  1: 'grid-cols-1',
+  2: 'grid-cols-1 sm:grid-cols-2',
+  3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+  4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
+  5: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5',
+  6: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6',
+};
+
+const gridClass = `grid gap-6 ${gridClasses[columns]} ${className}`.trim();
+---
+
+<div class={gridClass} data-testid={testId}>
+  {
+    loading ? (
+      // Loading skeleton
+      [...Array(8)].map((_, index) => (
+        <div key={index} class='animate-pulse'>
+          <div class='bg-gray-200 rounded-lg h-64 mb-4' />
+          <div class='space-y-2'>
+            <div class='h-4 bg-gray-200 rounded w-3/4' />
+            <div class='h-4 bg-gray-200 rounded w-1/2' />
+            <div class='h-6 bg-gray-200 rounded w-1/4' />
+          </div>
+        </div>
+      ))
+    ) : products.length > 0 ? (
+      products.map(product => (
+        <ProductCard
+          key={product.id}
+          id={product.id}
+          title={product.title}
+          price={product.price}
+          image={product.image}
+          imageAlt={product.imageAlt}
+          description={product.description}
+          category={product.category}
+          rating={product.rating}
+          reviewCount={product.reviewCount}
+          inStock={product.inStock}
+          onSale={product.onSale}
+          salePrice={product.salePrice}
+        />
+      ))
+    ) : (
+      // Empty state
+      <div class='col-span-full text-center py-12'>
+        <svg
+          class='mx-auto h-12 w-12 text-gray-400'
+          fill='none'
+          stroke='currentColor'
+          viewBox='0 0 24 24'
+        >
+          <path
+            stroke-linecap='round'
+            stroke-linejoin='round'
+            stroke-width='2'
+            d='M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'
+          />
+        </svg>
+        <h3 class='mt-2 text-sm font-medium text-gray-900'>{emptyMessage}</h3>
+        <p class='mt-1 text-sm text-gray-500'>
+          Try adjusting your search or filter criteria.
+        </p>
+      </div>
+    )
+  }
+</div>
+
+<style>
+  .animate-pulse {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0.5;
+    }
+  }
+</style>

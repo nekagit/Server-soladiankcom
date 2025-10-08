@@ -1,564 +1,716 @@
 """
-Advanced Security & Compliance Framework
-Implements enterprise-grade security features and compliance tools
+Advanced Security System for Soladia Marketplace
+Enterprise-grade security, compliance, and threat detection
 """
 
-import asyncio
-import hashlib
-import hmac
-import secrets
-import time
-from typing import Dict, Any, Optional, List, Tuple, Union
-from dataclasses import dataclass
+from typing import Optional, Dict, Any, List, Tuple
 from datetime import datetime, timedelta
 from enum import Enum
-import logging
-import json
-import re
-from cryptography.hazmat.primitives import hashes, serialization
-from cryptography.hazmat.primitives.asymmetric import rsa, padding
-from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
-from cryptography.hazmat.backends import default_backend
-import jwt
+import uuid
+import hashlib
+import secrets
+import hmac
 import base64
+import json
+import ipaddress
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, JSON, ForeignKey, BigInteger
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import relationship
+from fastapi import HTTPException, Depends, Request, Response
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from pydantic import BaseModel, Field, validator
+import jwt
+import bcrypt
+import redis
+import asyncio
+from collections import defaultdict
+import re
 
-logger = logging.getLogger(__name__)
+Base = declarative_base()
 
-class SecurityLevel(Enum):
-    """Security levels for different operations"""
+class SecurityLevel(str, Enum):
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
     CRITICAL = "critical"
 
-class ComplianceStandard(Enum):
-    """Compliance standards"""
-    GDPR = "gdpr"
-    CCPA = "ccpa"
-    SOX = "sox"
-    PCI_DSS = "pci_dss"
-    HIPAA = "hipaa"
-    FINRA = "finra"
+class ThreatType(str, Enum):
+    BRUTE_FORCE = "brute_force"
+    SQL_INJECTION = "sql_injection"
+    XSS = "xss"
+    CSRF = "csrf"
+    DDoS = "ddos"
+    SUSPICIOUS_ACTIVITY = "suspicious_activity"
+    UNAUTHORIZED_ACCESS = "unauthorized_access"
+    DATA_BREACH = "data_breach"
+    MALWARE = "malware"
+    PHISHING = "phishing"
 
-@dataclass
-class SecurityEvent:
-    """Security event record"""
-    event_id: str
-    event_type: str
-    severity: SecurityLevel
-    user_id: Optional[str]
-    ip_address: str
-    user_agent: str
-    timestamp: datetime
-    details: Dict[str, Any]
-    resolved: bool = False
+class SecurityEvent(Base):
+    __tablename__ = "security_events"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    event_id = Column(String(36), unique=True, index=True, nullable=False)
+    tenant_id = Column(String(36), ForeignKey("tenants.tenant_id"), nullable=True)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
+    
+    # Event details
+    event_type = Column(String(50), nullable=False)
+    threat_type = Column(String(50), nullable=True)
+    severity = Column(String(20), default=SecurityLevel.MEDIUM)
+    description = Column(Text, nullable=False)
+    
+    # Request details
+    ip_address = Column(String(45), nullable=True)
+    user_agent = Column(Text, nullable=True)
+    request_path = Column(String(500), nullable=True)
+    request_method = Column(String(10), nullable=True)
+    request_headers = Column(JSON, nullable=True)
+    request_body = Column(Text, nullable=True)
+    
+    # Response details
+    response_status = Column(Integer, nullable=True)
+    response_time = Column(Integer, nullable=True)  # milliseconds
+    
+    # Additional data
+    metadata = Column(JSON, default=dict)
+    tags = Column(JSON, default=list)
+    
+    # Status
+    is_resolved = Column(Boolean, default=False)
+    resolved_at = Column(DateTime, nullable=True)
+    resolved_by = Column(Integer, ForeignKey("users.id"), nullable=True)
+    resolution_notes = Column(Text, nullable=True)
+    
+    # Timestamps
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-@dataclass
-class ComplianceRecord:
-    """Compliance record"""
-    record_id: str
-    standard: ComplianceStandard
-    user_id: str
-    action: str
-    data_type: str
-    timestamp: datetime
-    metadata: Dict[str, Any]
-    retention_period: int  # days
+class SecurityRule(Base):
+    __tablename__ = "security_rules"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    rule_id = Column(String(36), unique=True, index=True, nullable=False)
+    tenant_id = Column(String(36), ForeignKey("tenants.tenant_id"), nullable=True)
+    
+    # Rule details
+    name = Column(String(255), nullable=False)
+    description = Column(Text, nullable=True)
+    rule_type = Column(String(50), nullable=False)
+    threat_type = Column(String(50), nullable=True)
+    severity = Column(String(20), default=SecurityLevel.MEDIUM)
+    
+    # Rule configuration
+    conditions = Column(JSON, nullable=False)
+    actions = Column(JSON, nullable=False)
+    is_active = Column(Boolean, default=True)
+    is_global = Column(Boolean, default=False)
+    
+    # Rate limiting
+    rate_limit = Column(Integer, nullable=True)  # requests per minute
+    rate_window = Column(Integer, default=60)  # seconds
+    
+    # Metadata
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
+
+class SecurityPolicy(Base):
+    __tablename__ = "security_policies"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    tenant_id = Column(String(36), ForeignKey("tenants.tenant_id"), nullable=False)
+    
+    # Password policy
+    min_password_length = Column(Integer, default=8)
+    require_uppercase = Column(Boolean, default=True)
+    require_lowercase = Column(Boolean, default=True)
+    require_numbers = Column(Boolean, default=True)
+    require_special_chars = Column(Boolean, default=True)
+    password_history_count = Column(Integer, default=5)
+    password_expiry_days = Column(Integer, default=90)
+    
+    # Session policy
+    session_timeout_minutes = Column(Integer, default=30)
+    max_concurrent_sessions = Column(Integer, default=5)
+    require_2fa = Column(Boolean, default=False)
+    
+    # API security
+    api_rate_limit = Column(Integer, default=1000)  # requests per hour
+    api_key_rotation_days = Column(Integer, default=30)
+    require_https = Column(Boolean, default=True)
+    
+    # Data protection
+    encrypt_sensitive_data = Column(Boolean, default=True)
+    data_retention_days = Column(Integer, default=365)
+    audit_log_retention_days = Column(Integer, default=2555)  # 7 years
+    
+    # Compliance
+    gdpr_compliant = Column(Boolean, default=True)
+    ccpa_compliant = Column(Boolean, default=True)
+    sox_compliant = Column(Boolean, default=False)
+    hipaa_compliant = Column(Boolean, default=False)
+    
+    # Metadata
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class SecurityAudit(Base):
+    __tablename__ = "security_audits"
+    
+    id = Column(Integer, primary_key=True, index=True)
+    audit_id = Column(String(36), unique=True, index=True, nullable=False)
+    tenant_id = Column(String(36), ForeignKey("tenants.tenant_id"), nullable=False)
+    
+    # Audit details
+    audit_type = Column(String(50), nullable=False)
+    status = Column(String(20), default="pending")
+    started_at = Column(DateTime, default=datetime.utcnow)
+    completed_at = Column(DateTime, nullable=True)
+    
+    # Results
+    total_checks = Column(Integer, default=0)
+    passed_checks = Column(Integer, default=0)
+    failed_checks = Column(Integer, default=0)
+    warnings = Column(Integer, default=0)
+    
+    # Report
+    report_data = Column(JSON, nullable=True)
+    recommendations = Column(JSON, default=list)
+    
+    # Metadata
+    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_at = Column(DateTime, default=datetime.utcnow)
+
+# Pydantic models
+class SecurityEventCreate(BaseModel):
+    event_type: str = Field(..., max_length=50)
+    threat_type: Optional[ThreatType] = None
+    severity: SecurityLevel = SecurityLevel.MEDIUM
+    description: str = Field(..., min_length=1)
+    ip_address: Optional[str] = None
+    user_agent: Optional[str] = None
+    request_path: Optional[str] = None
+    request_method: Optional[str] = None
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+    tags: List[str] = Field(default_factory=list)
+
+class SecurityRuleCreate(BaseModel):
+    name: str = Field(..., min_length=1, max_length=255)
+    description: Optional[str] = None
+    rule_type: str = Field(..., max_length=50)
+    threat_type: Optional[ThreatType] = None
+    severity: SecurityLevel = SecurityLevel.MEDIUM
+    conditions: Dict[str, Any] = Field(..., min_items=1)
+    actions: Dict[str, Any] = Field(..., min_items=1)
+    is_global: bool = False
+    rate_limit: Optional[int] = Field(None, ge=1)
+    rate_window: int = Field(60, ge=1, le=3600)
+
+class SecurityPolicyUpdate(BaseModel):
+    min_password_length: Optional[int] = Field(None, ge=6, le=128)
+    require_uppercase: Optional[bool] = None
+    require_lowercase: Optional[bool] = None
+    require_numbers: Optional[bool] = None
+    require_special_chars: Optional[bool] = None
+    password_history_count: Optional[int] = Field(None, ge=0, le=20)
+    password_expiry_days: Optional[int] = Field(None, ge=1, le=365)
+    session_timeout_minutes: Optional[int] = Field(None, ge=5, le=1440)
+    max_concurrent_sessions: Optional[int] = Field(None, ge=1, le=50)
+    require_2fa: Optional[bool] = None
+    api_rate_limit: Optional[int] = Field(None, ge=1)
+    api_key_rotation_days: Optional[int] = Field(None, ge=1, le=365)
+    require_https: Optional[bool] = None
+    encrypt_sensitive_data: Optional[bool] = None
+    data_retention_days: Optional[int] = Field(None, ge=1, le=3650)
+    audit_log_retention_days: Optional[int] = Field(None, ge=30, le=3650)
+    gdpr_compliant: Optional[bool] = None
+    ccpa_compliant: Optional[bool] = None
+    sox_compliant: Optional[bool] = None
+    hipaa_compliant: Optional[bool] = None
+
+class SecurityAuditResponse(BaseModel):
+    id: int
+    audit_id: str
+    tenant_id: str
+    audit_type: str
+    status: str
+    started_at: datetime
+    completed_at: Optional[datetime]
+    total_checks: int
+    passed_checks: int
+    failed_checks: int
+    warnings: int
+    recommendations: List[str]
+    created_at: datetime
 
 class AdvancedSecurityService:
-    """Advanced security and compliance service"""
+    def __init__(self, db_session, redis_client):
+        self.db = db_session
+        self.redis = redis_client
+        self.rate_limiters = defaultdict(lambda: defaultdict(list))
+        self.threat_detectors = {
+            "sql_injection": self._detect_sql_injection,
+            "xss": self._detect_xss,
+            "brute_force": self._detect_brute_force,
+            "ddos": self._detect_ddos,
+            "suspicious_activity": self._detect_suspicious_activity
+        }
     
-    def __init__(self):
-        self.security_events: List[SecurityEvent] = []
-        self.compliance_records: List[ComplianceRecord] = []
-        self.blocked_ips: set = set()
-        self.rate_limits: Dict[str, Dict[str, Any]] = {}
-        self.encryption_keys: Dict[str, bytes] = {}
-        self.audit_log: List[Dict[str, Any]] = []
+    async def log_security_event(self, event_data: SecurityEventCreate, request: Request, tenant_id: Optional[str] = None) -> str:
+        """Log a security event"""
+        event_id = str(uuid.uuid4())
         
-        # Initialize encryption keys
-        self._initialize_encryption_keys()
+        # Extract request details
+        ip_address = self._get_client_ip(request)
+        user_agent = request.headers.get("user-agent")
+        request_path = str(request.url.path)
+        request_method = request.method
+        request_headers = dict(request.headers)
         
-    def _initialize_encryption_keys(self):
-        """Initialize encryption keys for different security levels"""
-        for level in SecurityLevel:
-            self.encryption_keys[level.value] = secrets.token_bytes(32)
-            
-    async def detect_fraud(self, 
-                          transaction_data: Dict[str, Any],
-                          user_behavior: Dict[str, Any]) -> Dict[str, Any]:
-        """Advanced fraud detection using ML and pattern analysis"""
-        try:
-            fraud_score = 0
-            fraud_indicators = []
-            
-            # Transaction amount analysis
-            amount = transaction_data.get('amount', 0)
-            if amount > 1000:  # High value transaction
-                fraud_score += 20
-                fraud_indicators.append("High value transaction")
-                
-            # Velocity analysis
-            user_id = transaction_data.get('user_id')
-            if user_id in self.rate_limits:
-                recent_transactions = self.rate_limits[user_id].get('transactions', [])
-                if len(recent_transactions) > 10:  # More than 10 transactions in time window
-                    fraud_score += 30
-                    fraud_indicators.append("High transaction velocity")
-                    
-            # IP analysis
-            ip_address = transaction_data.get('ip_address')
-            if ip_address in self.blocked_ips:
-                fraud_score += 50
-                fraud_indicators.append("Blocked IP address")
-                
-            # Geographic analysis
-            if self._detect_impossible_travel(user_behavior):
-                fraud_score += 25
-                fraud_indicators.append("Impossible travel detected")
-                
-            # Device fingerprinting
-            if self._detect_device_anomaly(user_behavior):
-                fraud_score += 15
-                fraud_indicators.append("Device anomaly detected")
-                
-            # Time-based analysis
-            if self._detect_unusual_time_pattern(transaction_data):
-                fraud_score += 10
-                fraud_indicators.append("Unusual time pattern")
-                
-            # Network analysis
-            if self._detect_network_anomaly(transaction_data):
-                fraud_score += 20
-                fraud_indicators.append("Network anomaly detected")
-                
-            # Determine fraud risk level
-            if fraud_score >= 80:
-                risk_level = "HIGH"
-                action = "BLOCK"
-            elif fraud_score >= 50:
-                risk_level = "MEDIUM"
-                action = "REVIEW"
-            elif fraud_score >= 25:
-                risk_level = "LOW"
-                action = "MONITOR"
-            else:
-                risk_level = "MINIMAL"
-                action = "ALLOW"
-                
-            # Log security event
-            await self._log_security_event(
-                event_type="fraud_detection",
-                severity=SecurityLevel.HIGH if risk_level == "HIGH" else SecurityLevel.MEDIUM,
-                user_id=user_id,
-                ip_address=ip_address,
-                details={
-                    'fraud_score': fraud_score,
-                    'risk_level': risk_level,
-                    'action': action,
-                    'indicators': fraud_indicators,
-                    'transaction_data': transaction_data
-                }
-            )
-            
-            return {
-                'fraud_detected': fraud_score >= 25,
-                'fraud_score': fraud_score,
-                'risk_level': risk_level,
-                'action': action,
-                'indicators': fraud_indicators,
-                'confidence': min(fraud_score, 100) / 100
-            }
-            
-        except Exception as e:
-            logger.error(f"Fraud detection failed: {str(e)}")
-            return {
-                'fraud_detected': False,
-                'error': str(e)
-            }
-            
-    async def validate_transaction_security(self, 
-                                          transaction: Dict[str, Any],
-                                          user_context: Dict[str, Any]) -> Dict[str, Any]:
-        """Validate transaction security requirements"""
-        try:
-            validation_results = {
-                'valid': True,
-                'warnings': [],
-                'errors': [],
-                'security_score': 100
-            }
-            
-            # Signature validation
-            if not self._validate_transaction_signature(transaction):
-                validation_results['valid'] = False
-                validation_results['errors'].append("Invalid transaction signature")
-                validation_results['security_score'] -= 50
-                
-            # Amount validation
-            amount = transaction.get('amount', 0)
-            if amount <= 0:
-                validation_results['valid'] = False
-                validation_results['errors'].append("Invalid transaction amount")
-                validation_results['security_score'] -= 30
-                
-            # Address validation
-            if not self._validate_addresses(transaction):
-                validation_results['valid'] = False
-                validation_results['errors'].append("Invalid wallet addresses")
-                validation_results['security_score'] -= 40
-                
-            # Rate limiting
-            if not self._check_rate_limits(transaction.get('user_id'), transaction.get('ip_address')):
-                validation_results['warnings'].append("Rate limit exceeded")
-                validation_results['security_score'] -= 20
-                
-            # Compliance checks
-            compliance_result = await self._check_compliance(transaction, user_context)
-            if not compliance_result['compliant']:
-                validation_results['warnings'].extend(compliance_result['warnings'])
-                validation_results['security_score'] -= compliance_result['penalty']
-                
-            # Anti-money laundering checks
-            aml_result = await self._check_aml_requirements(transaction)
-            if not aml_result['compliant']:
-                validation_results['warnings'].extend(aml_result['warnings'])
-                validation_results['security_score'] -= aml_result['penalty']
-                
-            return validation_results
-            
-        except Exception as e:
-            logger.error(f"Transaction security validation failed: {str(e)}")
-            return {
-                'valid': False,
-                'errors': [f"Validation error: {str(e)}"],
-                'security_score': 0
-            }
-            
-    async def encrypt_sensitive_data(self, 
-                                   data: str, 
-                                   security_level: SecurityLevel = SecurityLevel.MEDIUM) -> Dict[str, Any]:
-        """Encrypt sensitive data with specified security level"""
-        try:
-            # Generate random IV
-            iv = secrets.token_bytes(16)
-            
-            # Get encryption key for security level
-            key = self.encryption_keys[security_level.value]
-            
-            # Create cipher
-            cipher = Cipher(
-                algorithms.AES(key),
-                modes.CBC(iv),
-                backend=default_backend()
-            )
-            encryptor = cipher.encryptor()
-            
-            # Pad data to block size
-            data_bytes = data.encode('utf-8')
-            padding_length = 16 - (len(data_bytes) % 16)
-            padded_data = data_bytes + bytes([padding_length] * padding_length)
-            
-            # Encrypt data
-            encrypted_data = encryptor.update(padded_data) + encryptor.finalize()
-            
-            # Encode as base64
-            encrypted_b64 = base64.b64encode(encrypted_data).decode('utf-8')
-            iv_b64 = base64.b64encode(iv).decode('utf-8')
-            
-            return {
-                'encrypted_data': encrypted_b64,
-                'iv': iv_b64,
-                'security_level': security_level.value,
-                'algorithm': 'AES-256-CBC',
-                'timestamp': datetime.utcnow().isoformat()
-            }
-            
-        except Exception as e:
-            logger.error(f"Data encryption failed: {str(e)}")
-            return {
-                'encrypted_data': None,
-                'error': str(e)
-            }
-            
-    async def decrypt_sensitive_data(self, 
-                                   encrypted_data: str, 
-                                   iv: str, 
-                                   security_level: SecurityLevel = SecurityLevel.MEDIUM) -> Dict[str, Any]:
-        """Decrypt sensitive data"""
-        try:
-            # Decode base64
-            encrypted_bytes = base64.b64decode(encrypted_data)
-            iv_bytes = base64.b64decode(iv)
-            
-            # Get decryption key
-            key = self.encryption_keys[security_level.value]
-            
-            # Create cipher
-            cipher = Cipher(
-                algorithms.AES(key),
-                modes.CBC(iv_bytes),
-                backend=default_backend()
-            )
-            decryptor = cipher.decryptor()
-            
-            # Decrypt data
-            decrypted_padded = decryptor.update(encrypted_bytes) + decryptor.finalize()
-            
-            # Remove padding
-            padding_length = decrypted_padded[-1]
-            decrypted_data = decrypted_padded[:-padding_length]
-            
-            return {
-                'decrypted_data': decrypted_data.decode('utf-8'),
-                'success': True
-            }
-            
-        except Exception as e:
-            logger.error(f"Data decryption failed: {str(e)}")
-            return {
-                'decrypted_data': None,
-                'success': False,
-                'error': str(e)
-            }
-            
-    async def generate_audit_report(self, 
-                                  start_date: datetime,
-                                  end_date: datetime,
-                                  report_type: str = "comprehensive") -> Dict[str, Any]:
-        """Generate comprehensive audit report"""
-        try:
-            # Filter events by date range
-            filtered_events = [
-                event for event in self.security_events
-                if start_date <= event.timestamp <= end_date
-            ]
-            
-            # Generate report sections
-            report = {
-                'report_id': self._generate_report_id(),
-                'report_type': report_type,
-                'period': {
-                    'start': start_date.isoformat(),
-                    'end': end_date.isoformat()
-                },
-                'summary': {
-                    'total_events': len(filtered_events),
-                    'high_severity': len([e for e in filtered_events if e.severity == SecurityLevel.HIGH]),
-                    'medium_severity': len([e for e in filtered_events if e.severity == SecurityLevel.MEDIUM]),
-                    'low_severity': len([e for e in filtered_events if e.severity == SecurityLevel.LOW]),
-                    'resolved_events': len([e for e in filtered_events if e.resolved])
-                },
-                'security_events': [
-                    {
-                        'event_id': event.event_id,
-                        'event_type': event.event_type,
-                        'severity': event.severity.value,
-                        'timestamp': event.timestamp.isoformat(),
-                        'resolved': event.resolved,
-                        'details': event.details
-                    }
-                    for event in filtered_events
-                ],
-                'compliance_summary': await self._generate_compliance_summary(start_date, end_date),
-                'recommendations': await self._generate_security_recommendations(filtered_events),
-                'generated_at': datetime.utcnow().isoformat()
-            }
-            
-            return report
-            
-        except Exception as e:
-            logger.error(f"Audit report generation failed: {str(e)}")
-            return {
-                'report_id': None,
-                'error': str(e)
-            }
-            
-    async def check_compliance_requirements(self, 
-                                          user_id: str,
-                                          action: str,
-                                          data: Dict[str, Any]) -> Dict[str, Any]:
-        """Check compliance requirements for specific action"""
-        try:
-            compliance_results = {
-                'compliant': True,
-                'requirements_met': [],
-                'requirements_failed': [],
-                'recommendations': []
-            }
-            
-            # GDPR compliance
-            gdpr_result = await self._check_gdpr_compliance(user_id, action, data)
-            if not gdpr_result['compliant']:
-                compliance_results['compliant'] = False
-                compliance_results['requirements_failed'].extend(gdpr_result['failures'])
-            else:
-                compliance_results['requirements_met'].extend(gdpr_result['requirements'])
-                
-            # CCPA compliance
-            ccpa_result = await self._check_ccpa_compliance(user_id, action, data)
-            if not ccpa_result['compliant']:
-                compliance_results['compliant'] = False
-                compliance_results['requirements_failed'].extend(ccpa_result['failures'])
-            else:
-                compliance_results['requirements_met'].extend(ccpa_result['requirements'])
-                
-            # PCI DSS compliance (for payment data)
-            if 'payment' in action.lower():
-                pci_result = await self._check_pci_compliance(data)
-                if not pci_result['compliant']:
-                    compliance_results['compliant'] = False
-                    compliance_results['requirements_failed'].extend(pci_result['failures'])
-                else:
-                    compliance_results['requirements_met'].extend(pci_result['requirements'])
-                    
-            # Generate recommendations
-            compliance_results['recommendations'] = await self._generate_compliance_recommendations(
-                compliance_results['requirements_failed']
-            )
-            
-            return compliance_results
-            
-        except Exception as e:
-            logger.error(f"Compliance check failed: {str(e)}")
-            return {
-                'compliant': False,
-                'error': str(e)
-            }
-            
-    def _detect_impossible_travel(self, user_behavior: Dict[str, Any]) -> bool:
-        """Detect impossible travel patterns"""
-        # Mock implementation - in real scenario, would analyze location data
-        return False
-        
-    def _detect_device_anomaly(self, user_behavior: Dict[str, Any]) -> bool:
-        """Detect device anomalies"""
-        # Mock implementation - would analyze device fingerprinting data
-        return False
-        
-    def _detect_unusual_time_pattern(self, transaction_data: Dict[str, Any]) -> bool:
-        """Detect unusual time patterns"""
-        # Mock implementation - would analyze transaction timing
-        return False
-        
-    def _detect_network_anomaly(self, transaction_data: Dict[str, Any]) -> bool:
-        """Detect network anomalies"""
-        # Mock implementation - would analyze network patterns
-        return False
-        
-    def _validate_transaction_signature(self, transaction: Dict[str, Any]) -> bool:
-        """Validate transaction signature"""
-        # Mock implementation - would validate actual Solana transaction signature
-        return True
-        
-    def _validate_addresses(self, transaction: Dict[str, Any]) -> bool:
-        """Validate wallet addresses"""
-        # Mock implementation - would validate Solana addresses
-        return True
-        
-    def _check_rate_limits(self, user_id: str, ip_address: str) -> bool:
-        """Check rate limits"""
-        # Mock implementation - would check actual rate limits
-        return True
-        
-    async def _check_compliance(self, transaction: Dict[str, Any], user_context: Dict[str, Any]) -> Dict[str, Any]:
-        """Check compliance requirements"""
-        return {
-            'compliant': True,
-            'warnings': [],
-            'penalty': 0
-        }
-        
-    async def _check_aml_requirements(self, transaction: Dict[str, Any]) -> Dict[str, Any]:
-        """Check anti-money laundering requirements"""
-        return {
-            'compliant': True,
-            'warnings': [],
-            'penalty': 0
-        }
-        
-    async def _log_security_event(self, 
-                                event_type: str,
-                                severity: SecurityLevel,
-                                user_id: Optional[str],
-                                ip_address: str,
-                                details: Dict[str, Any]):
-        """Log security event"""
+        # Create security event
         event = SecurityEvent(
-            event_id=self._generate_event_id(),
-            event_type=event_type,
-            severity=severity,
-            user_id=user_id,
+            event_id=event_id,
+            tenant_id=tenant_id,
+            event_type=event_data.event_type,
+            threat_type=event_data.threat_type,
+            severity=event_data.severity,
+            description=event_data.description,
             ip_address=ip_address,
-            user_agent="",  # Would be extracted from request
-            timestamp=datetime.utcnow(),
-            details=details
+            user_agent=user_agent,
+            request_path=request_path,
+            request_method=request_method,
+            request_headers=request_headers,
+            metadata=event_data.metadata,
+            tags=event_data.tags
         )
-        self.security_events.append(event)
         
-    async def _generate_compliance_summary(self, start_date: datetime, end_date: datetime) -> Dict[str, Any]:
-        """Generate compliance summary"""
-        return {
-            'gdpr_compliance': 95,
-            'ccpa_compliance': 90,
-            'pci_compliance': 100,
-            'total_violations': 0
+        self.db.add(event)
+        self.db.commit()
+        
+        # Check for threats
+        await self._analyze_threat(event)
+        
+        # Cache for rate limiting
+        await self._update_rate_limiter(ip_address, event_id)
+        
+        return event_id
+    
+    async def create_security_rule(self, tenant_id: str, rule_data: SecurityRuleCreate, created_by: int) -> str:
+        """Create a security rule"""
+        rule_id = str(uuid.uuid4())
+        
+        rule = SecurityRule(
+            rule_id=rule_id,
+            tenant_id=tenant_id if not rule_data.is_global else None,
+            name=rule_data.name,
+            description=rule_data.description,
+            rule_type=rule_data.rule_type,
+            threat_type=rule_data.threat_type,
+            severity=rule_data.severity,
+            conditions=rule_data.conditions,
+            actions=rule_data.actions,
+            is_global=rule_data.is_global,
+            rate_limit=rule_data.rate_limit,
+            rate_window=rule_data.rate_window,
+            created_by=created_by
+        )
+        
+        self.db.add(rule)
+        self.db.commit()
+        
+        return rule_id
+    
+    async def get_security_policy(self, tenant_id: str) -> Optional[SecurityPolicy]:
+        """Get security policy for tenant"""
+        return self.db.query(SecurityPolicy).filter(SecurityPolicy.tenant_id == tenant_id).first()
+    
+    async def update_security_policy(self, tenant_id: str, policy_data: SecurityPolicyUpdate) -> SecurityPolicy:
+        """Update security policy"""
+        policy = await self.get_security_policy(tenant_id)
+        
+        if not policy:
+            # Create new policy
+            policy = SecurityPolicy(tenant_id=tenant_id)
+            self.db.add(policy)
+        
+        # Update fields
+        for field, value in policy_data.dict(exclude_unset=True).items():
+            setattr(policy, field, value)
+        
+        policy.updated_at = datetime.utcnow()
+        
+        self.db.commit()
+        self.db.refresh(policy)
+        
+        return policy
+    
+    async def validate_password(self, password: str, tenant_id: str) -> Tuple[bool, List[str]]:
+        """Validate password against security policy"""
+        policy = await self.get_security_policy(tenant_id)
+        if not policy:
+            return True, []  # No policy, allow any password
+        
+        errors = []
+        
+        if len(password) < policy.min_password_length:
+            errors.append(f"Password must be at least {policy.min_password_length} characters long")
+        
+        if policy.require_uppercase and not re.search(r'[A-Z]', password):
+            errors.append("Password must contain at least one uppercase letter")
+        
+        if policy.require_lowercase and not re.search(r'[a-z]', password):
+            errors.append("Password must contain at least one lowercase letter")
+        
+        if policy.require_numbers and not re.search(r'\d', password):
+            errors.append("Password must contain at least one number")
+        
+        if policy.require_special_chars and not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+            errors.append("Password must contain at least one special character")
+        
+        return len(errors) == 0, errors
+    
+    async def check_rate_limit(self, identifier: str, limit: int, window: int = 60) -> bool:
+        """Check if rate limit is exceeded"""
+        now = datetime.utcnow()
+        cutoff = now - timedelta(seconds=window)
+        
+        # Get recent requests
+        recent_requests = await self.redis.lrange(f"rate_limit:{identifier}", 0, -1)
+        
+        # Filter out old requests
+        valid_requests = []
+        for req_time_str in recent_requests:
+            req_time = datetime.fromisoformat(req_time_str.decode())
+            if req_time > cutoff:
+                valid_requests.append(req_time)
+        
+        # Check if limit exceeded
+        if len(valid_requests) >= limit:
+            return False
+        
+        # Add current request
+        await self.redis.lpush(f"rate_limit:{identifier}", now.isoformat())
+        await self.redis.expire(f"rate_limit:{identifier}", window)
+        
+        return True
+    
+    async def detect_threats(self, request: Request, tenant_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        """Detect security threats in request"""
+        threats = []
+        
+        # Get request data
+        request_data = {
+            "path": str(request.url.path),
+            "query": str(request.url.query),
+            "headers": dict(request.headers),
+            "method": request.method
         }
         
-    async def _generate_security_recommendations(self, events: List[SecurityEvent]) -> List[str]:
-        """Generate security recommendations"""
-        recommendations = []
+        # Check each threat detector
+        for threat_type, detector in self.threat_detectors.items():
+            if await detector(request_data):
+                threats.append({
+                    "threat_type": threat_type,
+                    "severity": self._get_threat_severity(threat_type),
+                    "description": f"Detected {threat_type} threat",
+                    "metadata": {"detector": threat_type}
+                })
         
-        high_severity_events = [e for e in events if e.severity == SecurityLevel.HIGH]
-        if len(high_severity_events) > 5:
-            recommendations.append("Consider implementing additional security measures due to high number of security events")
-            
-        return recommendations
+        # Log threats
+        for threat in threats:
+            await self.log_security_event(
+                SecurityEventCreate(
+                    event_type="threat_detected",
+                    threat_type=threat["threat_type"],
+                    severity=threat["severity"],
+                    description=threat["description"],
+                    metadata=threat["metadata"]
+                ),
+                request,
+                tenant_id
+            )
         
-    async def _check_gdpr_compliance(self, user_id: str, action: str, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Check GDPR compliance"""
+        return threats
+    
+    async def run_security_audit(self, tenant_id: str, audit_type: str, created_by: int) -> str:
+        """Run security audit"""
+        audit_id = str(uuid.uuid4())
+        
+        audit = SecurityAudit(
+            audit_id=audit_id,
+            tenant_id=tenant_id,
+            audit_type=audit_type,
+            created_by=created_by
+        )
+        
+        self.db.add(audit)
+        self.db.commit()
+        
+        # Run audit in background
+        asyncio.create_task(self._run_audit_checks(audit_id, tenant_id, audit_type))
+        
+        return audit_id
+    
+    async def get_security_dashboard(self, tenant_id: str) -> Dict[str, Any]:
+        """Get security dashboard data"""
+        # Get recent events
+        recent_events = self.db.query(SecurityEvent).filter(
+            SecurityEvent.tenant_id == tenant_id,
+            SecurityEvent.created_at >= datetime.utcnow() - timedelta(days=7)
+        ).order_by(SecurityEvent.created_at.desc()).limit(100).all()
+        
+        # Get threat statistics
+        threat_stats = {}
+        for event in recent_events:
+            if event.threat_type:
+                threat_stats[event.threat_type] = threat_stats.get(event.threat_type, 0) + 1
+        
+        # Get severity distribution
+        severity_stats = {}
+        for event in recent_events:
+            severity_stats[event.severity] = severity_stats.get(event.severity, 0) + 1
+        
+        # Get top IP addresses
+        ip_stats = {}
+        for event in recent_events:
+            if event.ip_address:
+                ip_stats[event.ip_address] = ip_stats.get(event.ip_address, 0) + 1
+        
+        top_ips = sorted(ip_stats.items(), key=lambda x: x[1], reverse=True)[:10]
+        
         return {
-            'compliant': True,
-            'requirements': ['data_protection', 'consent_management'],
-            'failures': []
+            "total_events": len(recent_events),
+            "threat_stats": threat_stats,
+            "severity_stats": severity_stats,
+            "top_ips": top_ips,
+            "recent_events": [
+                {
+                    "event_id": event.event_id,
+                    "event_type": event.event_type,
+                    "threat_type": event.threat_type,
+                    "severity": event.severity,
+                    "description": event.description,
+                    "ip_address": event.ip_address,
+                    "created_at": event.created_at
+                }
+                for event in recent_events[:20]
+            ]
+        }
+    
+    def _get_client_ip(self, request: Request) -> str:
+        """Get client IP address"""
+        # Check for forwarded headers
+        forwarded_for = request.headers.get("x-forwarded-for")
+        if forwarded_for:
+            return forwarded_for.split(",")[0].strip()
+        
+        real_ip = request.headers.get("x-real-ip")
+        if real_ip:
+            return real_ip
+        
+        # Fallback to direct connection
+        return request.client.host if request.client else "unknown"
+    
+    async def _analyze_threat(self, event: SecurityEvent):
+        """Analyze security event for threats"""
+        # Check against security rules
+        rules = self.db.query(SecurityRule).filter(
+            SecurityRule.is_active == True,
+            (SecurityRule.tenant_id == event.tenant_id) | (SecurityRule.is_global == True)
+        ).all()
+        
+        for rule in rules:
+            if await self._evaluate_rule(rule, event):
+                await self._execute_rule_actions(rule, event)
+    
+    async def _evaluate_rule(self, rule: SecurityRule, event: SecurityEvent) -> bool:
+        """Evaluate if event matches rule conditions"""
+        conditions = rule.conditions
+        
+        # Check event type
+        if "event_type" in conditions and event.event_type != conditions["event_type"]:
+            return False
+        
+        # Check threat type
+        if "threat_type" in conditions and event.threat_type != conditions["threat_type"]:
+            return False
+        
+        # Check severity
+        if "severity" in conditions and event.severity != conditions["severity"]:
+            return False
+        
+        # Check IP address patterns
+        if "ip_patterns" in conditions:
+            ip_matches = False
+            for pattern in conditions["ip_patterns"]:
+                if self._ip_matches_pattern(event.ip_address, pattern):
+                    ip_matches = True
+                    break
+            if not ip_matches:
+                return False
+        
+        # Check user agent patterns
+        if "user_agent_patterns" in conditions:
+            ua_matches = False
+            for pattern in conditions["user_agent_patterns"]:
+                if event.user_agent and re.search(pattern, event.user_agent, re.IGNORECASE):
+                    ua_matches = True
+                    break
+            if not ua_matches:
+                return False
+        
+        return True
+    
+    async def _execute_rule_actions(self, rule: SecurityRule, event: SecurityEvent):
+        """Execute rule actions"""
+        actions = rule.actions
+        
+        # Block IP
+        if "block_ip" in actions and actions["block_ip"]:
+            await self._block_ip(event.ip_address, rule.rate_window or 3600)
+        
+        # Send alert
+        if "send_alert" in actions and actions["send_alert"]:
+            await self._send_security_alert(rule, event)
+        
+        # Log additional event
+        if "log_event" in actions and actions["log_event"]:
+            await self.log_security_event(
+                SecurityEventCreate(
+                    event_type="rule_triggered",
+                    severity=rule.severity,
+                    description=f"Security rule '{rule.name}' triggered",
+                    metadata={"rule_id": rule.rule_id, "original_event_id": event.event_id}
+                ),
+                None,
+                event.tenant_id
+            )
+    
+    def _ip_matches_pattern(self, ip: str, pattern: str) -> bool:
+        """Check if IP matches pattern"""
+        try:
+            if "/" in pattern:  # CIDR notation
+                return ipaddress.ip_address(ip) in ipaddress.ip_network(pattern)
+            else:  # Exact match
+                return ip == pattern
+        except:
+            return False
+    
+    async def _block_ip(self, ip: str, duration: int):
+        """Block IP address"""
+        await self.redis.setex(f"blocked_ip:{ip}", duration, "blocked")
+    
+    async def _send_security_alert(self, rule: SecurityRule, event: SecurityEvent):
+        """Send security alert"""
+        # Implementation would send email, Slack, etc.
+        pass
+    
+    async def _detect_sql_injection(self, request_data: Dict[str, Any]) -> bool:
+        """Detect SQL injection attempts"""
+        sql_patterns = [
+            r"union\s+select",
+            r"drop\s+table",
+            r"delete\s+from",
+            r"insert\s+into",
+            r"update\s+set",
+            r"or\s+1\s*=\s*1",
+            r"and\s+1\s*=\s*1",
+            r"'\s*or\s*'",
+            r"'\s*and\s*'",
+            r"'\s*;\s*--",
+            r"'\s*;\s*#",
+            r"'\s*;\s*\/\*"
+        ]
+        
+        search_text = f"{request_data['path']} {request_data['query']}"
+        for pattern in sql_patterns:
+            if re.search(pattern, search_text, re.IGNORECASE):
+                return True
+        
+        return False
+    
+    async def _detect_xss(self, request_data: Dict[str, Any]) -> bool:
+        """Detect XSS attempts"""
+        xss_patterns = [
+            r"<script[^>]*>",
+            r"javascript:",
+            r"on\w+\s*=",
+            r"<iframe[^>]*>",
+            r"<object[^>]*>",
+            r"<embed[^>]*>",
+            r"<link[^>]*>",
+            r"<meta[^>]*>",
+            r"<style[^>]*>",
+            r"expression\s*\(",
+            r"url\s*\(",
+            r"@import"
+        ]
+        
+        search_text = f"{request_data['path']} {request_data['query']}"
+        for pattern in xss_patterns:
+            if re.search(pattern, search_text, re.IGNORECASE):
+                return True
+        
+        return False
+    
+    async def _detect_brute_force(self, request_data: Dict[str, Any]) -> bool:
+        """Detect brute force attempts"""
+        # This would check rate limits and failed login attempts
+        # Implementation depends on specific requirements
+        return False
+    
+    async def _detect_ddos(self, request_data: Dict[str, Any]) -> bool:
+        """Detect DDoS attempts"""
+        # This would check for high request volumes
+        # Implementation depends on specific requirements
+        return False
+    
+    async def _detect_suspicious_activity(self, request_data: Dict[str, Any]) -> bool:
+        """Detect suspicious activity"""
+        # Check for unusual patterns
+        suspicious_patterns = [
+            r"\.\.\/",  # Directory traversal
+            r"\/etc\/passwd",  # System file access
+            r"\/proc\/",  # Process access
+            r"cmd\.exe",  # Command execution
+            r"powershell",  # PowerShell execution
+            r"wget\s+",  # File download
+            r"curl\s+",  # File download
+        ]
+        
+        search_text = f"{request_data['path']} {request_data['query']}"
+        for pattern in suspicious_patterns:
+            if re.search(pattern, search_text, re.IGNORECASE):
+                return True
+        
+        return False
+    
+    def _get_threat_severity(self, threat_type: str) -> SecurityLevel:
+        """Get severity level for threat type"""
+        severity_map = {
+            "sql_injection": SecurityLevel.HIGH,
+            "xss": SecurityLevel.HIGH,
+            "brute_force": SecurityLevel.MEDIUM,
+            "ddos": SecurityLevel.CRITICAL,
+            "suspicious_activity": SecurityLevel.MEDIUM
         }
         
-    async def _check_ccpa_compliance(self, user_id: str, action: str, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Check CCPA compliance"""
-        return {
-            'compliant': True,
-            'requirements': ['privacy_rights', 'data_disclosure'],
-            'failures': []
-        }
-        
-    async def _check_pci_compliance(self, data: Dict[str, Any]) -> Dict[str, Any]:
-        """Check PCI DSS compliance"""
-        return {
-            'compliant': True,
-            'requirements': ['secure_transmission', 'data_encryption'],
-            'failures': []
-        }
-        
-    async def _generate_compliance_recommendations(self, failures: List[str]) -> List[str]:
-        """Generate compliance recommendations"""
-        recommendations = []
-        
-        if 'data_protection' in failures:
-            recommendations.append("Implement stronger data protection measures")
-        if 'consent_management' in failures:
-            recommendations.append("Improve consent management system")
-            
-        return recommendations
-        
-    def _generate_event_id(self) -> str:
-        """Generate unique event ID"""
-        return f"evt_{int(time.time())}_{secrets.token_hex(8)}"
-        
-    def _generate_report_id(self) -> str:
-        """Generate unique report ID"""
-        return f"rpt_{int(time.time())}_{secrets.token_hex(8)}"
+        return severity_map.get(threat_type, SecurityLevel.MEDIUM)
+    
+    async def _update_rate_limiter(self, ip: str, event_id: str):
+        """Update rate limiter for IP"""
+        now = datetime.utcnow()
+        await self.redis.lpush(f"rate_limit:{ip}", now.isoformat())
+        await self.redis.expire(f"rate_limit:{ip}", 3600)  # 1 hour
+    
+    async def _run_audit_checks(self, audit_id: str, tenant_id: str, audit_type: str):
+        """Run security audit checks"""
+        # Implementation would run various security checks
+        # This is a placeholder for the actual audit logic
+        pass
 
-# Create singleton instance
-advanced_security_service = AdvancedSecurityService()
-
-
+# Dependency injection
+def get_security_service(db_session = Depends(get_db), redis_client = Depends(get_redis)) -> AdvancedSecurityService:
+    """Get advanced security service"""
+    return AdvancedSecurityService(db_session, redis_client)

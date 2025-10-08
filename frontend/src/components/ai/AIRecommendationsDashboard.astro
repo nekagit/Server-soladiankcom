@@ -1,0 +1,1187 @@
+---
+// AI Recommendations Dashboard Component
+// Advanced machine learning-powered recommendation system
+---
+
+<div class="ai-recommendations-dashboard">
+  <!-- Header -->
+  <div class="dashboard-header">
+    <div class="header-content">
+      <h1 class="dashboard-title">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"></path>
+        </svg>
+        AI Recommendations
+      </h1>
+      <p class="dashboard-subtitle">Personalized recommendations powered by machine learning</p>
+    </div>
+    <div class="header-actions">
+      <button class="btn btn-secondary" id="refresh-recommendations">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+        </svg>
+        Refresh
+      </button>
+      <button class="btn btn-primary" id="train-model-btn">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+        </svg>
+        Train Model
+      </button>
+    </div>
+  </div>
+
+  <!-- Recommendation Tabs -->
+  <div class="recommendation-tabs">
+    <button class="tab-button active" data-tab="products">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+      </svg>
+      Products
+    </button>
+    <button class="tab-button" data-tab="users">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z"></path>
+      </svg>
+      Users
+    </button>
+    <button class="tab-button" data-tab="content">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+      </svg>
+      Content
+    </button>
+    <button class="tab-button" data-tab="analytics">
+      <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+      </svg>
+      Analytics
+    </button>
+  </div>
+
+  <!-- Tab Content -->
+  <div class="tab-content-container">
+    <!-- Products Tab -->
+    <div class="tab-content active" id="products-tab">
+      <!-- Recommendation Filters -->
+      <div class="recommendation-filters">
+        <div class="filter-group">
+          <label for="recommendation-type" class="filter-label">Recommendation Type</label>
+          <select id="recommendation-type" class="filter-select">
+            <option value="all">All Types</option>
+            <option value="collaborative">Collaborative Filtering</option>
+            <option value="content_based">Content-Based</option>
+            <option value="hybrid">Hybrid</option>
+            <option value="popular">Popular Items</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label for="category-filter" class="filter-label">Category</label>
+          <select id="category-filter" class="filter-select">
+            <option value="">All Categories</option>
+            <option value="electronics">Electronics</option>
+            <option value="fashion">Fashion</option>
+            <option value="home">Home & Garden</option>
+            <option value="sports">Sports</option>
+            <option value="books">Books</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <label for="price-range" class="filter-label">Price Range</label>
+          <select id="price-range" class="filter-select">
+            <option value="">Any Price</option>
+            <option value="0-50">$0 - $50</option>
+            <option value="50-100">$50 - $100</option>
+            <option value="100-500">$100 - $500</option>
+            <option value="500+">$500+</option>
+          </select>
+        </div>
+        
+        <div class="filter-group">
+          <button class="btn btn-secondary" id="apply-filters">Apply Filters</button>
+        </div>
+      </div>
+
+      <!-- Recommendation Grid -->
+      <div class="recommendations-grid" id="recommendations-grid">
+        <!-- Recommendations will be loaded here -->
+      </div>
+
+      <!-- Load More Button -->
+      <div class="load-more-container">
+        <button class="btn btn-primary" id="load-more-recommendations">Load More</button>
+      </div>
+    </div>
+
+    <!-- Users Tab -->
+    <div class="tab-content" id="users-tab">
+      <div class="user-recommendations">
+        <h3 class="section-title">User Recommendations</h3>
+        <div class="user-grid" id="user-grid">
+          <!-- User recommendations will be loaded here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Tab -->
+    <div class="tab-content" id="content-tab">
+      <div class="content-recommendations">
+        <h3 class="section-title">Content Recommendations</h3>
+        <div class="content-grid" id="content-grid">
+          <!-- Content recommendations will be loaded here -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Analytics Tab -->
+    <div class="tab-content" id="analytics-tab">
+      <div class="recommendation-analytics">
+        <h3 class="section-title">Recommendation Analytics</h3>
+        
+        <!-- Performance Metrics -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-icon">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+              </svg>
+            </div>
+            <div class="metric-content">
+              <h3 class="metric-value" id="click-through-rate">0%</h3>
+              <p class="metric-label">Click-Through Rate</p>
+            </div>
+          </div>
+          
+          <div class="metric-card">
+            <div class="metric-icon">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+              </svg>
+            </div>
+            <div class="metric-content">
+              <h3 class="metric-value" id="conversion-rate">0%</h3>
+              <p class="metric-label">Conversion Rate</p>
+            </div>
+          </div>
+          
+          <div class="metric-card">
+            <div class="metric-icon">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path>
+              </svg>
+            </div>
+            <div class="metric-content">
+              <h3 class="metric-value" id="user-satisfaction">0%</h3>
+              <p class="metric-label">User Satisfaction</p>
+            </div>
+          </div>
+          
+          <div class="metric-card">
+            <div class="metric-icon">
+              <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+            </div>
+            <div class="metric-content">
+              <h3 class="metric-value" id="model-accuracy">0%</h3>
+              <p class="metric-label">Model Accuracy</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recommendation Performance Chart -->
+        <div class="chart-container">
+          <h4 class="chart-title">Recommendation Performance Over Time</h4>
+          <div class="chart" id="performance-chart">
+            <!-- Chart will be rendered here -->
+          </div>
+        </div>
+
+        <!-- Model Performance -->
+        <div class="model-performance">
+          <h4 class="section-subtitle">Model Performance</h4>
+          <div class="model-stats" id="model-stats">
+            <!-- Model statistics will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Train Model Modal -->
+<div id="train-model-modal" class="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2>Train Recommendation Model</h2>
+      <button class="modal-close" id="close-train-modal">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <form id="train-model-form" class="form">
+        <div class="form-group">
+          <label for="model-type" class="form-label">Model Type *</label>
+          <select id="model-type" name="model_type" class="form-select" required>
+            <option value="">Select Model Type</option>
+            <option value="collaborative">Collaborative Filtering</option>
+            <option value="content_based">Content-Based Filtering</option>
+            <option value="hybrid">Hybrid Model</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="training-data" class="form-label">Training Data Source</label>
+          <select id="training-data" name="training_data" class="form-select">
+            <option value="interactions">User Interactions</option>
+            <option value="purchases">Purchase History</option>
+            <option value="views">View History</option>
+            <option value="all">All Data</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="time-range" class="form-label">Time Range</label>
+          <select id="time-range" name="time_range" class="form-select">
+            <option value="30">Last 30 days</option>
+            <option value="90">Last 90 days</option>
+            <option value="180">Last 6 months</option>
+            <option value="365">Last year</option>
+          </select>
+        </div>
+        
+        <div class="form-group">
+          <label for="min-interactions" class="form-label">Minimum Interactions per User</label>
+          <input type="number" id="min-interactions" name="min_interactions" class="form-input" value="5" min="1">
+        </div>
+        
+        <div class="form-group">
+          <label for="min-products" class="form-label">Minimum Interactions per Product</label>
+          <input type="number" id="min-products" name="min_products" class="form-input" value="3" min="1">
+        </div>
+      </form>
+    </div>
+    <div class="modal-footer">
+      <button type="button" class="btn btn-secondary" id="cancel-train-model">Cancel</button>
+      <button type="submit" form="train-model-form" class="btn btn-primary">Start Training</button>
+    </div>
+  </div>
+</div>
+
+<!-- Recommendation Details Modal -->
+<div id="recommendation-details-modal" class="modal">
+  <div class="modal-content large">
+    <div class="modal-header">
+      <h2 id="recommendation-details-title">Recommendation Details</h2>
+      <button class="modal-close" id="close-details-modal">
+        <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-body">
+      <div class="recommendation-details" id="recommendation-details-content">
+        <!-- Recommendation details will be loaded here -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<style>
+  .ai-recommendations-dashboard {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+
+  .dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .header-content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .dashboard-title {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .dashboard-subtitle {
+    color: var(--text-secondary);
+    margin: 0.5rem 0 0 0;
+  }
+
+  .header-actions {
+    display: flex;
+    gap: 1rem;
+  }
+
+  .recommendation-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 2rem;
+    overflow-x: auto;
+  }
+
+  .tab-button {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 1.5rem;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .tab-button:hover {
+    color: var(--text-primary);
+  }
+
+  .tab-button.active {
+    color: var(--primary-color);
+    border-bottom-color: var(--primary-color);
+  }
+
+  .tab-button .icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .tab-content-container {
+    min-height: 500px;
+  }
+
+  .tab-content {
+    display: none;
+  }
+
+  .tab-content.active {
+    display: block;
+  }
+
+  .recommendation-filters {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    padding: 1.5rem;
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    flex-wrap: wrap;
+  }
+
+  .filter-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    min-width: 150px;
+  }
+
+  .filter-label {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+  }
+
+  .filter-select {
+    padding: 0.5rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    background: var(--input-background);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+  }
+
+  .recommendations-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .recommendation-card {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    overflow: hidden;
+    transition: all 0.2s ease;
+    cursor: pointer;
+  }
+
+  .recommendation-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-lg);
+  }
+
+  .recommendation-image {
+    width: 100%;
+    height: 200px;
+    background: var(--background-secondary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+  }
+
+  .recommendation-content {
+    padding: 1.5rem;
+  }
+
+  .recommendation-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 0.5rem 0;
+  }
+
+  .recommendation-description {
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    margin: 0 0 1rem 0;
+    line-height: 1.5;
+  }
+
+  .recommendation-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+  }
+
+  .recommendation-price {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--primary-color);
+  }
+
+  .recommendation-score {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+  }
+
+  .score-bar {
+    width: 60px;
+    height: 4px;
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-full);
+    overflow: hidden;
+  }
+
+  .score-fill {
+    height: 100%;
+    background: var(--primary-color);
+    transition: width 0.3s ease;
+  }
+
+  .recommendation-reason {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin: 0 0 1rem 0;
+    padding: 0.5rem;
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-md);
+  }
+
+  .recommendation-actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+
+  .btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: var(--border-radius-md);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+  }
+
+  .btn-primary {
+    background: var(--primary-color);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: var(--primary-color-dark);
+  }
+
+  .btn-secondary {
+    background: var(--background-secondary);
+    color: var(--text-primary);
+    border: 1px solid var(--border-color);
+  }
+
+  .btn-secondary:hover {
+    background: var(--border-color);
+  }
+
+  .btn-sm {
+    padding: 0.375rem 0.75rem;
+    font-size: 0.75rem;
+  }
+
+  .load-more-container {
+    text-align: center;
+    margin-top: 2rem;
+  }
+
+  .metrics-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .metric-card {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .metric-icon {
+    width: 3rem;
+    height: 3rem;
+    background: var(--primary-color);
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+
+  .metric-icon .icon {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+
+  .metric-content {
+    flex: 1;
+  }
+
+  .metric-value {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin: 0;
+  }
+
+  .metric-label {
+    color: var(--text-secondary);
+    margin: 0.25rem 0 0 0;
+    font-size: 0.875rem;
+  }
+
+  .chart-container {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+  }
+
+  .chart-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 1rem 0;
+  }
+
+  .chart {
+    height: 300px;
+    background: var(--background-secondary);
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+  }
+
+  .model-performance {
+    background: var(--card-background);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+  }
+
+  .section-title {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 1.5rem 0;
+  }
+
+  .section-subtitle {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin: 0 0 1rem 0;
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal.active {
+    display: flex;
+  }
+
+  .modal-content {
+    background: var(--card-background);
+    border-radius: var(--border-radius-lg);
+    box-shadow: var(--shadow-xl);
+    max-width: 500px;
+    width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+  }
+
+  .modal-content.large {
+    max-width: 800px;
+  }
+
+  .modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .modal-header h2 {
+    margin: 0;
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-primary);
+  }
+
+  .modal-close {
+    width: 2rem;
+    height: 2rem;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    cursor: pointer;
+    border-radius: var(--border-radius-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .modal-close:hover {
+    background: var(--background-secondary);
+  }
+
+  .modal-close .icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+
+  .modal-body {
+    padding: 1.5rem;
+  }
+
+  .modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-top: 1px solid var(--border-color);
+  }
+
+  .form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .form-label {
+    font-weight: 500;
+    color: var(--text-primary);
+    font-size: 0.875rem;
+  }
+
+  .form-input,
+  .form-select {
+    padding: 0.75rem;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-md);
+    background: var(--input-background);
+    color: var(--text-primary);
+    font-size: 0.875rem;
+  }
+
+  .form-input:focus,
+  .form-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px var(--primary-color-alpha);
+  }
+
+  @media (max-width: 768px) {
+    .ai-recommendations-dashboard {
+      padding: 1rem;
+    }
+
+    .dashboard-header {
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 1rem;
+    }
+
+    .recommendation-filters {
+      flex-direction: column;
+    }
+
+    .filter-group {
+      min-width: auto;
+    }
+
+    .recommendations-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .metrics-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const aiRecommendationsDashboard = new AIRecommendationsDashboard();
+    aiRecommendationsDashboard.init();
+  });
+
+  class AIRecommendationsDashboard {
+    constructor() {
+      this.currentTab = 'products';
+      this.currentPage = 1;
+      this.pageSize = 20;
+      this.filters = {
+        type: 'all',
+        category: '',
+        priceRange: ''
+      };
+    }
+
+    async init() {
+      this.setupEventListeners();
+      await this.loadRecommendations();
+      await this.loadAnalytics();
+    }
+
+    setupEventListeners() {
+      // Tab switching
+      document.querySelectorAll('.tab-button').forEach(button => {
+        button.addEventListener('click', (e) => {
+          this.switchTab(e.target.dataset.tab);
+        });
+      });
+
+      // Filters
+      document.getElementById('apply-filters').addEventListener('click', () => {
+        this.applyFilters();
+      });
+
+      // Load more
+      document.getElementById('load-more-recommendations').addEventListener('click', () => {
+        this.loadMoreRecommendations();
+      });
+
+      // Refresh
+      document.getElementById('refresh-recommendations').addEventListener('click', () => {
+        this.refreshRecommendations();
+      });
+
+      // Train model
+      document.getElementById('train-model-btn').addEventListener('click', () => {
+        this.showTrainModelModal();
+      });
+
+      document.getElementById('close-train-modal').addEventListener('click', () => {
+        this.hideTrainModelModal();
+      });
+
+      document.getElementById('cancel-train-model').addEventListener('click', () => {
+        this.hideTrainModelModal();
+      });
+
+      document.getElementById('train-model-form').addEventListener('submit', (e) => {
+        e.preventDefault();
+        this.trainModel();
+      });
+
+      // Recommendation details
+      document.getElementById('close-details-modal').addEventListener('click', () => {
+        this.hideRecommendationDetailsModal();
+      });
+    }
+
+    switchTab(tabName) {
+      // Update tab buttons
+      document.querySelectorAll('.tab-button').forEach(button => {
+        button.classList.remove('active');
+      });
+      document.querySelector(`[data-tab="${tabName}"]`).classList.add('active');
+
+      // Update tab content
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      document.getElementById(`${tabName}-tab`).classList.add('active');
+
+      this.currentTab = tabName;
+
+      // Load tab-specific data
+      if (tabName === 'products') {
+        this.loadRecommendations();
+      } else if (tabName === 'users') {
+        this.loadUserRecommendations();
+      } else if (tabName === 'content') {
+        this.loadContentRecommendations();
+      } else if (tabName === 'analytics') {
+        this.loadAnalytics();
+      }
+    }
+
+    async loadRecommendations() {
+      try {
+        const params = new URLSearchParams({
+          type: this.filters.type,
+          category: this.filters.category,
+          price_range: this.filters.priceRange,
+          page: this.currentPage,
+          limit: this.pageSize
+        });
+
+        const response = await fetch(`/api/ai/recommendations?${params}`);
+        const data = await response.json();
+
+        this.renderRecommendations(data.recommendations || []);
+      } catch (error) {
+        console.error('Failed to load recommendations:', error);
+      }
+    }
+
+    renderRecommendations(recommendations) {
+      const grid = document.getElementById('recommendations-grid');
+      
+      if (this.currentPage === 1) {
+        grid.innerHTML = '';
+      }
+
+      recommendations.forEach(rec => {
+        const card = document.createElement('div');
+        card.className = 'recommendation-card';
+        card.innerHTML = `
+          <div class="recommendation-image">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+            </svg>
+          </div>
+          <div class="recommendation-content">
+            <h3 class="recommendation-title">${rec.title || 'Product Title'}</h3>
+            <p class="recommendation-description">${rec.description || 'Product description goes here...'}</p>
+            <div class="recommendation-meta">
+              <span class="recommendation-price">$${rec.price || '0.00'}</span>
+              <div class="recommendation-score">
+                <span>${Math.round(rec.score * 100)}%</span>
+                <div class="score-bar">
+                  <div class="score-fill" style="width: ${rec.score * 100}%"></div>
+                </div>
+              </div>
+            </div>
+            <p class="recommendation-reason">${rec.reason || 'Recommended for you'}</p>
+            <div class="recommendation-actions">
+              <button class="btn btn-primary btn-sm" onclick="aiRecommendationsDashboard.viewDetails('${rec.id}')">View Details</button>
+              <button class="btn btn-secondary btn-sm" onclick="aiRecommendationsDashboard.addToCart('${rec.id}')">Add to Cart</button>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    async loadUserRecommendations() {
+      try {
+        const response = await fetch('/api/ai/recommendations/users');
+        const data = await response.json();
+        
+        const grid = document.getElementById('user-grid');
+        grid.innerHTML = '';
+        
+        data.recommendations.forEach(user => {
+          const card = document.createElement('div');
+          card.className = 'recommendation-card';
+          card.innerHTML = `
+            <div class="recommendation-content">
+              <h3 class="recommendation-title">${user.name}</h3>
+              <p class="recommendation-description">${user.bio || 'User bio...'}</p>
+              <div class="recommendation-meta">
+                <span class="recommendation-score">${Math.round(user.compatibility * 100)}% match</span>
+              </div>
+              <div class="recommendation-actions">
+                <button class="btn btn-primary btn-sm">Follow</button>
+                <button class="btn btn-secondary btn-sm">View Profile</button>
+              </div>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      } catch (error) {
+        console.error('Failed to load user recommendations:', error);
+      }
+    }
+
+    async loadContentRecommendations() {
+      try {
+        const response = await fetch('/api/ai/recommendations/content');
+        const data = await response.json();
+        
+        const grid = document.getElementById('content-grid');
+        grid.innerHTML = '';
+        
+        data.recommendations.forEach(content => {
+          const card = document.createElement('div');
+          card.className = 'recommendation-card';
+          card.innerHTML = `
+            <div class="recommendation-content">
+              <h3 class="recommendation-title">${content.title}</h3>
+              <p class="recommendation-description">${content.description}</p>
+              <div class="recommendation-meta">
+                <span class="recommendation-score">${Math.round(content.relevance * 100)}% relevant</span>
+              </div>
+              <div class="recommendation-actions">
+                <button class="btn btn-primary btn-sm">Read More</button>
+                <button class="btn btn-secondary btn-sm">Save</button>
+              </div>
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+      } catch (error) {
+        console.error('Failed to load content recommendations:', error);
+      }
+    }
+
+    async loadAnalytics() {
+      try {
+        const response = await fetch('/api/ai/recommendations/analytics');
+        const data = await response.json();
+        
+        // Update metrics
+        document.getElementById('click-through-rate').textContent = `${data.ctr || 0}%`;
+        document.getElementById('conversion-rate').textContent = `${data.conversion_rate || 0}%`;
+        document.getElementById('user-satisfaction').textContent = `${data.satisfaction || 0}%`;
+        document.getElementById('model-accuracy').textContent = `${data.accuracy || 0}%`;
+        
+        // Render performance chart
+        this.renderPerformanceChart(data.performance_data || []);
+        
+        // Render model stats
+        this.renderModelStats(data.model_stats || []);
+      } catch (error) {
+        console.error('Failed to load analytics:', error);
+      }
+    }
+
+    renderPerformanceChart(data) {
+      const chart = document.getElementById('performance-chart');
+      chart.innerHTML = `
+        <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--text-secondary);">
+          Performance chart will be rendered here
+        </div>
+      `;
+    }
+
+    renderModelStats(stats) {
+      const container = document.getElementById('model-stats');
+      container.innerHTML = '';
+      
+      stats.forEach(stat => {
+        const statItem = document.createElement('div');
+        statItem.className = 'metric-card';
+        statItem.innerHTML = `
+          <div class="metric-icon">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+            </svg>
+          </div>
+          <div class="metric-content">
+            <h3 class="metric-value">${stat.value}</h3>
+            <p class="metric-label">${stat.label}</p>
+          </div>
+        `;
+        container.appendChild(statItem);
+      });
+    }
+
+    applyFilters() {
+      this.filters = {
+        type: document.getElementById('recommendation-type').value,
+        category: document.getElementById('category-filter').value,
+        priceRange: document.getElementById('price-range').value
+      };
+      
+      this.currentPage = 1;
+      this.loadRecommendations();
+    }
+
+    async loadMoreRecommendations() {
+      this.currentPage++;
+      await this.loadRecommendations();
+    }
+
+    async refreshRecommendations() {
+      this.currentPage = 1;
+      await this.loadRecommendations();
+    }
+
+    showTrainModelModal() {
+      document.getElementById('train-model-modal').classList.add('active');
+    }
+
+    hideTrainModelModal() {
+      document.getElementById('train-model-modal').classList.remove('active');
+      document.getElementById('train-model-form').reset();
+    }
+
+    async trainModel() {
+      try {
+        const formData = new FormData(document.getElementById('train-model-form'));
+        const trainingData = {
+          model_type: formData.get('model_type'),
+          training_data: formData.get('training_data'),
+          time_range: parseInt(formData.get('time_range')),
+          min_interactions: parseInt(formData.get('min_interactions')),
+          min_products: parseInt(formData.get('min_products'))
+        };
+
+        const response = await fetch('/api/ai/recommendations/train', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(trainingData)
+        });
+
+        if (response.ok) {
+          this.hideTrainModelModal();
+          this.showNotification('Model training started', 'success');
+        } else {
+          this.showNotification('Failed to start model training', 'error');
+        }
+      } catch (error) {
+        console.error('Failed to train model:', error);
+        this.showNotification('Failed to train model', 'error');
+      }
+    }
+
+    async viewDetails(recommendationId) {
+      try {
+        const response = await fetch(`/api/ai/recommendations/${recommendationId}`);
+        const data = await response.json();
+        
+        document.getElementById('recommendation-details-title').textContent = data.title;
+        document.getElementById('recommendation-details-content').innerHTML = `
+          <div class="recommendation-detail-section">
+            <h4>Recommendation Details</h4>
+            <p><strong>Score:</strong> ${Math.round(data.score * 100)}%</p>
+            <p><strong>Type:</strong> ${data.type}</p>
+            <p><strong>Reason:</strong> ${data.reason}</p>
+            <p><strong>Model:</strong> ${data.model_id}</p>
+          </div>
+          <div class="recommendation-detail-section">
+            <h4>Product Information</h4>
+            <p><strong>Title:</strong> ${data.title}</p>
+            <p><strong>Description:</strong> ${data.description}</p>
+            <p><strong>Price:</strong> $${data.price}</p>
+            <p><strong>Category:</strong> ${data.category}</p>
+          </div>
+        `;
+        
+        document.getElementById('recommendation-details-modal').classList.add('active');
+      } catch (error) {
+        console.error('Failed to load recommendation details:', error);
+      }
+    }
+
+    hideRecommendationDetailsModal() {
+      document.getElementById('recommendation-details-modal').classList.remove('active');
+    }
+
+    async addToCart(recommendationId) {
+      try {
+        const response = await fetch('/api/cart/add', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ product_id: recommendationId })
+        });
+
+        if (response.ok) {
+          this.showNotification('Added to cart', 'success');
+        } else {
+          this.showNotification('Failed to add to cart', 'error');
+        }
+      } catch (error) {
+        console.error('Failed to add to cart:', error);
+        this.showNotification('Failed to add to cart', 'error');
+      }
+    }
+
+    showNotification(message, type) {
+      // Implementation for showing notifications
+      console.log(`${type.toUpperCase()}: ${message}`);
+    }
+  }
+</script>
+
