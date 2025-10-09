@@ -1,522 +1,308 @@
 """
-Multi-Tenancy System for Soladia Marketplace
-Enterprise-grade multi-tenant architecture with tenant isolation
+Multi-tenancy support for Soladia Enterprise
 """
-
-from typing import Optional, Dict, Any, List
-from datetime import datetime, timedelta
-from enum import Enum
-import uuid
-import hashlib
-import secrets
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, JSON, ForeignKey
+from typing import Optional, List, Dict, Any
+from sqlalchemy import Column, String, Integer, Boolean, DateTime, Text, ForeignKey
+from sqlalchemy.orm import relationship
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship, sessionmaker
-from sqlalchemy import create_engine
-from fastapi import HTTPException, Depends, Request
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-import jwt
-from pydantic import BaseModel, Field
-import redis
-import json
+from datetime import datetime
+import uuid
 
 Base = declarative_base()
 
-class TenantStatus(str, Enum):
-    ACTIVE = "active"
-    SUSPENDED = "suspended"
-    PENDING = "pending"
-    EXPIRED = "expired"
-
-class TenantTier(str, Enum):
-    STARTER = "starter"
-    PROFESSIONAL = "professional"
-    ENTERPRISE = "enterprise"
-    CUSTOM = "custom"
-
 class Tenant(Base):
+    """Tenant model for multi-tenancy support"""
     __tablename__ = "tenants"
     
-    id = Column(Integer, primary_key=True, index=True)
-    tenant_id = Column(String(36), unique=True, index=True, nullable=False)
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
     name = Column(String(255), nullable=False)
-    domain = Column(String(255), unique=True, index=True, nullable=False)
-    subdomain = Column(String(100), unique=True, index=True, nullable=True)
-    status = Column(String(20), default=TenantStatus.PENDING)
-    tier = Column(String(20), default=TenantTier.STARTER)
+    slug = Column(String(100), unique=True, nullable=False)
+    domain = Column(String(255), unique=True, nullable=True)
+    subdomain = Column(String(100), unique=True, nullable=True)
     
-    # Branding and customization
+    # Tenant configuration
     logo_url = Column(String(500), nullable=True)
     primary_color = Column(String(7), default="#E60012")
     secondary_color = Column(String(7), default="#0066CC")
     custom_css = Column(Text, nullable=True)
     custom_js = Column(Text, nullable=True)
-    favicon_url = Column(String(500), nullable=True)
     
-    # Configuration
-    settings = Column(JSON, default=dict)
-    features = Column(JSON, default=dict)
-    limits = Column(JSON, default=dict)
+    # Feature flags
+    features = Column(Text, nullable=True)  # JSON string of enabled features
+    max_users = Column(Integer, default=1000)
+    max_listings = Column(Integer, default=10000)
+    max_storage_gb = Column(Integer, default=100)
     
     # Billing and subscription
-    subscription_id = Column(String(100), nullable=True)
+    subscription_plan = Column(String(50), default="basic")
+    subscription_status = Column(String(20), default="active")
     billing_email = Column(String(255), nullable=True)
-    trial_ends_at = Column(DateTime, nullable=True)
-    subscription_ends_at = Column(DateTime, nullable=True)
     
-    # Security
-    api_key = Column(String(64), unique=True, index=True, nullable=False)
-    webhook_secret = Column(String(64), nullable=True)
-    encryption_key = Column(String(64), nullable=True)
+    # Status
+    is_active = Column(Boolean, default=True)
+    is_verified = Column(Boolean, default=False)
     
-    # Metadata
+    # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    created_by = Column(Integer, ForeignKey("users.id"), nullable=True)
     
     # Relationships
-    users = relationship("User", back_populates="tenant")
-    products = relationship("Product", back_populates="tenant")
-    orders = relationship("Order", back_populates="tenant")
+    users = relationship("TenantUser", back_populates="tenant")
+    listings = relationship("TenantListing", back_populates="tenant")
+    settings = relationship("TenantSettings", back_populates="tenant", uselist=False)
 
 class TenantUser(Base):
+    """User model with tenant association"""
     __tablename__ = "tenant_users"
     
-    id = Column(Integer, primary_key=True, index=True)
-    tenant_id = Column(String(36), ForeignKey("tenants.tenant_id"), nullable=False)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    role = Column(String(50), default="member")
-    permissions = Column(JSON, default=dict)
-    joined_at = Column(DateTime, default=datetime.utcnow)
-    is_active = Column(Boolean, default=True)
-
-class TenantInvitation(Base):
-    __tablename__ = "tenant_invitations"
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    tenant_id = Column(String, ForeignKey("tenants.id"), nullable=False)
+    user_id = Column(String, nullable=False)  # Reference to main user table
     
-    id = Column(Integer, primary_key=True, index=True)
-    tenant_id = Column(String(36), ForeignKey("tenants.tenant_id"), nullable=False)
-    email = Column(String(255), nullable=False)
-    role = Column(String(50), default="member")
-    token = Column(String(64), unique=True, index=True, nullable=False)
-    expires_at = Column(DateTime, nullable=False)
-    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
+    # Tenant-specific user data
+    role = Column(String(50), default="user")
+    permissions = Column(Text, nullable=True)  # JSON string of permissions
+    is_active = Column(Boolean, default=True)
+    
+    # Timestamps
     created_at = Column(DateTime, default=datetime.utcnow)
-    accepted_at = Column(DateTime, nullable=True)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships
+    tenant = relationship("Tenant", back_populates="users")
 
-# Pydantic models
-class TenantCreate(BaseModel):
-    name: str = Field(..., min_length=1, max_length=255)
-    domain: str = Field(..., min_length=3, max_length=255)
-    subdomain: Optional[str] = Field(None, min_length=3, max_length=100)
-    tier: TenantTier = TenantTier.STARTER
-    billing_email: str = Field(..., min_length=5, max_length=255)
-    settings: Dict[str, Any] = Field(default_factory=dict)
-    features: Dict[str, Any] = Field(default_factory=dict)
+class TenantListing(Base):
+    """Listing model with tenant association"""
+    __tablename__ = "tenant_listings"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    tenant_id = Column(String, ForeignKey("tenants.id"), nullable=False)
+    listing_id = Column(String, nullable=False)  # Reference to main listing table
+    
+    # Tenant-specific listing data
+    is_featured = Column(Boolean, default=False)
+    custom_fields = Column(Text, nullable=True)  # JSON string of custom fields
+    
+    # Timestamps
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships
+    tenant = relationship("Tenant", back_populates="listings")
 
-class TenantUpdate(BaseModel):
-    name: Optional[str] = Field(None, min_length=1, max_length=255)
-    logo_url: Optional[str] = Field(None, max_length=500)
-    primary_color: Optional[str] = Field(None, regex=r"^#[0-9A-Fa-f]{6}$")
-    secondary_color: Optional[str] = Field(None, regex=r"^#[0-9A-Fa-f]{6}$")
-    custom_css: Optional[str] = None
-    custom_js: Optional[str] = None
-    favicon_url: Optional[str] = Field(None, max_length=500)
-    settings: Optional[Dict[str, Any]] = None
-    features: Optional[Dict[str, Any]] = None
-
-class TenantResponse(BaseModel):
-    id: int
-    tenant_id: str
-    name: str
-    domain: str
-    subdomain: Optional[str]
-    status: TenantStatus
-    tier: TenantTier
-    logo_url: Optional[str]
-    primary_color: str
-    secondary_color: str
-    custom_css: Optional[str]
-    custom_js: Optional[str]
-    favicon_url: Optional[str]
-    settings: Dict[str, Any]
-    features: Dict[str, Any]
-    limits: Dict[str, Any]
-    created_at: datetime
-    updated_at: datetime
-
-class TenantInvitationCreate(BaseModel):
-    email: str = Field(..., min_length=5, max_length=255)
-    role: str = Field(default="member", max_length=50)
-    expires_in_days: int = Field(default=7, ge=1, le=30)
-
-class TenantInvitationResponse(BaseModel):
-    id: int
-    tenant_id: str
-    email: str
-    role: str
-    token: str
-    expires_at: datetime
-    created_at: datetime
+class TenantSettings(Base):
+    """Tenant-specific settings"""
+    __tablename__ = "tenant_settings"
+    
+    id = Column(String, primary_key=True, default=lambda: str(uuid.uuid4()))
+    tenant_id = Column(String, ForeignKey("tenants.id"), nullable=False)
+    
+    # Marketplace settings
+    marketplace_name = Column(String(255), nullable=True)
+    marketplace_description = Column(Text, nullable=True)
+    currency = Column(String(3), default="USD")
+    timezone = Column(String(50), default="UTC")
+    language = Column(String(5), default="en")
+    
+    # Payment settings
+    payment_methods = Column(Text, nullable=True)  # JSON string of enabled payment methods
+    fee_percentage = Column(Integer, default=250)  # 2.5% in basis points
+    minimum_payout = Column(Integer, default=10000)  # $100 in cents
+    
+    # Solana settings
+    solana_network = Column(String(20), default="mainnet-beta")
+    solana_rpc_url = Column(String(500), nullable=True)
+    solana_ws_url = Column(String(500), nullable=True)
+    
+    # API settings
+    api_rate_limit = Column(Integer, default=1000)  # requests per hour
+    webhook_url = Column(String(500), nullable=True)
+    webhook_secret = Column(String(255), nullable=True)
+    
+    # Timestamps
+    created_at = Column(DateTime, default=datetime.utcnow)
+    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    
+    # Relationships
+    tenant = relationship("Tenant", back_populates="settings")
 
 class MultiTenancyService:
-    def __init__(self, db_session, redis_client):
-        self.db = db_session
-        self.redis = redis_client
-        self.cache_ttl = 3600  # 1 hour
+    """Service for managing multi-tenancy"""
     
-    async def create_tenant(self, tenant_data: TenantCreate, created_by: int) -> TenantResponse:
+    def __init__(self, db_session):
+        self.db = db_session
+    
+    async def create_tenant(
+        self,
+        name: str,
+        slug: str,
+        domain: Optional[str] = None,
+        subdomain: Optional[str] = None,
+        **kwargs
+    ) -> Tenant:
         """Create a new tenant"""
-        # Generate unique tenant ID
-        tenant_id = str(uuid.uuid4())
-        
-        # Generate API key
-        api_key = self._generate_api_key()
-        
-        # Check domain uniqueness
-        existing_tenant = self.db.query(Tenant).filter(
-            (Tenant.domain == tenant_data.domain) | 
-            (Tenant.subdomain == tenant_data.subdomain)
-        ).first()
-        
-        if existing_tenant:
-            raise HTTPException(
-                status_code=400,
-                detail="Domain or subdomain already exists"
-            )
-        
-        # Create tenant
         tenant = Tenant(
-            tenant_id=tenant_id,
-            name=tenant_data.name,
-            domain=tenant_data.domain,
-            subdomain=tenant_data.subdomain,
-            tier=tenant_data.tier,
-            billing_email=tenant_data.billing_email,
-            api_key=api_key,
-            settings=tenant_data.settings,
-            features=tenant_data.features,
-            limits=self._get_tenant_limits(tenant_data.tier),
-            created_by=created_by,
-            trial_ends_at=datetime.utcnow() + timedelta(days=14)
+            name=name,
+            slug=slug,
+            domain=domain,
+            subdomain=subdomain,
+            **kwargs
         )
         
         self.db.add(tenant)
         self.db.commit()
         self.db.refresh(tenant)
         
-        # Add creator as admin
-        await self.add_user_to_tenant(tenant_id, created_by, "admin")
+        # Create default settings
+        settings = TenantSettings(tenant_id=tenant.id)
+        self.db.add(settings)
+        self.db.commit()
         
-        # Cache tenant data
-        await self._cache_tenant(tenant)
-        
-        return TenantResponse.from_orm(tenant)
+        return tenant
     
-    async def get_tenant(self, tenant_id: str) -> Optional[TenantResponse]:
-        """Get tenant by ID"""
-        # Try cache first
-        cached_tenant = await self._get_cached_tenant(tenant_id)
-        if cached_tenant:
-            return cached_tenant
-        
-        # Query database
-        tenant = self.db.query(Tenant).filter(Tenant.tenant_id == tenant_id).first()
-        if not tenant:
-            return None
-        
-        # Cache result
-        await self._cache_tenant(tenant)
-        
-        return TenantResponse.from_orm(tenant)
+    async def get_tenant_by_domain(self, domain: str) -> Optional[Tenant]:
+        """Get tenant by domain"""
+        return self.db.query(Tenant).filter(
+            Tenant.domain == domain,
+            Tenant.is_active == True
+        ).first()
     
-    async def get_tenant_by_domain(self, domain: str) -> Optional[TenantResponse]:
-        """Get tenant by domain or subdomain"""
-        # Try cache first
-        cached_tenant = await self._get_cached_tenant_by_domain(domain)
-        if cached_tenant:
-            return cached_tenant
-        
-        # Query database
-        tenant = self.db.query(Tenant).filter(
-            (Tenant.domain == domain) | (Tenant.subdomain == domain)
+    async def get_tenant_by_subdomain(self, subdomain: str) -> Optional[Tenant]:
+        """Get tenant by subdomain"""
+        return self.db.query(Tenant).filter(
+            Tenant.subdomain == subdomain,
+            Tenant.is_active == True
+        ).first()
+    
+    async def get_tenant_by_slug(self, slug: str) -> Optional[Tenant]:
+        """Get tenant by slug"""
+        return self.db.query(Tenant).filter(
+            Tenant.slug == slug,
+            Tenant.is_active == True
+        ).first()
+    
+    async def update_tenant_settings(
+        self,
+        tenant_id: str,
+        settings_data: Dict[str, Any]
+    ) -> TenantSettings:
+        """Update tenant settings"""
+        settings = self.db.query(TenantSettings).filter(
+            TenantSettings.tenant_id == tenant_id
         ).first()
         
-        if not tenant:
-            return None
+        if not settings:
+            settings = TenantSettings(tenant_id=tenant_id)
+            self.db.add(settings)
         
-        # Cache result
-        await self._cache_tenant(tenant)
-        
-        return TenantResponse.from_orm(tenant)
-    
-    async def update_tenant(self, tenant_id: str, update_data: TenantUpdate) -> TenantResponse:
-        """Update tenant configuration"""
-        tenant = self.db.query(Tenant).filter(Tenant.tenant_id == tenant_id).first()
-        if not tenant:
-            raise HTTPException(status_code=404, detail="Tenant not found")
-        
-        # Update fields
-        for field, value in update_data.dict(exclude_unset=True).items():
-            setattr(tenant, field, value)
-        
-        tenant.updated_at = datetime.utcnow()
+        for key, value in settings_data.items():
+            if hasattr(settings, key):
+                setattr(settings, key, value)
         
         self.db.commit()
-        self.db.refresh(tenant)
+        self.db.refresh(settings)
         
-        # Update cache
-        await self._cache_tenant(tenant)
-        
-        return TenantResponse.from_orm(tenant)
+        return settings
     
-    async def add_user_to_tenant(self, tenant_id: str, user_id: int, role: str = "member") -> bool:
+    async def add_user_to_tenant(
+        self,
+        tenant_id: str,
+        user_id: str,
+        role: str = "user",
+        permissions: Optional[List[str]] = None
+    ) -> TenantUser:
         """Add user to tenant"""
-        # Check if user is already in tenant
-        existing = self.db.query(TenantUser).filter(
-            TenantUser.tenant_id == tenant_id,
-            TenantUser.user_id == user_id
-        ).first()
-        
-        if existing:
-            return False
-        
-        # Add user to tenant
         tenant_user = TenantUser(
             tenant_id=tenant_id,
             user_id=user_id,
             role=role,
-            permissions=self._get_role_permissions(role)
+            permissions=permissions
         )
         
         self.db.add(tenant_user)
         self.db.commit()
+        self.db.refresh(tenant_user)
         
-        return True
+        return tenant_user
     
-    async def remove_user_from_tenant(self, tenant_id: str, user_id: int) -> bool:
-        """Remove user from tenant"""
-        tenant_user = self.db.query(TenantUser).filter(
-            TenantUser.tenant_id == tenant_id,
-            TenantUser.user_id == user_id
-        ).first()
-        
-        if not tenant_user:
-            return False
-        
-        self.db.delete(tenant_user)
-        self.db.commit()
-        
-        return True
-    
-    async def create_tenant_invitation(self, tenant_id: str, invitation_data: TenantInvitationCreate, created_by: int) -> TenantInvitationResponse:
-        """Create tenant invitation"""
-        # Generate invitation token
-        token = secrets.token_urlsafe(32)
-        expires_at = datetime.utcnow() + timedelta(days=invitation_data.expires_in_days)
-        
-        # Create invitation
-        invitation = TenantInvitation(
-            tenant_id=tenant_id,
-            email=invitation_data.email,
-            role=invitation_data.role,
-            token=token,
-            expires_at=expires_at,
-            created_by=created_by
-        )
-        
-        self.db.add(invitation)
-        self.db.commit()
-        self.db.refresh(invitation)
-        
-        return TenantInvitationResponse.from_orm(invitation)
-    
-    async def accept_tenant_invitation(self, token: str, user_id: int) -> bool:
-        """Accept tenant invitation"""
-        invitation = self.db.query(TenantInvitation).filter(
-            TenantInvitation.token == token,
-            TenantInvitation.accepted_at.is_(None)
-        ).first()
-        
-        if not invitation or invitation.expires_at < datetime.utcnow():
-            return False
-        
-        # Add user to tenant
-        success = await self.add_user_to_tenant(invitation.tenant_id, user_id, invitation.role)
-        
-        if success:
-            invitation.accepted_at = datetime.utcnow()
-            self.db.commit()
-        
-        return success
-    
-    async def get_tenant_users(self, tenant_id: str, skip: int = 0, limit: int = 100) -> List[Dict[str, Any]]:
-        """Get tenant users"""
-        users = self.db.query(TenantUser, User).join(User).filter(
+    async def get_tenant_users(self, tenant_id: str) -> List[TenantUser]:
+        """Get all users for a tenant"""
+        return self.db.query(TenantUser).filter(
             TenantUser.tenant_id == tenant_id,
             TenantUser.is_active == True
-        ).offset(skip).limit(limit).all()
-        
-        return [
-            {
-                "user_id": user.id,
-                "email": user.email,
-                "username": user.username,
-                "full_name": user.full_name,
-                "role": tenant_user.role,
-                "permissions": tenant_user.permissions,
-                "joined_at": tenant_user.joined_at
-            }
-            for tenant_user, user in users
-        ]
+        ).all()
     
-    async def get_user_tenants(self, user_id: int) -> List[TenantResponse]:
-        """Get user's tenants"""
+    async def get_user_tenants(self, user_id: str) -> List[Tenant]:
+        """Get all tenants for a user"""
         tenant_users = self.db.query(TenantUser).filter(
             TenantUser.user_id == user_id,
             TenantUser.is_active == True
         ).all()
         
         tenant_ids = [tu.tenant_id for tu in tenant_users]
-        tenants = self.db.query(Tenant).filter(Tenant.tenant_id.in_(tenant_ids)).all()
+        return self.db.query(Tenant).filter(Tenant.id.in_(tenant_ids)).all()
+    
+    async def check_tenant_limits(self, tenant_id: str) -> Dict[str, Any]:
+        """Check if tenant has exceeded limits"""
+        tenant = self.db.query(Tenant).filter(Tenant.id == tenant_id).first()
+        if not tenant:
+            return {"error": "Tenant not found"}
         
-        return [TenantResponse.from_orm(tenant) for tenant in tenants]
-    
-    def _generate_api_key(self) -> str:
-        """Generate secure API key"""
-        return secrets.token_urlsafe(32)
-    
-    def _get_tenant_limits(self, tier: TenantTier) -> Dict[str, Any]:
-        """Get tenant limits based on tier"""
+        # Get current usage
+        user_count = self.db.query(TenantUser).filter(
+            TenantUser.tenant_id == tenant_id,
+            TenantUser.is_active == True
+        ).count()
+        
+        listing_count = self.db.query(TenantListing).filter(
+            TenantListing.tenant_id == tenant_id
+        ).count()
+        
+        # Check limits
         limits = {
-            TenantTier.STARTER: {
-                "max_users": 10,
-                "max_products": 100,
-                "max_orders_per_month": 1000,
-                "storage_gb": 1,
-                "api_calls_per_month": 10000,
-                "custom_domain": False,
-                "white_label": False,
-                "priority_support": False
+            "users": {
+                "current": user_count,
+                "limit": tenant.max_users,
+                "exceeded": user_count >= tenant.max_users
             },
-            TenantTier.PROFESSIONAL: {
-                "max_users": 50,
-                "max_products": 1000,
-                "max_orders_per_month": 10000,
-                "storage_gb": 10,
-                "api_calls_per_month": 100000,
-                "custom_domain": True,
-                "white_label": False,
-                "priority_support": True
-            },
-            TenantTier.ENTERPRISE: {
-                "max_users": 500,
-                "max_products": 10000,
-                "max_orders_per_month": 100000,
-                "storage_gb": 100,
-                "api_calls_per_month": 1000000,
-                "custom_domain": True,
-                "white_label": True,
-                "priority_support": True
-            },
-            TenantTier.CUSTOM: {
-                "max_users": -1,  # Unlimited
-                "max_products": -1,
-                "max_orders_per_month": -1,
-                "storage_gb": -1,
-                "api_calls_per_month": -1,
-                "custom_domain": True,
-                "white_label": True,
-                "priority_support": True
+            "listings": {
+                "current": listing_count,
+                "limit": tenant.max_listings,
+                "exceeded": listing_count >= tenant.max_listings
             }
         }
         
-        return limits.get(tier, limits[TenantTier.STARTER])
+        return limits
     
-    def _get_role_permissions(self, role: str) -> Dict[str, Any]:
-        """Get role permissions"""
-        permissions = {
-            "admin": {
-                "manage_tenant": True,
-                "manage_users": True,
-                "manage_products": True,
-                "manage_orders": True,
-                "view_analytics": True,
-                "manage_billing": True,
-                "manage_settings": True
-            },
-            "manager": {
-                "manage_tenant": False,
-                "manage_users": True,
-                "manage_products": True,
-                "manage_orders": True,
-                "view_analytics": True,
-                "manage_billing": False,
-                "manage_settings": False
-            },
-            "member": {
-                "manage_tenant": False,
-                "manage_users": False,
-                "manage_products": False,
-                "manage_orders": False,
-                "view_analytics": False,
-                "manage_billing": False,
-                "manage_settings": False
-            }
+    async def get_tenant_analytics(self, tenant_id: str) -> Dict[str, Any]:
+        """Get analytics for a tenant"""
+        # This would integrate with the analytics service
+        # For now, return mock data
+        return {
+            "total_users": 150,
+            "active_users": 45,
+            "total_listings": 320,
+            "active_listings": 280,
+            "total_revenue": 12500.50,
+            "monthly_revenue": 2500.75,
+            "conversion_rate": 3.2
         }
+    
+    async def update_tenant_subscription(
+        self,
+        tenant_id: str,
+        plan: str,
+        status: str
+    ) -> Tenant:
+        """Update tenant subscription"""
+        tenant = self.db.query(Tenant).filter(Tenant.id == tenant_id).first()
+        if not tenant:
+            raise ValueError("Tenant not found")
         
-        return permissions.get(role, permissions["member"])
-    
-    async def _cache_tenant(self, tenant: Tenant):
-        """Cache tenant data"""
-        tenant_data = TenantResponse.from_orm(tenant).dict()
-        await self.redis.setex(
-            f"tenant:{tenant.tenant_id}",
-            self.cache_ttl,
-            json.dumps(tenant_data, default=str)
-        )
-        await self.redis.setex(
-            f"tenant:domain:{tenant.domain}",
-            self.cache_ttl,
-            json.dumps(tenant_data, default=str)
-        )
-        if tenant.subdomain:
-            await self.redis.setex(
-                f"tenant:subdomain:{tenant.subdomain}",
-                self.cache_ttl,
-                json.dumps(tenant_data, default=str)
-            )
-    
-    async def _get_cached_tenant(self, tenant_id: str) -> Optional[TenantResponse]:
-        """Get cached tenant"""
-        cached = await self.redis.get(f"tenant:{tenant_id}")
-        if cached:
-            return TenantResponse.parse_raw(cached)
-        return None
-    
-    async def _get_cached_tenant_by_domain(self, domain: str) -> Optional[TenantResponse]:
-        """Get cached tenant by domain"""
-        cached = await self.redis.get(f"tenant:domain:{domain}")
-        if cached:
-            return TenantResponse.parse_raw(cached)
+        tenant.subscription_plan = plan
+        tenant.subscription_status = status
         
-        cached = await self.redis.get(f"tenant:subdomain:{domain}")
-        if cached:
-            return TenantResponse.parse_raw(cached)
+        self.db.commit()
+        self.db.refresh(tenant)
         
-        return None
-
-# Dependency injection
-def get_current_tenant(request: Request) -> Optional[str]:
-    """Get current tenant from request"""
-    # Check subdomain
-    host = request.headers.get("host", "")
-    if "." in host:
-        subdomain = host.split(".")[0]
-        return subdomain
-    
-    # Check custom header
-    return request.headers.get("x-tenant-id")
-
-def get_tenant_service(db_session = Depends(get_db), redis_client = Depends(get_redis)) -> MultiTenancyService:
-    """Get multi-tenancy service"""
-    return MultiTenancyService(db_session, redis_client)
+        return tenant

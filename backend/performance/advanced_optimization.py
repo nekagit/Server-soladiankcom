@@ -1,618 +1,459 @@
 """
-Advanced Performance Optimization Service
-Implements sophisticated caching, CDN, and performance monitoring
+Advanced performance optimization for Soladia
 """
-
 import asyncio
 import time
-import json
 import hashlib
-from typing import Dict, Any, Optional, List, Tuple, Union
-from dataclasses import dataclass
+import json
+from typing import Dict, List, Optional, Any, Tuple, Union
+from functools import wraps
 from datetime import datetime, timedelta
-from enum import Enum
-import logging
 import redis
 import aioredis
-from functools import wraps
-import gzip
-import brotli
-import base64
+from sqlalchemy import text
+from sqlalchemy.orm import sessionmaker
+import aiohttp
+import uvloop
 
-logger = logging.getLogger(__name__)
-
-class CacheStrategy(Enum):
-    """Cache strategies"""
-    CACHE_FIRST = "cache_first"
-    NETWORK_FIRST = "network_first"
-    STALE_WHILE_REVALIDATE = "stale_while_revalidate"
-    WRITE_THROUGH = "write_through"
-    WRITE_BEHIND = "write_behind"
-
-class CompressionType(Enum):
-    """Compression types"""
-    GZIP = "gzip"
-    BROTLI = "brotli"
-    DEFLATE = "deflate"
-    NONE = "none"
-
-@dataclass
-class PerformanceMetric:
-    """Performance metric record"""
-    metric_name: str
-    value: float
-    unit: str
-    timestamp: datetime
-    tags: Dict[str, str]
-    metadata: Dict[str, Any]
-
-@dataclass
-class CacheEntry:
-    """Cache entry"""
-    key: str
-    value: Any
-    ttl: int
-    created_at: datetime
-    access_count: int = 0
-    last_accessed: Optional[datetime] = None
-    compression_type: CompressionType = CompressionType.NONE
-
-class AdvancedPerformanceService:
-    """Advanced performance optimization service"""
+class PerformanceMonitor:
+    """Performance monitoring and metrics collection"""
     
-    def __init__(self, redis_url: str = "redis://localhost:6379"):
-        self.redis_url = redis_url
-        self.redis_client: Optional[aioredis.Redis] = None
-        self.local_cache: Dict[str, CacheEntry] = {}
-        self.performance_metrics: List[PerformanceMetric] = []
-        self.cdn_endpoints: Dict[str, str] = {}
-        self.cache_strategies: Dict[str, CacheStrategy] = {}
+    def __init__(self, redis_client: redis.Redis):
+        self.redis = redis_client
+        self.metrics = {}
+    
+    def track_execution_time(self, operation_name: str):
+        """Decorator to track execution time"""
+        def decorator(func):
+            @wraps(func)
+            async def async_wrapper(*args, **kwargs):
+                start_time = time.time()
+                try:
+                    result = await func(*args, **kwargs)
+                    execution_time = time.time() - start_time
+                    await self.record_metric(f"{operation_name}_success", execution_time)
+                    return result
+                except Exception as e:
+                    execution_time = time.time() - start_time
+                    await self.record_metric(f"{operation_name}_error", execution_time)
+                    raise e
+            return async_wrapper
         
-        # Performance thresholds
-        self.thresholds = {
-            'response_time_ms': 200,
-            'cache_hit_ratio': 0.8,
-            'memory_usage_mb': 512,
-            'cpu_usage_percent': 80,
-            'database_query_time_ms': 100
+        @wraps(func)
+        def sync_wrapper(*args, **kwargs):
+            start_time = time.time()
+            try:
+                result = func(*args, **kwargs)
+                execution_time = time.time() - start_time
+                asyncio.create_task(self.record_metric(f"{operation_name}_success", execution_time))
+                return result
+            except Exception as e:
+                execution_time = time.time() - start_time
+                asyncio.create_task(self.record_metric(f"{operation_name}_error", execution_time))
+                raise e
+        return sync_wrapper
+    
+    async def record_metric(self, metric_name: str, value: float):
+        """Record a performance metric"""
+        timestamp = int(time.time())
+        key = f"perf:{metric_name}:{timestamp}"
+        await self.redis.setex(key, 3600, value)  # Keep for 1 hour
+    
+    async def get_metrics(self, metric_name: str, time_range: int = 3600) -> List[float]:
+        """Get metrics for a specific operation"""
+        current_time = int(time.time())
+        start_time = current_time - time_range
+        
+        keys = []
+        for timestamp in range(start_time, current_time):
+            key = f"perf:{metric_name}:{timestamp}"
+            keys.append(key)
+        
+        values = await self.redis.mget(keys)
+        return [float(v) for v in values if v is not None]
+
+class CacheManager:
+    """Advanced caching system with multiple strategies"""
+    
+    def __init__(self, redis_client: aioredis.Redis):
+        self.redis = redis_client
+        self.cache_stats = {
+            "hits": 0,
+            "misses": 0,
+            "sets": 0,
+            "deletes": 0
         }
-        
-    async def initialize(self):
-        """Initialize the performance service"""
+    
+    async def get(self, key: str) -> Optional[Any]:
+        """Get value from cache"""
         try:
-            self.redis_client = await aioredis.from_url(self.redis_url)
-            await self._setup_cache_strategies()
-            await self._setup_cdn_endpoints()
-            logger.info("Advanced performance service initialized")
-        except Exception as e:
-            logger.error(f"Failed to initialize performance service: {str(e)}")
-            
-    async def close(self):
-        """Close the performance service"""
-        if self.redis_client:
-            await self.redis_client.close()
-            
-    async def cache_with_strategy(self, 
+            value = await self.redis.get(key)
+            if value:
+                self.cache_stats["hits"] += 1
+                return json.loads(value)
+            else:
+                self.cache_stats["misses"] += 1
+                return None
+        except Exception:
+            self.cache_stats["misses"] += 1
+            return None
+    
+    async def set(
+        self,
                                 key: str,
                                 value: Any,
-                                strategy: CacheStrategy = CacheStrategy.CACHE_FIRST,
                                 ttl: int = 3600,
-                                compression: CompressionType = CompressionType.GZIP) -> bool:
-        """Cache data with specified strategy"""
+        tags: Optional[List[str]] = None
+    ) -> bool:
+        """Set value in cache with TTL and tags"""
         try:
-            # Compress value if needed
-            compressed_value = await self._compress_data(value, compression)
+            serialized_value = json.dumps(value)
+            await self.redis.setex(key, ttl, serialized_value)
             
-            # Create cache entry
-            cache_entry = CacheEntry(
-                key=key,
-                value=compressed_value,
-                ttl=ttl,
-                created_at=datetime.utcnow(),
-                compression_type=compression
-            )
+            # Store tags for cache invalidation
+            if tags:
+                for tag in tags:
+                    await self.redis.sadd(f"cache:tags:{tag}", key)
+                    await self.redis.expire(f"cache:tags:{tag}", ttl)
             
-            # Store in local cache
-            self.local_cache[key] = cache_entry
-            
-            # Store in Redis if available
-            if self.redis_client:
-                redis_data = {
-                    'value': compressed_value,
-                    'ttl': ttl,
-                    'created_at': cache_entry.created_at.isoformat(),
-                    'compression_type': compression.value
-                }
-                await self.redis_client.setex(
-                    key, 
-                    ttl, 
-                    json.dumps(redis_data)
-                )
-                
-            # Record cache operation metric
-            await self._record_metric('cache_operation', 1, 'count', {
-                'operation': 'set',
-                'strategy': strategy.value,
-                'compression': compression.value
-            })
-            
+            self.cache_stats["sets"] += 1
             return True
-            
-        except Exception as e:
-            logger.error(f"Cache operation failed: {str(e)}")
+        except Exception:
             return False
             
-    async def get_from_cache(self, 
-                           key: str,
-                           strategy: CacheStrategy = CacheStrategy.CACHE_FIRST) -> Optional[Any]:
-        """Get data from cache with specified strategy"""
+    async def delete(self, key: str) -> bool:
+        """Delete value from cache"""
         try:
-            # Try local cache first
-            if key in self.local_cache:
-                entry = self.local_cache[key]
-                
-                # Check if entry is expired
-                if datetime.utcnow() - entry.created_at > timedelta(seconds=entry.ttl):
-                    del self.local_cache[key]
-                else:
-                    # Update access statistics
-                    entry.access_count += 1
-                    entry.last_accessed = datetime.utcnow()
-                    
-                    # Decompress and return value
-                    return await self._decompress_data(entry.value, entry.compression_type)
-                    
-            # Try Redis cache
-            if self.redis_client:
-                redis_data = await self.redis_client.get(key)
-                if redis_data:
-                    data = json.loads(redis_data)
-                    
-                    # Check if entry is expired
-                    created_at = datetime.fromisoformat(data['created_at'])
-                    if datetime.utcnow() - created_at > timedelta(seconds=data['ttl']):
-                        await self.redis_client.delete(key)
-                    else:
-                        # Decompress and return value
-                        compression_type = CompressionType(data['compression_type'])
-                        return await self._decompress_data(data['value'], compression_type)
-                        
-            # Record cache miss
-            await self._record_metric('cache_miss', 1, 'count', {'key': key})
-            return None
-            
-        except Exception as e:
-            logger.error(f"Cache retrieval failed: {str(e)}")
-            return None
-            
-    async def invalidate_cache(self, 
-                             pattern: str,
-                             strategy: str = "exact") -> int:
-        """Invalidate cache entries matching pattern"""
+            await self.redis.delete(key)
+            self.cache_stats["deletes"] += 1
+            return True
+        except Exception:
+            return False
+    
+    async def invalidate_by_tag(self, tag: str) -> int:
+        """Invalidate all cache entries with a specific tag"""
         try:
-            invalidated_count = 0
-            
-            # Invalidate local cache
-            if strategy == "exact":
-                if pattern in self.local_cache:
-                    del self.local_cache[pattern]
-                    invalidated_count += 1
-            else:
-                # Pattern matching
-                keys_to_remove = [
-                    key for key in self.local_cache.keys()
-                    if pattern in key
-                ]
-                for key in keys_to_remove:
-                    del self.local_cache[key]
-                    invalidated_count += 1
-                    
-            # Invalidate Redis cache
-            if self.redis_client:
-                if strategy == "exact":
-                    result = await self.redis_client.delete(pattern)
-                    invalidated_count += result
-                else:
-                    keys = await self.redis_client.keys(f"*{pattern}*")
+            keys = await self.redis.smembers(f"cache:tags:{tag}")
                     if keys:
-                        result = await self.redis_client.delete(*keys)
-                        invalidated_count += result
-                        
-            # Record invalidation metric
-            await self._record_metric('cache_invalidation', invalidated_count, 'count', {
-                'pattern': pattern,
-                'strategy': strategy
-            })
-            
-            return invalidated_count
-            
-        except Exception as e:
-            logger.error(f"Cache invalidation failed: {str(e)}")
+                await self.redis.delete(*keys)
+                await self.redis.delete(f"cache:tags:{tag}")
+            return len(keys)
+        except Exception:
             return 0
             
-    async def optimize_database_queries(self, 
-                                      query: str,
-                                      params: Dict[str, Any]) -> Dict[str, Any]:
-        """Optimize database queries with caching and analysis"""
-        try:
-            # Generate query hash for caching
-            query_hash = hashlib.md5(f"{query}{json.dumps(params, sort_keys=True)}".encode()).hexdigest()
-            cache_key = f"db_query:{query_hash}"
+    async def get_stats(self) -> Dict[str, Any]:
+        """Get cache statistics"""
+        total_requests = self.cache_stats["hits"] + self.cache_stats["misses"]
+        hit_rate = (self.cache_stats["hits"] / total_requests * 100) if total_requests > 0 else 0
             
-            # Try to get from cache first
-            cached_result = await self.get_from_cache(cache_key, CacheStrategy.CACHE_FIRST)
-            if cached_result:
-                await self._record_metric('database_query_cache_hit', 1, 'count')
-                return {
-                    'result': cached_result,
-                    'cached': True,
-                    'query_time_ms': 0
-                }
+            return {
+            **self.cache_stats,
+            "hit_rate": hit_rate,
+            "total_requests": total_requests
+        }
+
+class DatabaseOptimizer:
+    """Database query optimization"""
+    
+    def __init__(self, db_session):
+        self.db = db_session
+    
+    async def optimize_query(self, query: str, params: Dict[str, Any] = None) -> str:
+        """Optimize SQL query"""
+        # Add query hints and optimizations
+        optimized_query = query
+        
+        # Add index hints for common patterns
+        if "WHERE" in query.upper():
+            optimized_query = self._add_index_hints(optimized_query)
+        
+        # Add query plan analysis
+        if "SELECT" in query.upper():
+            optimized_query = self._add_query_plan(optimized_query)
+        
+        return optimized_query
+    
+    def _add_index_hints(self, query: str) -> str:
+        """Add index hints to query"""
+        # This would analyze the query and add appropriate index hints
+        # For now, return the original query
+        return query
+    
+    def _add_query_plan(self, query: str) -> str:
+        """Add query plan analysis"""
+        # This would analyze the query execution plan
+        # For now, return the original query
+        return query
+    
+    async def analyze_slow_queries(self, time_threshold: float = 1.0) -> List[Dict[str, Any]]:
+        """Analyze slow queries"""
+        # This would query the database for slow query logs
+        # For now, return mock data
+        return [
+            {
+                "query": "SELECT * FROM users WHERE email = ?",
+                "execution_time": 2.5,
+                "frequency": 100,
+                "suggestion": "Add index on email column"
+            }
+        ]
+
+class ConnectionPoolManager:
+    """Advanced connection pool management"""
+    
+    def __init__(self, max_connections: int = 100, min_connections: int = 10):
+        self.max_connections = max_connections
+        self.min_connections = min_connections
+        self.active_connections = 0
+        self.connection_pool = []
+        self.connection_stats = {
+            "total_created": 0,
+            "total_destroyed": 0,
+            "active_connections": 0,
+            "peak_connections": 0
+        }
+    
+    async def get_connection(self):
+        """Get connection from pool"""
+        if self.connection_pool:
+            connection = self.connection_pool.pop()
+            self.active_connections += 1
+            self.connection_stats["active_connections"] = self.active_connections
+            self.connection_stats["peak_connections"] = max(
+                self.connection_stats["peak_connections"],
+                self.active_connections
+            )
+            return connection
+            else:
+            # Create new connection
+            connection = await self._create_connection()
+            self.active_connections += 1
+            self.connection_stats["total_created"] += 1
+            return connection
+    
+    async def return_connection(self, connection):
+        """Return connection to pool"""
+        if self.active_connections > self.min_connections:
+            # Destroy connection if we have too many
+            await self._destroy_connection(connection)
+            self.connection_stats["total_destroyed"] += 1
+        else:
+            # Return to pool
+            self.connection_pool.append(connection)
+        
+        self.active_connections -= 1
+        self.connection_stats["active_connections"] = self.active_connections
+    
+    async def _create_connection(self):
+        """Create new database connection"""
+        # Mock connection creation
+        return {"id": f"conn_{int(time.time())}", "created_at": datetime.utcnow()}
+    
+    async def _destroy_connection(self, connection):
+        """Destroy database connection"""
+        # Mock connection destruction
+        pass
+    
+    def get_stats(self) -> Dict[str, Any]:
+        """Get connection pool statistics"""
+        return {
+            **self.connection_stats,
+            "pool_size": len(self.connection_pool),
+            "utilization": (self.active_connections / self.max_connections) * 100
+        }
+
+class APIOptimizer:
+    """API response optimization"""
+    
+    def __init__(self, cache_manager: CacheManager):
+        self.cache = cache_manager
+        self.response_cache = {}
+    
+    async def optimize_response(
+        self,
+        endpoint: str,
+        params: Dict[str, Any],
+        response_data: Any,
+        ttl: int = 300
+    ) -> Any:
+        """Optimize API response with caching and compression"""
+        # Generate cache key
+        cache_key = self._generate_cache_key(endpoint, params)
+        
+        # Check cache first
+        cached_response = await self.cache.get(cache_key)
+        if cached_response:
+            return cached_response
+        
+        # Optimize response data
+        optimized_data = await self._optimize_data(response_data)
+        
+        # Cache the response
+        await self.cache.set(cache_key, optimized_data, ttl)
+        
+        return optimized_data
+    
+    def _generate_cache_key(self, endpoint: str, params: Dict[str, Any]) -> str:
+        """Generate cache key for endpoint and parameters"""
+        key_data = f"{endpoint}:{json.dumps(params, sort_keys=True)}"
+        return hashlib.md5(key_data.encode()).hexdigest()
+    
+    async def _optimize_data(self, data: Any) -> Any:
+        """Optimize response data"""
+        if isinstance(data, list):
+            # Limit list size for performance
+            return data[:1000] if len(data) > 1000 else data
+        elif isinstance(data, dict):
+            # Remove unnecessary fields
+            optimized = {}
+            for key, value in data.items():
+                if value is not None and value != "":
+                    optimized[key] = value
+            return optimized
+        else:
+            return data
+    
+    async def batch_optimize_responses(
+        self,
+        requests: List[Tuple[str, Dict[str, Any]]],
+        ttl: int = 300
+    ) -> List[Any]:
+        """Batch optimize multiple API responses"""
+        results = []
+        
+        for endpoint, params in requests:
+            try:
+                # This would make the actual API call
+                response_data = await self._make_api_call(endpoint, params)
+                optimized_response = await self.optimize_response(
+                    endpoint, params, response_data, ttl
+                )
+                results.append(optimized_response)
+            except Exception as e:
+                results.append({"error": str(e)})
+        
+        return results
+    
+    async def _make_api_call(self, endpoint: str, params: Dict[str, Any]) -> Any:
+        """Make API call (mock implementation)"""
+        # This would make the actual API call
+        return {"endpoint": endpoint, "params": params, "data": "mock_response"}
+
+class MemoryOptimizer:
+    """Memory usage optimization"""
+    
+    def __init__(self):
+        self.memory_stats = {
+            "total_allocated": 0,
+            "total_freed": 0,
+            "current_usage": 0,
+            "peak_usage": 0
+        }
+    
+    def track_memory_usage(self, func):
+        """Decorator to track memory usage"""
+        @wraps(func)
+        async def async_wrapper(*args, **kwargs):
+            import psutil
+            import os
+            
+            process = psutil.Process(os.getpid())
+            memory_before = process.memory_info().rss
+            
+            try:
+                result = await func(*args, **kwargs)
+                memory_after = process.memory_info().rss
+                memory_used = memory_after - memory_before
                 
-            # Execute query (mock implementation)
-            start_time = time.time()
-            result = await self._execute_database_query(query, params)
-            query_time = (time.time() - start_time) * 1000
-            
-            # Cache result if query time is significant
-            if query_time > 50:  # Cache queries taking more than 50ms
-                await self.cache_with_strategy(
-                    cache_key,
-                    result,
-                    CacheStrategy.WRITE_THROUGH,
-                    ttl=300  # 5 minutes
+                self.memory_stats["total_allocated"] += memory_used
+                self.memory_stats["current_usage"] = memory_after
+                self.memory_stats["peak_usage"] = max(
+                    self.memory_stats["peak_usage"],
+                    memory_after
                 )
                 
-            # Record query performance metric
-            await self._record_metric('database_query_time', query_time, 'milliseconds', {
-                'query_type': self._classify_query(query),
-                'cached': False
-            })
-            
-            return {
-                'result': result,
-                'cached': False,
-                'query_time_ms': query_time
-            }
-            
-        except Exception as e:
-            logger.error(f"Database query optimization failed: {str(e)}")
-            return {
-                'result': None,
-                'error': str(e),
-                'query_time_ms': 0
-            }
-            
-    async def optimize_api_response(self, 
-                                  endpoint: str,
-                                  data: Any,
-                                  compression: CompressionType = CompressionType.BROTLI) -> Dict[str, Any]:
-        """Optimize API response with compression and caching"""
-        try:
-            # Compress response data
-            compressed_data = await self._compress_data(data, compression)
-            
-            # Calculate compression ratio
-            original_size = len(json.dumps(data).encode('utf-8'))
-            compressed_size = len(compressed_data)
-            compression_ratio = (1 - compressed_size / original_size) * 100
-            
-            # Record compression metric
-            await self._record_metric('api_compression_ratio', compression_ratio, 'percent', {
-                'endpoint': endpoint,
-                'compression_type': compression.value
-            })
-            
-            return {
-                'data': compressed_data,
-                'compression_type': compression.value,
-                'compression_ratio': compression_ratio,
-                'original_size': original_size,
-                'compressed_size': compressed_size
-            }
-            
-        except Exception as e:
-            logger.error(f"API response optimization failed: {str(e)}")
-            return {
-                'data': data,
-                'error': str(e)
-            }
-            
-    async def setup_cdn_optimization(self, 
-                                   static_assets: List[str],
-                                   cdn_provider: str = "cloudflare") -> Dict[str, Any]:
-        """Setup CDN optimization for static assets"""
-        try:
-            cdn_config = {
-                'provider': cdn_provider,
-                'assets': [],
-                'optimization_rules': [],
-                'cache_headers': {},
-                'compression': True
-            }
-            
-            for asset in static_assets:
-                # Generate CDN URL
-                cdn_url = await self._generate_cdn_url(asset, cdn_provider)
-                
-                # Optimize asset
-                optimized_asset = await self._optimize_static_asset(asset)
-                
-                cdn_config['assets'].append({
-                    'original_path': asset,
-                    'cdn_url': cdn_url,
-                    'optimized': optimized_asset,
-                    'cache_ttl': self._get_asset_cache_ttl(asset)
-                })
-                
-            # Setup cache headers
-            cdn_config['cache_headers'] = {
-                'css': 'max-age=31536000, immutable',
-                'js': 'max-age=31536000, immutable',
-                'images': 'max-age=31536000, immutable',
-                'fonts': 'max-age=31536000, immutable'
-            }
-            
-            # Record CDN setup metric
-            await self._record_metric('cdn_assets_optimized', len(static_assets), 'count', {
-                'provider': cdn_provider
-            })
-            
-            return cdn_config
-            
-        except Exception as e:
-            logger.error(f"CDN optimization setup failed: {str(e)}")
-            return {
-                'error': str(e)
-            }
-            
-    async def monitor_performance(self) -> Dict[str, Any]:
-        """Monitor system performance and generate report"""
-        try:
-            # Collect performance metrics
-            metrics = {
-                'response_times': await self._get_response_time_metrics(),
-                'cache_performance': await self._get_cache_performance_metrics(),
-                'memory_usage': await self._get_memory_usage_metrics(),
-                'cpu_usage': await self._get_cpu_usage_metrics(),
-                'database_performance': await self._get_database_performance_metrics(),
-                'api_performance': await self._get_api_performance_metrics()
-            }
-            
-            # Analyze performance
-            analysis = await self._analyze_performance_metrics(metrics)
-            
-            # Generate recommendations
-            recommendations = await self._generate_performance_recommendations(analysis)
-            
-            return {
-                'metrics': metrics,
-                'analysis': analysis,
-                'recommendations': recommendations,
-                'timestamp': datetime.utcnow().isoformat()
-            }
-            
-        except Exception as e:
-            logger.error(f"Performance monitoring failed: {str(e)}")
-            return {
-                'error': str(e)
-            }
-            
-    async def _compress_data(self, data: Any, compression_type: CompressionType) -> bytes:
-        """Compress data using specified compression type"""
-        try:
-            # Serialize data to JSON
-            json_data = json.dumps(data).encode('utf-8')
-            
-            if compression_type == CompressionType.GZIP:
-                return gzip.compress(json_data)
-            elif compression_type == CompressionType.BROTLI:
-                return brotli.compress(json_data)
-            elif compression_type == CompressionType.DEFLATE:
-                import zlib
-                return zlib.compress(json_data)
-            else:
-                return json_data
-                
-        except Exception as e:
-            logger.error(f"Data compression failed: {str(e)}")
-            return json.dumps(data).encode('utf-8')
-            
-    async def _decompress_data(self, compressed_data: bytes, compression_type: CompressionType) -> Any:
-        """Decompress data using specified compression type"""
-        try:
-            if compression_type == CompressionType.GZIP:
-                decompressed = gzip.decompress(compressed_data)
-            elif compression_type == CompressionType.BROTLI:
-                decompressed = brotli.decompress(compressed_data)
-            elif compression_type == CompressionType.DEFLATE:
-                import zlib
-                decompressed = zlib.decompress(compressed_data)
-            else:
-                decompressed = compressed_data
-                
-            return json.loads(decompressed.decode('utf-8'))
-            
-        except Exception as e:
-            logger.error(f"Data decompression failed: {str(e)}")
-            return None
-            
-    async def _execute_database_query(self, query: str, params: Dict[str, Any]) -> Any:
-        """Execute database query (mock implementation)"""
-        # Mock implementation - would execute actual database query
-        await asyncio.sleep(0.01)  # Simulate query execution time
-        return {"result": "mock_data"}
+                return result
+            except Exception as e:
+                memory_after = process.memory_info().rss
+                memory_used = memory_after - memory_before
+                self.memory_stats["total_allocated"] += memory_used
+                raise e
         
-    def _classify_query(self, query: str) -> str:
-        """Classify query type"""
-        query_lower = query.lower()
-        if 'select' in query_lower:
-            return 'select'
-        elif 'insert' in query_lower:
-            return 'insert'
-        elif 'update' in query_lower:
-            return 'update'
-        elif 'delete' in query_lower:
-            return 'delete'
-        else:
-            return 'other'
-            
-    async def _generate_cdn_url(self, asset_path: str, provider: str) -> str:
-        """Generate CDN URL for asset"""
-        # Mock implementation - would generate actual CDN URL
-        return f"https://cdn.{provider}.com/{asset_path}"
+        return async_wrapper
+    
+    def get_memory_stats(self) -> Dict[str, Any]:
+        """Get memory usage statistics"""
+        return self.memory_stats
+    
+    async def cleanup_memory(self):
+        """Cleanup memory usage"""
+        import gc
+        gc.collect()
+        self.memory_stats["total_freed"] += 1
+
+class PerformanceOptimizer:
+    """Main performance optimization service"""
+    
+    def __init__(
+        self,
+        redis_client: aioredis.Redis,
+        db_session,
+        max_connections: int = 100
+    ):
+        self.monitor = PerformanceMonitor(redis_client)
+        self.cache = CacheManager(redis_client)
+        self.db_optimizer = DatabaseOptimizer(db_session)
+        self.connection_pool = ConnectionPoolManager(max_connections)
+        self.api_optimizer = APIOptimizer(self.cache)
+        self.memory_optimizer = MemoryOptimizer()
+    
+    async def optimize_application(self):
+        """Optimize the entire application"""
+        # Set up event loop optimization
+        asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
         
-    async def _optimize_static_asset(self, asset_path: str) -> Dict[str, Any]:
-        """Optimize static asset"""
-        # Mock implementation - would optimize actual asset
+        # Optimize database connections
+        await self._optimize_database()
+        
+        # Set up caching strategies
+        await self._setup_caching()
+        
+        # Optimize memory usage
+        await self.memory_optimizer.cleanup_memory()
+    
+    async def _optimize_database(self):
+        """Optimize database performance"""
+        # This would implement database-specific optimizations
+        pass
+    
+    async def _setup_caching(self):
+        """Set up caching strategies"""
+        # This would implement caching strategies
+        pass
+    
+    async def get_performance_report(self) -> Dict[str, Any]:
+        """Get comprehensive performance report"""
         return {
-            'minified': True,
-            'compressed': True,
-            'optimized_size': 1024
+            "cache_stats": await self.cache.get_stats(),
+            "connection_stats": self.connection_pool.get_stats(),
+            "memory_stats": self.memory_optimizer.get_memory_stats(),
+            "timestamp": datetime.utcnow().isoformat()
         }
-        
-    def _get_asset_cache_ttl(self, asset_path: str) -> int:
-        """Get cache TTL for asset based on file type"""
-        if asset_path.endswith(('.css', '.js')):
-            return 31536000  # 1 year
-        elif asset_path.endswith(('.png', '.jpg', '.jpeg', '.gif', '.svg')):
-            return 31536000  # 1 year
-        elif asset_path.endswith(('.woff', '.woff2', '.ttf', '.eot')):
-            return 31536000  # 1 year
-        else:
-            return 3600  # 1 hour
-            
-    async def _setup_cache_strategies(self):
-        """Setup cache strategies for different data types"""
-        self.cache_strategies = {
-            'user_data': CacheStrategy.CACHE_FIRST,
-            'nft_metadata': CacheStrategy.STALE_WHILE_REVALIDATE,
-            'market_data': CacheStrategy.NETWORK_FIRST,
-            'static_content': CacheStrategy.CACHE_FIRST,
-            'api_responses': CacheStrategy.WRITE_THROUGH
-        }
-        
-    async def _setup_cdn_endpoints(self):
-        """Setup CDN endpoints"""
-        self.cdn_endpoints = {
-            'images': 'https://cdn.soladia.com/images',
-            'assets': 'https://cdn.soladia.com/assets',
-            'fonts': 'https://cdn.soladia.com/fonts'
-        }
-        
-    async def _record_metric(self, 
-                           metric_name: str, 
-                           value: float, 
-                           unit: str, 
-                           tags: Dict[str, str] = None):
-        """Record performance metric"""
-        metric = PerformanceMetric(
-            metric_name=metric_name,
-            value=value,
-            unit=unit,
-            timestamp=datetime.utcnow(),
-            tags=tags or {},
-            metadata={}
+    
+    async def optimize_endpoint(
+        self,
+        endpoint: str,
+        params: Dict[str, Any],
+        response_data: Any
+    ) -> Any:
+        """Optimize a specific API endpoint"""
+        return await self.api_optimizer.optimize_response(
+            endpoint, params, response_data
         )
-        self.performance_metrics.append(metric)
-        
-    async def _get_response_time_metrics(self) -> Dict[str, float]:
-        """Get response time metrics"""
-        # Mock implementation - would collect actual metrics
-        return {
-            'average_response_time_ms': 150,
-            'p95_response_time_ms': 300,
-            'p99_response_time_ms': 500
-        }
-        
-    async def _get_cache_performance_metrics(self) -> Dict[str, float]:
-        """Get cache performance metrics"""
-        total_requests = len(self.performance_metrics)
-        cache_hits = len([m for m in self.performance_metrics if 'cache_hit' in m.metric_name])
-        
-        return {
-            'cache_hit_ratio': cache_hits / total_requests if total_requests > 0 else 0,
-            'cache_size': len(self.local_cache),
-            'cache_evictions': 0
-        }
-        
-    async def _get_memory_usage_metrics(self) -> Dict[str, float]:
-        """Get memory usage metrics"""
-        # Mock implementation - would collect actual memory metrics
-        return {
-            'used_memory_mb': 256,
-            'available_memory_mb': 768,
-            'memory_usage_percent': 25
-        }
-        
-    async def _get_cpu_usage_metrics(self) -> Dict[str, float]:
-        """Get CPU usage metrics"""
-        # Mock implementation - would collect actual CPU metrics
-        return {
-            'cpu_usage_percent': 45,
-            'load_average': 1.2
-        }
-        
-    async def _get_database_performance_metrics(self) -> Dict[str, float]:
-        """Get database performance metrics"""
-        # Mock implementation - would collect actual database metrics
-        return {
-            'average_query_time_ms': 25,
-            'slow_queries_count': 5,
-            'connection_pool_usage': 0.3
-        }
-        
-    async def _get_api_performance_metrics(self) -> Dict[str, float]:
-        """Get API performance metrics"""
-        # Mock implementation - would collect actual API metrics
-        return {
-            'requests_per_second': 100,
-            'error_rate_percent': 0.5,
-            'average_response_size_kb': 2.5
-        }
-        
-    async def _analyze_performance_metrics(self, metrics: Dict[str, Any]) -> Dict[str, Any]:
-        """Analyze performance metrics and identify issues"""
-        analysis = {
-            'issues': [],
-            'warnings': [],
-            'performance_score': 100
-        }
-        
-        # Check response time thresholds
-        if metrics['response_times']['average_response_time_ms'] > self.thresholds['response_time_ms']:
-            analysis['issues'].append('High average response time')
-            analysis['performance_score'] -= 20
-            
-        # Check cache hit ratio
-        if metrics['cache_performance']['cache_hit_ratio'] < self.thresholds['cache_hit_ratio']:
-            analysis['warnings'].append('Low cache hit ratio')
-            analysis['performance_score'] -= 10
-            
-        # Check memory usage
-        if metrics['memory_usage']['memory_usage_percent'] > 80:
-            analysis['warnings'].append('High memory usage')
-            analysis['performance_score'] -= 15
-            
-        return analysis
-        
-    async def _generate_performance_recommendations(self, analysis: Dict[str, Any]) -> List[str]:
-        """Generate performance recommendations"""
-        recommendations = []
-        
-        if 'High average response time' in analysis['issues']:
-            recommendations.append('Consider implementing response caching and database query optimization')
-            
-        if 'Low cache hit ratio' in analysis['warnings']:
-            recommendations.append('Review cache strategies and increase cache TTL for frequently accessed data')
-            
-        if 'High memory usage' in analysis['warnings']:
-            recommendations.append('Consider implementing memory optimization and garbage collection tuning')
-            
-        return recommendations
-
-# Create singleton instance
-advanced_performance_service = AdvancedPerformanceService()
-
-
-
+    
+    async def batch_optimize(
+        self,
+        requests: List[Tuple[str, Dict[str, Any]]]
+    ) -> List[Any]:
+        """Batch optimize multiple requests"""
+        return await self.api_optimizer.batch_optimize_responses(requests)

@@ -632,3 +632,4 @@ def get_predictive_analytics(db_session = Depends(get_db), redis_client = Depend
     """Get predictive analytics service"""
     return PredictiveAnalytics(db_session, redis_client)
 
+

@@ -3,100 +3,20 @@ import Layout from '../layouts/Layout.astro';
 import Navigation from '../components/Navigation.astro';
 import AuthGuard from '../components/AuthGuard.astro';
 import Card from '../components/atoms/Card.astro';
-import Button from '../components/atoms/Button.astro';
 ---
 
 <Layout title='Analytics Dashboard - Soladia'>
   <Navigation />
 
-  <AuthGuard requireAuth={true} redirectTo='/auth'>
+  <AuthGuard requireAuth={true} requireRole='admin' redirectTo='/auth'>
     <main class='min-h-screen bg-gray-50 py-8'>
       <div class='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
         <!-- Header -->
         <div class='mb-8'>
           <h1 class='text-3xl font-bold text-gray-900'>Analytics Dashboard</h1>
           <p class='mt-2 text-gray-600'>
-            Track your marketplace performance and insights
+            Comprehensive insights into your Soladia marketplace performance
           </p>
-        </div>
-
-        <!-- Time Range Selector -->
-        <div class='mb-8'>
-          <Card variant='default' padding='md'>
-            <div class='flex items-center justify-between'>
-              <div class='flex items-center space-x-4'>
-                <h3 class='text-lg font-semibold text-gray-900'>Time Range</h3>
-                <div class='flex space-x-2'>
-                  <Button
-                    id='time-7d'
-                    variant='outline'
-                    size='sm'
-                    onclick='setTimeRange("7d")'
-                  >
-                    7 Days
-                  </Button>
-                  <Button
-                    id='time-30d'
-                    variant='outline'
-                    size='sm'
-                    onclick='setTimeRange("30d")'
-                  >
-                    30 Days
-                  </Button>
-                  <Button
-                    id='time-90d'
-                    variant='outline'
-                    size='sm'
-                    onclick='setTimeRange("90d")'
-                  >
-                    90 Days
-                  </Button>
-                  <Button
-                    id='time-1y'
-                    variant='outline'
-                    size='sm'
-                    onclick='setTimeRange("1y")'
-                  >
-                    1 Year
-                  </Button>
-                </div>
-              </div>
-              <div class='flex items-center space-x-2'>
-                <Button variant='ghost' size='sm' onclick='refreshData()'>
-                  <svg
-                    class='w-4 h-4 mr-2'
-                    fill='none'
-                    stroke='currentColor'
-                    viewBox='0 0 24 24'
-                  >
-                    <path
-                      stroke-linecap='round'
-                      stroke-linejoin='round'
-                      stroke-width='2'
-                      d='M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15'
-                    ></path>
-                  </svg>
-                  Refresh
-                </Button>
-                <Button variant='ghost' size='sm' onclick='exportData()'>
-                  <svg
-                    class='w-4 h-4 mr-2'
-                    fill='none'
-                    stroke='currentColor'
-                    viewBox='0 0 24 24'
-                  >
-                    <path
-                      stroke-linecap='round'
-                      stroke-linejoin='round'
-                      stroke-width='2'
-                      d='M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z'
-                    ></path>
-                  </svg>
-                  Export
-                </Button>
-              </div>
-            </div>
-          </Card>
         </div>
 
         <!-- Key Metrics -->
@@ -106,9 +26,9 @@ import Button from '../components/atoms/Button.astro';
               <div>
                 <p class='text-sm font-medium text-gray-500'>Total Revenue</p>
                 <p id='total-revenue' class='text-3xl font-bold text-gray-900'>
-                  $0.00
+                  $0
                 </p>
-                <p id='revenue-change' class='text-sm text-green-600'>+0%</p>
+                <p id='revenue-growth' class='text-sm text-green-600'>+0%</p>
               </div>
               <div
                 class='w-12 h-12 bg-green-100 rounded-full flex items-center justify-center'
@@ -137,7 +57,7 @@ import Button from '../components/atoms/Button.astro';
                 <p id='total-sales' class='text-3xl font-bold text-gray-900'>
                   0
                 </p>
-                <p id='sales-change' class='text-sm text-blue-600'>+0%</p>
+                <p id='sales-growth' class='text-sm text-blue-600'>+0%</p>
               </div>
               <div
                 class='w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center'
@@ -161,14 +81,11 @@ import Button from '../components/atoms/Button.astro';
           <Card variant='elevated' padding='lg'>
             <div class='flex items-center justify-between'>
               <div>
-                <p class='text-sm font-medium text-gray-500'>Active Listings</p>
-                <p
-                  id='active-listings'
-                  class='text-3xl font-bold text-gray-900'
-                >
+                <p class='text-sm font-medium text-gray-500'>Active Users</p>
+                <p id='active-users' class='text-3xl font-bold text-gray-900'>
                   0
                 </p>
-                <p id='listings-change' class='text-sm text-purple-600'>+0%</p>
+                <p id='users-growth' class='text-sm text-purple-600'>+0%</p>
               </div>
               <div
                 class='w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center'
@@ -183,7 +100,8 @@ import Button from '../components/atoms/Button.astro';
                     stroke-linecap='round'
                     stroke-linejoin='round'
                     stroke-width='2'
-                    d='M19 11H5m14 0l-8-8m8 8l-8 8'></path>
+                    d='M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-9a2.5 2.5 0 11-5 0 2.5 2.5 0 015 0z'
+                  ></path>
                 </svg>
               </div>
             </div>
@@ -199,15 +117,15 @@ import Button from '../components/atoms/Button.astro';
                 >
                   0%
                 </p>
-                <p id='conversion-change' class='text-sm text-yellow-600'>
+                <p id='conversion-growth' class='text-sm text-orange-600'>
                   +0%
                 </p>
               </div>
               <div
-                class='w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center'
+                class='w-12 h-12 bg-orange-100 rounded-full flex items-center justify-center'
               >
                 <svg
-                  class='w-6 h-6 text-yellow-600'
+                  class='w-6 h-6 text-orange-600'
                   fill='none'
                   stroke='currentColor'
                   viewBox='0 0 24 24'
@@ -228,9 +146,25 @@ import Button from '../components/atoms/Button.astro';
         <div class='grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8'>
           <!-- Revenue Chart -->
           <Card variant='default' padding='lg'>
-            <h3 class='text-lg font-semibold text-gray-900 mb-4'>
-              Revenue Trend
-            </h3>
+            <div class='flex items-center justify-between mb-6'>
+              <h2 class='text-xl font-semibold text-gray-900'>
+                Revenue Trends
+              </h2>
+              <div class='flex space-x-2'>
+                <button
+                  class='px-3 py-1 text-sm bg-soladia-primary text-white rounded-md'
+                  >30D</button
+                >
+                <button
+                  class='px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md'
+                  >90D</button
+                >
+                <button
+                  class='px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md'
+                  >1Y</button
+                >
+              </div>
+            </div>
             <div
               id='revenue-chart'
               class='h-64 flex items-center justify-center bg-gray-50 rounded-lg'
@@ -249,18 +183,34 @@ import Button from '../components/atoms/Button.astro';
                     d='M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'
                   ></path>
                 </svg>
-                <p class='text-sm text-gray-500'>Chart will load here</p>
+                <p class='text-sm text-gray-500'>
+                  Revenue chart will load here
+                </p>
               </div>
             </div>
           </Card>
 
-          <!-- Sales Chart -->
+          <!-- User Growth Chart -->
           <Card variant='default' padding='lg'>
-            <h3 class='text-lg font-semibold text-gray-900 mb-4'>
-              Sales Volume
-            </h3>
+            <div class='flex items-center justify-between mb-6'>
+              <h2 class='text-xl font-semibold text-gray-900'>User Growth</h2>
+              <div class='flex space-x-2'>
+                <button
+                  class='px-3 py-1 text-sm bg-soladia-primary text-white rounded-md'
+                  >30D</button
+                >
+                <button
+                  class='px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md'
+                  >90D</button
+                >
+                <button
+                  class='px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded-md'
+                  >1Y</button
+                >
+              </div>
+            </div>
             <div
-              id='sales-chart'
+              id='user-growth-chart'
               class='h-64 flex items-center justify-center bg-gray-50 rounded-lg'
             >
               <div class='text-center'>
@@ -274,378 +224,368 @@ import Button from '../components/atoms/Button.astro';
                     stroke-linecap='round'
                     stroke-linejoin='round'
                     stroke-width='2'
-                    d='M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z'
-                  ></path>
+                    d='M13 7h8m0 0v8m0-8l-8 8m8-8l-8 8'></path>
                 </svg>
-                <p class='text-sm text-gray-500'>Chart will load here</p>
+                <p class='text-sm text-gray-500'>
+                  User growth chart will load here
+                </p>
               </div>
             </div>
           </Card>
         </div>
 
-        <!-- Detailed Analytics -->
-        <div class='grid grid-cols-1 lg:grid-cols-3 gap-8 mb-8'>
+        <!-- Top Products and Sellers -->
+        <div class='grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8'>
           <!-- Top Products -->
           <Card variant='default' padding='lg'>
-            <h3 class='text-lg font-semibold text-gray-900 mb-4'>
+            <h2 class='text-xl font-semibold text-gray-900 mb-6'>
               Top Products
-            </h3>
-            <div id='top-products' class='space-y-3'>
-              <div
-                class='flex items-center justify-between p-3 bg-gray-50 rounded-lg'
-              >
-                <div class='flex items-center space-x-3'>
-                  <div class='w-10 h-10 bg-gray-200 rounded'></div>
-                  <div>
-                    <p class='text-sm font-medium text-gray-900'>
-                      Product Name
-                    </p>
-                    <p class='text-xs text-gray-500'>$0.00</p>
-                  </div>
-                </div>
-                <span class='text-sm font-medium text-gray-900'>0 sales</span>
-              </div>
+            </h2>
+            <div id='top-products' class='space-y-4'>
+              <!-- Top products will be populated here -->
             </div>
           </Card>
 
-          <!-- Recent Activity -->
+          <!-- Top Sellers -->
           <Card variant='default' padding='lg'>
-            <h3 class='text-lg font-semibold text-gray-900 mb-4'>
-              Recent Activity
-            </h3>
-            <div id='recent-activity' class='space-y-3'>
-              <div
-                class='flex items-center space-x-3 p-3 bg-gray-50 rounded-lg'
-              >
-                <div
-                  class='w-8 h-8 bg-green-100 rounded-full flex items-center justify-center'
-                >
-                  <svg
-                    class='w-4 h-4 text-green-600'
-                    fill='none'
-                    stroke='currentColor'
-                    viewBox='0 0 24 24'
-                  >
-                    <path
-                      stroke-linecap='round'
-                      stroke-linejoin='round'
-                      stroke-width='2'
-                      d='M5 13l4 4L19 7'></path>
-                  </svg>
-                </div>
-                <div class='flex-1'>
-                  <p class='text-sm text-gray-900'>Sale completed</p>
-                  <p class='text-xs text-gray-500'>2 hours ago</p>
-                </div>
-              </div>
-            </div>
-          </Card>
-
-          <!-- Performance Metrics -->
-          <Card variant='default' padding='lg'>
-            <h3 class='text-lg font-semibold text-gray-900 mb-4'>
-              Performance
-            </h3>
-            <div id='performance-metrics' class='space-y-4'>
-              <div class='flex justify-between items-center'>
-                <span class='text-sm text-gray-600'>Page Views</span>
-                <span class='text-sm font-medium text-gray-900'>0</span>
-              </div>
-              <div class='flex justify-between items-center'>
-                <span class='text-sm text-gray-600'>Unique Visitors</span>
-                <span class='text-sm font-medium text-gray-900'>0</span>
-              </div>
-              <div class='flex justify-between items-center'>
-                <span class='text-sm text-gray-600'>Bounce Rate</span>
-                <span class='text-sm font-medium text-gray-900'>0%</span>
-              </div>
-              <div class='flex justify-between items-center'>
-                <span class='text-sm text-gray-600'>Avg. Session</span>
-                <span class='text-sm font-medium text-gray-900'>0m</span>
-              </div>
+            <h2 class='text-xl font-semibold text-gray-900 mb-6'>
+              Top Sellers
+            </h2>
+            <div id='top-sellers' class='space-y-4'>
+              <!-- Top sellers will be populated here -->
             </div>
           </Card>
         </div>
 
-        <!-- Blockchain Analytics -->
-        <div class='grid grid-cols-1 lg:grid-cols-2 gap-8'>
-          <!-- Solana Transactions -->
+        <!-- Geographic and Device Data -->
+        <div class='grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8'>
+          <!-- Geographic Distribution -->
           <Card variant='default' padding='lg'>
-            <h3 class='text-lg font-semibold text-gray-900 mb-4'>
-              Solana Transactions
-            </h3>
-            <div id='solana-transactions' class='space-y-3'>
-              <div
-                class='flex items-center justify-between p-3 bg-gray-50 rounded-lg'
-              >
-                <div class='flex items-center space-x-3'>
-                  <div
-                    class='w-8 h-8 bg-purple-100 rounded-full flex items-center justify-center'
-                  >
-                    <svg
-                      class='w-4 h-4 text-purple-600'
-                      fill='currentColor'
-                      viewBox='0 0 24 24'
-                    >
-                      <path
-                        d='M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5'
-                      ></path>
-                    </svg>
-                  </div>
-                  <div>
-                    <p class='text-sm font-medium text-gray-900'>
-                      Transaction Hash
-                    </p>
-                    <p class='text-xs text-gray-500 font-mono'>0x1234...5678</p>
-                  </div>
-                </div>
-                <div class='text-right'>
-                  <p class='text-sm font-medium text-gray-900'>+1.5 SOL</p>
-                  <p class='text-xs text-gray-500'>2 min ago</p>
-                </div>
-              </div>
+            <h2 class='text-xl font-semibold text-gray-900 mb-6'>
+              Geographic Distribution
+            </h2>
+            <div id='geographic-data' class='space-y-3'>
+              <!-- Geographic data will be populated here -->
             </div>
           </Card>
 
-          <!-- Wallet Analytics -->
+          <!-- Device Analytics -->
           <Card variant='default' padding='lg'>
-            <h3 class='text-lg font-semibold text-gray-900 mb-4'>
-              Wallet Analytics
-            </h3>
-            <div id='wallet-analytics' class='space-y-4'>
-              <div class='flex justify-between items-center'>
-                <span class='text-sm text-gray-600'>Connected Wallets</span>
-                <span class='text-sm font-medium text-gray-900'>0</span>
-              </div>
-              <div class='flex justify-between items-center'>
-                <span class='text-sm text-gray-600'>Total SOL Volume</span>
-                <span class='text-sm font-medium text-gray-900'>0 SOL</span>
-              </div>
-              <div class='flex justify-between items-center'>
-                <span class='text-sm text-gray-600'>Avg. Transaction</span>
-                <span class='text-sm font-medium text-gray-900'>0 SOL</span>
-              </div>
-              <div class='flex justify-between items-center'>
-                <span class='text-sm text-gray-600'>Success Rate</span>
-                <span class='text-sm font-medium text-gray-900'>0%</span>
-              </div>
+            <h2 class='text-xl font-semibold text-gray-900 mb-6'>
+              Device Analytics
+            </h2>
+            <div id='device-data' class='space-y-4'>
+              <!-- Device data will be populated here -->
             </div>
           </Card>
         </div>
+
+        <!-- Real-time Events -->
+        <Card variant='default' padding='lg'>
+          <div class='flex items-center justify-between mb-6'>
+            <h2 class='text-xl font-semibold text-gray-900'>
+              Real-time Events
+            </h2>
+            <button
+              id='refresh-events'
+              class='px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200'
+            >
+              Refresh
+            </button>
+          </div>
+          <div id='events-list' class='space-y-2 max-h-64 overflow-y-auto'>
+            <!-- Events will be populated here -->
+          </div>
+        </Card>
       </div>
     </main>
   </AuthGuard>
 </Layout>
 
 <script>
-  let currentTimeRange = '30d';
-  let analyticsData: any = {};
-
-  // Initialize analytics dashboard
   document.addEventListener('DOMContentLoaded', () => {
-    loadAnalyticsData();
-    setupEventListeners();
+    const analyticsService = (window as any).analyticsService;
+    if (!analyticsService) {
+      console.error('Analytics service not available');
+      return;
+    }
+
+    // Load all analytics data
+    loadDashboardData();
+    loadCharts();
+    loadTopProducts();
+    loadTopSellers();
+    loadGeographicData();
+    loadDeviceData();
+    loadEvents();
+
+    // Set up refresh intervals
+    setInterval(loadEvents, 30000); // Refresh events every 30 seconds
+    setInterval(loadDashboardData, 60000); // Refresh dashboard data every minute
+
+    async function loadDashboardData() {
+      try {
+        const data = await analyticsService.getDashboardData();
+        updateMetrics(data);
+      } catch (error) {
+        console.error('Failed to load dashboard data:', error);
+      }
+    }
+
+    function updateMetrics(data: any) {
+      // Update revenue metrics
+      const totalRevenue = document.getElementById('total-revenue');
+      const revenueGrowth = document.getElementById('revenue-growth');
+      if (totalRevenue)
+        totalRevenue.textContent = `$${data.revenue.total.toLocaleString()}`;
+      if (revenueGrowth) {
+        revenueGrowth.textContent = `+${data.revenue.growth}%`;
+        revenueGrowth.className = `text-sm ${data.revenue.growth >= 0 ? 'text-green-600' : 'text-red-600'}`;
+      }
+
+      // Update sales metrics
+      const totalSales = document.getElementById('total-sales');
+      const salesGrowth = document.getElementById('sales-growth');
+      if (totalSales)
+        totalSales.textContent = data.sales.total.toLocaleString();
+      if (salesGrowth) {
+        salesGrowth.textContent = `+${data.sales.growth}%`;
+        salesGrowth.className = `text-sm ${data.sales.growth >= 0 ? 'text-green-600' : 'text-red-600'}`;
+      }
+
+      // Update user metrics
+      const activeUsers = document.getElementById('active-users');
+      const usersGrowth = document.getElementById('users-growth');
+      if (activeUsers)
+        activeUsers.textContent = data.users.active.toLocaleString();
+      if (usersGrowth) {
+        usersGrowth.textContent = `+${data.users.growth}%`;
+        usersGrowth.className = `text-sm ${data.users.growth >= 0 ? 'text-green-600' : 'text-red-600'}`;
+      }
+
+      // Update conversion metrics
+      const conversionRate = document.getElementById('conversion-rate');
+      const conversionGrowth = document.getElementById('conversion-growth');
+      if (conversionRate)
+        conversionRate.textContent = `${data.conversion.rate}%`;
+      if (conversionGrowth) {
+        conversionGrowth.textContent = `+${data.conversion.growth}%`;
+        conversionGrowth.className = `text-sm ${data.conversion.growth >= 0 ? 'text-green-600' : 'text-red-600'}`;
+      }
+    }
+
+    async function loadCharts() {
+      try {
+        const revenueChart = await analyticsService.getRevenueChart(30);
+        const userGrowthChart = await analyticsService.getUserGrowthChart(30);
+
+        // In a real implementation, you would use a charting library like Chart.js
+        console.log('Revenue Chart Data:', revenueChart);
+        console.log('User Growth Chart Data:', userGrowthChart);
+
+        // For now, show placeholder text
+        const revenueChartContainer = document.getElementById('revenue-chart');
+        const userGrowthChartContainer =
+          document.getElementById('user-growth-chart');
+
+        if (revenueChartContainer) {
+          revenueChartContainer.innerHTML = `
+            <div class='text-center'>
+              <p class='text-sm text-gray-500'>Revenue chart with ${revenueChart.datasets[0].data.length} data points</p>
+              <p class='text-xs text-gray-400 mt-1'>Chart.js integration needed</p>
+            </div>
+          `;
+        }
+
+        if (userGrowthChartContainer) {
+          userGrowthChartContainer.innerHTML = `
+            <div class='text-center'>
+              <p class='text-sm text-gray-500'>User growth chart with ${userGrowthChart.datasets[0].data.length} data points</p>
+              <p class='text-xs text-gray-400 mt-1'>Chart.js integration needed</p>
+            </div>
+          `;
+        }
+      } catch (error) {
+        console.error('Failed to load charts:', error);
+      }
+    }
+
+    async function loadTopProducts() {
+      try {
+        const products = await analyticsService.getTopProducts(5);
+        const container = document.getElementById('top-products');
+        if (!container) return;
+
+        container.innerHTML = products
+          .map(
+            (product, index) => `
+          <div class='flex items-center justify-between p-3 bg-gray-50 rounded-lg'>
+            <div class='flex items-center space-x-3'>
+              <span class='w-6 h-6 bg-soladia-primary text-white rounded-full flex items-center justify-center text-sm font-semibold'>
+                ${index + 1}
+              </span>
+              <div>
+                <p class='text-sm font-medium text-gray-900'>${product.name}</p>
+                <p class='text-xs text-gray-500'>${product.sales} sales</p>
+              </div>
+            </div>
+            <div class='text-right'>
+              <p class='text-sm font-semibold text-gray-900'>$${product.revenue.toLocaleString()}</p>
+              <p class='text-xs ${product.growth >= 0 ? 'text-green-600' : 'text-red-600'}'>
+                ${product.growth >= 0 ? '+' : ''}${product.growth}%
+              </p>
+            </div>
+          </div>
+        `
+          )
+          .join('');
+      } catch (error) {
+        console.error('Failed to load top products:', error);
+      }
+    }
+
+    async function loadTopSellers() {
+      try {
+        const sellers = await analyticsService.getTopSellers(5);
+        const container = document.getElementById('top-sellers');
+        if (!container) return;
+
+        container.innerHTML = sellers
+          .map(
+            (seller, index) => `
+          <div class='flex items-center justify-between p-3 bg-gray-50 rounded-lg'>
+            <div class='flex items-center space-x-3'>
+              <span class='w-6 h-6 bg-blue-500 text-white rounded-full flex items-center justify-center text-sm font-semibold'>
+                ${index + 1}
+              </span>
+              <div>
+                <p class='text-sm font-medium text-gray-900'>${seller.name}</p>
+                <div class='flex items-center space-x-1'>
+                  <div class='flex'>
+                    ${Array.from(
+                      { length: 5 },
+                      (_, i) => `
+                      <svg class='w-3 h-3 ${i < Math.floor(seller.rating) ? 'text-yellow-400' : 'text-gray-300'}' fill='currentColor' viewBox='0 0 20 20'>
+                        <path d='M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z' />
+                      </svg>
+                    `
+                    ).join('')}
+                  </div>
+                  <span class='text-xs text-gray-500'>${seller.rating}</span>
+                </div>
+              </div>
+            </div>
+            <div class='text-right'>
+              <p class='text-sm font-semibold text-gray-900'>$${seller.revenue.toLocaleString()}</p>
+              <p class='text-xs text-gray-500'>${seller.sales} sales</p>
+            </div>
+          </div>
+        `
+          )
+          .join('');
+      } catch (error) {
+        console.error('Failed to load top sellers:', error);
+      }
+    }
+
+    async function loadGeographicData() {
+      try {
+        const data = await analyticsService.getGeographicData();
+        const container = document.getElementById('geographic-data');
+        if (!container) return;
+
+        container.innerHTML = data
+          .map(
+            country => `
+          <div class='flex items-center justify-between p-2 bg-gray-50 rounded'>
+            <span class='text-sm font-medium text-gray-900'>${country.country}</span>
+            <div class='flex items-center space-x-4 text-xs text-gray-500'>
+              <span>${country.sales} sales</span>
+              <span>$${country.revenue.toLocaleString()}</span>
+              <span>${country.users} users</span>
+            </div>
+          </div>
+        `
+          )
+          .join('');
+      } catch (error) {
+        console.error('Failed to load geographic data:', error);
+      }
+    }
+
+    async function loadDeviceData() {
+      try {
+        const data = await analyticsService.getDeviceData();
+        const container = document.getElementById('device-data');
+        if (!container) return;
+
+        container.innerHTML = data
+          .map(
+            device => `
+          <div class='space-y-2'>
+            <div class='flex items-center justify-between'>
+              <span class='text-sm font-medium text-gray-900'>${device.device}</span>
+              <span class='text-sm text-gray-500'>${device.conversion}% conversion</span>
+            </div>
+            <div class='flex items-center space-x-4 text-xs text-gray-500'>
+              <span>${device.users} users</span>
+              <span>${device.sessions} sessions</span>
+            </div>
+            <div class='w-full bg-gray-200 rounded-full h-2'>
+              <div class='bg-soladia-primary h-2 rounded-full' style='width: ${device.conversion * 10}%'></div>
+            </div>
+          </div>
+        `
+          )
+          .join('');
+      } catch (error) {
+        console.error('Failed to load device data:', error);
+      }
+    }
+
+    function loadEvents() {
+      try {
+        const events = analyticsService.getCachedEvents();
+        const container = document.getElementById('events-list');
+        if (!container) return;
+
+        const recentEvents = events.slice(-10).reverse();
+        container.innerHTML = recentEvents
+          .map(
+            event => `
+          <div class='flex items-center justify-between p-2 bg-gray-50 rounded text-sm'>
+            <div class='flex items-center space-x-2'>
+              <div class='w-2 h-2 bg-blue-500 rounded-full'></div>
+              <span class='font-medium'>${event.name}</span>
+              <span class='text-gray-500'>${event.properties.page || ''}</span>
+            </div>
+            <span class='text-xs text-gray-400'>${new Date(event.timestamp).toLocaleTimeString()}</span>
+          </div>
+        `
+          )
+          .join('');
+      } catch (error) {
+        console.error('Failed to load events:', error);
+      }
+    }
+
+    // Refresh events button
+    document
+      .getElementById('refresh-events')
+      ?.addEventListener('click', loadEvents);
   });
-
-  // Setup event listeners
-  function setupEventListeners() {
-    // Time range buttons
-    document.querySelectorAll('[id^="time-"]').forEach(button => {
-      button.addEventListener('click', e => {
-        const target = e.target as HTMLElement;
-        const timeRange = target.id.replace('time-', '');
-        setTimeRange(timeRange);
-      });
-    });
-  }
-
-  // Set time range
-  function setTimeRange(range: string) {
-    currentTimeRange = range;
-
-    // Update button states
-    document.querySelectorAll('[id^="time-"]').forEach(button => {
-      button.classList.remove('bg-soladia-primary', 'text-white');
-      button.classList.add('bg-white', 'text-gray-700');
-    });
-
-    const activeButton = document.getElementById(`time-${range}`);
-    if (activeButton) {
-      activeButton.classList.remove('bg-white', 'text-gray-700');
-      activeButton.classList.add('bg-soladia-primary', 'text-white');
-    }
-
-    // Reload data
-    loadAnalyticsData();
-  }
-
-  // Load analytics data
-  async function loadAnalyticsData() {
-    try {
-      // Mock data - replace with actual API calls
-      analyticsData = {
-        revenue: {
-          total: 12500.5,
-          change: 12.5,
-          trend: [1000, 1200, 1100, 1500, 1800, 2000, 2200],
-        },
-        sales: {
-          total: 156,
-          change: 8.3,
-          trend: [10, 12, 15, 18, 20, 22, 25],
-        },
-        listings: {
-          total: 89,
-          change: -2.1,
-          trend: [90, 88, 92, 89, 87, 89, 89],
-        },
-        conversion: {
-          rate: 3.2,
-          change: 0.8,
-          trend: [2.8, 3.0, 2.9, 3.1, 3.2, 3.3, 3.2],
-        },
-      };
-
-      updateMetrics();
-      updateCharts();
-      updateDetailedAnalytics();
-    } catch (error) {
-      console.error('Failed to load analytics data:', error);
-    }
-  }
-
-  // Update key metrics
-  function updateMetrics() {
-    const { revenue, sales, listings, conversion } = analyticsData;
-
-    // Revenue
-    const totalRevenueEl = document.getElementById('total-revenue');
-    const revenueChangeEl = document.getElementById('revenue-change');
-    if (totalRevenueEl)
-      totalRevenueEl.textContent = `$${revenue.total.toLocaleString()}`;
-    if (revenueChangeEl) {
-      revenueChangeEl.textContent = `+${revenue.change}%`;
-      revenueChangeEl.className =
-        revenue.change >= 0 ? 'text-sm text-green-600' : 'text-sm text-red-600';
-    }
-
-    // Sales
-    const totalSalesEl = document.getElementById('total-sales');
-    const salesChangeEl = document.getElementById('sales-change');
-    if (totalSalesEl) totalSalesEl.textContent = sales.total.toLocaleString();
-    if (salesChangeEl) {
-      salesChangeEl.textContent = `+${sales.change}%`;
-      salesChangeEl.className =
-        sales.change >= 0 ? 'text-sm text-blue-600' : 'text-sm text-red-600';
-    }
-
-    // Listings
-    const activeListingsEl = document.getElementById('active-listings');
-    const listingsChangeEl = document.getElementById('listings-change');
-    if (activeListingsEl)
-      activeListingsEl.textContent = listings.total.toLocaleString();
-    if (listingsChangeEl) {
-      listingsChangeEl.textContent = `${listings.change >= 0 ? '+' : ''}${listings.change}%`;
-      listingsChangeEl.className =
-        listings.change >= 0
-          ? 'text-sm text-purple-600'
-          : 'text-sm text-red-600';
-    }
-
-    // Conversion
-    const conversionRateEl = document.getElementById('conversion-rate');
-    const conversionChangeEl = document.getElementById('conversion-change');
-    if (conversionRateEl) conversionRateEl.textContent = `${conversion.rate}%`;
-    if (conversionChangeEl) {
-      conversionChangeEl.textContent = `+${conversion.change}%`;
-      conversionChangeEl.className =
-        conversion.change >= 0
-          ? 'text-sm text-yellow-600'
-          : 'text-sm text-red-600';
-    }
-  }
-
-  // Update charts (placeholder)
-  function updateCharts() {
-    // In a real implementation, you would use a charting library like Chart.js or D3.js
-    console.log('Charts would be updated here with data:', analyticsData);
-  }
-
-  // Update detailed analytics
-  function updateDetailedAnalytics() {
-    // Top products
-    const topProductsEl = document.getElementById('top-products');
-    if (topProductsEl) {
-      topProductsEl.innerHTML = `
-        <div class='flex items-center justify-between p-3 bg-gray-50 rounded-lg'>
-          <div class='flex items-center space-x-3'>
-            <div class='w-10 h-10 bg-gray-200 rounded'></div>
-            <div>
-              <p class='text-sm font-medium text-gray-900'>Sample Product 1</p>
-              <p class='text-xs text-gray-500'>$99.99</p>
-            </div>
-          </div>
-          <span class='text-sm font-medium text-gray-900'>25 sales</span>
-        </div>
-        <div class='flex items-center justify-between p-3 bg-gray-50 rounded-lg'>
-          <div class='flex items-center space-x-3'>
-            <div class='w-10 h-10 bg-gray-200 rounded'></div>
-            <div>
-              <p class='text-sm font-medium text-gray-900'>Sample Product 2</p>
-              <p class='text-xs text-gray-500'>$149.99</p>
-            </div>
-          </div>
-          <span class='text-sm font-medium text-gray-900'>18 sales</span>
-        </div>
-      `;
-    }
-  }
-
-  // Refresh data
-  function refreshData() {
-    loadAnalyticsData();
-    showNotification('Data refreshed successfully!', 'success');
-  }
-
-  // Export data
-  function exportData() {
-    // Mock export functionality
-    const dataStr = JSON.stringify(analyticsData, null, 2);
-    const dataBlob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(dataBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `analytics-${currentTimeRange}-${new Date().toISOString().split('T')[0]}.json`;
-    link.click();
-    URL.revokeObjectURL(url);
-
-    showNotification('Data exported successfully!', 'success');
-  }
-
-  // Show notification
-  function showNotification(
-    message: string,
-    type: 'success' | 'error' | 'info'
-  ) {
-    const notification = document.createElement('div');
-    notification.className = `fixed top-4 right-4 p-4 rounded-md text-white z-50 ${
-      type === 'success'
-        ? 'bg-green-500'
-        : type === 'error'
-          ? 'bg-red-500'
-          : 'bg-blue-500'
-    }`;
-    notification.textContent = message;
-    document.body.appendChild(notification);
-
-    setTimeout(() => {
-      notification.remove();
-    }, 3000);
-  }
 </script>
 
 <style>
-  .analytics-chart {
-    min-height: 200px;
+  .analytics-dashboard {
+    min-height: 100vh;
+  }
+
+  .metric-card {
+    transition: transform 0.2s ease-in-out;
+  }
+
+  .metric-card:hover {
+    transform: translateY(-2px);
   }
 </style>

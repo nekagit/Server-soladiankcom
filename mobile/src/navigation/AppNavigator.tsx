@@ -1,38 +1,24 @@
-/**
- * App Navigator
- * Main navigation component for the mobile app
- */
-
-import React from 'react';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { useAppSelector } from '../store/hooks';
+import { createStackNavigator } from '@react-navigation/stack';
+import React from 'react';
 import Icon from 'react-native-vector-icons/MaterialIcons';
+import { useSelector } from 'react-redux';
 
-// Screens
-import { AuthNavigator } from './AuthNavigator';
-import { HomeScreen } from '../screens/HomeScreen';
-import { MarketplaceScreen } from '../screens/MarketplaceScreen';
-import { ProfileScreen } from '../screens/ProfileScreen';
-import { WalletScreen } from '../screens/WalletScreen';
-import { NFTScreen } from '../screens/NFTScreen';
-import { SearchScreen } from '../screens/SearchScreen';
-import { CartScreen } from '../screens/CartScreen';
-import { SocialScreen } from '../screens/SocialScreen';
-import { AnalyticsScreen } from '../screens/AnalyticsScreen';
-import { SettingsScreen } from '../screens/SettingsScreen';
-import { NFTDetailScreen } from '../screens/NFTDetailScreen';
-import { CollectionScreen } from '../screens/CollectionScreen';
-import { CreatorScreen } from '../screens/CreatorScreen';
-import { CreateNFTScreen } from '../screens/CreateNFTScreen';
-import { EditProfileScreen } from '../screens/EditProfileScreen';
-import { NotificationScreen } from '../screens/NotificationScreen';
+import AuthScreen from '../screens/AuthScreen';
+import CreateScreen from '../screens/CreateScreen';
+import HomeScreen from '../screens/HomeScreen';
+import NFTScreen from '../screens/NFTScreen';
+import ProductDetailScreen from '../screens/ProductDetailScreen';
+import ProfileScreen from '../screens/ProfileScreen';
+import SearchScreen from '../screens/SearchScreen';
+import SettingsScreen from '../screens/SettingsScreen';
+import WalletScreen from '../screens/WalletScreen';
+import { RootState } from '../store';
 
-const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
-// Main Tab Navigator
-const MainTabNavigator = () => {
+const MainTabs = () => {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -43,17 +29,17 @@ const MainTabNavigator = () => {
             case 'Home':
               iconName = 'home';
               break;
-            case 'Marketplace':
-              iconName = 'store';
-              break;
             case 'Search':
               iconName = 'search';
               break;
-            case 'Social':
-              iconName = 'people';
+            case 'Create':
+              iconName = 'add-circle';
               break;
             case 'Profile':
               iconName = 'person';
+              break;
+            case 'Wallet':
+              iconName = 'account-balance-wallet';
               break;
             default:
               iconName = 'help';
@@ -62,69 +48,122 @@ const MainTabNavigator = () => {
           return <Icon name={iconName} size={size} color={color} />;
         },
         tabBarActiveTintColor: '#E60012',
-        tabBarInactiveTintColor: 'gray',
+        tabBarInactiveTintColor: '#6B7280',
         tabBarStyle: {
-          backgroundColor: 'white',
+          backgroundColor: '#FFFFFF',
           borderTopWidth: 1,
-          borderTopColor: '#e0e0e0',
-          paddingBottom: 5,
-          paddingTop: 5,
+          borderTopColor: '#E5E7EB',
+          paddingBottom: 8,
+          paddingTop: 8,
           height: 60,
+        },
+        tabBarLabelStyle: {
+          fontSize: 12,
+          fontWeight: '500',
         },
         headerShown: false,
       })}
     >
-      <Tab.Screen name="Home" component={HomeScreen} />
-      <Tab.Screen name="Marketplace" component={MarketplaceScreen} />
-      <Tab.Screen name="Search" component={SearchScreen} />
-      <Tab.Screen name="Social" component={SocialScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen
+        name="Home"
+        component={HomeScreen}
+        options={{
+          tabBarLabel: 'Home',
+        }}
+      />
+      <Tab.Screen
+        name="Search"
+        component={SearchScreen}
+        options={{
+          tabBarLabel: 'Search',
+        }}
+      />
+      <Tab.Screen
+        name="Create"
+        component={CreateScreen}
+        options={{
+          tabBarLabel: 'Create',
+        }}
+      />
+      <Tab.Screen
+        name="Wallet"
+        component={WalletScreen}
+        options={{
+          tabBarLabel: 'Wallet',
+        }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileScreen}
+        options={{
+          tabBarLabel: 'Profile',
+        }}
+      />
     </Tab.Navigator>
   );
 };
 
-// Main Stack Navigator
-const MainStackNavigator = () => {
-  return (
-    <Stack.Navigator
-      screenOptions={{
-        headerShown: false,
-        gestureEnabled: true,
-        gestureDirection: 'horizontal',
-      }}
-    >
-      <Stack.Screen name="MainTabs" component={MainTabNavigator} />
-      <Stack.Screen name="Wallet" component={WalletScreen} />
-      <Stack.Screen name="NFT" component={NFTScreen} />
-      <Stack.Screen name="Cart" component={CartScreen} />
-      <Stack.Screen name="Analytics" component={AnalyticsScreen} />
-      <Stack.Screen name="Settings" component={SettingsScreen} />
-      <Stack.Screen name="NFTDetail" component={NFTDetailScreen} />
-      <Stack.Screen name="Collection" component={CollectionScreen} />
-      <Stack.Screen name="Creator" component={CreatorScreen} />
-      <Stack.Screen name="CreateNFT" component={CreateNFTScreen} />
-      <Stack.Screen name="EditProfile" component={EditProfileScreen} />
-      <Stack.Screen name="Notifications" component={NotificationScreen} />
-    </Stack.Navigator>
-  );
-};
+const AppNavigator: React.FC = () => {
+  const isAuthenticated = useSelector((state: RootState) => state.auth.isAuthenticated);
 
-// Main App Navigator
-export const AppNavigator = () => {
-  const isAuthenticated = useAppSelector((state) => state.auth.isAuthenticated);
-  const isLoading = useAppSelector((state) => state.auth.isLoading);
-
-  if (isLoading) {
-    return null; // Loading screen is handled by PersistGate
+  if (!isAuthenticated) {
+    return (
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Auth" component={AuthScreen} />
+      </Stack.Navigator>
+    );
   }
 
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {isAuthenticated ? (
-        <Stack.Screen name="Main" component={MainStackNavigator} />
-      ) : (
-        <Stack.Screen name="Auth" component={AuthNavigator} />
-      )}
+      <Stack.Screen name="MainTabs" component={MainTabs} />
+      <Stack.Screen
+        name="ProductDetail"
+        component={ProductDetailScreen}
+        options={{
+          headerShown: true,
+          title: 'Product Details',
+          headerStyle: {
+            backgroundColor: '#E60012',
+          },
+          headerTintColor: '#FFFFFF',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="NFT"
+        component={NFTScreen}
+        options={{
+          headerShown: true,
+          title: 'NFT Details',
+          headerStyle: {
+            backgroundColor: '#E60012',
+          },
+          headerTintColor: '#FFFFFF',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
+      <Stack.Screen
+        name="Settings"
+        component={SettingsScreen}
+        options={{
+          headerShown: true,
+          title: 'Settings',
+          headerStyle: {
+            backgroundColor: '#E60012',
+          },
+          headerTintColor: '#FFFFFF',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+          },
+        }}
+      />
     </Stack.Navigator>
   );
 };
+
+export default AppNavigator;

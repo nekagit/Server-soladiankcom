@@ -1,0 +1,613 @@
+---
+// Social Feed Component
+---
+
+<div id='social-feed' class='max-w-2xl mx-auto space-y-6'>
+  <!-- Create Post -->
+  <div class='bg-white rounded-lg shadow-sm border border-gray-200 p-6'>
+    <div class='flex items-start space-x-3'>
+      <img
+        id='current-user-avatar'
+        src='https://via.placeholder.com/40x40'
+        alt='Your avatar'
+        class='w-10 h-10 rounded-full'
+      />
+      <div class='flex-1'>
+        <textarea
+          id='post-content'
+          placeholder="What's on your mind? Share your latest finds, thoughts, or updates..."
+          class='w-full p-3 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-soladia-primary focus:border-soladia-primary'
+          rows='3'></textarea>
+        <div class='flex items-center justify-between mt-3'>
+          <div class='flex items-center space-x-4'>
+            <button
+              id='add-image'
+              class='flex items-center space-x-1 text-gray-500 hover:text-gray-700'
+            >
+              <svg
+                class='w-5 h-5'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+              >
+                <path
+                  stroke-linecap='round'
+                  stroke-linejoin='round'
+                  stroke-width='2'
+                  d='M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z'
+                ></path>
+              </svg>
+              <span class='text-sm'>Photo</span>
+            </button>
+            <button
+              id='add-tags'
+              class='flex items-center space-x-1 text-gray-500 hover:text-gray-700'
+            >
+              <svg
+                class='w-5 h-5'
+                fill='none'
+                stroke='currentColor'
+                viewBox='0 0 24 24'
+              >
+                <path
+                  stroke-linecap='round'
+                  stroke-linejoin='round'
+                  stroke-width='2'
+                  d='M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z'
+                ></path>
+              </svg>
+              <span class='text-sm'>Tags</span>
+            </button>
+          </div>
+          <button
+            id='publish-post'
+            class='px-4 py-2 bg-soladia-primary text-white rounded-lg hover:bg-red-700 focus:ring-2 focus:ring-soladia-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed'
+            disabled
+          >
+            Post
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Trending Tags -->
+  <div class='bg-white rounded-lg shadow-sm border border-gray-200 p-4'>
+    <h3 class='text-sm font-medium text-gray-900 mb-3'>Trending Tags</h3>
+    <div id='trending-tags' class='flex flex-wrap gap-2'>
+      <!-- Trending tags will be populated here -->
+    </div>
+  </div>
+
+  <!-- Posts Feed -->
+  <div id='posts-container' class='space-y-6'>
+    <!-- Posts will be populated here -->
+  </div>
+
+  <!-- Load More Button -->
+  <div class='text-center'>
+    <button
+      id='load-more'
+      class='px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 focus:ring-2 focus:ring-gray-300 focus:ring-offset-2'
+    >
+      Load More Posts
+    </button>
+  </div>
+</div>
+
+<!-- Post Template -->
+<template id='post-template'>
+  <div
+    class='bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden'
+  >
+    <!-- Post Header -->
+    <div class='p-4 border-b border-gray-100'>
+      <div class='flex items-center justify-between'>
+        <div class='flex items-center space-x-3'>
+          <img class='w-10 h-10 rounded-full' src='' alt='' />
+          <div>
+            <div class='flex items-center space-x-2'>
+              <h4 class='text-sm font-semibold text-gray-900'></h4>
+              <span
+                class='inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800'
+              >
+                Verified
+              </span>
+            </div>
+            <p class='text-xs text-gray-500'></p>
+          </div>
+        </div>
+        <button class='p-2 text-gray-400 hover:text-gray-600'>
+          <svg
+            class='w-5 h-5'
+            fill='none'
+            stroke='currentColor'
+            viewBox='0 0 24 24'
+          >
+            <path
+              stroke-linecap='round'
+              stroke-linejoin='round'
+              stroke-width='2'
+              d='M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z'
+            ></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Post Content -->
+    <div class='p-4'>
+      <p class='text-gray-900 mb-3'></p>
+
+      <!-- Post Images -->
+      <div class='grid grid-cols-1 md:grid-cols-2 gap-2 mb-3'>
+        <!-- Images will be populated here -->
+      </div>
+
+      <!-- Post Tags -->
+      <div class='flex flex-wrap gap-2 mb-3'>
+        <!-- Tags will be populated here -->
+      </div>
+    </div>
+
+    <!-- Post Actions -->
+    <div class='px-4 py-3 border-t border-gray-100'>
+      <div class='flex items-center justify-between'>
+        <div class='flex items-center space-x-6'>
+          <button
+            class='flex items-center space-x-2 text-gray-500 hover:text-red-500'
+          >
+            <svg
+              class='w-5 h-5'
+              fill='none'
+              stroke='currentColor'
+              viewBox='0 0 24 24'
+            >
+              <path
+                stroke-linecap='round'
+                stroke-linejoin='round'
+                stroke-width='2'
+                d='M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z'
+              ></path>
+            </svg>
+            <span class='text-sm'></span>
+          </button>
+          <button
+            class='flex items-center space-x-2 text-gray-500 hover:text-blue-500'
+          >
+            <svg
+              class='w-5 h-5'
+              fill='none'
+              stroke='currentColor'
+              viewBox='0 0 24 24'
+            >
+              <path
+                stroke-linecap='round'
+                stroke-linejoin='round'
+                stroke-width='2'
+                d='M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z'
+              ></path>
+            </svg>
+            <span class='text-sm'></span>
+          </button>
+          <button
+            class='flex items-center space-x-2 text-gray-500 hover:text-green-500'
+          >
+            <svg
+              class='w-5 h-5'
+              fill='none'
+              stroke='currentColor'
+              viewBox='0 0 24 24'
+            >
+              <path
+                stroke-linecap='round'
+                stroke-linejoin='round'
+                stroke-width='2'
+                d='M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.367 2.684 3 3 0 00-5.367-2.684z'
+              ></path>
+            </svg>
+            <span class='text-sm'></span>
+          </button>
+        </div>
+        <button
+          class='flex items-center space-x-2 text-gray-500 hover:text-yellow-500'
+        >
+          <svg
+            class='w-5 h-5'
+            fill='none'
+            stroke='currentColor'
+            viewBox='0 0 24 24'
+          >
+            <path
+              stroke-linecap='round'
+              stroke-linejoin='round'
+              stroke-width='2'
+              d='M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z'></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Comments Section -->
+    <div id='comments-section' class='hidden border-t border-gray-100'>
+      <div class='p-4'>
+        <!-- Comments will be populated here -->
+      </div>
+
+      <!-- Add Comment -->
+      <div class='p-4 border-t border-gray-100'>
+        <div class='flex items-start space-x-3'>
+          <img class='w-8 h-8 rounded-full' src='' alt='Your avatar' />
+          <div class='flex-1'>
+            <textarea
+              placeholder='Write a comment...'
+              class='w-full p-2 border border-gray-300 rounded-lg resize-none focus:ring-2 focus:ring-soladia-primary focus:border-soladia-primary'
+              rows='2'></textarea>
+            <div class='flex justify-end mt-2'>
+              <button
+                class='px-3 py-1 bg-soladia-primary text-white text-sm rounded-md hover:bg-red-700'
+              >
+                Comment
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const socialService = (window as any).socialService;
+    if (!socialService) {
+      console.error('Social service not available');
+      return;
+    }
+
+    const postsContainer = document.getElementById('posts-container');
+    const postContent = document.getElementById(
+      'post-content'
+    ) as HTMLTextAreaElement;
+    const publishButton = document.getElementById(
+      'publish-post'
+    ) as HTMLButtonElement;
+    const loadMoreButton = document.getElementById(
+      'load-more'
+    ) as HTMLButtonElement;
+    const trendingTagsContainer = document.getElementById('trending-tags');
+
+    let currentFeed: any = null;
+    let isLoading = false;
+
+    // Initialize feed
+    loadFeed();
+    loadTrendingTags();
+    updateCurrentUser();
+
+    // Post content change handler
+    postContent?.addEventListener('input', () => {
+      const hasContent = postContent.value.trim().length > 0;
+      publishButton.disabled = !hasContent;
+    });
+
+    // Publish post handler
+    publishButton?.addEventListener('click', async () => {
+      const content = postContent.value.trim();
+      if (!content) return;
+
+      try {
+        publishButton.disabled = true;
+        publishButton.textContent = 'Posting...';
+
+        const post = await socialService.createPost(content);
+
+        // Add to feed
+        if (currentFeed) {
+          currentFeed.posts.unshift(post);
+          renderPosts([post], true);
+        }
+
+        // Clear form
+        postContent.value = '';
+        publishButton.disabled = true;
+        publishButton.textContent = 'Post';
+      } catch (error) {
+        console.error('Failed to create post:', error);
+        publishButton.disabled = false;
+        publishButton.textContent = 'Post';
+      }
+    });
+
+    // Load more handler
+    loadMoreButton?.addEventListener('click', () => {
+      if (!isLoading && currentFeed?.hasMore) {
+        loadFeed(currentFeed.nextCursor);
+      }
+    });
+
+    async function loadFeed(cursor?: string) {
+      if (isLoading) return;
+
+      try {
+        isLoading = true;
+        if (!cursor) {
+          postsContainer.innerHTML =
+            '<div class="text-center py-8"><div class="animate-spin rounded-full h-8 w-8 border-b-2 border-soladia-primary mx-auto"></div></div>';
+        }
+
+        const feed = await socialService.getSocialFeed(cursor);
+        currentFeed = feed;
+
+        if (!cursor) {
+          postsContainer.innerHTML = '';
+        }
+
+        renderPosts(feed.posts, !cursor);
+        loadMoreButton.style.display = feed.hasMore ? 'block' : 'none';
+      } catch (error) {
+        console.error('Failed to load feed:', error);
+        if (!cursor) {
+          postsContainer.innerHTML =
+            '<div class="text-center py-8 text-red-600">Failed to load posts</div>';
+        }
+      } finally {
+        isLoading = false;
+      }
+    }
+
+    function renderPosts(posts: any[], prepend = false) {
+      if (!postsContainer) return;
+
+      const postTemplate = document.getElementById(
+        'post-template'
+      ) as HTMLTemplateElement;
+      if (!postTemplate) return;
+
+      const fragment = document.createDocumentFragment();
+
+      posts.forEach(post => {
+        const postElement = createPostElement(post, postTemplate);
+        fragment.appendChild(postElement);
+      });
+
+      if (prepend) {
+        postsContainer.insertBefore(fragment, postsContainer.firstChild);
+      } else {
+        postsContainer.appendChild(fragment);
+      }
+    }
+
+    function createPostElement(post: any, template: HTMLTemplateElement) {
+      const clone = template.content.cloneNode(true) as DocumentFragment;
+      const postDiv = clone.querySelector('div') as HTMLElement;
+
+      // Set post data
+      const avatar = postDiv.querySelector('img') as HTMLImageElement;
+      const username = postDiv.querySelector('h4') as HTMLElement;
+      const timestamp = postDiv.querySelector('p') as HTMLElement;
+      const content = postDiv.querySelector('p:nth-of-type(2)') as HTMLElement;
+      const likeButton = postDiv.querySelector('button') as HTMLButtonElement;
+      const likeCount = likeButton.querySelector('span') as HTMLElement;
+      const commentButton = likeButton.nextElementSibling?.querySelector(
+        'button'
+      ) as HTMLButtonElement;
+      const commentCount = commentButton?.querySelector('span') as HTMLElement;
+      const shareButton = commentButton?.nextElementSibling?.querySelector(
+        'button'
+      ) as HTMLButtonElement;
+      const shareCount = shareButton?.querySelector('span') as HTMLElement;
+
+      // Populate data
+      if (avatar) avatar.src = post.author.avatar;
+      if (username) username.textContent = post.author.username;
+      if (timestamp) timestamp.textContent = formatTime(post.createdAt);
+      if (content) content.textContent = post.content;
+      if (likeCount) likeCount.textContent = post.likes.toString();
+      if (commentCount) commentCount.textContent = post.comments.toString();
+      if (shareCount) shareCount.textContent = post.shares.toString();
+
+      // Set up event handlers
+      setupPostEventHandlers(postDiv, post);
+
+      return postDiv;
+    }
+
+    function setupPostEventHandlers(postElement: HTMLElement, post: any) {
+      const likeButton = postElement.querySelector(
+        'button'
+      ) as HTMLButtonElement;
+      const commentButton = likeButton?.nextElementSibling?.querySelector(
+        'button'
+      ) as HTMLButtonElement;
+      const shareButton = commentButton?.nextElementSibling?.querySelector(
+        'button'
+      ) as HTMLButtonElement;
+      const bookmarkButton = shareButton?.nextElementSibling?.querySelector(
+        'button'
+      ) as HTMLButtonElement;
+
+      // Like button
+      likeButton?.addEventListener('click', async () => {
+        try {
+          if (post.isLiked) {
+            await socialService.unlikePost(post.id);
+            post.isLiked = false;
+            post.likes--;
+          } else {
+            await socialService.likePost(post.id);
+            post.isLiked = true;
+            post.likes++;
+          }
+
+          const likeCount = likeButton.querySelector('span') as HTMLElement;
+          if (likeCount) likeCount.textContent = post.likes.toString();
+
+          likeButton.classList.toggle('text-red-500', post.isLiked);
+        } catch (error) {
+          console.error('Failed to toggle like:', error);
+        }
+      });
+
+      // Comment button
+      commentButton?.addEventListener('click', () => {
+        const commentsSection = postElement.querySelector(
+          '#comments-section'
+        ) as HTMLElement;
+        if (commentsSection) {
+          commentsSection.classList.toggle('hidden');
+          if (!commentsSection.classList.contains('hidden')) {
+            loadComments(post.id, commentsSection);
+          }
+        }
+      });
+
+      // Share button
+      shareButton?.addEventListener('click', async () => {
+        try {
+          if (navigator.share) {
+            await navigator.share({
+              title: post.content,
+              url: window.location.href,
+            });
+          } else {
+            // Fallback to copying to clipboard
+            await navigator.clipboard.writeText(window.location.href);
+            showNotification('Link copied to clipboard!');
+          }
+        } catch (error) {
+          console.error('Failed to share:', error);
+        }
+      });
+
+      // Bookmark button
+      bookmarkButton?.addEventListener('click', async () => {
+        try {
+          if (post.isBookmarked) {
+            await socialService.unbookmarkPost(post.id);
+            post.isBookmarked = false;
+          } else {
+            await socialService.bookmarkPost(post.id);
+            post.isBookmarked = true;
+          }
+
+          bookmarkButton.classList.toggle('text-yellow-500', post.isBookmarked);
+        } catch (error) {
+          console.error('Failed to toggle bookmark:', error);
+        }
+      });
+    }
+
+    async function loadComments(postId: string, container: HTMLElement) {
+      try {
+        const comments = await socialService.getPostComments(postId);
+        const commentsHtml = comments
+          .map(
+            comment => `
+          <div class="flex items-start space-x-3 mb-4">
+            <img src="${comment.author.avatar}" alt="${comment.author.username}" class="w-8 h-8 rounded-full" />
+            <div class="flex-1">
+              <div class="bg-gray-50 rounded-lg p-3">
+                <div class="flex items-center space-x-2 mb-1">
+                  <span class="text-sm font-semibold text-gray-900">${comment.author.username}</span>
+                  <span class="text-xs text-gray-500">${formatTime(comment.createdAt)}</span>
+                </div>
+                <p class="text-sm text-gray-700">${comment.content}</p>
+              </div>
+              <div class="flex items-center space-x-4 mt-2">
+                <button class="text-xs text-gray-500 hover:text-red-500">Like</button>
+                <button class="text-xs text-gray-500 hover:text-blue-500">Reply</button>
+              </div>
+            </div>
+          </div>
+        `
+          )
+          .join('');
+
+        container.innerHTML = commentsHtml;
+      } catch (error) {
+        console.error('Failed to load comments:', error);
+      }
+    }
+
+    async function loadTrendingTags() {
+      try {
+        const tags = await socialService.getTrendingTags();
+        if (trendingTagsContainer) {
+          trendingTagsContainer.innerHTML = tags
+            .map(
+              tag => `
+            <button
+              class="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded-full hover:bg-blue-200 transition-colors"
+              onclick="searchByTag('${tag}')"
+            >
+              #${tag}
+            </button>
+          `
+            )
+            .join('');
+        }
+      } catch (error) {
+        console.error('Failed to load trending tags:', error);
+      }
+    }
+
+    function updateCurrentUser() {
+      const currentUser = socialService.getCurrentUser();
+      const avatar = document.getElementById(
+        'current-user-avatar'
+      ) as HTMLImageElement;
+      if (avatar && currentUser) {
+        avatar.src = currentUser.avatar;
+      }
+    }
+
+    function formatTime(timestamp: string): string {
+      const now = new Date();
+      const time = new Date(timestamp);
+      const diff = now.getTime() - time.getTime();
+      const minutes = Math.floor(diff / 60000);
+      const hours = Math.floor(diff / 3600000);
+      const days = Math.floor(diff / 86400000);
+
+      if (minutes < 1) return 'Just now';
+      if (minutes < 60) return `${minutes}m ago`;
+      if (hours < 24) return `${hours}h ago`;
+      return `${days}d ago`;
+    }
+
+    function showNotification(message: string) {
+      // Simple notification - in production, use a proper notification system
+      const notification = document.createElement('div');
+      notification.className =
+        'fixed top-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg z-50';
+      notification.textContent = message;
+      document.body.appendChild(notification);
+
+      setTimeout(() => {
+        notification.remove();
+      }, 3000);
+    }
+
+    // Global functions
+    (window as any).searchByTag = (tag: string) => {
+      postContent.value = `#${tag} `;
+      postContent.focus();
+    };
+  });
+</script>
+
+<style>
+  .animate-spin {
+    animation: spin 1s linear infinite;
+  }
+
+  @keyframes spin {
+    from {
+      transform: rotate(0deg);
+    }
+    to {
+      transform: rotate(360deg);
+    }
+  }
+</style>

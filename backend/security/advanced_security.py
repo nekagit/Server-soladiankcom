@@ -1,716 +1,558 @@
 """
-Advanced Security System for Soladia Marketplace
-Enterprise-grade security, compliance, and threat detection
+Advanced security measures for Soladia
 """
-
-from typing import Optional, Dict, Any, List, Tuple
-from datetime import datetime, timedelta
-from enum import Enum
-import uuid
 import hashlib
-import secrets
 import hmac
-import base64
-import json
-import ipaddress
-from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text, JSON, ForeignKey, BigInteger
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import relationship
-from fastapi import HTTPException, Depends, Request, Response
-from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
-from pydantic import BaseModel, Field, validator
-import jwt
-import bcrypt
-import redis
-import asyncio
-from collections import defaultdict
+import secrets
+import time
 import re
+from typing import Dict, List, Optional, Any, Tuple
+from datetime import datetime, timedelta
+from dataclasses import dataclass
+from enum import Enum
+import jwt
+from passlib.context import CryptContext
+from passlib.hash import bcrypt, argon2
+import ipaddress
+import geoip2.database
+import geoip2.errors
+from fastapi import Request, HTTPException, status
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+import logging
 
-Base = declarative_base()
+logger = logging.getLogger(__name__)
 
-class SecurityLevel(str, Enum):
+class SecurityLevel(Enum):
+    """Security level enumeration"""
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
     CRITICAL = "critical"
 
-class ThreatType(str, Enum):
+class ThreatType(Enum):
+    """Threat type enumeration"""
     BRUTE_FORCE = "brute_force"
+    RATE_LIMIT = "rate_limit"
+    SUSPICIOUS_IP = "suspicious_ip"
     SQL_INJECTION = "sql_injection"
     XSS = "xss"
     CSRF = "csrf"
-    DDoS = "ddos"
-    SUSPICIOUS_ACTIVITY = "suspicious_activity"
-    UNAUTHORIZED_ACCESS = "unauthorized_access"
-    DATA_BREACH = "data_breach"
-    MALWARE = "malware"
-    PHISHING = "phishing"
+    MALICIOUS_FILE = "malicious_file"
+    UNUSUAL_ACTIVITY = "unusual_activity"
 
-class SecurityEvent(Base):
-    __tablename__ = "security_events"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    event_id = Column(String(36), unique=True, index=True, nullable=False)
-    tenant_id = Column(String(36), ForeignKey("tenants.tenant_id"), nullable=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=True)
-    
-    # Event details
-    event_type = Column(String(50), nullable=False)
-    threat_type = Column(String(50), nullable=True)
-    severity = Column(String(20), default=SecurityLevel.MEDIUM)
-    description = Column(Text, nullable=False)
-    
-    # Request details
-    ip_address = Column(String(45), nullable=True)
-    user_agent = Column(Text, nullable=True)
-    request_path = Column(String(500), nullable=True)
-    request_method = Column(String(10), nullable=True)
-    request_headers = Column(JSON, nullable=True)
-    request_body = Column(Text, nullable=True)
-    
-    # Response details
-    response_status = Column(Integer, nullable=True)
-    response_time = Column(Integer, nullable=True)  # milliseconds
-    
-    # Additional data
-    metadata = Column(JSON, default=dict)
-    tags = Column(JSON, default=list)
-    
-    # Status
-    is_resolved = Column(Boolean, default=False)
-    resolved_at = Column(DateTime, nullable=True)
-    resolved_by = Column(Integer, ForeignKey("users.id"), nullable=True)
-    resolution_notes = Column(Text, nullable=True)
-    
-    # Timestamps
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+@dataclass
+class SecurityEvent:
+    """Security event data structure"""
+    event_id: str
+    threat_type: ThreatType
+    security_level: SecurityLevel
+    user_id: Optional[str]
+    ip_address: str
+    user_agent: str
+    request_path: str
+    timestamp: datetime
+    details: Dict[str, Any]
+    blocked: bool = False
 
-class SecurityRule(Base):
-    __tablename__ = "security_rules"
+class RateLimiter:
+    """Advanced rate limiting with multiple strategies"""
     
-    id = Column(Integer, primary_key=True, index=True)
-    rule_id = Column(String(36), unique=True, index=True, nullable=False)
-    tenant_id = Column(String(36), ForeignKey("tenants.tenant_id"), nullable=True)
-    
-    # Rule details
-    name = Column(String(255), nullable=False)
-    description = Column(Text, nullable=True)
-    rule_type = Column(String(50), nullable=False)
-    threat_type = Column(String(50), nullable=True)
-    severity = Column(String(20), default=SecurityLevel.MEDIUM)
-    
-    # Rule configuration
-    conditions = Column(JSON, nullable=False)
-    actions = Column(JSON, nullable=False)
-    is_active = Column(Boolean, default=True)
-    is_global = Column(Boolean, default=False)
-    
-    # Rate limiting
-    rate_limit = Column(Integer, nullable=True)  # requests per minute
-    rate_window = Column(Integer, default=60)  # seconds
-    
-    # Metadata
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
-
-class SecurityPolicy(Base):
-    __tablename__ = "security_policies"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    tenant_id = Column(String(36), ForeignKey("tenants.tenant_id"), nullable=False)
-    
-    # Password policy
-    min_password_length = Column(Integer, default=8)
-    require_uppercase = Column(Boolean, default=True)
-    require_lowercase = Column(Boolean, default=True)
-    require_numbers = Column(Boolean, default=True)
-    require_special_chars = Column(Boolean, default=True)
-    password_history_count = Column(Integer, default=5)
-    password_expiry_days = Column(Integer, default=90)
-    
-    # Session policy
-    session_timeout_minutes = Column(Integer, default=30)
-    max_concurrent_sessions = Column(Integer, default=5)
-    require_2fa = Column(Boolean, default=False)
-    
-    # API security
-    api_rate_limit = Column(Integer, default=1000)  # requests per hour
-    api_key_rotation_days = Column(Integer, default=30)
-    require_https = Column(Boolean, default=True)
-    
-    # Data protection
-    encrypt_sensitive_data = Column(Boolean, default=True)
-    data_retention_days = Column(Integer, default=365)
-    audit_log_retention_days = Column(Integer, default=2555)  # 7 years
-    
-    # Compliance
-    gdpr_compliant = Column(Boolean, default=True)
-    ccpa_compliant = Column(Boolean, default=True)
-    sox_compliant = Column(Boolean, default=False)
-    hipaa_compliant = Column(Boolean, default=False)
-    
-    # Metadata
-    created_at = Column(DateTime, default=datetime.utcnow)
-    updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
-
-class SecurityAudit(Base):
-    __tablename__ = "security_audits"
-    
-    id = Column(Integer, primary_key=True, index=True)
-    audit_id = Column(String(36), unique=True, index=True, nullable=False)
-    tenant_id = Column(String(36), ForeignKey("tenants.tenant_id"), nullable=False)
-    
-    # Audit details
-    audit_type = Column(String(50), nullable=False)
-    status = Column(String(20), default="pending")
-    started_at = Column(DateTime, default=datetime.utcnow)
-    completed_at = Column(DateTime, nullable=True)
-    
-    # Results
-    total_checks = Column(Integer, default=0)
-    passed_checks = Column(Integer, default=0)
-    failed_checks = Column(Integer, default=0)
-    warnings = Column(Integer, default=0)
-    
-    # Report
-    report_data = Column(JSON, nullable=True)
-    recommendations = Column(JSON, default=list)
-    
-    # Metadata
-    created_by = Column(Integer, ForeignKey("users.id"), nullable=False)
-    created_at = Column(DateTime, default=datetime.utcnow)
-
-# Pydantic models
-class SecurityEventCreate(BaseModel):
-    event_type: str = Field(..., max_length=50)
-    threat_type: Optional[ThreatType] = None
-    severity: SecurityLevel = SecurityLevel.MEDIUM
-    description: str = Field(..., min_length=1)
-    ip_address: Optional[str] = None
-    user_agent: Optional[str] = None
-    request_path: Optional[str] = None
-    request_method: Optional[str] = None
-    metadata: Dict[str, Any] = Field(default_factory=dict)
-    tags: List[str] = Field(default_factory=list)
-
-class SecurityRuleCreate(BaseModel):
-    name: str = Field(..., min_length=1, max_length=255)
-    description: Optional[str] = None
-    rule_type: str = Field(..., max_length=50)
-    threat_type: Optional[ThreatType] = None
-    severity: SecurityLevel = SecurityLevel.MEDIUM
-    conditions: Dict[str, Any] = Field(..., min_items=1)
-    actions: Dict[str, Any] = Field(..., min_items=1)
-    is_global: bool = False
-    rate_limit: Optional[int] = Field(None, ge=1)
-    rate_window: int = Field(60, ge=1, le=3600)
-
-class SecurityPolicyUpdate(BaseModel):
-    min_password_length: Optional[int] = Field(None, ge=6, le=128)
-    require_uppercase: Optional[bool] = None
-    require_lowercase: Optional[bool] = None
-    require_numbers: Optional[bool] = None
-    require_special_chars: Optional[bool] = None
-    password_history_count: Optional[int] = Field(None, ge=0, le=20)
-    password_expiry_days: Optional[int] = Field(None, ge=1, le=365)
-    session_timeout_minutes: Optional[int] = Field(None, ge=5, le=1440)
-    max_concurrent_sessions: Optional[int] = Field(None, ge=1, le=50)
-    require_2fa: Optional[bool] = None
-    api_rate_limit: Optional[int] = Field(None, ge=1)
-    api_key_rotation_days: Optional[int] = Field(None, ge=1, le=365)
-    require_https: Optional[bool] = None
-    encrypt_sensitive_data: Optional[bool] = None
-    data_retention_days: Optional[int] = Field(None, ge=1, le=3650)
-    audit_log_retention_days: Optional[int] = Field(None, ge=30, le=3650)
-    gdpr_compliant: Optional[bool] = None
-    ccpa_compliant: Optional[bool] = None
-    sox_compliant: Optional[bool] = None
-    hipaa_compliant: Optional[bool] = None
-
-class SecurityAuditResponse(BaseModel):
-    id: int
-    audit_id: str
-    tenant_id: str
-    audit_type: str
-    status: str
-    started_at: datetime
-    completed_at: Optional[datetime]
-    total_checks: int
-    passed_checks: int
-    failed_checks: int
-    warnings: int
-    recommendations: List[str]
-    created_at: datetime
-
-class AdvancedSecurityService:
-    def __init__(self, db_session, redis_client):
-        self.db = db_session
+    def __init__(self, redis_client):
         self.redis = redis_client
-        self.rate_limiters = defaultdict(lambda: defaultdict(list))
-        self.threat_detectors = {
-            "sql_injection": self._detect_sql_injection,
-            "xss": self._detect_xss,
-            "brute_force": self._detect_brute_force,
-            "ddos": self._detect_ddos,
-            "suspicious_activity": self._detect_suspicious_activity
+        self.limits = {
+            "login": {"requests": 5, "window": 300},  # 5 attempts per 5 minutes
+            "api": {"requests": 100, "window": 60},   # 100 requests per minute
+            "upload": {"requests": 10, "window": 3600},  # 10 uploads per hour
+            "password_reset": {"requests": 3, "window": 3600},  # 3 resets per hour
         }
     
-    async def log_security_event(self, event_data: SecurityEventCreate, request: Request, tenant_id: Optional[str] = None) -> str:
-        """Log a security event"""
-        event_id = str(uuid.uuid4())
+    async def is_rate_limited(
+        self,
+        identifier: str,
+        limit_type: str,
+        custom_limits: Optional[Dict[str, int]] = None
+    ) -> Tuple[bool, Dict[str, Any]]:
+        """Check if request is rate limited"""
+        limits = custom_limits or self.limits.get(limit_type, {"requests": 100, "window": 60})
         
-        # Extract request details
-        ip_address = self._get_client_ip(request)
-        user_agent = request.headers.get("user-agent")
-        request_path = str(request.url.path)
-        request_method = request.method
-        request_headers = dict(request.headers)
+        key = f"rate_limit:{limit_type}:{identifier}"
+        current_time = int(time.time())
+        window_start = current_time - limits["window"]
         
-        # Create security event
-        event = SecurityEvent(
-            event_id=event_id,
-            tenant_id=tenant_id,
-            event_type=event_data.event_type,
-            threat_type=event_data.threat_type,
-            severity=event_data.severity,
-            description=event_data.description,
-            ip_address=ip_address,
-            user_agent=user_agent,
-            request_path=request_path,
-            request_method=request_method,
-            request_headers=request_headers,
-            metadata=event_data.metadata,
-            tags=event_data.tags
+        try:
+            # Get current count
+            pipe = self.redis.pipeline()
+            pipe.zremrangebyscore(key, 0, window_start)  # Remove old entries
+            pipe.zcard(key)  # Count current entries
+            pipe.zadd(key, {str(current_time): current_time})  # Add current request
+            pipe.expire(key, limits["window"])  # Set expiration
+            results = await pipe.execute()
+            
+            current_count = results[1]
+            is_limited = current_count >= limits["requests"]
+            
+            return is_limited, {
+                "current_count": current_count,
+                "limit": limits["requests"],
+                "window": limits["window"],
+                "reset_time": current_time + limits["window"]
+            }
+        except Exception as e:
+            logger.error(f"Rate limiting error: {e}")
+            return False, {}
+
+class IPReputationChecker:
+    """Check IP reputation and geolocation"""
+    
+    def __init__(self, geoip_db_path: Optional[str] = None):
+        self.geoip_db = None
+        if geoip_db_path:
+            try:
+                self.geoip_db = geoip2.database.Reader(geoip_db_path)
+            except Exception as e:
+                logger.warning(f"Could not load GeoIP database: {e}")
+        
+        # Known malicious IP ranges (simplified)
+        self.malicious_ranges = [
+            "10.0.0.0/8",  # Private networks (for testing)
+            "192.168.0.0/16",  # Private networks
+        ]
+        
+        # Suspicious countries (example)
+        self.suspicious_countries = ["XX"]  # Add country codes as needed
+    
+    def is_malicious_ip(self, ip_address: str) -> bool:
+        """Check if IP is in malicious ranges"""
+        try:
+            ip = ipaddress.ip_address(ip_address)
+            for range_str in self.malicious_ranges:
+                if ip in ipaddress.ip_network(range_str):
+                    return True
+            return False
+        except ValueError:
+            return True  # Invalid IP
+    
+    def get_ip_info(self, ip_address: str) -> Dict[str, Any]:
+        """Get IP geolocation and reputation info"""
+        info = {
+            "ip": ip_address,
+            "country": None,
+            "city": None,
+            "is_malicious": self.is_malicious_ip(ip_address),
+            "is_suspicious": False
+        }
+        
+        if self.geoip_db:
+            try:
+                response = self.geoip_db.city(ip_address)
+                info["country"] = response.country.iso_code
+                info["city"] = response.city.name
+                info["is_suspicious"] = response.country.iso_code in self.suspicious_countries
+            except geoip2.errors.AddressNotFoundError:
+                pass
+            except Exception as e:
+                logger.error(f"GeoIP lookup error: {e}")
+        
+        return info
+
+class InputValidator:
+    """Advanced input validation and sanitization"""
+    
+    def __init__(self):
+        self.sql_patterns = [
+            r"(\b(SELECT|INSERT|UPDATE|DELETE|DROP|CREATE|ALTER|EXEC|UNION|SCRIPT)\b)",
+            r"(\b(OR|AND)\s+\d+\s*=\s*\d+)",
+            r"(\b(OR|AND)\s+'.*'\s*=\s*'.*')",
+            r"(--|#|\/\*|\*\/)",
+            r"(\b(UNION|UNION ALL)\b)",
+        ]
+        
+        self.xss_patterns = [
+            r"<script[^>]*>.*?</script>",
+            r"javascript:",
+            r"on\w+\s*=",
+            r"<iframe[^>]*>.*?</iframe>",
+            r"<object[^>]*>.*?</object>",
+            r"<embed[^>]*>.*?</embed>",
+        ]
+        
+        self.path_traversal_patterns = [
+            r"\.\.",
+            r"\/\.\.",
+            r"\\\.\.",
+            r"\.\.\/",
+            r"\.\.\\",
+        ]
+    
+    def validate_sql_injection(self, input_string: str) -> bool:
+        """Check for SQL injection patterns"""
+        input_lower = input_string.lower()
+        for pattern in self.sql_patterns:
+            if re.search(pattern, input_lower, re.IGNORECASE):
+                return False
+        return True
+    
+    def validate_xss(self, input_string: str) -> bool:
+        """Check for XSS patterns"""
+        for pattern in self.xss_patterns:
+            if re.search(pattern, input_string, re.IGNORECASE):
+                return False
+        return True
+    
+    def validate_path_traversal(self, input_string: str) -> bool:
+        """Check for path traversal patterns"""
+        for pattern in self.path_traversal_patterns:
+            if re.search(pattern, input_string):
+                return False
+        return True
+    
+    def sanitize_string(self, input_string: str) -> str:
+        """Sanitize input string"""
+        # Remove null bytes
+        sanitized = input_string.replace('\x00', '')
+        
+        # Remove control characters except newlines and tabs
+        sanitized = ''.join(char for char in sanitized if ord(char) >= 32 or char in '\n\t')
+        
+        # Limit length
+        sanitized = sanitized[:1000]
+        
+        return sanitized.strip()
+    
+    def validate_email(self, email: str) -> bool:
+        """Validate email format"""
+        pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
+        return bool(re.match(pattern, email))
+    
+    def validate_password_strength(self, password: str) -> Dict[str, Any]:
+        """Validate password strength"""
+        score = 0
+        feedback = []
+        
+        if len(password) >= 8:
+            score += 1
+        else:
+            feedback.append("Password must be at least 8 characters long")
+        
+        if re.search(r'[a-z]', password):
+            score += 1
+        else:
+            feedback.append("Password must contain lowercase letters")
+        
+        if re.search(r'[A-Z]', password):
+            score += 1
+        else:
+            feedback.append("Password must contain uppercase letters")
+        
+        if re.search(r'\d', password):
+            score += 1
+        else:
+            feedback.append("Password must contain numbers")
+        
+        if re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
+            score += 1
+        else:
+            feedback.append("Password must contain special characters")
+        
+        strength_levels = {
+            0: "Very Weak",
+            1: "Weak", 
+            2: "Fair",
+            3: "Good",
+            4: "Strong",
+            5: "Very Strong"
+        }
+        
+        return {
+            "score": score,
+            "strength": strength_levels.get(score, "Very Weak"),
+            "is_strong": score >= 4,
+            "feedback": feedback
+        }
+
+class SecurityMonitor:
+    """Monitor and detect security threats"""
+    
+    def __init__(self, redis_client):
+        self.redis = redis_client
+        self.rate_limiter = RateLimiter(redis_client)
+        self.ip_checker = IPReputationChecker()
+        self.input_validator = InputValidator()
+        self.security_events = []
+        self.blocked_ips = set()
+        self.suspicious_activities = {}
+    
+    async def analyze_request(
+        self,
+        request: Request,
+        user_id: Optional[str] = None
+    ) -> Tuple[bool, Optional[SecurityEvent]]:
+        """Analyze request for security threats"""
+        client_ip = request.client.host
+        user_agent = request.headers.get("user-agent", "")
+        path = request.url.path
+        
+        # Check if IP is blocked
+        if client_ip in self.blocked_ips:
+            return False, SecurityEvent(
+                event_id=secrets.token_hex(8),
+                threat_type=ThreatType.SUSPICIOUS_IP,
+                security_level=SecurityLevel.HIGH,
+                user_id=user_id,
+                ip_address=client_ip,
+                user_agent=user_agent,
+                request_path=path,
+                timestamp=datetime.utcnow(),
+                details={"reason": "IP is blocked"},
+                blocked=True
+            )
+        
+        # Check IP reputation
+        ip_info = self.ip_checker.get_ip_info(client_ip)
+        if ip_info["is_malicious"]:
+            self.blocked_ips.add(client_ip)
+            return False, SecurityEvent(
+                event_id=secrets.token_hex(8),
+                threat_type=ThreatType.SUSPICIOUS_IP,
+                security_level=SecurityLevel.CRITICAL,
+                user_id=user_id,
+                ip_address=client_ip,
+                user_agent=user_agent,
+                request_path=path,
+                timestamp=datetime.utcnow(),
+                details=ip_info,
+                blocked=True
+            )
+        
+        # Check rate limiting
+        identifier = user_id or client_ip
+        is_rate_limited, rate_info = await self.rate_limiter.is_rate_limited(
+            identifier, "api"
         )
         
-        self.db.add(event)
-        self.db.commit()
+        if is_rate_limited:
+            return False, SecurityEvent(
+                event_id=secrets.token_hex(8),
+                threat_type=ThreatType.RATE_LIMIT,
+                security_level=SecurityLevel.MEDIUM,
+                user_id=user_id,
+                ip_address=client_ip,
+                user_agent=user_agent,
+                request_path=path,
+                timestamp=datetime.utcnow(),
+                details=rate_info,
+                blocked=True
+            )
         
-        # Check for threats
-        await self._analyze_threat(event)
+        # Check for suspicious activity patterns
+        if await self._detect_suspicious_activity(identifier, path, user_agent):
+            return False, SecurityEvent(
+                event_id=secrets.token_hex(8),
+                threat_type=ThreatType.UNUSUAL_ACTIVITY,
+                security_level=SecurityLevel.MEDIUM,
+                user_id=user_id,
+                ip_address=client_ip,
+                user_agent=user_agent,
+                request_path=path,
+                timestamp=datetime.utcnow(),
+                details={"reason": "Suspicious activity pattern detected"},
+                blocked=True
+            )
         
-        # Cache for rate limiting
-        await self._update_rate_limiter(ip_address, event_id)
-        
-        return event_id
+        return True, None
     
-    async def create_security_rule(self, tenant_id: str, rule_data: SecurityRuleCreate, created_by: int) -> str:
-        """Create a security rule"""
-        rule_id = str(uuid.uuid4())
+    async def _detect_suspicious_activity(
+        self,
+        identifier: str,
+        path: str,
+        user_agent: str
+    ) -> bool:
+        """Detect suspicious activity patterns"""
+        key = f"suspicious_activity:{identifier}"
         
-        rule = SecurityRule(
-            rule_id=rule_id,
-            tenant_id=tenant_id if not rule_data.is_global else None,
-            name=rule_data.name,
-            description=rule_data.description,
-            rule_type=rule_data.rule_type,
-            threat_type=rule_data.threat_type,
-            severity=rule_data.severity,
-            conditions=rule_data.conditions,
-            actions=rule_data.actions,
-            is_global=rule_data.is_global,
-            rate_limit=rule_data.rate_limit,
-            rate_window=rule_data.rate_window,
-            created_by=created_by
-        )
+        # Track activity
+        activity = {
+            "path": path,
+            "user_agent": user_agent,
+            "timestamp": datetime.utcnow().isoformat()
+        }
         
-        self.db.add(rule)
-        self.db.commit()
+        await self.redis.lpush(key, json.dumps(activity))
+        await self.redis.ltrim(key, 0, 99)  # Keep last 100 activities
+        await self.redis.expire(key, 3600)  # Expire in 1 hour
         
-        return rule_id
+        # Get recent activities
+        activities = await self.redis.lrange(key, 0, 9)
+        recent_paths = [json.loads(act)["path"] for act in activities]
+        
+        # Check for rapid path changes (potential scanning)
+        unique_paths = len(set(recent_paths))
+        if unique_paths > 5:  # More than 5 different paths in recent requests
+            return True
+        
+        # Check for admin path access attempts
+        admin_paths = ["/admin", "/api/admin", "/dashboard", "/settings"]
+        admin_attempts = sum(1 for p in recent_paths if any(ap in p for ap in admin_paths))
+        if admin_attempts > 3:
+            return True
+        
+        return False
     
-    async def get_security_policy(self, tenant_id: str) -> Optional[SecurityPolicy]:
-        """Get security policy for tenant"""
-        return self.db.query(SecurityPolicy).filter(SecurityPolicy.tenant_id == tenant_id).first()
-    
-    async def update_security_policy(self, tenant_id: str, policy_data: SecurityPolicyUpdate) -> SecurityPolicy:
-        """Update security policy"""
-        policy = await self.get_security_policy(tenant_id)
-        
-        if not policy:
-            # Create new policy
-            policy = SecurityPolicy(tenant_id=tenant_id)
-            self.db.add(policy)
-        
-        # Update fields
-        for field, value in policy_data.dict(exclude_unset=True).items():
-            setattr(policy, field, value)
-        
-        policy.updated_at = datetime.utcnow()
-        
-        self.db.commit()
-        self.db.refresh(policy)
-        
-        return policy
-    
-    async def validate_password(self, password: str, tenant_id: str) -> Tuple[bool, List[str]]:
-        """Validate password against security policy"""
-        policy = await self.get_security_policy(tenant_id)
-        if not policy:
-            return True, []  # No policy, allow any password
-        
+    async def validate_input(
+        self,
+        input_data: Dict[str, Any],
+        user_id: Optional[str] = None
+    ) -> Tuple[bool, List[str]]:
+        """Validate input data for security threats"""
         errors = []
         
-        if len(password) < policy.min_password_length:
-            errors.append(f"Password must be at least {policy.min_password_length} characters long")
-        
-        if policy.require_uppercase and not re.search(r'[A-Z]', password):
-            errors.append("Password must contain at least one uppercase letter")
-        
-        if policy.require_lowercase and not re.search(r'[a-z]', password):
-            errors.append("Password must contain at least one lowercase letter")
-        
-        if policy.require_numbers and not re.search(r'\d', password):
-            errors.append("Password must contain at least one number")
-        
-        if policy.require_special_chars and not re.search(r'[!@#$%^&*(),.?":{}|<>]', password):
-            errors.append("Password must contain at least one special character")
+        for key, value in input_data.items():
+            if isinstance(value, str):
+                # Check for SQL injection
+                if not self.input_validator.validate_sql_injection(value):
+                    errors.append(f"Potential SQL injection in {key}")
+                
+                # Check for XSS
+                if not self.input_validator.validate_xss(value):
+                    errors.append(f"Potential XSS in {key}")
+                
+                # Check for path traversal
+                if not self.input_validator.validate_path_traversal(value):
+                    errors.append(f"Potential path traversal in {key}")
+                
+                # Sanitize string
+                input_data[key] = self.input_validator.sanitize_string(value)
         
         return len(errors) == 0, errors
     
-    async def check_rate_limit(self, identifier: str, limit: int, window: int = 60) -> bool:
-        """Check if rate limit is exceeded"""
-        now = datetime.utcnow()
-        cutoff = now - timedelta(seconds=window)
+    async def log_security_event(self, event: SecurityEvent):
+        """Log security event"""
+        self.security_events.append(event)
         
-        # Get recent requests
-        recent_requests = await self.redis.lrange(f"rate_limit:{identifier}", 0, -1)
-        
-        # Filter out old requests
-        valid_requests = []
-        for req_time_str in recent_requests:
-            req_time = datetime.fromisoformat(req_time_str.decode())
-            if req_time > cutoff:
-                valid_requests.append(req_time)
-        
-        # Check if limit exceeded
-        if len(valid_requests) >= limit:
-            return False
-        
-        # Add current request
-        await self.redis.lpush(f"rate_limit:{identifier}", now.isoformat())
-        await self.redis.expire(f"rate_limit:{identifier}", window)
-        
-        return True
-    
-    async def detect_threats(self, request: Request, tenant_id: Optional[str] = None) -> List[Dict[str, Any]]:
-        """Detect security threats in request"""
-        threats = []
-        
-        # Get request data
-        request_data = {
-            "path": str(request.url.path),
-            "query": str(request.url.query),
-            "headers": dict(request.headers),
-            "method": request.method
-        }
-        
-        # Check each threat detector
-        for threat_type, detector in self.threat_detectors.items():
-            if await detector(request_data):
-                threats.append({
-                    "threat_type": threat_type,
-                    "severity": self._get_threat_severity(threat_type),
-                    "description": f"Detected {threat_type} threat",
-                    "metadata": {"detector": threat_type}
-                })
-        
-        # Log threats
-        for threat in threats:
-            await self.log_security_event(
-                SecurityEventCreate(
-                    event_type="threat_detected",
-                    threat_type=threat["threat_type"],
-                    severity=threat["severity"],
-                    description=threat["description"],
-                    metadata=threat["metadata"]
-                ),
-                request,
-                tenant_id
-            )
-        
-        return threats
-    
-    async def run_security_audit(self, tenant_id: str, audit_type: str, created_by: int) -> str:
-        """Run security audit"""
-        audit_id = str(uuid.uuid4())
-        
-        audit = SecurityAudit(
-            audit_id=audit_id,
-            tenant_id=tenant_id,
-            audit_type=audit_type,
-            created_by=created_by
+        # Store in Redis for persistence
+        await self.redis.lpush(
+            "security_events",
+            json.dumps({
+                "event_id": event.event_id,
+                "threat_type": event.threat_type.value,
+                "security_level": event.security_level.value,
+                "user_id": event.user_id,
+                "ip_address": event.ip_address,
+                "user_agent": event.user_agent,
+                "request_path": event.request_path,
+                "timestamp": event.timestamp.isoformat(),
+                "details": event.details,
+                "blocked": event.blocked
+            })
         )
         
-        self.db.add(audit)
-        self.db.commit()
+        # Keep only last 1000 events
+        await self.redis.ltrim("security_events", 0, 999)
         
-        # Run audit in background
-        asyncio.create_task(self._run_audit_checks(audit_id, tenant_id, audit_type))
-        
-        return audit_id
+        logger.warning(f"Security event: {event.threat_type.value} - {event.details}")
     
-    async def get_security_dashboard(self, tenant_id: str) -> Dict[str, Any]:
-        """Get security dashboard data"""
-        # Get recent events
-        recent_events = self.db.query(SecurityEvent).filter(
-            SecurityEvent.tenant_id == tenant_id,
-            SecurityEvent.created_at >= datetime.utcnow() - timedelta(days=7)
-        ).order_by(SecurityEvent.created_at.desc()).limit(100).all()
+    async def get_security_stats(self) -> Dict[str, Any]:
+        """Get security statistics"""
+        events = await self.redis.lrange("security_events", 0, -1)
+        parsed_events = [json.loads(event) for event in events]
         
-        # Get threat statistics
-        threat_stats = {}
-        for event in recent_events:
-            if event.threat_type:
-                threat_stats[event.threat_type] = threat_stats.get(event.threat_type, 0) + 1
+        threat_counts = {}
+        blocked_count = 0
         
-        # Get severity distribution
-        severity_stats = {}
-        for event in recent_events:
-            severity_stats[event.severity] = severity_stats.get(event.severity, 0) + 1
-        
-        # Get top IP addresses
-        ip_stats = {}
-        for event in recent_events:
-            if event.ip_address:
-                ip_stats[event.ip_address] = ip_stats.get(event.ip_address, 0) + 1
-        
-        top_ips = sorted(ip_stats.items(), key=lambda x: x[1], reverse=True)[:10]
+        for event in parsed_events:
+            threat_type = event["threat_type"]
+            threat_counts[threat_type] = threat_counts.get(threat_type, 0) + 1
+            if event["blocked"]:
+                blocked_count += 1
         
         return {
-            "total_events": len(recent_events),
-            "threat_stats": threat_stats,
-            "severity_stats": severity_stats,
-            "top_ips": top_ips,
-            "recent_events": [
-                {
-                    "event_id": event.event_id,
-                    "event_type": event.event_type,
-                    "threat_type": event.threat_type,
-                    "severity": event.severity,
-                    "description": event.description,
-                    "ip_address": event.ip_address,
-                    "created_at": event.created_at
-                }
-                for event in recent_events[:20]
-            ]
+            "total_events": len(parsed_events),
+            "blocked_requests": blocked_count,
+            "threat_breakdown": threat_counts,
+            "blocked_ips": len(self.blocked_ips),
+            "suspicious_activities": len(self.suspicious_activities)
         }
-    
-    def _get_client_ip(self, request: Request) -> str:
-        """Get client IP address"""
-        # Check for forwarded headers
-        forwarded_for = request.headers.get("x-forwarded-for")
-        if forwarded_for:
-            return forwarded_for.split(",")[0].strip()
-        
-        real_ip = request.headers.get("x-real-ip")
-        if real_ip:
-            return real_ip
-        
-        # Fallback to direct connection
-        return request.client.host if request.client else "unknown"
-    
-    async def _analyze_threat(self, event: SecurityEvent):
-        """Analyze security event for threats"""
-        # Check against security rules
-        rules = self.db.query(SecurityRule).filter(
-            SecurityRule.is_active == True,
-            (SecurityRule.tenant_id == event.tenant_id) | (SecurityRule.is_global == True)
-        ).all()
-        
-        for rule in rules:
-            if await self._evaluate_rule(rule, event):
-                await self._execute_rule_actions(rule, event)
-    
-    async def _evaluate_rule(self, rule: SecurityRule, event: SecurityEvent) -> bool:
-        """Evaluate if event matches rule conditions"""
-        conditions = rule.conditions
-        
-        # Check event type
-        if "event_type" in conditions and event.event_type != conditions["event_type"]:
-            return False
-        
-        # Check threat type
-        if "threat_type" in conditions and event.threat_type != conditions["threat_type"]:
-            return False
-        
-        # Check severity
-        if "severity" in conditions and event.severity != conditions["severity"]:
-            return False
-        
-        # Check IP address patterns
-        if "ip_patterns" in conditions:
-            ip_matches = False
-            for pattern in conditions["ip_patterns"]:
-                if self._ip_matches_pattern(event.ip_address, pattern):
-                    ip_matches = True
-                    break
-            if not ip_matches:
-                return False
-        
-        # Check user agent patterns
-        if "user_agent_patterns" in conditions:
-            ua_matches = False
-            for pattern in conditions["user_agent_patterns"]:
-                if event.user_agent and re.search(pattern, event.user_agent, re.IGNORECASE):
-                    ua_matches = True
-                    break
-            if not ua_matches:
-                return False
-        
-        return True
-    
-    async def _execute_rule_actions(self, rule: SecurityRule, event: SecurityEvent):
-        """Execute rule actions"""
-        actions = rule.actions
-        
-        # Block IP
-        if "block_ip" in actions and actions["block_ip"]:
-            await self._block_ip(event.ip_address, rule.rate_window or 3600)
-        
-        # Send alert
-        if "send_alert" in actions and actions["send_alert"]:
-            await self._send_security_alert(rule, event)
-        
-        # Log additional event
-        if "log_event" in actions and actions["log_event"]:
-            await self.log_security_event(
-                SecurityEventCreate(
-                    event_type="rule_triggered",
-                    severity=rule.severity,
-                    description=f"Security rule '{rule.name}' triggered",
-                    metadata={"rule_id": rule.rule_id, "original_event_id": event.event_id}
-                ),
-                None,
-                event.tenant_id
-            )
-    
-    def _ip_matches_pattern(self, ip: str, pattern: str) -> bool:
-        """Check if IP matches pattern"""
-        try:
-            if "/" in pattern:  # CIDR notation
-                return ipaddress.ip_address(ip) in ipaddress.ip_network(pattern)
-            else:  # Exact match
-                return ip == pattern
-        except:
-            return False
-    
-    async def _block_ip(self, ip: str, duration: int):
-        """Block IP address"""
-        await self.redis.setex(f"blocked_ip:{ip}", duration, "blocked")
-    
-    async def _send_security_alert(self, rule: SecurityRule, event: SecurityEvent):
-        """Send security alert"""
-        # Implementation would send email, Slack, etc.
-        pass
-    
-    async def _detect_sql_injection(self, request_data: Dict[str, Any]) -> bool:
-        """Detect SQL injection attempts"""
-        sql_patterns = [
-            r"union\s+select",
-            r"drop\s+table",
-            r"delete\s+from",
-            r"insert\s+into",
-            r"update\s+set",
-            r"or\s+1\s*=\s*1",
-            r"and\s+1\s*=\s*1",
-            r"'\s*or\s*'",
-            r"'\s*and\s*'",
-            r"'\s*;\s*--",
-            r"'\s*;\s*#",
-            r"'\s*;\s*\/\*"
-        ]
-        
-        search_text = f"{request_data['path']} {request_data['query']}"
-        for pattern in sql_patterns:
-            if re.search(pattern, search_text, re.IGNORECASE):
-                return True
-        
-        return False
-    
-    async def _detect_xss(self, request_data: Dict[str, Any]) -> bool:
-        """Detect XSS attempts"""
-        xss_patterns = [
-            r"<script[^>]*>",
-            r"javascript:",
-            r"on\w+\s*=",
-            r"<iframe[^>]*>",
-            r"<object[^>]*>",
-            r"<embed[^>]*>",
-            r"<link[^>]*>",
-            r"<meta[^>]*>",
-            r"<style[^>]*>",
-            r"expression\s*\(",
-            r"url\s*\(",
-            r"@import"
-        ]
-        
-        search_text = f"{request_data['path']} {request_data['query']}"
-        for pattern in xss_patterns:
-            if re.search(pattern, search_text, re.IGNORECASE):
-                return True
-        
-        return False
-    
-    async def _detect_brute_force(self, request_data: Dict[str, Any]) -> bool:
-        """Detect brute force attempts"""
-        # This would check rate limits and failed login attempts
-        # Implementation depends on specific requirements
-        return False
-    
-    async def _detect_ddos(self, request_data: Dict[str, Any]) -> bool:
-        """Detect DDoS attempts"""
-        # This would check for high request volumes
-        # Implementation depends on specific requirements
-        return False
-    
-    async def _detect_suspicious_activity(self, request_data: Dict[str, Any]) -> bool:
-        """Detect suspicious activity"""
-        # Check for unusual patterns
-        suspicious_patterns = [
-            r"\.\.\/",  # Directory traversal
-            r"\/etc\/passwd",  # System file access
-            r"\/proc\/",  # Process access
-            r"cmd\.exe",  # Command execution
-            r"powershell",  # PowerShell execution
-            r"wget\s+",  # File download
-            r"curl\s+",  # File download
-        ]
-        
-        search_text = f"{request_data['path']} {request_data['query']}"
-        for pattern in suspicious_patterns:
-            if re.search(pattern, search_text, re.IGNORECASE):
-                return True
-        
-        return False
-    
-    def _get_threat_severity(self, threat_type: str) -> SecurityLevel:
-        """Get severity level for threat type"""
-        severity_map = {
-            "sql_injection": SecurityLevel.HIGH,
-            "xss": SecurityLevel.HIGH,
-            "brute_force": SecurityLevel.MEDIUM,
-            "ddos": SecurityLevel.CRITICAL,
-            "suspicious_activity": SecurityLevel.MEDIUM
-        }
-        
-        return severity_map.get(threat_type, SecurityLevel.MEDIUM)
-    
-    async def _update_rate_limiter(self, ip: str, event_id: str):
-        """Update rate limiter for IP"""
-        now = datetime.utcnow()
-        await self.redis.lpush(f"rate_limit:{ip}", now.isoformat())
-        await self.redis.expire(f"rate_limit:{ip}", 3600)  # 1 hour
-    
-    async def _run_audit_checks(self, audit_id: str, tenant_id: str, audit_type: str):
-        """Run security audit checks"""
-        # Implementation would run various security checks
-        # This is a placeholder for the actual audit logic
-        pass
 
-# Dependency injection
-def get_security_service(db_session = Depends(get_db), redis_client = Depends(get_redis)) -> AdvancedSecurityService:
-    """Get advanced security service"""
-    return AdvancedSecurityService(db_session, redis_client)
+class PasswordManager:
+    """Advanced password management"""
+    
+    def __init__(self):
+        self.pwd_context = CryptContext(
+            schemes=["bcrypt", "argon2"],
+            default="bcrypt",
+            bcrypt__rounds=12,
+            argon2__memory_cost=65536,
+            argon2__time_cost=3,
+            argon2__parallelism=4
+        )
+    
+    def hash_password(self, password: str) -> str:
+        """Hash password with salt"""
+        return self.pwd_context.hash(password)
+    
+    def verify_password(self, plain_password: str, hashed_password: str) -> bool:
+        """Verify password against hash"""
+        return self.pwd_context.verify(plain_password, hashed_password)
+    
+    def generate_secure_password(self, length: int = 16) -> str:
+        """Generate secure random password"""
+        alphabet = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*"
+        return ''.join(secrets.choice(alphabet) for _ in range(length))
+
+class TokenManager:
+    """Advanced token management with JWT"""
+    
+    def __init__(self, secret_key: str, algorithm: str = "HS256"):
+        self.secret_key = secret_key
+        self.algorithm = algorithm
+        self.access_token_expire = timedelta(minutes=30)
+        self.refresh_token_expire = timedelta(days=7)
+    
+    def create_access_token(self, data: Dict[str, Any]) -> str:
+        """Create JWT access token"""
+        to_encode = data.copy()
+        expire = datetime.utcnow() + self.access_token_expire
+        to_encode.update({"exp": expire, "type": "access"})
+        
+        return jwt.encode(to_encode, self.secret_key, algorithm=self.algorithm)
+    
+    def create_refresh_token(self, data: Dict[str, Any]) -> str:
+        """Create JWT refresh token"""
+        to_encode = data.copy()
+        expire = datetime.utcnow() + self.refresh_token_expire
+        to_encode.update({"exp": expire, "type": "refresh"})
+        
+        return jwt.encode(to_encode, self.secret_key, algorithm=self.algorithm)
+    
+    def verify_token(self, token: str) -> Optional[Dict[str, Any]]:
+        """Verify and decode JWT token"""
+        try:
+            payload = jwt.decode(token, self.secret_key, algorithms=[self.algorithm])
+            return payload
+        except jwt.ExpiredSignatureError:
+            return None
+        except jwt.InvalidTokenError:
+            return None
+    
+    def create_token_pair(self, user_id: str, additional_data: Optional[Dict[str, Any]] = None) -> Dict[str, str]:
+        """Create access and refresh token pair"""
+        data = {"user_id": user_id}
+        if additional_data:
+            data.update(additional_data)
+        
+        return {
+            "access_token": self.create_access_token(data),
+            "refresh_token": self.create_refresh_token(data),
+            "token_type": "bearer"
+        }
+
+# Global security instances
+security_monitor = None
+password_manager = PasswordManager()
+token_manager = None
+
+def initialize_security(redis_client, secret_key: str):
+    """Initialize global security components"""
+    global security_monitor, token_manager
+    security_monitor = SecurityMonitor(redis_client)
+    token_manager = TokenManager(secret_key)

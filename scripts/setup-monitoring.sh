@@ -1,11 +1,17 @@
 #!/bin/bash
 
-# Soladia Marketplace Monitoring Setup Script
-# This script sets up comprehensive monitoring for the development environment
+# Soladia Monitoring Setup Script
+# This script sets up comprehensive monitoring for the Soladia marketplace
 
-set -e
+set -e  # Exit on any error
 
-echo "📊 Setting up Soladia Marketplace Monitoring..."
+# Configuration
+NAMESPACE="monitoring"
+PROMETHEUS_VERSION="v2.45.0"
+GRAFANA_VERSION="10.0.0"
+ALERTMANAGER_VERSION="v0.25.0"
+LOKI_VERSION="2.8.0"
+PROMTAIL_VERSION="2.8.0"
 
 # Colors for output
 RED='\033[0;31m'
@@ -14,211 +20,435 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Function to print colored output
-print_status() {
+# Logging functions
+log_info() {
     echo -e "${BLUE}[INFO]${NC} $1"
 }
 
-print_success() {
+log_success() {
     echo -e "${GREEN}[SUCCESS]${NC} $1"
 }
 
-print_warning() {
+log_warning() {
     echo -e "${YELLOW}[WARNING]${NC} $1"
 }
 
-print_error() {
+log_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
 
-# Check if Docker is running
-check_docker() {
-    if ! docker info > /dev/null 2>&1; then
-        print_error "Docker is not running. Please start Docker and try again."
+# Check prerequisites
+check_prerequisites() {
+    log_info "Checking prerequisites..."
+    
+    # Check if required tools are installed
+    local tools=("kubectl" "helm" "git" "curl" "jq")
+    for tool in "${tools[@]}"; do
+        if ! command -v "$tool" &> /dev/null; then
+            log_error "$tool is not installed or not in PATH"
+            exit 1
+        fi
+    done
+    
+    # Check if kubectl is configured
+    if ! kubectl cluster-info &> /dev/null; then
+        log_error "kubectl is not configured or cluster is not accessible"
         exit 1
     fi
-    print_success "Docker is running"
+    
+    # Check if helm is initialized
+    if ! helm list &> /dev/null; then
+        log_warning "Helm is not initialized, initializing..."
+        helm init --wait
+    fi
+    
+    log_success "Prerequisites check passed"
 }
 
-# Create monitoring directories
-create_directories() {
-    print_status "Creating monitoring directories..."
+# Create monitoring namespace
+create_namespace() {
+    log_info "Creating monitoring namespace..."
     
-    mkdir -p monitoring/prometheus/data
-    mkdir -p monitoring/grafana/data
-    mkdir -p monitoring/grafana/provisioning/datasources
-    mkdir -p monitoring/grafana/provisioning/dashboards
-    mkdir -p monitoring/grafana/dashboards
-    mkdir -p monitoring/alertmanager/data
-    mkdir -p monitoring/loki/data
-    mkdir -p monitoring/jaeger/data
+    kubectl create namespace "${NAMESPACE}" --dry-run=client -o yaml | kubectl apply -f -
     
-    print_success "Monitoring directories created"
+    log_success "Monitoring namespace created"
 }
 
-# Create Prometheus configuration
-setup_prometheus() {
-    print_status "Setting up Prometheus configuration..."
+# Install Prometheus
+install_prometheus() {
+    log_info "Installing Prometheus..."
     
-    cat > monitoring/prometheus/prometheus.yml << 'EOF'
-global:
-  scrape_interval: 15s
-  evaluation_interval: 15s
+    # Add Prometheus Helm repository
+    helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
+    helm repo update
+    
+    # Create Prometheus values file
+    cat > prometheus-values.yaml << EOF
+server:
+  persistentVolume:
+    enabled: true
+    size: 50Gi
+  resources:
+    requests:
+      memory: 2Gi
+      cpu: 500m
+    limits:
+      memory: 4Gi
+      cpu: 1000m
 
-rule_files:
-  - "rules/*.yml"
+alertmanager:
+  enabled: true
+  persistentVolume:
+    enabled: true
+    size: 10Gi
+  resources:
+    requests:
+      memory: 512Mi
+      cpu: 100m
+    limits:
+      memory: 1Gi
+      cpu: 200m
 
-alerting:
-  alertmanagers:
-    - static_configs:
-        - targets:
-          - alertmanager:9093
+pushgateway:
+  enabled: true
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 50m
+    limits:
+      memory: 512Mi
+      cpu: 100m
 
-scrape_configs:
-  - job_name: 'prometheus'
-    static_configs:
-      - targets: ['localhost:9090']
+nodeExporter:
+  enabled: true
 
-  - job_name: 'soladia-backend'
-    static_configs:
-      - targets: ['backend:8001']
-    metrics_path: '/metrics'
-    scrape_interval: 5s
+kubeStateMetrics:
+  enabled: true
 
-  - job_name: 'soladia-frontend'
-    static_configs:
-      - targets: ['frontend:4321']
-    metrics_path: '/metrics'
-    scrape_interval: 5s
+serverFiles:
+  prometheus.yml:
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+    rule_files:
+      - "/etc/config/alerting-rules.yml"
+    alerting:
+      alertmanagers:
+        - static_configs:
+            - targets:
+              - alertmanager:9093
+    scrape_configs:
+      - job_name: 'prometheus'
+        static_configs:
+          - targets: ['localhost:9090']
+      
+      - job_name: 'soladia-backend'
+        static_configs:
+          - targets: ['soladia-backend:8000']
+        metrics_path: '/metrics'
+        scrape_interval: 15s
+      
+      - job_name: 'soladia-frontend'
+        static_configs:
+          - targets: ['soladia-frontend:3000']
+        metrics_path: '/metrics'
+        scrape_interval: 15s
+      
+      - job_name: 'postgres'
+        static_configs:
+          - targets: ['postgres:5432']
+        metrics_path: '/metrics'
+        scrape_interval: 30s
+      
+      - job_name: 'redis'
+        static_configs:
+          - targets: ['redis:6379']
+        metrics_path: '/metrics'
+        scrape_interval: 30s
+      
+      - job_name: 'nginx'
+        static_configs:
+          - targets: ['nginx:80']
+        metrics_path: '/nginx_status'
+        scrape_interval: 30s
 
-  - job_name: 'postgres'
-    static_configs:
-      - targets: ['postgres-exporter:9187']
-
-  - job_name: 'redis'
-    static_configs:
-      - targets: ['redis-exporter:9121']
-
-  - job_name: 'node-exporter'
-    static_configs:
-      - targets: ['node-exporter:9100']
+extraConfigmapMounts:
+  - name: alerting-rules
+    mountPath: /etc/config
+    configMap: alerting-rules
+    readOnly: true
 EOF
 
-    print_success "Prometheus configuration created"
+    # Install Prometheus
+    helm upgrade --install prometheus prometheus-community/prometheus \
+        --namespace "${NAMESPACE}" \
+        --values prometheus-values.yaml \
+        --wait --timeout=10m
+    
+    log_success "Prometheus installed successfully"
 }
 
-# Create Grafana configuration
-setup_grafana() {
-    print_status "Setting up Grafana configuration..."
+# Install Grafana
+install_grafana() {
+    log_info "Installing Grafana..."
     
-    # Create datasource configuration
-    cat > monitoring/grafana/provisioning/datasources/prometheus.yml << 'EOF'
-apiVersion: 1
+    # Add Grafana Helm repository
+    helm repo add grafana https://grafana.github.io/helm-charts
+    helm repo update
+    
+    # Create Grafana values file
+    cat > grafana-values.yaml << EOF
+adminPassword: "admin123"
+persistence:
+  enabled: true
+  size: 10Gi
+
+resources:
+  requests:
+    memory: 512Mi
+    cpu: 100m
+  limits:
+    memory: 1Gi
+    cpu: 200m
+
+service:
+  type: LoadBalancer
+  port: 80
 
 datasources:
-  - name: Prometheus
-    type: prometheus
-    access: proxy
-    url: http://prometheus:9090
-    isDefault: true
-    editable: true
+  datasources.yaml:
+    apiVersion: 1
+    datasources:
+      - name: Prometheus
+        type: prometheus
+        url: http://prometheus-server:80
+        access: proxy
+        isDefault: true
+        editable: true
+      
+      - name: Loki
+        type: loki
+        url: http://loki:3100
+        access: proxy
+        editable: true
+
+dashboardProviders:
+  dashboardproviders.yaml:
+    apiVersion: 1
+    providers:
+      - name: 'default'
+        orgId: 1
+        folder: ''
+        type: file
+        disableDeletion: false
+        editable: true
+        options:
+          path: /var/lib/grafana/dashboards
+
+dashboards:
+  default:
+    soladia-dashboard:
+      gnetId: 0
+      revision: 1
+      datasource: Prometheus
+
+extraConfigmapMounts:
+  - name: grafana-dashboards
+    mountPath: /var/lib/grafana/dashboards
+    configMap: grafana-dashboards
+    readOnly: true
 EOF
 
-    # Create dashboard configuration
-    cat > monitoring/grafana/provisioning/dashboards/dashboards.yml << 'EOF'
-apiVersion: 1
-
-providers:
-  - name: 'default'
-    orgId: 1
-    folder: ''
-    type: file
-    disableDeletion: false
-    updateIntervalSeconds: 10
-    allowUiUpdates: true
-    options:
-      path: /var/lib/grafana/dashboards
-EOF
-
-    # Create basic dashboard
-    cat > monitoring/grafana/dashboards/soladia-overview.json << 'EOF'
-{
-  "dashboard": {
-    "id": null,
-    "title": "Soladia Marketplace Overview",
-    "tags": ["soladia", "marketplace"],
-    "style": "dark",
-    "timezone": "browser",
-    "panels": [
-      {
-        "id": 1,
-        "title": "Request Rate",
-        "type": "graph",
-        "targets": [
-          {
-            "expr": "rate(http_requests_total[5m])",
-            "legendFormat": "{{method}} {{endpoint}}"
-          }
-        ],
-        "yAxes": [
-          {
-            "label": "Requests/sec",
-            "min": 0
-          }
-        ]
-      },
-      {
-        "id": 2,
-        "title": "Response Time",
-        "type": "graph",
-        "targets": [
-          {
-            "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[5m]))",
-            "legendFormat": "95th percentile"
-          }
-        ],
-        "yAxes": [
-          {
-            "label": "Seconds",
-            "min": 0
-          }
-        ]
-      },
-      {
-        "id": 3,
-        "title": "Error Rate",
-        "type": "graph",
-        "targets": [
-          {
-            "expr": "rate(http_requests_total{status=~\"5..\"}[5m])",
-            "legendFormat": "5xx errors"
-          }
-        ],
-        "yAxes": [
-          {
-            "label": "Errors/sec",
-            "min": 0
-          }
-        ]
-      }
-    ],
-    "time": {
-      "from": "now-1h",
-      "to": "now"
-    },
-    "refresh": "5s"
-  }
-}
-EOF
-
-    print_success "Grafana configuration created"
-}
-
-# Create Alertmanager configuration
-setup_alertmanager() {
-    print_status "Setting up Alertmanager configuration..."
+    # Install Grafana
+    helm upgrade --install grafana grafana/grafana \
+        --namespace "${NAMESPACE}" \
+        --values grafana-values.yaml \
+        --wait --timeout=10m
     
-    cat > monitoring/alertmanager/alertmanager.yml << 'EOF'
+    log_success "Grafana installed successfully"
+}
+
+# Install Loki
+install_loki() {
+    log_info "Installing Loki..."
+    
+    # Add Grafana Helm repository (Loki is in the same repo)
+    helm repo add grafana https://grafana.github.io/helm-charts
+    helm repo update
+    
+    # Create Loki values file
+    cat > loki-values.yaml << EOF
+loki:
+  persistence:
+    enabled: true
+    size: 50Gi
+  resources:
+    requests:
+      memory: 1Gi
+      cpu: 200m
+    limits:
+      memory: 2Gi
+      cpu: 500m
+
+promtail:
+  enabled: true
+  resources:
+    requests:
+      memory: 256Mi
+      cpu: 100m
+    limits:
+      memory: 512Mi
+      cpu: 200m
+EOF
+
+    # Install Loki
+    helm upgrade --install loki grafana/loki-stack \
+        --namespace "${NAMESPACE}" \
+        --values loki-values.yaml \
+        --wait --timeout=10m
+    
+    log_success "Loki installed successfully"
+}
+
+# Create monitoring configurations
+create_configurations() {
+    log_info "Creating monitoring configurations..."
+    
+    # Create alerting rules ConfigMap
+    kubectl create configmap alerting-rules \
+        --from-file=alerting-rules.yml=monitoring/alerting-rules.yml \
+        --namespace "${NAMESPACE}" \
+        --dry-run=client -o yaml | kubectl apply -f -
+    
+    # Create Grafana dashboards ConfigMap
+    kubectl create configmap grafana-dashboards \
+        --from-file=soladia-dashboard.json=monitoring/grafana-dashboards.json \
+        --namespace "${NAMESPACE}" \
+        --dry-run=client -o yaml | kubectl apply -f -
+    
+    # Create Prometheus service monitor
+    cat > prometheus-servicemonitor.yaml << EOF
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: soladia-backend
+  namespace: ${NAMESPACE}
+spec:
+  selector:
+    matchLabels:
+      app: soladia-backend
+  endpoints:
+  - port: metrics
+    path: /metrics
+    interval: 15s
+EOF
+
+    kubectl apply -f prometheus-servicemonitor.yaml
+    
+    # Create Prometheus service monitor for frontend
+    cat > prometheus-servicemonitor-frontend.yaml << EOF
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: soladia-frontend
+  namespace: ${NAMESPACE}
+spec:
+  selector:
+    matchLabels:
+      app: soladia-frontend
+  endpoints:
+  - port: metrics
+    path: /metrics
+    interval: 15s
+EOF
+
+    kubectl apply -f prometheus-servicemonitor-frontend.yaml
+    
+    log_success "Monitoring configurations created"
+}
+
+# Setup monitoring for Soladia services
+setup_soladia_monitoring() {
+    log_info "Setting up Soladia service monitoring..."
+    
+    # Create monitoring annotations for services
+    kubectl annotate service soladia-backend \
+        prometheus.io/scrape=true \
+        prometheus.io/port=8000 \
+        prometheus.io/path=/metrics \
+        --namespace="${NAMESPACE}" || true
+    
+    kubectl annotate service soladia-frontend \
+        prometheus.io/scrape=true \
+        prometheus.io/port=3000 \
+        prometheus.io/path=/metrics \
+        --namespace="${NAMESPACE}" || true
+    
+    # Create monitoring labels
+    kubectl label service soladia-backend \
+        app=soladia-backend \
+        --namespace="${NAMESPACE}" || true
+    
+    kubectl label service soladia-frontend \
+        app=soladia-frontend \
+        --namespace="${NAMESPACE}" || true
+    
+    log_success "Soladia service monitoring configured"
+}
+
+# Create monitoring dashboards
+create_dashboards() {
+    log_info "Creating monitoring dashboards..."
+    
+    # Wait for Grafana to be ready
+    kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=grafana -n "${NAMESPACE}" --timeout=300s
+    
+    # Get Grafana service URL
+    local grafana_url
+    grafana_url=$(kubectl get service grafana -n "${NAMESPACE}" -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    if [ -z "$grafana_url" ]; then
+        grafana_url="localhost:$(kubectl get service grafana -n "${NAMESPACE}" -o jsonpath='{.spec.ports[0].nodePort}')"
+    fi
+    
+    # Import dashboards
+    log_info "Importing Grafana dashboards..."
+    
+    # Wait for Grafana to be accessible
+    local max_attempts=30
+    local attempt=1
+    
+    while [ $attempt -le $max_attempts ]; do
+        if curl -f "http://${grafana_url}/api/health" &> /dev/null; then
+            log_success "Grafana is accessible"
+            break
+        else
+            log_info "Waiting for Grafana to be accessible (attempt $attempt/$max_attempts)..."
+            sleep 10
+            ((attempt++))
+        fi
+    done
+    
+    if [ $attempt -gt $max_attempts ]; then
+        log_error "Grafana is not accessible after $max_attempts attempts"
+        return 1
+    fi
+    
+    # Import dashboard
+    curl -X POST \
+        -H "Content-Type: application/json" \
+        -H "Authorization: Basic $(echo -n 'admin:admin123' | base64)" \
+        -d @monitoring/grafana-dashboards.json \
+        "http://${grafana_url}/api/dashboards/db" || log_warning "Failed to import dashboard"
+    
+    log_success "Monitoring dashboards created"
+}
+
+# Setup alerting
+setup_alerting() {
+    log_info "Setting up alerting..."
+    
+    # Create alerting configuration
+    cat > alertmanager-config.yaml << EOF
 global:
   smtp_smarthost: 'localhost:587'
   smtp_from: 'alerts@soladia.com'
@@ -233,208 +463,148 @@ route:
 receivers:
   - name: 'web.hook'
     webhook_configs:
-      - url: 'http://localhost:5001/'
+      - url: 'http://webhook:5001/'
+        send_resolved: true
 
-inhibit_rules:
-  - source_match:
-      severity: 'critical'
-    target_match:
-      severity: 'warning'
-    equal: ['alertname', 'dev', 'instance']
+  - name: 'email'
+    email_configs:
+      - to: 'admin@soladia.com'
+        subject: 'Soladia Alert: {{ .GroupLabels.alertname }}'
+        body: |
+          {{ range .Alerts }}
+          Alert: {{ .Annotations.summary }}
+          Description: {{ .Annotations.description }}
+          {{ end }}
 EOF
 
-    print_success "Alertmanager configuration created"
+    # Create Alertmanager ConfigMap
+    kubectl create configmap alertmanager-config \
+        --from-file=alertmanager.yml=alertmanager-config.yaml \
+        --namespace "${NAMESPACE}" \
+        --dry-run=client -o yaml | kubectl apply -f -
+    
+    log_success "Alerting configured"
 }
 
-# Create monitoring Docker Compose
-create_monitoring_compose() {
-    print_status "Creating monitoring Docker Compose file..."
+# Create monitoring documentation
+create_documentation() {
+    log_info "Creating monitoring documentation..."
     
-    cat > docker-compose.monitoring.yml << 'EOF'
-version: '3.8'
+    cat > monitoring/README.md << EOF
+# Soladia Monitoring Setup
 
-services:
-  # Prometheus
-  prometheus:
-    image: prom/prometheus:latest
-    container_name: soladia-prometheus
-    ports:
-      - "9090:9090"
-    volumes:
-      - ./monitoring/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
-      - ./monitoring/prometheus/data:/prometheus
-    command:
-      - '--config.file=/etc/prometheus/prometheus.yml'
-      - '--storage.tsdb.path=/prometheus'
-      - '--web.console.libraries=/etc/prometheus/console_libraries'
-      - '--web.console.templates=/etc/prometheus/consoles'
-      - '--storage.tsdb.retention.time=200h'
-      - '--web.enable-lifecycle'
-    networks:
-      - soladia-network
+This directory contains the monitoring configuration for the Soladia marketplace.
 
-  # Grafana
-  grafana:
-    image: grafana/grafana:latest
-    container_name: soladia-grafana
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./monitoring/grafana/data:/var/lib/grafana
-      - ./monitoring/grafana/provisioning:/etc/grafana/provisioning
-      - ./monitoring/grafana/dashboards:/var/lib/grafana/dashboards
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-      - GF_USERS_ALLOW_SIGN_UP=false
-    networks:
-      - soladia-network
+## Components
 
-  # Alertmanager
-  alertmanager:
-    image: prom/alertmanager:latest
-    container_name: soladia-alertmanager
-    ports:
-      - "9093:9093"
-    volumes:
-      - ./monitoring/alertmanager/alertmanager.yml:/etc/alertmanager/alertmanager.yml
-      - ./monitoring/alertmanager/data:/alertmanager
-    command:
-      - '--config.file=/etc/alertmanager/alertmanager.yml'
-      - '--storage.path=/alertmanager'
-    networks:
-      - soladia-network
+- **Prometheus**: Metrics collection and storage
+- **Grafana**: Visualization and dashboards
+- **Loki**: Log aggregation
+- **AlertManager**: Alert management
+- **Promtail**: Log collection
 
-  # Node Exporter
-  node-exporter:
-    image: prom/node-exporter:latest
-    container_name: soladia-node-exporter
-    ports:
-      - "9100:9100"
-    volumes:
-      - /proc:/host/proc:ro
-      - /sys:/host/sys:ro
-      - /:/rootfs:ro
-    command:
-      - '--path.procfs=/host/proc'
-      - '--path.rootfs=/rootfs'
-      - '--path.sysfs=/host/sys'
-      - '--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)'
-    networks:
-      - soladia-network
+## Access URLs
 
-  # PostgreSQL Exporter
-  postgres-exporter:
-    image: prometheuscommunity/postgres-exporter:latest
-    container_name: soladia-postgres-exporter
-    ports:
-      - "9187:9187"
-    environment:
-      - DATA_SOURCE_NAME=postgresql://postgres:postgres@postgres:5432/soladia_dev?sslmode=disable
-    depends_on:
-      - postgres
-    networks:
-      - soladia-network
+- Grafana: http://localhost:3000 (admin/admin123)
+- Prometheus: http://localhost:9090
+- AlertManager: http://localhost:9093
 
-  # Redis Exporter
-  redis-exporter:
-    image: oliver006/redis_exporter:latest
-    container_name: soladia-redis-exporter
-    ports:
-      - "9121:9121"
-    environment:
-      - REDIS_ADDR=redis://redis:6379
-    depends_on:
-      - redis
-    networks:
-      - soladia-network
+## Dashboards
 
-  # Loki (Log aggregation)
-  loki:
-    image: grafana/loki:latest
-    container_name: soladia-loki
-    ports:
-      - "3100:3100"
-    volumes:
-      - ./monitoring/loki/data:/loki
-    command: -config.file=/etc/loki/local-config.yaml
-    networks:
-      - soladia-network
+- **System Overview**: High-level system health
+- **Application Metrics**: Detailed application performance
+- **Database Metrics**: Database performance and health
+- **Security Metrics**: Security events and alerts
+- **Business Metrics**: Business KPIs and trends
 
-  # Jaeger (Distributed tracing)
-  jaeger:
-    image: jaegertracing/all-in-one:latest
-    container_name: soladia-jaeger
-    ports:
-      - "16686:16686"
-      - "14268:14268"
-    environment:
-      - COLLECTOR_OTLP_ENABLED=true
-    networks:
-      - soladia-network
+## Alerts
 
-networks:
-  soladia-network:
-    external: true
+The monitoring system includes comprehensive alerting for:
+
+- Service availability
+- Performance degradation
+- Security incidents
+- Business metrics
+- Infrastructure health
+
+## Configuration
+
+All monitoring configurations are stored in Kubernetes ConfigMaps and can be updated without restarting the services.
+
+## Troubleshooting
+
+1. Check pod status: \`kubectl get pods -n monitoring\`
+2. Check service status: \`kubectl get svc -n monitoring\`
+3. Check logs: \`kubectl logs -n monitoring -l app=prometheus\`
+4. Check Grafana logs: \`kubectl logs -n monitoring -l app.kubernetes.io/name=grafana\`
+
+## Maintenance
+
+- Regular backup of Grafana dashboards
+- Monitor disk usage for Prometheus and Loki
+- Update alerting rules as needed
+- Review and tune alert thresholds
 EOF
 
-    print_success "Monitoring Docker Compose file created"
+    log_success "Monitoring documentation created"
 }
 
-# Start monitoring services
-start_monitoring() {
-    print_status "Starting monitoring services..."
-    
-    # Create network if it doesn't exist
-    docker network create soladia-network 2>/dev/null || true
-    
-    # Start monitoring services
-    docker-compose -f docker-compose.monitoring.yml up -d
-    
-    print_success "Monitoring services started"
-}
-
-# Display monitoring URLs
-show_urls() {
-    print_success "🎉 Monitoring setup completed!"
-    echo ""
-    echo "📊 Monitoring URLs:"
-    echo "=================="
-    echo "Prometheus:     http://localhost:9090"
-    echo "Grafana:        http://localhost:3000 (admin/admin)"
-    echo "Alertmanager:   http://localhost:9093"
-    echo "Jaeger:         http://localhost:16686"
-    echo "Loki:           http://localhost:3100"
-    echo ""
-    echo "🔧 Management Commands:"
-    echo "======================"
-    echo "Start monitoring:  docker-compose -f docker-compose.monitoring.yml up -d"
-    echo "Stop monitoring:   docker-compose -f docker-compose.monitoring.yml down"
-    echo "View logs:         docker-compose -f docker-compose.monitoring.yml logs -f"
-    echo ""
-    echo "📈 Next Steps:"
-    echo "============="
-    echo "1. Access Grafana at http://localhost:3000"
-    echo "2. Login with admin/admin"
-    echo "3. Import the Soladia dashboard"
-    echo "4. Configure alerts as needed"
-    echo "5. Set up log aggregation with Loki"
-    echo ""
-}
-
-# Main function
+# Main setup function
 main() {
-    echo "📊 Soladia Marketplace Monitoring Setup"
-    echo "======================================="
+    log_info "Starting Soladia monitoring setup..."
     
-    check_docker
-    create_directories
-    setup_prometheus
-    setup_grafana
-    setup_alertmanager
-    create_monitoring_compose
-    start_monitoring
-    show_urls
+    # Run setup steps
+    check_prerequisites
+    create_namespace
+    install_prometheus
+    install_grafana
+    install_loki
+    create_configurations
+    setup_soladia_monitoring
+    create_dashboards
+    setup_alerting
+    create_documentation
+    
+    log_success "Soladia monitoring setup completed successfully!"
+    
+    # Display access information
+    log_info "Access URLs:"
+    log_info "  Grafana: http://localhost:3000 (admin/admin123)"
+    log_info "  Prometheus: http://localhost:9090"
+    log_info "  AlertManager: http://localhost:9093"
+    
+    # Display next steps
+    log_info "Next steps:"
+    log_info "  1. Access Grafana and import additional dashboards"
+    log_info "  2. Configure alerting channels (Slack, email, etc.)"
+    log_info "  3. Set up log aggregation for application logs"
+    log_info "  4. Configure custom metrics for business KPIs"
+    log_info "  5. Set up log rotation and retention policies"
 }
 
-# Run main function
-main "$@"
+# Parse command line arguments
+case "${1:-setup}" in
+    "setup")
+        main
+        ;;
+    "cleanup")
+        log_info "Cleaning up monitoring..."
+        helm uninstall prometheus -n "${NAMESPACE}" || true
+        helm uninstall grafana -n "${NAMESPACE}" || true
+        helm uninstall loki -n "${NAMESPACE}" || true
+        kubectl delete namespace "${NAMESPACE}" || true
+        log_success "Monitoring cleanup completed"
+        ;;
+    "status")
+        log_info "Checking monitoring status..."
+        kubectl get pods -n "${NAMESPACE}"
+        kubectl get svc -n "${NAMESPACE}"
+        ;;
+    *)
+        echo "Usage: $0 {setup|cleanup|status}"
+        echo "  setup   - Set up monitoring (default)"
+        echo "  cleanup - Remove monitoring"
+        echo "  status  - Check monitoring status"
+        exit 1
+        ;;
+esac

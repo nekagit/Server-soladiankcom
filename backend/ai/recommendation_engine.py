@@ -773,3 +773,4 @@ def get_recommendation_engine(db_session = Depends(get_db), redis_client = Depen
     """Get recommendation engine service"""
     return RecommendationEngine(db_session, redis_client)
 
+

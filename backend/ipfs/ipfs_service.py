@@ -1,501 +1,398 @@
 """
-IPFS Service for Soladia Marketplace
-Handles file upload, pinning, and metadata management
+IPFS integration service for Soladia NFT marketplace
 """
-
 import asyncio
 import aiohttp
 import json
-import hashlib
-import mimetypes
-from typing import Dict, Any, Optional, List, Tuple
-from dataclasses import dataclass
+from typing import Dict, List, Optional, Any, Tuple
 from pathlib import Path
-import logging
-from PIL import Image
-import io
-
-logger = logging.getLogger(__name__)
-
-@dataclass
-class IPFSFile:
-    """IPFS file metadata"""
-    hash: str
-    size: int
-    name: str
-    mime_type: str
-    pin_status: str
-    created_at: str
-    url: str
-
-@dataclass
-class IPFSUploadResult:
-    """IPFS upload result"""
-    success: bool
-    file: Optional[IPFSFile] = None
-    error: Optional[str] = None
+import hashlib
+import base64
+from datetime import datetime
+import uuid
 
 class IPFSService:
-    """IPFS service for file management"""
+    """Service for IPFS operations"""
     
-    def __init__(self, 
-                 ipfs_gateway: str = "https://ipfs.io/ipfs/",
-                 pinata_api_key: Optional[str] = None,
-                 pinata_secret_key: Optional[str] = None):
+    def __init__(self, ipfs_gateway: str = "https://ipfs.io/ipfs/", ipfs_api: str = "http://localhost:5001"):
         self.ipfs_gateway = ipfs_gateway
-        self.pinata_api_key = pinata_api_key
-        self.pinata_secret_key = pinata_secret_key
-        self.session: Optional[aiohttp.ClientSession] = None
-        
+        self.ipfs_api = ipfs_api
+        self.session = None
+    
     async def __aenter__(self):
-        await self.connect()
+        self.session = aiohttp.ClientSession()
         return self
-        
+    
     async def __aexit__(self, exc_type, exc_val, exc_tb):
-        await self.close()
-        
-    async def connect(self):
-        """Initialize HTTP session"""
-        self.session = aiohttp.ClientSession(
-            timeout=aiohttp.ClientTimeout(total=30)
-        )
-        
-    async def close(self):
-        """Close HTTP session"""
         if self.session:
             await self.session.close()
-            
-    async def upload_file(self, 
-                         file_path: str, 
-                         metadata: Optional[Dict[str, Any]] = None) -> IPFSUploadResult:
-        """Upload file to IPFS"""
+    
+    async def add_file(self, file_path: str, pin: bool = True) -> str:
+        """Add file to IPFS"""
+        if not self.session:
+            self.session = aiohttp.ClientSession()
+        
         try:
-            if not self.session:
-                await self.connect()
-                
-            # Read file
             with open(file_path, 'rb') as f:
-                file_data = f.read()
+                files = {'file': f}
+                data = {'pin': str(pin).lower()}
                 
-            # Get file info
-            file_name = Path(file_path).name
-            file_size = len(file_data)
-            mime_type, _ = mimetypes.guess_type(file_path)
-            
-            # Upload to IPFS
-            if self.pinata_api_key and self.pinata_secret_key:
-                result = await self._upload_to_pinata(file_data, file_name, metadata)
-            else:
-                result = await self._upload_to_local_ipfs(file_data, file_name, metadata)
-                
-            if result.success:
-                ipfs_file = IPFSFile(
-                    hash=result.file.hash,
-                    size=file_size,
-                    name=file_name,
-                    mime_type=mime_type or 'application/octet-stream',
-                    pin_status='pinned',
-                    created_at=result.file.created_at,
-                    url=f"{self.ipfs_gateway}{result.file.hash}"
-                )
-                
-                return IPFSUploadResult(
-                    success=True,
-                    file=ipfs_file
-                )
-            else:
-                return IPFSUploadResult(
-                    success=False,
-                    error=result.error
-                )
-                
+                async with self.session.post(
+                    f"{self.ipfs_api}/api/v0/add",
+                    data=data,
+                    files=files
+                ) as response:
+                    if response.status == 200:
+                        result = await response.json()
+                        return result['Hash']
+                    else:
+                        raise Exception(f"IPFS add failed: {response.status}")
         except Exception as e:
-            logger.error(f"Failed to upload file {file_path}: {str(e)}")
-            return IPFSUploadResult(
-                success=False,
-                error=str(e)
-            )
-            
-    async def upload_bytes(self, 
-                          data: bytes, 
-                          file_name: str,
-                          metadata: Optional[Dict[str, Any]] = None) -> IPFSUploadResult:
-        """Upload bytes data to IPFS"""
-        try:
-            if not self.session:
-                await self.connect()
-                
-            # Upload to IPFS
-            if self.pinata_api_key and self.pinata_secret_key:
-                result = await self._upload_to_pinata(data, file_name, metadata)
-            else:
-                result = await self._upload_to_local_ipfs(data, file_name, metadata)
-                
-            if result.success:
-                mime_type, _ = mimetypes.guess_type(file_name)
-                
-                ipfs_file = IPFSFile(
-                    hash=result.file.hash,
-                    size=len(data),
-                    name=file_name,
-                    mime_type=mime_type or 'application/octet-stream',
-                    pin_status='pinned',
-                    created_at=result.file.created_at,
-                    url=f"{self.ipfs_gateway}{result.file.hash}"
-                )
-                
-                return IPFSUploadResult(
-                    success=True,
-                    file=ipfs_file
-                )
-            else:
-                return IPFSUploadResult(
-                    success=False,
-                    error=result.error
-                )
-                
-        except Exception as e:
-            logger.error(f"Failed to upload bytes data: {str(e)}")
-            return IPFSUploadResult(
-                success=False,
-                error=str(e)
-            )
-            
-    async def upload_nft_metadata(self, 
-                                 name: str,
-                                 description: str,
-                                 image_url: str,
-                                 attributes: List[Dict[str, Any]],
-                                 external_url: Optional[str] = None) -> IPFSUploadResult:
-        """Upload NFT metadata to IPFS"""
-        try:
-            metadata = {
-                "name": name,
-                "description": description,
-                "image": image_url,
-                "attributes": attributes,
-                "external_url": external_url,
-                "animation_url": None,
-                "background_color": None,
-                "youtube_url": None
-            }
-            
-            # Convert to JSON
-            metadata_json = json.dumps(metadata, indent=2)
-            metadata_bytes = metadata_json.encode('utf-8')
-            
-            # Upload metadata
-            return await self.upload_bytes(
-                metadata_bytes,
-                f"{name}_metadata.json",
-                {"type": "nft_metadata"}
-            )
-            
-        except Exception as e:
-            logger.error(f"Failed to upload NFT metadata: {str(e)}")
-            return IPFSUploadResult(
-                success=False,
-                error=str(e)
-            )
-            
-    async def upload_image_with_variants(self, 
-                                       image_path: str,
-                                       variants: List[Tuple[int, int]] = None) -> Dict[str, IPFSUploadResult]:
-        """Upload image with multiple size variants"""
-        if variants is None:
-            variants = [(300, 300), (600, 600), (1200, 1200)]
-            
-        results = {}
+            raise Exception(f"Failed to add file to IPFS: {str(e)}")
+    
+    async def add_data(self, data: bytes, pin: bool = True) -> str:
+        """Add data to IPFS"""
+        if not self.session:
+            self.session = aiohttp.ClientSession()
         
         try:
-            # Load original image
-            with Image.open(image_path) as img:
-                original_format = img.format
-                
-                # Upload original
-                original_result = await self.upload_file(image_path)
-                if original_result.success:
-                    results['original'] = original_result
-                
-                # Create and upload variants
-                for width, height in variants:
-                    try:
-                        # Resize image
-                        resized_img = img.resize((width, height), Image.Resampling.LANCZOS)
-                        
-                        # Convert to bytes
-                        img_bytes = io.BytesIO()
-                        resized_img.save(img_bytes, format=original_format or 'PNG')
-                        img_bytes.seek(0)
-                        
-                        # Upload variant
-                        variant_name = f"{Path(image_path).stem}_{width}x{height}.{original_format.lower()}"
-                        variant_result = await self.upload_bytes(
-                            img_bytes.getvalue(),
-                            variant_name,
-                            {"type": "image_variant", "size": f"{width}x{height}"}
-                        )
-                        
-                        if variant_result.success:
-                            results[f"{width}x{height}"] = variant_result
-                            
-                    except Exception as e:
-                        logger.error(f"Failed to create variant {width}x{height}: {str(e)}")
-                        
-        except Exception as e:
-            logger.error(f"Failed to upload image variants: {str(e)}")
-            
-        return results
-        
-    async def pin_file(self, ipfs_hash: str) -> bool:
-        """Pin file to IPFS"""
-        try:
-            if not self.session:
-                await self.connect()
-                
-            if self.pinata_api_key and self.pinata_secret_key:
-                return await self._pin_to_pinata(ipfs_hash)
-            else:
-                return await self._pin_to_local_ipfs(ipfs_hash)
-                
-        except Exception as e:
-            logger.error(f"Failed to pin file {ipfs_hash}: {str(e)}")
-            return False
-            
-    async def unpin_file(self, ipfs_hash: str) -> bool:
-        """Unpin file from IPFS"""
-        try:
-            if not self.session:
-                await self.connect()
-                
-            if self.pinata_api_key and self.pinata_secret_key:
-                return await self._unpin_from_pinata(ipfs_hash)
-            else:
-                return await self._unpin_from_local_ipfs(ipfs_hash)
-                
-        except Exception as e:
-            logger.error(f"Failed to unpin file {ipfs_hash}: {str(e)}")
-            return False
-            
-    async def get_file_info(self, ipfs_hash: str) -> Optional[IPFSFile]:
-        """Get file information from IPFS"""
-        try:
-            if not self.session:
-                await self.connect()
-                
-            if self.pinata_api_key and self.pinata_secret_key:
-                return await self._get_file_info_from_pinata(ipfs_hash)
-            else:
-                return await self._get_file_info_from_local_ipfs(ipfs_hash)
-                
-        except Exception as e:
-            logger.error(f"Failed to get file info {ipfs_hash}: {str(e)}")
-            return None
-            
-    async def validate_metadata(self, metadata: Dict[str, Any]) -> Tuple[bool, List[str]]:
-        """Validate NFT metadata"""
-        errors = []
-        
-        # Required fields
-        required_fields = ['name', 'description', 'image']
-        for field in required_fields:
-            if field not in metadata or not metadata[field]:
-                errors.append(f"Missing required field: {field}")
-                
-        # Validate name
-        if 'name' in metadata:
-            if len(metadata['name']) > 100:
-                errors.append("Name too long (max 100 characters)")
-                
-        # Validate description
-        if 'description' in metadata:
-            if len(metadata['description']) > 1000:
-                errors.append("Description too long (max 1000 characters)")
-                
-        # Validate image URL
-        if 'image' in metadata:
-            image_url = metadata['image']
-            if not image_url.startswith(('http://', 'https://', 'ipfs://')):
-                errors.append("Invalid image URL format")
-                
-        # Validate attributes
-        if 'attributes' in metadata:
-            attributes = metadata['attributes']
-            if not isinstance(attributes, list):
-                errors.append("Attributes must be a list")
-            else:
-                for i, attr in enumerate(attributes):
-                    if not isinstance(attr, dict):
-                        errors.append(f"Attribute {i} must be an object")
-                    elif 'trait_type' not in attr or 'value' not in attr:
-                        errors.append(f"Attribute {i} missing trait_type or value")
-                        
-        return len(errors) == 0, errors
-        
-    async def _upload_to_pinata(self, 
-                               data: bytes, 
-                               file_name: str,
-                               metadata: Optional[Dict[str, Any]] = None) -> IPFSUploadResult:
-        """Upload to Pinata IPFS service"""
-        try:
-            # Prepare form data
-            form_data = aiohttp.FormData()
-            form_data.add_field('file', data, filename=file_name)
-            
-            if metadata:
-                form_data.add_field('pinataMetadata', json.dumps({
-                    'name': file_name,
-                    'keyvalues': metadata
-                }))
-                
-            # Upload to Pinata
-            headers = {
-                'pinata_api_key': self.pinata_api_key,
-                'pinata_secret_api_key': self.pinata_secret_key
-            }
+            files = {'file': data}
+            params = {'pin': str(pin).lower()}
             
             async with self.session.post(
-                'https://api.pinata.cloud/pinning/pinFileToIPFS',
-                data=form_data,
-                headers=headers
+                f"{self.ipfs_api}/api/v0/add",
+                data=params,
+                files=files
             ) as response:
                 if response.status == 200:
                     result = await response.json()
-                    
-                    ipfs_file = IPFSFile(
-                        hash=result['IpfsHash'],
-                        size=result['PinSize'],
-                        name=file_name,
-                        mime_type='application/octet-stream',
-                        pin_status='pinned',
-                        created_at=result['Timestamp'],
-                        url=f"{self.ipfs_gateway}{result['IpfsHash']}"
-                    )
-                    
-                    return IPFSUploadResult(success=True, file=ipfs_file)
+                    return result['Hash']
                 else:
-                    error_text = await response.text()
-                    return IPFSUploadResult(
-                        success=False,
-                        error=f"Pinata upload failed: {response.status} - {error_text}"
-                    )
-                    
+                    raise Exception(f"IPFS add failed: {response.status}")
         except Exception as e:
-            return IPFSUploadResult(
-                success=False,
-                error=f"Pinata upload error: {str(e)}"
-            )
-            
-    async def _upload_to_local_ipfs(self, 
-                                   data: bytes, 
-                                   file_name: str,
-                                   metadata: Optional[Dict[str, Any]] = None) -> IPFSUploadResult:
-        """Upload to local IPFS node"""
+            raise Exception(f"Failed to add data to IPFS: {str(e)}")
+    
+    async def get_file(self, ipfs_hash: str) -> bytes:
+        """Get file from IPFS"""
+        if not self.session:
+            self.session = aiohttp.ClientSession()
+        
         try:
-            # This would require a local IPFS node running
-            # For now, return a mock result
-            return IPFSUploadResult(
-                success=False,
-                error="Local IPFS node not configured"
-            )
-            
+            async with self.session.get(f"{self.ipfs_gateway}{ipfs_hash}") as response:
+                if response.status == 200:
+                    return await response.read()
+                else:
+                    raise Exception(f"Failed to get file from IPFS: {response.status}")
         except Exception as e:
-            return IPFSUploadResult(
-                success=False,
-                error=f"Local IPFS upload error: {str(e)}"
-            )
-            
-    async def _pin_to_pinata(self, ipfs_hash: str) -> bool:
-        """Pin file to Pinata"""
+            raise Exception(f"Failed to get file from IPFS: {str(e)}")
+    
+    async def pin_hash(self, ipfs_hash: str) -> bool:
+        """Pin hash to IPFS"""
+        if not self.session:
+            self.session = aiohttp.ClientSession()
+        
         try:
-            headers = {
-                'pinata_api_key': self.pinata_api_key,
-                'pinata_secret_api_key': self.pinata_secret_key,
-                'Content-Type': 'application/json'
-            }
-            
-            data = {
-                'hashToPin': ipfs_hash
-            }
-            
             async with self.session.post(
-                'https://api.pinata.cloud/pinning/pinByHash',
-                json=data,
-                headers=headers
+                f"{self.ipfs_api}/api/v0/pin/add",
+                params={'arg': ipfs_hash}
             ) as response:
                 return response.status == 200
-                
         except Exception as e:
-            logger.error(f"Failed to pin to Pinata: {str(e)}")
-            return False
-            
-    async def _unpin_from_pinata(self, ipfs_hash: str) -> bool:
-        """Unpin file from Pinata"""
+            raise Exception(f"Failed to pin hash: {str(e)}")
+    
+    async def unpin_hash(self, ipfs_hash: str) -> bool:
+        """Unpin hash from IPFS"""
+        if not self.session:
+            self.session = aiohttp.ClientSession()
+        
         try:
-            headers = {
-                'pinata_api_key': self.pinata_api_key,
-                'pinata_secret_api_key': self.pinata_secret_key
-            }
-            
-            async with self.session.delete(
-                f'https://api.pinata.cloud/pinning/unpin/{ipfs_hash}',
-                headers=headers
+            async with self.session.post(
+                f"{self.ipfs_api}/api/v0/pin/rm",
+                params={'arg': ipfs_hash}
             ) as response:
                 return response.status == 200
-                
         except Exception as e:
-            logger.error(f"Failed to unpin from Pinata: {str(e)}")
-            return False
-            
-    async def _get_file_info_from_pinata(self, ipfs_hash: str) -> Optional[IPFSFile]:
-        """Get file info from Pinata"""
+            raise Exception(f"Failed to unpin hash: {str(e)}")
+    
+    async def get_pinned_hashes(self) -> List[str]:
+        """Get list of pinned hashes"""
+        if not self.session:
+            self.session = aiohttp.ClientSession()
+        
         try:
-            headers = {
-                'pinata_api_key': self.pinata_api_key,
-                'pinata_secret_api_key': self.pinata_secret_key
-            }
-            
-            async with self.session.get(
-                f'https://api.pinata.cloud/data/pinList?hashContains={ipfs_hash}',
-                headers=headers
-            ) as response:
+            async with self.session.post(f"{self.ipfs_api}/api/v0/pin/ls") as response:
                 if response.status == 200:
                     result = await response.json()
-                    if result['rows']:
-                        pin_info = result['rows'][0]
-                        
-                        return IPFSFile(
-                            hash=pin_info['ipfs_pin_hash'],
-                            size=pin_info['size'],
-                            name=pin_info['metadata']['name'],
-                            mime_type=pin_info['mime_type'],
-                            pin_status='pinned',
-                            created_at=pin_info['date_pinned'],
-                            url=f"{self.ipfs_gateway}{pin_info['ipfs_pin_hash']}"
-                        )
-                        
+                    return [pin['Hash'] for pin in result['Keys'].values()]
+                else:
+                    return []
         except Exception as e:
-            logger.error(f"Failed to get file info from Pinata: {str(e)}")
+            raise Exception(f"Failed to get pinned hashes: {str(e)}")
+    
+    def get_gateway_url(self, ipfs_hash: str) -> str:
+        """Get gateway URL for IPFS hash"""
+        return f"{self.ipfs_gateway}{ipfs_hash}"
+
+class NFTMetadataService:
+    """Service for NFT metadata operations"""
+    
+    def __init__(self, ipfs_service: IPFSService):
+        self.ipfs_service = ipfs_service
+    
+    async def create_metadata(
+        self,
+        name: str,
+        description: str,
+        image_url: str,
+        attributes: List[Dict[str, Any]],
+        external_url: Optional[str] = None,
+        animation_url: Optional[str] = None,
+        background_color: Optional[str] = None,
+        youtube_url: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Create NFT metadata following OpenSea standards"""
+        metadata = {
+            "name": name,
+            "description": description,
+            "image": image_url,
+            "attributes": attributes,
+            "external_url": external_url,
+            "animation_url": animation_url,
+            "background_color": background_color,
+            "youtube_url": youtube_url,
+            "created_at": datetime.utcnow().isoformat(),
+            "metadata_version": "1.0"
+        }
+        
+        # Remove None values
+        metadata = {k: v for k, v in metadata.items() if v is not None}
+        
+        return metadata
+    
+    async def upload_metadata(self, metadata: Dict[str, Any]) -> str:
+        """Upload metadata to IPFS"""
+        metadata_json = json.dumps(metadata, indent=2)
+        metadata_bytes = metadata_json.encode('utf-8')
+        
+        ipfs_hash = await self.ipfs_service.add_data(metadata_bytes, pin=True)
+        return ipfs_hash
+    
+    async def get_metadata(self, ipfs_hash: str) -> Dict[str, Any]:
+        """Get metadata from IPFS"""
+        metadata_bytes = await self.ipfs_service.get_file(ipfs_hash)
+        metadata_json = metadata_bytes.decode('utf-8')
+        return json.loads(metadata_json)
+    
+    async def update_metadata(
+        self,
+        ipfs_hash: str,
+        updates: Dict[str, Any]
+    ) -> str:
+        """Update metadata and upload new version"""
+        current_metadata = await self.get_metadata(ipfs_hash)
+        updated_metadata = {**current_metadata, **updates}
+        updated_metadata['updated_at'] = datetime.utcnow().isoformat()
+        
+        return await self.upload_metadata(updated_metadata)
+
+class NFTBulkService:
+    """Service for bulk NFT operations"""
+    
+    def __init__(self, ipfs_service: IPFSService, metadata_service: NFTMetadataService):
+        self.ipfs_service = ipfs_service
+        self.metadata_service = metadata_service
+    
+    async def bulk_upload_images(
+        self,
+        image_paths: List[str],
+        batch_size: int = 10
+    ) -> List[Tuple[str, str]]:
+        """Bulk upload images to IPFS"""
+        results = []
+        
+        for i in range(0, len(image_paths), batch_size):
+            batch = image_paths[i:i + batch_size]
+            tasks = [self.ipfs_service.add_file(path, pin=True) for path in batch]
+            batch_results = await asyncio.gather(*tasks, return_exceptions=True)
             
-        return None
+            for j, result in enumerate(batch_results):
+                if isinstance(result, Exception):
+                    results.append((batch[j], None))
+                else:
+                    results.append((batch[j], result))
         
-    async def _pin_to_local_ipfs(self, ipfs_hash: str) -> bool:
-        """Pin file to local IPFS node"""
-        # Implementation for local IPFS node
-        return False
+        return results
+    
+    async def bulk_create_metadata(
+        self,
+        nft_data: List[Dict[str, Any]],
+        batch_size: int = 10
+    ) -> List[Tuple[int, str]]:
+        """Bulk create NFT metadata"""
+        results = []
         
-    async def _unpin_from_local_ipfs(self, ipfs_hash: str) -> bool:
-        """Unpin file from local IPFS node"""
-        # Implementation for local IPFS node
-        return False
+        for i in range(0, len(nft_data), batch_size):
+            batch = nft_data[i:i + batch_size]
+            tasks = []
+            
+            for nft in batch:
+                metadata = await self.metadata_service.create_metadata(
+                    name=nft['name'],
+                    description=nft['description'],
+                    image_url=nft['image_url'],
+                    attributes=nft.get('attributes', []),
+                    external_url=nft.get('external_url'),
+                    animation_url=nft.get('animation_url'),
+                    background_color=nft.get('background_color'),
+                    youtube_url=nft.get('youtube_url')
+                )
+                tasks.append(self.metadata_service.upload_metadata(metadata))
+            
+            batch_results = await asyncio.gather(*tasks, return_exceptions=True)
+            
+            for j, result in enumerate(batch_results):
+                if isinstance(result, Exception):
+                    results.append((i + j, None))
+                else:
+                    results.append((i + j, result))
         
-    async def _get_file_info_from_local_ipfs(self, ipfs_hash: str) -> Optional[IPFSFile]:
-        """Get file info from local IPFS node"""
-        # Implementation for local IPFS node
-        return None
+        return results
+    
+    async def bulk_pin_hashes(self, hashes: List[str], batch_size: int = 20) -> List[bool]:
+        """Bulk pin hashes to IPFS"""
+        results = []
+        
+        for i in range(0, len(hashes), batch_size):
+            batch = hashes[i:i + batch_size]
+            tasks = [self.ipfs_service.pin_hash(hash) for hash in batch]
+            batch_results = await asyncio.gather(*tasks, return_exceptions=True)
+            
+            for result in batch_results:
+                if isinstance(result, Exception):
+                    results.append(False)
+                else:
+                    results.append(result)
+        
+        return results
+    
+    async def bulk_unpin_hashes(self, hashes: List[str], batch_size: int = 20) -> List[bool]:
+        """Bulk unpin hashes from IPFS"""
+        results = []
+        
+        for i in range(0, len(hashes), batch_size):
+            batch = hashes[i:i + batch_size]
+            tasks = [self.ipfs_service.unpin_hash(hash) for hash in batch]
+            batch_results = await asyncio.gather(*tasks, return_exceptions=True)
+            
+            for result in batch_results:
+                if isinstance(result, Exception):
+                    results.append(False)
+                else:
+                    results.append(result)
+        
+        return results
 
-# Create singleton instance
-ipfs_service = IPFSService()
+class NFTCollectionService:
+    """Service for NFT collection operations"""
+    
+    def __init__(self, ipfs_service: IPFSService, metadata_service: NFTMetadataService):
+        self.ipfs_service = ipfs_service
+        self.metadata_service = metadata_service
+    
+    async def create_collection_metadata(
+        self,
+        name: str,
+        description: str,
+        image_url: str,
+        external_url: Optional[str] = None,
+        seller_fee_basis_points: int = 250,  # 2.5%
+        fee_recipient: Optional[str] = None
+    ) -> Dict[str, Any]:
+        """Create collection metadata"""
+        collection_metadata = {
+            "name": name,
+            "description": description,
+            "image": image_url,
+            "external_url": external_url,
+            "seller_fee_basis_points": seller_fee_basis_points,
+            "fee_recipient": fee_recipient,
+            "created_at": datetime.utcnow().isoformat(),
+            "metadata_version": "1.0"
+        }
+        
+        # Remove None values
+        collection_metadata = {k: v for k, v in collection_metadata.items() if v is not None}
+        
+        return collection_metadata
+    
+    async def upload_collection_metadata(self, metadata: Dict[str, Any]) -> str:
+        """Upload collection metadata to IPFS"""
+        return await self.metadata_service.upload_metadata(metadata)
+    
+    async def create_nft_with_metadata(
+        self,
+        name: str,
+        description: str,
+        image_path: str,
+        attributes: List[Dict[str, Any]],
+        collection_id: Optional[str] = None,
+        **kwargs
+    ) -> Tuple[str, str]:
+        """Create NFT with image and metadata"""
+        # Upload image to IPFS
+        image_hash = await self.ipfs_service.add_file(image_path, pin=True)
+        image_url = self.ipfs_service.get_gateway_url(image_hash)
+        
+        # Create metadata
+        metadata = await self.metadata_service.create_metadata(
+            name=name,
+            description=description,
+            image_url=image_url,
+            attributes=attributes,
+            **kwargs
+        )
+        
+        # Upload metadata to IPFS
+        metadata_hash = await self.metadata_service.upload_metadata(metadata)
+        
+        return image_hash, metadata_hash
+    
+    async def batch_create_nfts(
+        self,
+        nft_batch: List[Dict[str, Any]],
+        collection_id: Optional[str] = None
+    ) -> List[Tuple[str, str]]:
+        """Batch create NFTs"""
+        results = []
+        
+        for nft_data in nft_batch:
+            try:
+                image_hash, metadata_hash = await self.create_nft_with_metadata(
+                    name=nft_data['name'],
+                    description=nft_data['description'],
+                    image_path=nft_data['image_path'],
+                    attributes=nft_data.get('attributes', []),
+                    collection_id=collection_id,
+                    **nft_data.get('extra_metadata', {})
+                )
+                results.append((image_hash, metadata_hash))
+            except Exception as e:
+                print(f"Failed to create NFT {nft_data['name']}: {str(e)}")
+                results.append((None, None))
+        
+        return results
 
-
-
+# Factory function to create services
+def create_ipfs_services(ipfs_gateway: str = "https://ipfs.io/ipfs/", ipfs_api: str = "http://localhost:5001"):
+    """Create IPFS services"""
+    ipfs_service = IPFSService(ipfs_gateway, ipfs_api)
+    metadata_service = NFTMetadataService(ipfs_service)
+    bulk_service = NFTBulkService(ipfs_service, metadata_service)
+    collection_service = NFTCollectionService(ipfs_service, metadata_service)
+    
+    return {
+        'ipfs': ipfs_service,
+        'metadata': metadata_service,
+        'bulk': bulk_service,
+        'collection': collection_service
+    }

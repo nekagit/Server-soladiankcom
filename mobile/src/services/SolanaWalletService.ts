@@ -1,570 +1,338 @@
-/**
- * Solana Wallet Service for React Native
- * Provides native Solana wallet integration for mobile apps
- */
-
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { PublicKey, Connection, Transaction, VersionedTransaction } from '@solana/web3.js';
-import { getAssociatedTokenAddress, createTransferInstruction } from '@solana/spl-token';
-import CryptoJS from 'react-native-crypto-js';
-import { Platform } from 'react-native';
+import { Connection, PublicKey, Transaction, VersionedTransaction } from '@solana/web3.js';
 
-export interface SolanaWallet {
-  publicKey: string;
-  connected: boolean;
-  balance: number;
-  tokens: SolanaToken[];
-  network: 'mainnet-beta' | 'testnet' | 'devnet';
-}
-
-export interface SolanaToken {
-  mint: string;
-  amount: number;
-  decimals: number;
-  symbol?: string;
+export interface WalletAccount {
+  publicKey: PublicKey;
+  secretKey?: Uint8Array;
   name?: string;
-  image?: string;
 }
 
-export interface SolanaTransaction {
+export interface WalletBalance {
+  sol: number;
+  tokens: Array<{
+    mint: string;
+    amount: number;
+    decimals: number;
+    symbol?: string;
+    name?: string;
+  }>;
+}
+
+export interface TransactionResult {
   signature: string;
-  amount: number;
-  from: string;
-  to: string;
-  status: 'pending' | 'confirmed' | 'failed';
-  created_at: string;
-  blockTime?: number;
-  slot?: number;
-}
-
-export interface WalletConnectionResult {
   success: boolean;
-  wallet?: SolanaWallet;
   error?: string;
 }
 
-export class SolanaWalletService {
+class SolanaWalletService {
   private connection: Connection;
-  private wallet: SolanaWallet | null = null;
-  private privateKey: string | null = null;
-  private isInitialized = false;
+  private currentAccount: WalletAccount | null = null;
+  private isConnected = false;
 
   constructor() {
-    // Initialize with mainnet by default
-    this.connection = new Connection(
-      'https://api.mainnet-beta.solana.com',
-      'confirmed'
-    );
+    // Use different RPC endpoints for different networks
+    const rpcUrl = __DEV__
+      ? 'https://api.devnet.solana.com'
+      : 'https://api.mainnet-beta.solana.com';
+
+    this.connection = new Connection(rpcUrl, 'confirmed');
   }
 
-  /**
-   * Initialize the wallet service
-   */
-  async initialize(): Promise<void> {
-    if (this.isInitialized) return;
-
+  public async connectWallet(): Promise<boolean> {
     try {
-      // Load saved wallet from secure storage
-      const savedWallet = await this.loadWalletFromStorage();
-      if (savedWallet) {
-        this.wallet = savedWallet;
-        await this.updateWalletBalance();
-      }
-
-      this.isInitialized = true;
-    } catch (error) {
-      console.error('Failed to initialize wallet service:', error);
-      throw new Error('Wallet initialization failed');
-    }
-  }
-
-  /**
-   * Connect to wallet using private key
-   */
-  async connectWithPrivateKey(privateKey: string): Promise<WalletConnectionResult> {
-    try {
-      if (!this.isInitialized) {
-        await this.initialize();
-      }
-
-      // Validate private key
-      if (!this.validatePrivateKey(privateKey)) {
-        return {
-          success: false,
-          error: 'Invalid private key format'
-        };
-      }
-
-      // Create keypair from private key
-      const keypair = this.createKeypairFromPrivateKey(privateKey);
-      const publicKey = keypair.publicKey.toString();
-
-      // Create wallet object
-      this.wallet = {
-        publicKey,
-        connected: true,
-        balance: 0,
-        tokens: [],
-        network: 'mainnet-beta'
+      // In a real implementation, this would integrate with wallet adapters
+      // For now, we'll simulate wallet connection
+      const mockAccount: WalletAccount = {
+        publicKey: new PublicKey('11111111111111111111111111111112'), // System Program
+        name: 'Mock Wallet',
       };
 
-      // Store private key securely
-      this.privateKey = privateKey;
-      await this.saveWalletToStorage();
+      this.currentAccount = mockAccount;
+      this.isConnected = true;
 
-      // Update balance and tokens
-      await this.updateWalletBalance();
-      await this.updateWalletTokens();
+      // Store connection state
+      await AsyncStorage.setItem('wallet_connected', 'true');
+      await AsyncStorage.setItem('wallet_public_key', mockAccount.publicKey.toString());
 
-      return {
-        success: true,
-        wallet: this.wallet
-      };
+      return true;
     } catch (error) {
       console.error('Failed to connect wallet:', error);
-      return {
-        success: false,
-        error: error instanceof Error ? error.message : 'Connection failed'
-      };
+      return false;
     }
   }
 
-  /**
-   * Connect using QR code scan
-   */
-  async connectWithQRCode(qrData: string): Promise<WalletConnectionResult> {
+  public async disconnectWallet(): Promise<void> {
     try {
-      // Parse QR code data (assuming it contains wallet info)
-      const walletData = JSON.parse(qrData);
-      
-      if (!walletData.privateKey) {
-        return {
-          success: false,
-          error: 'Invalid QR code format'
-        };
-      }
+      this.currentAccount = null;
+      this.isConnected = false;
 
-      return await this.connectWithPrivateKey(walletData.privateKey);
-    } catch (error) {
-      return {
-        success: false,
-        error: 'Failed to parse QR code'
-      };
-    }
-  }
-
-  /**
-   * Disconnect wallet
-   */
-  async disconnect(): Promise<void> {
-    try {
-      // Clear sensitive data
-      this.privateKey = null;
-      this.wallet = null;
-
-      // Clear secure storage
-      await AsyncStorage.multiRemove([
-        'solana_wallet',
-        'solana_private_key'
-      ]);
+      // Clear stored data
+      await AsyncStorage.removeItem('wallet_connected');
+      await AsyncStorage.removeItem('wallet_public_key');
     } catch (error) {
       console.error('Failed to disconnect wallet:', error);
     }
   }
 
-  /**
-   * Get current wallet
-   */
-  getWallet(): SolanaWallet | null {
-    return this.wallet;
-  }
-
-  /**
-   * Check if wallet is connected
-   */
-  isConnected(): boolean {
-    return this.wallet?.connected || false;
-  }
-
-  /**
-   * Get wallet balance
-   */
-  async getBalance(): Promise<number> {
-    if (!this.wallet) return 0;
+  public async getBalance(): Promise<WalletBalance> {
+    if (!this.currentAccount) {
+      throw new Error('Wallet not connected');
+    }
 
     try {
-      const publicKey = new PublicKey(this.wallet.publicKey);
-      const balance = await this.connection.getBalance(publicKey);
-      return balance / 1e9; // Convert lamports to SOL
+      const balance = await this.connection.getBalance(this.currentAccount.publicKey);
+      const solBalance = balance / 1e9; // Convert lamports to SOL
+
+      // Mock token balances - in production, this would fetch SPL token balances
+      const tokens = [
+        {
+          mint: 'EPjFWdd5AufqSSqeM2qN1xzybapC8G4wEGGkZwyTDt1v', // USDC
+          amount: 1000,
+          decimals: 6,
+          symbol: 'USDC',
+          name: 'USD Coin',
+        },
+        {
+          mint: 'So11111111111111111111111111111111111111112', // Wrapped SOL
+          amount: 5,
+          decimals: 9,
+          symbol: 'WSOL',
+          name: 'Wrapped SOL',
+        },
+      ];
+
+      return {
+        sol: solBalance,
+        tokens,
+      };
     } catch (error) {
       console.error('Failed to get balance:', error);
-      return 0;
+      throw error;
     }
   }
 
-  /**
-   * Get wallet tokens
-   */
-  async getTokens(): Promise<SolanaToken[]> {
-    if (!this.wallet) return [];
-
-    try {
-      const publicKey = new PublicKey(this.wallet.publicKey);
-      const tokenAccounts = await this.connection.getParsedTokenAccountsByOwner(
-        publicKey,
-        { programId: new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA') }
-      );
-
-      const tokens: SolanaToken[] = [];
-      
-      for (const account of tokenAccounts.value) {
-        const tokenInfo = account.account.data.parsed.info;
-        tokens.push({
-          mint: tokenInfo.mint,
-          amount: tokenInfo.tokenAmount.uiAmount || 0,
-          decimals: tokenInfo.tokenAmount.decimals,
-          symbol: tokenInfo.mint, // You might want to fetch metadata
-          name: `Token ${tokenInfo.mint.slice(0, 8)}`
-        });
-      }
-
-      return tokens;
-    } catch (error) {
-      console.error('Failed to get tokens:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Send SOL transaction
-   */
-  async sendSOL(to: string, amount: number, memo?: string): Promise<SolanaTransaction> {
-    if (!this.wallet || !this.privateKey) {
+  public async sendTransaction(transaction: Transaction | VersionedTransaction): Promise<TransactionResult> {
+    if (!this.currentAccount) {
       throw new Error('Wallet not connected');
     }
 
     try {
-      const fromPublicKey = new PublicKey(this.wallet.publicKey);
-      const toPublicKey = new PublicKey(to);
-      const lamports = Math.floor(amount * 1e9);
+      // In a real implementation, this would use wallet adapter to sign and send
+      // For now, we'll simulate the transaction
+      const mockSignature = 'mock_signature_' + Date.now();
 
-      // Create transaction
-      const transaction = new Transaction().add(
-        SystemProgram.transfer({
-          fromPubkey: fromPublicKey,
-          toPubkey: toPublicKey,
-          lamports
-        })
-      );
-
-      // Add memo if provided
-      if (memo) {
-        transaction.add(
-          new TransactionInstruction({
-            keys: [],
-            programId: new PublicKey('MemoSq4gqABAXKb96qnH8TysKcWfC85B2q2'),
-            data: Buffer.from(memo, 'utf8')
-          })
-        );
-      }
-
-      // Get recent blockhash
-      const { blockhash } = await this.connection.getLatestBlockhash();
-      transaction.recentBlockhash = blockhash;
-      transaction.feePayer = fromPublicKey;
-
-      // Sign transaction
-      const keypair = this.createKeypairFromPrivateKey(this.privateKey);
-      transaction.sign(keypair);
-
-      // Send transaction
-      const signature = await this.connection.sendTransaction(transaction, [keypair]);
-
-      // Create transaction object
-      const solanaTransaction: SolanaTransaction = {
-        signature,
-        amount,
-        from: this.wallet.publicKey,
-        to,
-        status: 'pending',
-        created_at: new Date().toISOString()
+      return {
+        signature: mockSignature,
+        success: true,
       };
-
-      // Wait for confirmation
-      await this.waitForConfirmation(signature);
-
-      // Update transaction status
-      solanaTransaction.status = 'confirmed';
-
-      // Update wallet balance
-      await this.updateWalletBalance();
-
-      return solanaTransaction;
     } catch (error) {
-      console.error('Failed to send SOL:', error);
-      throw new Error(`Transaction failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error('Failed to send transaction:', error);
+      return {
+        signature: '',
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
     }
   }
 
-  /**
-   * Send SPL token transaction
-   */
-  async sendToken(
-    tokenMint: string,
-    to: string,
-    amount: number
-  ): Promise<SolanaTransaction> {
-    if (!this.wallet || !this.privateKey) {
+  public async signMessage(message: string): Promise<string> {
+    if (!this.currentAccount) {
       throw new Error('Wallet not connected');
     }
 
     try {
-      const fromPublicKey = new PublicKey(this.wallet.publicKey);
-      const toPublicKey = new PublicKey(to);
-      const mintPublicKey = new PublicKey(tokenMint);
-
-      // Get token accounts
-      const fromTokenAccount = await getAssociatedTokenAddress(
-        mintPublicKey,
-        fromPublicKey
-      );
-      const toTokenAccount = await getAssociatedTokenAddress(
-        mintPublicKey,
-        toPublicKey
-      );
-
-      // Create transfer instruction
-      const transferInstruction = createTransferInstruction(
-        fromTokenAccount,
-        toTokenAccount,
-        fromPublicKey,
-        Math.floor(amount * 1e9) // Assuming 9 decimals
-      );
-
-      // Create transaction
-      const transaction = new Transaction().add(transferInstruction);
-
-      // Get recent blockhash
-      const { blockhash } = await this.connection.getLatestBlockhash();
-      transaction.recentBlockhash = blockhash;
-      transaction.feePayer = fromPublicKey;
-
-      // Sign transaction
-      const keypair = this.createKeypairFromPrivateKey(this.privateKey);
-      transaction.sign(keypair);
-
-      // Send transaction
-      const signature = await this.connection.sendTransaction(transaction, [keypair]);
-
-      // Create transaction object
-      const solanaTransaction: SolanaTransaction = {
-        signature,
-        amount,
-        from: this.wallet.publicKey,
-        to,
-        status: 'pending',
-        created_at: new Date().toISOString()
-      };
-
-      // Wait for confirmation
-      await this.waitForConfirmation(signature);
-
-      // Update transaction status
-      solanaTransaction.status = 'confirmed';
-
-      // Update wallet tokens
-      await this.updateWalletTokens();
-
-      return solanaTransaction;
+      // In a real implementation, this would use wallet adapter to sign
+      // For now, we'll simulate message signing
+      const mockSignature = 'mock_signature_' + Date.now();
+      return mockSignature;
     } catch (error) {
-      console.error('Failed to send token:', error);
-      throw new Error(`Token transaction failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+      console.error('Failed to sign message:', error);
+      throw error;
     }
   }
 
-  /**
-   * Get transaction history
-   */
-  async getTransactionHistory(limit = 50): Promise<SolanaTransaction[]> {
-    if (!this.wallet) return [];
+  public async getAccountInfo(): Promise<WalletAccount | null> {
+    return this.currentAccount;
+  }
 
+  public isWalletConnected(): boolean {
+    return this.isConnected;
+  }
+
+  public async restoreConnection(): Promise<boolean> {
     try {
-      const publicKey = new PublicKey(this.wallet.publicKey);
-      const signatures = await this.connection.getSignaturesForAddress(publicKey, {
-        limit
-      });
+      const isConnected = await AsyncStorage.getItem('wallet_connected');
+      const publicKeyString = await AsyncStorage.getItem('wallet_public_key');
 
-      const transactions: SolanaTransaction[] = [];
-
-      for (const sigInfo of signatures) {
-        try {
-          const transaction = await this.connection.getParsedTransaction(sigInfo.signature);
-          
-          if (transaction) {
-            transactions.push({
-              signature: sigInfo.signature,
-              amount: 0, // You'll need to parse the transaction to get amount
-              from: this.wallet!.publicKey,
-              to: '', // You'll need to parse the transaction to get recipient
-              status: sigInfo.err ? 'failed' : 'confirmed',
-              created_at: new Date(sigInfo.blockTime! * 1000).toISOString(),
-              blockTime: sigInfo.blockTime,
-              slot: sigInfo.slot
-            });
-          }
-        } catch (error) {
-          console.error('Failed to get transaction details:', error);
-        }
-      }
-
-      return transactions;
-    } catch (error) {
-      console.error('Failed to get transaction history:', error);
-      return [];
-    }
-  }
-
-  /**
-   * Switch network
-   */
-  async switchNetwork(network: 'mainnet-beta' | 'testnet' | 'devnet'): Promise<void> {
-    const rpcUrls = {
-      'mainnet-beta': 'https://api.mainnet-beta.solana.com',
-      'testnet': 'https://api.testnet.solana.com',
-      'devnet': 'https://api.devnet.solana.com'
-    };
-
-    this.connection = new Connection(rpcUrls[network], 'confirmed');
-    
-    if (this.wallet) {
-      this.wallet.network = network;
-      await this.saveWalletToStorage();
-      await this.updateWalletBalance();
-    }
-  }
-
-  /**
-   * Generate QR code for wallet
-   */
-  generateQRCode(): string {
-    if (!this.wallet) {
-      throw new Error('Wallet not connected');
-    }
-
-    const walletData = {
-      publicKey: this.wallet.publicKey,
-      network: this.wallet.network,
-      timestamp: Date.now()
-    };
-
-    return JSON.stringify(walletData);
-  }
-
-  /**
-   * Private helper methods
-   */
-  private async updateWalletBalance(): Promise<void> {
-    if (!this.wallet) return;
-
-    try {
-      const balance = await this.getBalance();
-      this.wallet.balance = balance;
-    } catch (error) {
-      console.error('Failed to update balance:', error);
-    }
-  }
-
-  private async updateWalletTokens(): Promise<void> {
-    if (!this.wallet) return;
-
-    try {
-      const tokens = await this.getTokens();
-      this.wallet.tokens = tokens;
-    } catch (error) {
-      console.error('Failed to update tokens:', error);
-    }
-  }
-
-  private async saveWalletToStorage(): Promise<void> {
-    if (!this.wallet) return;
-
-    try {
-      const walletData = {
-        ...this.wallet,
-        privateKey: this.privateKey // Note: In production, use secure storage
-      };
-
-      await AsyncStorage.setItem('solana_wallet', JSON.stringify(walletData));
-    } catch (error) {
-      console.error('Failed to save wallet:', error);
-    }
-  }
-
-  private async loadWalletFromStorage(): Promise<SolanaWallet | null> {
-    try {
-      const walletData = await AsyncStorage.getItem('solana_wallet');
-      if (walletData) {
-        const parsed = JSON.parse(walletData);
-        this.privateKey = parsed.privateKey;
-        return {
-          publicKey: parsed.publicKey,
-          connected: parsed.connected,
-          balance: parsed.balance || 0,
-          tokens: parsed.tokens || [],
-          network: parsed.network || 'mainnet-beta'
+      if (isConnected === 'true' && publicKeyString) {
+        this.currentAccount = {
+          publicKey: new PublicKey(publicKeyString),
         };
+        this.isConnected = true;
+        return true;
       }
-      return null;
-    } catch (error) {
-      console.error('Failed to load wallet:', error);
-      return null;
-    }
-  }
 
-  private validatePrivateKey(privateKey: string): boolean {
-    try {
-      // Basic validation - should be 64 characters hex string
-      return /^[0-9a-fA-F]{64}$/.test(privateKey);
-    } catch {
+      return false;
+    } catch (error) {
+      console.error('Failed to restore connection:', error);
       return false;
     }
   }
 
-  private createKeypairFromPrivateKey(privateKey: string): any {
-    // This is a simplified version - in production, use proper keypair creation
-    const privateKeyBytes = Buffer.from(privateKey, 'hex');
-    // You'll need to implement proper keypair creation here
-    // This is just a placeholder
-    return { publicKey: new PublicKey('11111111111111111111111111111112') };
+  public async getRecentTransactions(limit: number = 10): Promise<any[]> {
+    if (!this.currentAccount) {
+      throw new Error('Wallet not connected');
+    }
+
+    try {
+      // In a real implementation, this would fetch from Solana RPC
+      // For now, we'll return mock data
+      return [
+        {
+          signature: 'mock_tx_1',
+          slot: 123456789,
+          blockTime: Date.now() / 1000 - 3600,
+          fee: 5000,
+          status: 'success',
+          type: 'transfer',
+          amount: 1.5,
+          from: this.currentAccount.publicKey.toString(),
+          to: 'RecipientAddress123',
+        },
+        {
+          signature: 'mock_tx_2',
+          slot: 123456788,
+          blockTime: Date.now() / 1000 - 7200,
+          fee: 5000,
+          status: 'success',
+          type: 'nft_purchase',
+          amount: 0.1,
+          from: this.currentAccount.publicKey.toString(),
+          to: 'NFTSellerAddress456',
+        },
+      ];
+    } catch (error) {
+      console.error('Failed to get recent transactions:', error);
+      return [];
+    }
   }
 
-  private async waitForConfirmation(signature: string, timeout = 30000): Promise<void> {
-    const startTime = Date.now();
-    
-    while (Date.now() - startTime < timeout) {
-      try {
-        const status = await this.connection.getSignatureStatus(signature);
-        if (status.value?.confirmationStatus === 'confirmed' || 
-            status.value?.confirmationStatus === 'finalized') {
-          return;
-        }
-        if (status.value?.err) {
-          throw new Error('Transaction failed');
-        }
-      } catch (error) {
-        console.error('Error checking transaction status:', error);
-      }
-      
-      // Wait 1 second before checking again
-      await new Promise(resolve => setTimeout(resolve, 1000));
+  public async getNFTs(): Promise<any[]> {
+    if (!this.currentAccount) {
+      throw new Error('Wallet not connected');
     }
-    
-    throw new Error('Transaction confirmation timeout');
+
+    try {
+      // In a real implementation, this would fetch NFT metadata
+      // For now, we'll return mock data
+      return [
+        {
+          mint: 'nft_mint_1',
+          name: 'Soladia NFT #001',
+          description: 'A unique digital artwork',
+          image: 'https://via.placeholder.com/300x300',
+          attributes: [
+            { trait_type: 'Color', value: 'Blue' },
+            { trait_type: 'Rarity', value: 'Rare' },
+          ],
+          collection: 'Soladia Collection',
+        },
+        {
+          mint: 'nft_mint_2',
+          name: 'Soladia NFT #002',
+          description: 'Another unique digital artwork',
+          image: 'https://via.placeholder.com/300x300',
+          attributes: [
+            { trait_type: 'Color', value: 'Red' },
+            { trait_type: 'Rarity', value: 'Common' },
+          ],
+          collection: 'Soladia Collection',
+        },
+      ];
+    } catch (error) {
+      console.error('Failed to get NFTs:', error);
+      return [];
+    }
+  }
+
+  public async createNFTListing(
+    mint: string,
+    price: number,
+    currency: string = 'SOL'
+  ): Promise<TransactionResult> {
+    if (!this.currentAccount) {
+      throw new Error('Wallet not connected');
+    }
+
+    try {
+      // In a real implementation, this would create a marketplace listing
+      // For now, we'll simulate the transaction
+      const mockSignature = 'mock_listing_' + Date.now();
+
+      return {
+        signature: mockSignature,
+        success: true,
+      };
+    } catch (error) {
+      console.error('Failed to create NFT listing:', error);
+      return {
+        signature: '',
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  public async purchaseNFT(
+    listingId: string,
+    price: number
+  ): Promise<TransactionResult> {
+    if (!this.currentAccount) {
+      throw new Error('Wallet not connected');
+    }
+
+    try {
+      // In a real implementation, this would execute the purchase
+      // For now, we'll simulate the transaction
+      const mockSignature = 'mock_purchase_' + Date.now();
+
+      return {
+        signature: mockSignature,
+        success: true,
+      };
+    } catch (error) {
+      console.error('Failed to purchase NFT:', error);
+      return {
+        signature: '',
+        success: false,
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+  }
+
+  public getConnection(): Connection {
+    return this.connection;
+  }
+
+  public async getNetworkInfo(): Promise<{
+    cluster: string;
+    version: string;
+    epoch: number;
+  }> {
+    try {
+      const version = await this.connection.getVersion();
+      const epochInfo = await this.connection.getEpochInfo();
+
+      return {
+        cluster: __DEV__ ? 'devnet' : 'mainnet-beta',
+        version: version['solana-core'],
+        epoch: epochInfo.epoch,
+      };
+    } catch (error) {
+      console.error('Failed to get network info:', error);
+      throw error;
+    }
   }
 }
 
-// Export singleton instance
 export const solanaWalletService = new SolanaWalletService();
-
-
-

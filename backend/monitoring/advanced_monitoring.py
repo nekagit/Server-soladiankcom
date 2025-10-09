@@ -767,3 +767,4 @@ def get_monitoring_service(db_session = Depends(get_db), redis_client = Depends(
     """Get advanced monitoring service"""
     return AdvancedMonitoringService(db_session, redis_client)
 
+

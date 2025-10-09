@@ -775,3 +775,4 @@ def get_fraud_detection(db_session = Depends(get_db), redis_client = Depends(get
     """Get fraud detection service"""
     return FraudDetection(db_session, redis_client)
 
+

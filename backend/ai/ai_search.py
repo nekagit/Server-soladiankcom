@@ -618,3 +618,4 @@ def get_ai_search(db_session = Depends(get_db), redis_client = Depends(get_redis
     """Get AI search service"""
     return AISearch(db_session, redis_client)
 
+

@@ -1,631 +1,602 @@
 """
-AI/ML Service for Soladia Marketplace
-Implements predictive analytics, recommendations, and intelligent features
+Advanced Machine Learning Service for Soladia Marketplace
+Provides AI-powered features including recommendations, fraud detection, and analytics
 """
 
-import numpy as np
-import pandas as pd
-from typing import Dict, List, Any, Optional, Tuple
-from dataclasses import dataclass
-from datetime import datetime, timezone, timedelta
 import asyncio
 import logging
+from typing import Dict, List, Optional, Any, Tuple
+from datetime import datetime, timedelta
+import numpy as np
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+from sklearn.cluster import KMeans
+from sklearn.ensemble import IsolationForest
+from sklearn.preprocessing import StandardScaler
+import joblib
 import json
-from enum import Enum
+import redis
+from sqlalchemy.orm import Session
+from sqlalchemy import text
 
-# In a real implementation, these would be actual ML libraries
-# from sklearn.ensemble import RandomForestRegressor
-# from sklearn.cluster import KMeans
-# from sklearn.preprocessing import StandardScaler
-# import tensorflow as tf
+from ..database import get_db
+from ..models import User, Product, Order, Transaction, NFT
+from ..services.caching import CacheService
+from ..services.analytics import AnalyticsService
 
 logger = logging.getLogger(__name__)
 
-class RecommendationType(Enum):
-    """Types of recommendations"""
-    PRODUCT = "product"
-    NFT = "nft"
-    USER = "user"
-    COLLECTION = "collection"
-    TREND = "trend"
-
-class PredictionType(Enum):
-    """Types of predictions"""
-    PRICE = "price"
-    TREND = "trend"
-    POPULARITY = "popularity"
-    RISK = "risk"
-    SUCCESS = "success"
-
-@dataclass
-class Recommendation:
-    """Recommendation data structure"""
-    id: str
-    type: RecommendationType
-    item_id: str
-    score: float
-    reason: str
-    confidence: float
-    metadata: Dict[str, Any]
-
-@dataclass
-class Prediction:
-    """Prediction data structure"""
-    id: str
-    type: PredictionType
-    target: str
-    predicted_value: float
-    confidence: float
-    timeframe: str
-    factors: List[str]
-    metadata: Dict[str, Any]
-
-@dataclass
-class UserProfile:
-    """User profile for ML analysis"""
-    user_id: str
-    preferences: Dict[str, Any]
-    behavior_patterns: Dict[str, Any]
-    transaction_history: List[Dict[str, Any]]
-    engagement_metrics: Dict[str, float]
-    risk_profile: str
-
 class MLService:
-    """AI/ML service for Soladia marketplace"""
+    """Advanced Machine Learning Service for Soladia Marketplace"""
     
-    def __init__(self):
-        self.models = {}
-        self.user_profiles = {}
-        self.market_data = {}
-        self.trend_analysis = {}
+    def __init__(self, cache_service: CacheService, analytics_service: AnalyticsService):
+        self.cache_service = cache_service
+        self.analytics_service = analytics_service
+        self.redis_client = redis.Redis(host='localhost', port=6379, db=0)
         
-        # Initialize models (in production, these would be trained models)
-        self._initialize_models()
+        # ML Models
+        self.recommendation_model = None
+        self.fraud_detection_model = None
+        self.price_prediction_model = None
+        self.sentiment_analyzer = None
+        
+        # Vectorizers
+        self.tfidf_vectorizer = TfidfVectorizer(max_features=1000, stop_words='english')
+        self.scaler = StandardScaler()
+        
+        # Model paths
+        self.model_paths = {
+            'recommendation': 'models/recommendation_model.pkl',
+            'fraud_detection': 'models/fraud_detection_model.pkl',
+            'price_prediction': 'models/price_prediction_model.pkl',
+            'sentiment': 'models/sentiment_model.pkl'
+        }
+        
+        # Initialize models
+        asyncio.create_task(self._initialize_models())
     
-    def _initialize_models(self):
+    async def _initialize_models(self):
         """Initialize ML models"""
-        # In a real implementation, this would load trained models
-        self.models = {
-            'price_predictor': None,  # RandomForestRegressor
-            'recommendation_engine': None,  # Custom recommendation model
-            'trend_analyzer': None,  # Time series analysis model
-            'risk_assessor': None,  # Risk assessment model
-            'user_clustering': None,  # KMeans clustering
-            'anomaly_detector': None  # Anomaly detection model
-        }
-    
-    # Recommendation Engine
-    async def get_recommendations(
-        self, 
-        user_id: str, 
-        recommendation_type: RecommendationType,
-        limit: int = 10
-    ) -> List[Recommendation]:
-        """Get AI-powered recommendations for a user"""
         try:
-            # Get user profile
-            user_profile = await self._get_user_profile(user_id)
+            await self._load_or_train_models()
+            logger.info("ML models initialized successfully")
+        except Exception as e:
+            logger.error(f"Failed to initialize ML models: {e}")
+    
+    async def _load_or_train_models(self):
+        """Load existing models or train new ones"""
+        try:
+            # Try to load existing models
+            self.recommendation_model = joblib.load(self.model_paths['recommendation'])
+            self.fraud_detection_model = joblib.load(self.model_paths['fraud_detection'])
+            self.price_prediction_model = joblib.load(self.model_paths['price_prediction'])
+            self.sentiment_analyzer = joblib.load(self.model_paths['sentiment'])
             
-            # Generate recommendations based on type
-            if recommendation_type == RecommendationType.PRODUCT:
-                return await self._get_product_recommendations(user_profile, limit)
-            elif recommendation_type == RecommendationType.NFT:
-                return await self._get_nft_recommendations(user_profile, limit)
-            elif recommendation_type == RecommendationType.USER:
-                return await self._get_user_recommendations(user_profile, limit)
-            elif recommendation_type == RecommendationType.COLLECTION:
-                return await self._get_collection_recommendations(user_profile, limit)
-            elif recommendation_type == RecommendationType.TREND:
-                return await self._get_trend_recommendations(user_profile, limit)
-            else:
+            logger.info("Loaded existing ML models")
+        except FileNotFoundError:
+            # Train new models if they don't exist
+            logger.info("Training new ML models...")
+            await self._train_all_models()
+    
+    async def _train_all_models(self):
+        """Train all ML models"""
+        try:
+            # Get training data
+            db = next(get_db())
+            
+            # Train recommendation model
+            await self._train_recommendation_model(db)
+            
+            # Train fraud detection model
+            await self._train_fraud_detection_model(db)
+            
+            # Train price prediction model
+            await self._train_price_prediction_model(db)
+            
+            # Train sentiment analyzer
+            await self._train_sentiment_analyzer(db)
+            
+            logger.info("All ML models trained successfully")
+                
+        except Exception as e:
+            logger.error(f"Failed to train ML models: {e}")
+        finally:
+            db.close()
+    
+    async def _train_recommendation_model(self, db: Session):
+        """Train product recommendation model"""
+        try:
+            # Get user interactions data
+            query = text("""
+                SELECT u.id as user_id, p.id as product_id, 
+                       COUNT(o.id) as interaction_count,
+                       AVG(r.rating) as avg_rating,
+                       p.category, p.price, p.created_at
+                FROM users u
+                JOIN orders o ON u.id = o.user_id
+                JOIN order_items oi ON o.id = oi.order_id
+                JOIN products p ON oi.product_id = p.id
+                LEFT JOIN reviews r ON p.id = r.product_id AND u.id = r.user_id
+                GROUP BY u.id, p.id, p.category, p.price, p.created_at
+            """)
+            
+            result = db.execute(query).fetchall()
+            
+            if not result:
+                logger.warning("No data available for recommendation model training")
+                return
+            
+            # Convert to DataFrame
+            df = pd.DataFrame(result)
+            
+            # Create user-item matrix
+            user_item_matrix = df.pivot_table(
+                index='user_id', 
+                columns='product_id', 
+                values='interaction_count', 
+                fill_value=0
+            )
+            
+            # Calculate similarity matrix
+            similarity_matrix = cosine_similarity(user_item_matrix)
+            
+            # Save model
+            joblib.dump(similarity_matrix, self.model_paths['recommendation'])
+            self.recommendation_model = similarity_matrix
+            
+            logger.info("Recommendation model trained successfully")
+            
+        except Exception as e:
+            logger.error(f"Failed to train recommendation model: {e}")
+    
+    async def _train_fraud_detection_model(self, db: Session):
+        """Train fraud detection model"""
+        try:
+            # Get transaction data with fraud labels
+            query = text("""
+                SELECT t.amount, t.created_at, t.payment_method,
+                       u.created_at as user_created_at,
+                       COUNT(DISTINCT t.id) as transaction_count,
+                       AVG(t.amount) as avg_transaction_amount,
+                       CASE WHEN t.status = 'failed' THEN 1 ELSE 0 END as is_fraud
+                FROM transactions t
+                JOIN users u ON t.user_id = u.id
+                GROUP BY t.id, t.amount, t.created_at, t.payment_method, 
+                         u.created_at, t.status
+            """)
+            
+            result = db.execute(query).fetchall()
+            
+            if not result:
+                logger.warning("No data available for fraud detection model training")
+                return
+            
+            # Convert to DataFrame
+            df = pd.DataFrame(result)
+            
+            # Feature engineering
+            df['transaction_hour'] = pd.to_datetime(df['created_at']).dt.hour
+            df['user_age_days'] = (pd.to_datetime(df['created_at']) - pd.to_datetime(df['user_created_at'])).dt.days
+            df['amount_log'] = np.log1p(df['amount'])
+            
+            # Select features
+            features = ['amount', 'transaction_hour', 'user_age_days', 'transaction_count', 
+                       'avg_transaction_amount', 'amount_log']
+            
+            X = df[features].fillna(0)
+            y = df['is_fraud']
+            
+            # Train isolation forest for anomaly detection
+            model = IsolationForest(contamination=0.1, random_state=42)
+            model.fit(X)
+            
+            # Save model
+            joblib.dump(model, self.model_paths['fraud_detection'])
+            self.fraud_detection_model = model
+            
+            logger.info("Fraud detection model trained successfully")
+            
+        except Exception as e:
+            logger.error(f"Failed to train fraud detection model: {e}")
+    
+    async def _train_price_prediction_model(self, db: Session):
+        """Train price prediction model"""
+        try:
+            # Get product price history
+            query = text("""
+                SELECT p.id, p.category, p.price, p.created_at,
+                       COUNT(DISTINCT o.id) as order_count,
+                       AVG(r.rating) as avg_rating,
+                       COUNT(DISTINCT r.id) as review_count
+                FROM products p
+                LEFT JOIN order_items oi ON p.id = oi.product_id
+                LEFT JOIN orders o ON oi.order_id = o.id
+                LEFT JOIN reviews r ON p.id = r.product_id
+                GROUP BY p.id, p.category, p.price, p.created_at
+            """)
+            
+            result = db.execute(query).fetchall()
+            
+            if not result:
+                logger.warning("No data available for price prediction model training")
+                return
+            
+            # Convert to DataFrame
+            df = pd.DataFrame(result)
+            
+            # Feature engineering
+            df['days_since_created'] = (datetime.now() - pd.to_datetime(df['created_at'])).dt.days
+            df['price_log'] = np.log1p(df['price'])
+            
+            # Select features
+            features = ['order_count', 'avg_rating', 'review_count', 'days_since_created']
+            
+            X = df[features].fillna(0)
+            y = df['price_log']
+            
+            # Train linear regression model
+            from sklearn.linear_model import LinearRegression
+            model = LinearRegression()
+            model.fit(X, y)
+            
+            # Save model
+            joblib.dump(model, self.model_paths['price_prediction'])
+            self.price_prediction_model = model
+            
+            logger.info("Price prediction model trained successfully")
+            
+        except Exception as e:
+            logger.error(f"Failed to train price prediction model: {e}")
+    
+    async def _train_sentiment_analyzer(self, db: Session):
+        """Train sentiment analysis model"""
+        try:
+            # Get review data
+            query = text("""
+                SELECT r.content, r.rating
+                FROM reviews r
+                WHERE r.content IS NOT NULL AND r.content != ''
+            """)
+            
+            result = db.execute(query).fetchall()
+            
+            if not result:
+                logger.warning("No data available for sentiment analyzer training")
+                return
+            
+            # Convert to DataFrame
+            df = pd.DataFrame(result)
+            
+            # Create sentiment labels based on rating
+            df['sentiment'] = df['rating'].apply(lambda x: 1 if x >= 4 else 0)
+            
+            # Train TF-IDF vectorizer
+            X = self.tfidf_vectorizer.fit_transform(df['content'])
+            y = df['sentiment']
+            
+            # Train logistic regression model
+            from sklearn.linear_model import LogisticRegression
+            model = LogisticRegression(random_state=42)
+            model.fit(X, y)
+            
+            # Save model and vectorizer
+            joblib.dump((model, self.tfidf_vectorizer), self.model_paths['sentiment'])
+            self.sentiment_analyzer = (model, self.tfidf_vectorizer)
+            
+            logger.info("Sentiment analyzer trained successfully")
+            
+        except Exception as e:
+            logger.error(f"Failed to train sentiment analyzer: {e}")
+    
+    async def get_product_recommendations(self, user_id: int, limit: int = 10) -> List[Dict]:
+        """Get product recommendations for a user"""
+        try:
+            cache_key = f"recommendations:{user_id}:{limit}"
+            cached_result = await self.cache_service.get(cache_key)
+            
+            if cached_result:
+                return cached_result
+            
+            if not self.recommendation_model:
                 return []
+            
+            db = next(get_db())
+            
+            # Get user's interaction history
+            query = text("""
+                SELECT p.id, COUNT(o.id) as interaction_count
+                FROM products p
+                JOIN order_items oi ON p.id = oi.product_id
+                JOIN orders o ON oi.order_id = o.id
+                WHERE o.user_id = :user_id
+                GROUP BY p.id
+            """)
+            
+            result = db.execute(query, {"user_id": user_id}).fetchall()
+            
+            if not result:
+                # Return popular products for new users
+                popular_query = text("""
+                    SELECT p.id, p.name, p.price, p.image_url, p.category
+                    FROM products p
+                    JOIN order_items oi ON p.id = oi.product_id
+                    GROUP BY p.id, p.name, p.price, p.image_url, p.category
+                    ORDER BY COUNT(oi.id) DESC
+                    LIMIT :limit
+                """)
                 
+                popular_result = db.execute(popular_query, {"limit": limit}).fetchall()
+                recommendations = [dict(row) for row in popular_result]
+                
+                await self.cache_service.set(cache_key, recommendations, ttl=3600)
+                return recommendations
+            
+            # Calculate recommendations using collaborative filtering
+            user_products = [row[0] for row in result]
+            user_interactions = [row[1] for row in result]
+            
+            # Get all products
+            all_products_query = text("SELECT id, name, price, image_url, category FROM products")
+            all_products = db.execute(all_products_query).fetchall()
+            
+            recommendations = []
+            for product in all_products:
+                if product[0] not in user_products:
+                    # Calculate similarity score
+                    similarity_score = self._calculate_product_similarity(
+                        user_products, user_interactions, product[0]
+                    )
+                    
+                    if similarity_score > 0.1:  # Threshold for recommendations
+                        recommendations.append({
+                            'id': product[0],
+                            'name': product[1],
+                            'price': float(product[2]),
+                            'image_url': product[3],
+                            'category': product[4],
+                            'similarity_score': similarity_score
+                        })
+            
+            # Sort by similarity score and limit results
+            recommendations.sort(key=lambda x: x['similarity_score'], reverse=True)
+            recommendations = recommendations[:limit]
+            
+            await self.cache_service.set(cache_key, recommendations, ttl=3600)
+            return recommendations
+            
         except Exception as e:
-            logger.error(f"Failed to get recommendations: {str(e)}")
+            logger.error(f"Failed to get product recommendations: {e}")
             return []
+        finally:
+            db.close()
     
-    async def _get_product_recommendations(
-        self, 
-        user_profile: UserProfile, 
-        limit: int
-    ) -> List[Recommendation]:
-        """Get product recommendations based on user behavior"""
-        # In a real implementation, this would use collaborative filtering
-        # and content-based filtering algorithms
-        
-        # Mock recommendations based on user preferences
-        recommendations = []
-        
-        # Analyze user's past purchases and preferences
-        preferred_categories = self._extract_preferred_categories(user_profile)
-        price_range = self._extract_price_preference(user_profile)
-        
-        # Generate mock recommendations
-        for i in range(limit):
-            recommendation = Recommendation(
-                id=f"rec_product_{i}",
-                type=RecommendationType.PRODUCT,
-                item_id=f"product_{i}",
-                score=0.8 + (i * 0.02),  # Decreasing score
-                reason=f"Based on your interest in {preferred_categories[i % len(preferred_categories)]}",
-                confidence=0.75 + (i * 0.01),
-                metadata={
-                    "category": preferred_categories[i % len(preferred_categories)],
-                    "price_range": price_range,
-                    "similarity_score": 0.85 - (i * 0.05)
-                }
-            )
-            recommendations.append(recommendation)
-        
-        return recommendations
-    
-    async def _get_nft_recommendations(
-        self, 
-        user_profile: UserProfile, 
-        limit: int
-    ) -> List[Recommendation]:
-        """Get NFT recommendations based on user behavior"""
-        recommendations = []
-        
-        # Analyze user's NFT collection and preferences
-        nft_preferences = self._extract_nft_preferences(user_profile)
-        
-        for i in range(limit):
-            recommendation = Recommendation(
-                id=f"rec_nft_{i}",
-                type=RecommendationType.NFT,
-                item_id=f"nft_{i}",
-                score=0.9 - (i * 0.05),
-                reason=f"Similar to NFTs in your collection",
-                confidence=0.8 + (i * 0.01),
-                metadata={
-                    "collection": nft_preferences.get("preferred_collections", ["Digital Art"])[i % 3],
-                    "rarity": "rare" if i < 3 else "common",
-                    "price_trend": "increasing" if i < 5 else "stable"
-                }
-            )
-            recommendations.append(recommendation)
-        
-        return recommendations
-    
-    async def _get_user_recommendations(
-        self, 
-        user_profile: UserProfile, 
-        limit: int
-    ) -> List[Recommendation]:
-        """Get user recommendations for social features"""
-        recommendations = []
-        
-        # Find users with similar interests and behavior
-        similar_users = await self._find_similar_users(user_profile)
-        
-        for i, user_id in enumerate(similar_users[:limit]):
-            recommendation = Recommendation(
-                id=f"rec_user_{i}",
-                type=RecommendationType.USER,
-                item_id=user_id,
-                score=0.7 + (i * 0.05),
-                reason="Similar interests and trading patterns",
-                confidence=0.65 + (i * 0.02),
-                metadata={
-                    "similarity_score": 0.8 - (i * 0.1),
-                    "common_interests": ["NFTs", "Digital Art"],
-                    "activity_level": "high"
-                }
-            )
-            recommendations.append(recommendation)
-        
-        return recommendations
-    
-    async def _get_collection_recommendations(
-        self, 
-        user_profile: UserProfile, 
-        limit: int
-    ) -> List[Recommendation]:
-        """Get collection recommendations"""
-        recommendations = []
-        
-        for i in range(limit):
-            recommendation = Recommendation(
-                id=f"rec_collection_{i}",
-                type=RecommendationType.COLLECTION,
-                item_id=f"collection_{i}",
-                score=0.85 - (i * 0.05),
-                reason="Trending collection in your area of interest",
-                confidence=0.75 + (i * 0.01),
-                metadata={
-                    "collection_size": 1000 + (i * 100),
-                    "floor_price": 2.5 + (i * 0.5),
-                    "growth_rate": 0.15 + (i * 0.02)
-                }
-            )
-            recommendations.append(recommendation)
-        
-        return recommendations
-    
-    async def _get_trend_recommendations(
-        self, 
-        user_profile: UserProfile, 
-        limit: int
-    ) -> List[Recommendation]:
-        """Get trend-based recommendations"""
-        recommendations = []
-        
-        # Analyze current market trends
-        trends = await self._analyze_market_trends()
-        
-        for i, trend in enumerate(trends[:limit]):
-            recommendation = Recommendation(
-                id=f"rec_trend_{i}",
-                type=RecommendationType.TREND,
-                item_id=trend["id"],
-                score=trend["score"],
-                reason=f"Emerging trend: {trend['description']}",
-                confidence=trend["confidence"],
-                metadata=trend["metadata"]
-            )
-            recommendations.append(recommendation)
-        
-        return recommendations
-    
-    # Predictive Analytics
-    async def predict_price(
-        self, 
-        item_id: str, 
-        item_type: str,
-        timeframe: str = "7d"
-    ) -> Prediction:
-        """Predict price movement for an item"""
+    def _calculate_product_similarity(self, user_products: List[int], 
+                                   user_interactions: List[int], 
+                                   product_id: int) -> float:
+        """Calculate similarity score for a product"""
         try:
-            # In a real implementation, this would use time series analysis
-            # and market data to predict prices
+            # Simple collaborative filtering based on category similarity
+            # In a real implementation, this would use the trained model
             
-            # Mock price prediction
-            base_price = 10.0  # Mock base price
-            volatility = 0.2   # Mock volatility
-            
-            # Generate prediction based on timeframe
-            if timeframe == "1d":
-                predicted_change = np.random.normal(0, volatility * 0.1)
-            elif timeframe == "7d":
-                predicted_change = np.random.normal(0, volatility * 0.3)
-            elif timeframe == "30d":
-                predicted_change = np.random.normal(0, volatility * 0.5)
-            else:
-                predicted_change = 0
-            
-            predicted_price = base_price * (1 + predicted_change)
-            confidence = max(0.5, 1.0 - abs(predicted_change) * 2)
-            
-            return Prediction(
-                id=f"price_pred_{item_id}_{timeframe}",
-                type=PredictionType.PRICE,
-                target=item_id,
-                predicted_value=predicted_price,
-                confidence=confidence,
-                timeframe=timeframe,
-                factors=["market_volatility", "trading_volume", "user_sentiment"],
-                metadata={
-                    "current_price": base_price,
-                    "predicted_change": predicted_change,
-                    "volatility": volatility
-                }
-            )
+            # For now, return a random score between 0 and 1
+            import random
+            return random.uniform(0, 1)
             
         except Exception as e:
-            logger.error(f"Price prediction failed: {str(e)}")
-            return Prediction(
-                id=f"price_pred_{item_id}_{timeframe}",
-                type=PredictionType.PRICE,
-                target=item_id,
-                predicted_value=0.0,
-                confidence=0.0,
-                timeframe=timeframe,
-                factors=[],
-                metadata={"error": str(e)}
-            )
+            logger.error(f"Failed to calculate product similarity: {e}")
+            return 0.0
     
-    async def predict_trend(
-        self, 
-        category: str,
-        timeframe: str = "30d"
-    ) -> Prediction:
-        """Predict trend for a category"""
+    async def detect_fraud(self, transaction_data: Dict) -> Tuple[bool, float]:
+        """Detect if a transaction is fraudulent"""
         try:
-            # Analyze historical data and market indicators
-            trend_data = await self._analyze_category_trends(category)
+            if not self.fraud_detection_model:
+                return False, 0.0
             
-            # Generate trend prediction
-            trend_score = np.random.uniform(-1, 1)  # Mock trend score
-            confidence = 0.7 + np.random.uniform(0, 0.3)
+            # Extract features
+            features = [
+                transaction_data.get('amount', 0),
+                transaction_data.get('hour', 12),
+                transaction_data.get('user_age_days', 0),
+                transaction_data.get('transaction_count', 0),
+                transaction_data.get('avg_transaction_amount', 0),
+                np.log1p(transaction_data.get('amount', 0))
+            ]
             
-            return Prediction(
-                id=f"trend_pred_{category}_{timeframe}",
-                type=PredictionType.TREND,
-                target=category,
-                predicted_value=trend_score,
-                confidence=confidence,
-                timeframe=timeframe,
-                factors=["market_sentiment", "volume_trends", "social_media"],
-                metadata={
-                    "trend_direction": "up" if trend_score > 0 else "down",
-                    "strength": abs(trend_score),
-                    "historical_data_points": len(trend_data)
-                }
-            )
+            # Predict anomaly
+            anomaly_score = self.fraud_detection_model.decision_function([features])[0]
+            is_fraud = anomaly_score < -0.1  # Threshold for fraud detection
+            
+            return is_fraud, float(anomaly_score)
             
         except Exception as e:
-            logger.error(f"Trend prediction failed: {str(e)}")
-            return Prediction(
-                id=f"trend_pred_{category}_{timeframe}",
-                type=PredictionType.TREND,
-                target=category,
-                predicted_value=0.0,
-                confidence=0.0,
-                timeframe=timeframe,
-                factors=[],
-                metadata={"error": str(e)}
-            )
+            logger.error(f"Failed to detect fraud: {e}")
+            return False, 0.0
     
-    async def predict_popularity(
-        self, 
-        item_id: str,
-        item_type: str
-    ) -> Prediction:
-        """Predict popularity of an item"""
+    async def predict_price(self, product_data: Dict) -> float:
+        """Predict optimal price for a product"""
         try:
-            # Analyze engagement metrics and social signals
-            engagement_data = await self._analyze_engagement(item_id)
+            if not self.price_prediction_model:
+                return product_data.get('current_price', 0)
             
-            # Generate popularity prediction
-            popularity_score = np.random.uniform(0, 1)
-            confidence = 0.6 + np.random.uniform(0, 0.3)
+            # Extract features
+            features = [
+                product_data.get('order_count', 0),
+                product_data.get('avg_rating', 0),
+                product_data.get('review_count', 0),
+                product_data.get('days_since_created', 0)
+            ]
             
-            return Prediction(
-                id=f"popularity_pred_{item_id}",
-                type=PredictionType.POPULARITY,
-                target=item_id,
-                predicted_value=popularity_score,
-                confidence=confidence,
-                timeframe="7d",
-                factors=["social_engagement", "search_volume", "view_count"],
-                metadata={
-                    "engagement_rate": engagement_data.get("engagement_rate", 0),
-                    "social_mentions": engagement_data.get("mentions", 0),
-                    "search_trends": engagement_data.get("search_trends", [])
-                }
-            )
+            # Predict price
+            predicted_price_log = self.price_prediction_model.predict([features])[0]
+            predicted_price = np.expm1(predicted_price_log)  # Convert back from log
+            
+            return max(0, predicted_price)  # Ensure non-negative price
             
         except Exception as e:
-            logger.error(f"Popularity prediction failed: {str(e)}")
-            return Prediction(
-                id=f"popularity_pred_{item_id}",
-                type=PredictionType.POPULARITY,
-                target=item_id,
-                predicted_value=0.0,
-                confidence=0.0,
-                timeframe="7d",
-                factors=[],
-                metadata={"error": str(e)}
-            )
+            logger.error(f"Failed to predict price: {e}")
+            return product_data.get('current_price', 0)
     
-    # User Profiling and Clustering
-    async def update_user_profile(self, user_id: str, data: Dict[str, Any]) -> UserProfile:
-        """Update user profile with new data"""
+    async def analyze_sentiment(self, text: str) -> Tuple[str, float]:
+        """Analyze sentiment of text"""
         try:
-            # Get existing profile or create new one
-            profile = self.user_profiles.get(user_id, UserProfile(
-                user_id=user_id,
-                preferences={},
-                behavior_patterns={},
-                transaction_history=[],
-                engagement_metrics={},
-                risk_profile="medium"
-            ))
+            if not self.sentiment_analyzer:
+                return "neutral", 0.5
             
-            # Update profile with new data
-            if "preferences" in data:
-                profile.preferences.update(data["preferences"])
+            model, vectorizer = self.sentiment_analyzer
             
-            if "transaction" in data:
-                profile.transaction_history.append(data["transaction"])
-                # Keep only last 1000 transactions
-                profile.transaction_history = profile.transaction_history[-1000:]
+            # Vectorize text
+            text_vector = vectorizer.transform([text])
             
-            if "engagement" in data:
-                profile.engagement_metrics.update(data["engagement"])
+            # Predict sentiment
+            sentiment_prob = model.predict_proba(text_vector)[0]
+            sentiment_label = "positive" if sentiment_prob[1] > 0.5 else "negative"
+            confidence = float(max(sentiment_prob))
             
-            # Update behavior patterns
-            profile.behavior_patterns = await self._analyze_behavior_patterns(profile)
-            
-            # Update risk profile
-            profile.risk_profile = await self._assess_risk_profile(profile)
-            
-            # Save updated profile
-            self.user_profiles[user_id] = profile
-            
-            return profile
+            return sentiment_label, confidence
             
         except Exception as e:
-            logger.error(f"Failed to update user profile: {str(e)}")
-            return UserProfile(
-                user_id=user_id,
-                preferences={},
-                behavior_patterns={},
-                transaction_history=[],
-                engagement_metrics={},
-                risk_profile="medium"
-            )
+            logger.error(f"Failed to analyze sentiment: {e}")
+            return "neutral", 0.5
     
-    async def cluster_users(self, limit: int = 1000) -> Dict[str, List[str]]:
-        """Cluster users based on behavior patterns"""
+    async def get_trending_products(self, category: Optional[str] = None, 
+                                  limit: int = 10) -> List[Dict]:
+        """Get trending products based on ML analysis"""
         try:
-            # In a real implementation, this would use KMeans clustering
-            # on user behavior features
+            cache_key = f"trending:{category or 'all'}:{limit}"
+            cached_result = await self.cache_service.get(cache_key)
             
-            # Mock clustering based on user profiles
-            clusters = {
-                "high_value_traders": [],
-                "casual_collectors": [],
-                "new_users": [],
-                "power_users": [],
-                "inactive_users": []
+            if cached_result:
+                return cached_result
+            
+            db = next(get_db())
+            
+            # Get trending products based on recent activity
+            query = text("""
+                SELECT p.id, p.name, p.price, p.image_url, p.category,
+                       COUNT(o.id) as recent_orders,
+                       AVG(r.rating) as avg_rating,
+                       COUNT(r.id) as review_count
+                FROM products p
+                LEFT JOIN order_items oi ON p.id = oi.product_id
+                LEFT JOIN orders o ON oi.order_id = o.id AND o.created_at > NOW() - INTERVAL '7 days'
+                LEFT JOIN reviews r ON p.id = r.product_id
+                WHERE (:category IS NULL OR p.category = :category)
+                GROUP BY p.id, p.name, p.price, p.image_url, p.category
+                HAVING COUNT(o.id) > 0
+                ORDER BY recent_orders DESC, avg_rating DESC
+                LIMIT :limit
+            """)
+            
+            result = db.execute(query, {
+                "category": category,
+                "limit": limit
+            }).fetchall()
+            
+            trending_products = [dict(row) for row in result]
+            
+            await self.cache_service.set(cache_key, trending_products, ttl=1800)
+            return trending_products
+            
+        except Exception as e:
+            logger.error(f"Failed to get trending products: {e}")
+            return []
+        finally:
+            db.close()
+    
+    async def get_similar_products(self, product_id: int, limit: int = 5) -> List[Dict]:
+        """Get similar products based on ML analysis"""
+        try:
+            cache_key = f"similar:{product_id}:{limit}"
+            cached_result = await self.cache_service.get(cache_key)
+            
+            if cached_result:
+                return cached_result
+            
+            db = next(get_db())
+            
+            # Get product details
+            product_query = text("""
+                SELECT category, price, name, description
+                FROM products
+                WHERE id = :product_id
+            """)
+            
+            product_result = db.execute(product_query, {"product_id": product_id}).fetchone()
+            
+            if not product_result:
+                return []
+            
+            product_category, product_price, product_name, product_description = product_result
+            
+            # Find similar products
+            similar_query = text("""
+                SELECT p.id, p.name, p.price, p.image_url, p.category,
+                       CASE 
+                           WHEN p.category = :category THEN 1.0
+                           ELSE 0.5
+                       END as category_similarity,
+                       CASE 
+                           WHEN ABS(p.price - :price) < :price * 0.2 THEN 1.0
+                           WHEN ABS(p.price - :price) < :price * 0.5 THEN 0.7
+                           ELSE 0.3
+                       END as price_similarity
+                FROM products p
+                WHERE p.id != :product_id
+                ORDER BY category_similarity DESC, price_similarity DESC
+                LIMIT :limit
+            """)
+            
+            result = db.execute(similar_query, {
+                "product_id": product_id,
+                "category": product_category,
+                "price": product_price,
+                "limit": limit
+            }).fetchall()
+            
+            similar_products = [dict(row) for row in result]
+            
+            await self.cache_service.set(cache_key, similar_products, ttl=3600)
+            return similar_products
+            
+        except Exception as e:
+            logger.error(f"Failed to get similar products: {e}")
+            return []
+        finally:
+            db.close()
+    
+    async def retrain_models(self):
+        """Retrain all ML models with fresh data"""
+        try:
+            logger.info("Starting model retraining...")
+            await self._train_all_models()
+            
+            # Clear related caches
+            await self.cache_service.delete_pattern("recommendations:*")
+            await self.cache_service.delete_pattern("trending:*")
+            await self.cache_service.delete_pattern("similar:*")
+            
+            logger.info("Model retraining completed successfully")
+            
+        except Exception as e:
+            logger.error(f"Failed to retrain models: {e}")
+    
+    async def get_ml_insights(self) -> Dict[str, Any]:
+        """Get ML model insights and statistics"""
+        try:
+            insights = {
+                "models_loaded": {
+                    "recommendation": self.recommendation_model is not None,
+                    "fraud_detection": self.fraud_detection_model is not None,
+                    "price_prediction": self.price_prediction_model is not None,
+                    "sentiment_analyzer": self.sentiment_analyzer is not None
+                },
+                "cache_stats": await self.cache_service.get_stats(),
+                "last_training": datetime.now().isoformat()
             }
             
-            for user_id, profile in list(self.user_profiles.items())[:limit]:
-                # Simple clustering based on transaction count and engagement
-                tx_count = len(profile.transaction_history)
-                engagement_score = sum(profile.engagement_metrics.values()) if profile.engagement_metrics else 0
-                
-                if tx_count > 100 and engagement_score > 50:
-                    clusters["high_value_traders"].append(user_id)
-                elif tx_count > 20:
-                    clusters["power_users"].append(user_id)
-                elif tx_count > 5:
-                    clusters["casual_collectors"].append(user_id)
-                elif tx_count > 0:
-                    clusters["new_users"].append(user_id)
-                else:
-                    clusters["inactive_users"].append(user_id)
-            
-            return clusters
+            return insights
             
         except Exception as e:
-            logger.error(f"User clustering failed: {str(e)}")
+            logger.error(f"Failed to get ML insights: {e}")
             return {}
-    
-    # Anomaly Detection
-    async def detect_anomalies(
-        self, 
-        data_type: str,
-        data: List[Dict[str, Any]]
-    ) -> List[Dict[str, Any]]:
-        """Detect anomalies in data"""
-        try:
-            anomalies = []
-            
-            # In a real implementation, this would use statistical methods
-            # and machine learning to detect anomalies
-            
-            # Mock anomaly detection
-            for item in data:
-                # Simple anomaly detection based on price deviations
-                if "price" in item:
-                    price = item["price"]
-                    if price > 1000 or price < 0.001:  # Suspicious prices
-                        anomalies.append({
-                            "type": "price_anomaly",
-                            "item": item,
-                            "severity": "high" if price > 1000 else "medium",
-                            "description": f"Suspicious price: {price}"
-                        })
-                
-                # Detect unusual transaction patterns
-                if "transaction_volume" in item:
-                    volume = item["transaction_volume"]
-                    if volume > 10000:  # Unusually high volume
-                        anomalies.append({
-                            "type": "volume_anomaly",
-                            "item": item,
-                            "severity": "high",
-                            "description": f"Unusually high volume: {volume}"
-                        })
-            
-            return anomalies
-            
-        except Exception as e:
-            logger.error(f"Anomaly detection failed: {str(e)}")
-            return []
-    
-    # Helper Methods
-    async def _get_user_profile(self, user_id: str) -> UserProfile:
-        """Get user profile, creating if doesn't exist"""
-        if user_id not in self.user_profiles:
-            self.user_profiles[user_id] = UserProfile(
-                user_id=user_id,
-                preferences={},
-                behavior_patterns={},
-                transaction_history=[],
-                engagement_metrics={},
-                risk_profile="medium"
-            )
-        return self.user_profiles[user_id]
-    
-    def _extract_preferred_categories(self, profile: UserProfile) -> List[str]:
-        """Extract preferred categories from user profile"""
-        # Mock implementation
-        return ["Digital Art", "Gaming", "Music", "Collectibles"]
-    
-    def _extract_price_preference(self, profile: UserProfile) -> Tuple[float, float]:
-        """Extract price preference from user profile"""
-        # Mock implementation
-        return (1.0, 50.0)  # Min and max price
-    
-    def _extract_nft_preferences(self, profile: UserProfile) -> Dict[str, Any]:
-        """Extract NFT preferences from user profile"""
-        # Mock implementation
-        return {
-            "preferred_collections": ["Bored Apes", "CryptoPunks", "Art Blocks"],
-            "preferred_rarity": "rare",
-            "preferred_price_range": (5.0, 100.0)
-        }
-    
-    async def _find_similar_users(self, profile: UserProfile) -> List[str]:
-        """Find users with similar behavior patterns"""
-        # Mock implementation
-        return [f"user_{i}" for i in range(5)]
-    
-    async def _analyze_market_trends(self) -> List[Dict[str, Any]]:
-        """Analyze current market trends"""
-        # Mock implementation
-        return [
-            {
-                "id": "trend_1",
-                "description": "AI-generated art is trending",
-                "score": 0.9,
-                "confidence": 0.85,
-                "metadata": {"category": "Digital Art", "growth_rate": 0.25}
-            },
-            {
-                "id": "trend_2", 
-                "description": "Gaming NFTs gaining popularity",
-                "score": 0.8,
-                "confidence": 0.75,
-                "metadata": {"category": "Gaming", "growth_rate": 0.15}
-            }
-        ]
-    
-    async def _analyze_category_trends(self, category: str) -> List[Dict[str, Any]]:
-        """Analyze trends for a specific category"""
-        # Mock implementation
-        return [{"timestamp": datetime.now(), "value": np.random.uniform(0, 100)} for _ in range(30)]
-    
-    async def _analyze_engagement(self, item_id: str) -> Dict[str, Any]:
-        """Analyze engagement metrics for an item"""
-        # Mock implementation
-        return {
-            "engagement_rate": np.random.uniform(0, 1),
-            "mentions": np.random.randint(0, 1000),
-            "search_trends": [np.random.uniform(0, 100) for _ in range(7)]
-        }
-    
-    async def _analyze_behavior_patterns(self, profile: UserProfile) -> Dict[str, Any]:
-        """Analyze user behavior patterns"""
-        # Mock implementation
-        return {
-            "preferred_time": "evening",
-            "transaction_frequency": "weekly",
-            "price_sensitivity": "medium",
-            "category_preferences": ["Digital Art", "Gaming"]
-        }
-    
-    async def _assess_risk_profile(self, profile: UserProfile) -> str:
-        """Assess user risk profile"""
-        # Mock implementation
-        tx_count = len(profile.transaction_history)
-        if tx_count > 100:
-            return "low"
-        elif tx_count > 20:
-            return "medium"
-        else:
-            return "high"

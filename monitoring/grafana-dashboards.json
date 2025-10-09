@@ -1,0 +1,395 @@
+{
+    "dashboard": {
+        "id": null,
+        "title": "Soladia Marketplace - Comprehensive Monitoring",
+        "tags": [
+            "soladia",
+            "marketplace",
+            "monitoring"
+        ],
+        "style": "dark",
+        "timezone": "browser",
+        "panels": [
+            {
+                "id": 1,
+                "title": "System Overview",
+                "type": "stat",
+                "targets": [
+                    {
+                        "expr": "up{job=\"soladia-backend\"}",
+                        "legendFormat": "Backend Status"
+                    },
+                    {
+                        "expr": "up{job=\"soladia-frontend\"}",
+                        "legendFormat": "Frontend Status"
+                    },
+                    {
+                        "expr": "up{job=\"postgres\"}",
+                        "legendFormat": "Database Status"
+                    },
+                    {
+                        "expr": "up{job=\"redis\"}",
+                        "legendFormat": "Redis Status"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 24,
+                    "x": 0,
+                    "y": 0
+                },
+                "fieldConfig": {
+                    "defaults": {
+                        "color": {
+                            "mode": "thresholds"
+                        },
+                        "thresholds": {
+                            "steps": [
+                                {
+                                    "color": "red",
+                                    "value": 0
+                                },
+                                {
+                                    "color": "green",
+                                    "value": 1
+                                }
+                            ]
+                        }
+                    }
+                }
+            },
+            {
+                "id": 2,
+                "title": "Request Rate",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "rate(http_requests_total{job=\"soladia-backend\"}[5m])",
+                        "legendFormat": "Backend Requests/sec"
+                    },
+                    {
+                        "expr": "rate(nginx_http_requests_total{job=\"soladia-frontend\"}[5m])",
+                        "legendFormat": "Frontend Requests/sec"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 8
+                },
+                "yAxes": [
+                    {
+                        "label": "Requests/sec",
+                        "min": 0
+                    },
+                    {
+                        "show": false
+                    }
+                ]
+            },
+            {
+                "id": 3,
+                "title": "Response Time",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket{job=\"soladia-backend\"}[5m]))",
+                        "legendFormat": "95th percentile"
+                    },
+                    {
+                        "expr": "histogram_quantile(0.50, rate(http_request_duration_seconds_bucket{job=\"soladia-backend\"}[5m]))",
+                        "legendFormat": "50th percentile"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 8
+                },
+                "yAxes": [
+                    {
+                        "label": "Response Time (s)",
+                        "min": 0
+                    },
+                    {
+                        "show": false
+                    }
+                ]
+            },
+            {
+                "id": 4,
+                "title": "Error Rate",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "rate(http_requests_total{job=\"soladia-backend\",status=~\"5..\"}[5m])",
+                        "legendFormat": "5xx Errors/sec"
+                    },
+                    {
+                        "expr": "rate(http_requests_total{job=\"soladia-backend\",status=~\"4..\"}[5m])",
+                        "legendFormat": "4xx Errors/sec"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 16
+                },
+                "yAxes": [
+                    {
+                        "label": "Errors/sec",
+                        "min": 0
+                    },
+                    {
+                        "show": false
+                    }
+                ]
+            },
+            {
+                "id": 5,
+                "title": "Database Performance",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "rate(postgresql_connections_total[5m])",
+                        "legendFormat": "Connections/sec"
+                    },
+                    {
+                        "expr": "rate(postgresql_queries_total[5m])",
+                        "legendFormat": "Queries/sec"
+                    },
+                    {
+                        "expr": "postgresql_database_size_bytes",
+                        "legendFormat": "Database Size"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 16
+                },
+                "yAxes": [
+                    {
+                        "label": "Rate/Size",
+                        "min": 0
+                    },
+                    {
+                        "show": false
+                    }
+                ]
+            },
+            {
+                "id": 6,
+                "title": "Memory Usage",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "process_resident_memory_bytes{job=\"soladia-backend\"}",
+                        "legendFormat": "Backend Memory"
+                    },
+                    {
+                        "expr": "process_resident_memory_bytes{job=\"soladia-frontend\"}",
+                        "legendFormat": "Frontend Memory"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 24
+                },
+                "yAxes": [
+                    {
+                        "label": "Memory (bytes)",
+                        "min": 0
+                    },
+                    {
+                        "show": false
+                    }
+                ]
+            },
+            {
+                "id": 7,
+                "title": "CPU Usage",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "rate(process_cpu_seconds_total{job=\"soladia-backend\"}[5m])",
+                        "legendFormat": "Backend CPU"
+                    },
+                    {
+                        "expr": "rate(process_cpu_seconds_total{job=\"soladia-frontend\"}[5m])",
+                        "legendFormat": "Frontend CPU"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 24
+                },
+                "yAxes": [
+                    {
+                        "label": "CPU Usage",
+                        "min": 0
+                    },
+                    {
+                        "show": false
+                    }
+                ]
+            },
+            {
+                "id": 8,
+                "title": "Solana Blockchain Metrics",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "solana_transactions_total",
+                        "legendFormat": "Transactions"
+                    },
+                    {
+                        "expr": "solana_balance_sol",
+                        "legendFormat": "SOL Balance"
+                    },
+                    {
+                        "expr": "solana_nft_count",
+                        "legendFormat": "NFT Count"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 24,
+                    "x": 0,
+                    "y": 32
+                },
+                "yAxes": [
+                    {
+                        "label": "Count/Balance",
+                        "min": 0
+                    },
+                    {
+                        "show": false
+                    }
+                ]
+            },
+            {
+                "id": 9,
+                "title": "Business Metrics",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "soladia_users_total",
+                        "legendFormat": "Total Users"
+                    },
+                    {
+                        "expr": "soladia_products_total",
+                        "legendFormat": "Total Products"
+                    },
+                    {
+                        "expr": "soladia_sales_total",
+                        "legendFormat": "Total Sales"
+                    },
+                    {
+                        "expr": "soladia_revenue_total",
+                        "legendFormat": "Total Revenue"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 24,
+                    "x": 0,
+                    "y": 40
+                },
+                "yAxes": [
+                    {
+                        "label": "Count/Revenue",
+                        "min": 0
+                    },
+                    {
+                        "show": false
+                    }
+                ]
+            },
+            {
+                "id": 10,
+                "title": "Cache Performance",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "rate(redis_commands_total[5m])",
+                        "legendFormat": "Redis Commands/sec"
+                    },
+                    {
+                        "expr": "redis_memory_used_bytes",
+                        "legendFormat": "Redis Memory Used"
+                    },
+                    {
+                        "expr": "redis_hits_total / (redis_hits_total + redis_misses_total) * 100",
+                        "legendFormat": "Cache Hit Rate %"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 0,
+                    "y": 48
+                },
+                "yAxes": [
+                    {
+                        "label": "Rate/Percentage",
+                        "min": 0
+                    },
+                    {
+                        "show": false
+                    }
+                ]
+            },
+            {
+                "id": 11,
+                "title": "Security Metrics",
+                "type": "graph",
+                "targets": [
+                    {
+                        "expr": "rate(http_requests_total{job=\"soladia-backend\",status=\"401\"}[5m])",
+                        "legendFormat": "401 Unauthorized/sec"
+                    },
+                    {
+                        "expr": "rate(http_requests_total{job=\"soladia-backend\",status=\"403\"}[5m])",
+                        "legendFormat": "403 Forbidden/sec"
+                    },
+                    {
+                        "expr": "rate(failed_login_attempts_total[5m])",
+                        "legendFormat": "Failed Login Attempts/sec"
+                    }
+                ],
+                "gridPos": {
+                    "h": 8,
+                    "w": 12,
+                    "x": 12,
+                    "y": 48
+                },
+                "yAxes": [
+                    {
+                        "label": "Security Events/sec",
+                        "min": 0
+                    },
+                    {
+                        "show": false
+                    }
+                ]
+            }
+        ],
+        "time": {
+            "from": "now-1h",
+            "to": "now"
+        },
+        "refresh": "30s",
+        "schemaVersion": 27,
+        "version": 1,
+        "links": []
+    }
+}
